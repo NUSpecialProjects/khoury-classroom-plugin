@@ -5,6 +5,10 @@ import (
 )
 
 func (s *Service) HelloWorld(c *fiber.Ctx) error {
-	s.github.Ping()
-	return c.SendString("Hello, World!")
+	repos := s.github.ListRepos()
+	repoString := ""
+	for _, repo := range repos {
+		repoString += repo + ", "
+	}
+	return c.SendString(repoString)
 }
