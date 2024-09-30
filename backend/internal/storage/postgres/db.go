@@ -22,3 +22,7 @@ func New(ctx context.Context, config config.Database) (*DB, error) {
 	fmt.Println("Successfully connected to the database!")
 	return &DB{conn: conn}, nil
 }
+
+func (db *DB) Close(ctx context.Context) error {
+	return db.conn.Close(ctx)
+}
