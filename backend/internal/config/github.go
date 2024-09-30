@@ -1,6 +1,6 @@
 package config
 
 type GitHub struct {
-	URL       string `env:"URL"`
-	Key       string `env:"ANON_KEY"`
+	AppID          int64 `env:"APP_ID"`
+	InstallationID int64 `env:"Installation_ID"`
 }
