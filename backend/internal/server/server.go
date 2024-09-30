@@ -2,8 +2,9 @@ package server
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
-	"github.com/CamPlume1/khoury-classroom/internal/types"
+	hello "github.com/CamPlume1/khoury-classroom/internal/handlers"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
+	"github.com/CamPlume1/khoury-classroom/internal/types"
 	go_json "github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -18,6 +19,8 @@ func New(params types.Params) *fiber.App {
 	useMiddlewares(app)
 
 	//Add Route Groupings here: @TODO
+	hello.Routes(app, params)
+	
 
 	return app
 }

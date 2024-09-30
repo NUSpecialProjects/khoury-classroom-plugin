@@ -45,6 +45,11 @@ backend-run:
 backend-build:
 	cd backend && go build -o bin/nightlife cmd/server/main.go
 
+# Run database
+.PHONY: db-run
+db-run:
+	docker-compose up
+
 # convert the backend link to an ngrok link
 .PHONY: backend-ngrok
 backend-ngrok:
