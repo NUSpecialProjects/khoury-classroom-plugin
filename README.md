@@ -36,7 +36,7 @@ frontend to backend code. Make an account for a stable link!
 Create an .env file in the root directory:
 
 ```
-DATABASE_URL=postgresql://user:pwd@localhost:5434/classroom
+DATABASE_URL=<Your database URL>
 AUTH_URL=<url for auth provider>
 AUTH_ANON_KEY=<api key for auth provider>
 AUTH_JWT_SECRET=<JWT Secret>
