@@ -43,7 +43,7 @@ backend-run:
 # Build backend
 .PHONY: backend-build
 backend-build:
-	cd backend && go build -o bin/nightlife cmd/server/main.go
+	cd backend && go build -o bin/classroom cmd/server/main.go
 
 # Run database
 .PHONY: db-run
@@ -53,5 +53,5 @@ db-run:
 # convert the backend link to an ngrok link
 .PHONY: backend-ngrok
 backend-ngrok:
-	@echo ${EXPO_PUBLIC_API_DOMAIN}
-	cd backend && ngrok http --domain=${EXPO_PUBLIC_API_DOMAIN} 8080
+	@echo ${PUBLIC_API_DOMAIN}
+	cd backend && ngrok http --domain=${PUBLIC_API_DOMAIN} 8080
