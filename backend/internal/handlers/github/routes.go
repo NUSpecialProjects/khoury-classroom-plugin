@@ -1,4 +1,4 @@
-package hello
+package github
 
 //NOTE: This is an example usage for auth demonstration purposes. In real configurations (beyond login) all route groups should be protected
 
@@ -10,18 +10,11 @@ import (
 
 // Create HelloGroup fiber route group
 func Routes(app *fiber.App, params types.Params) {
-	service := newService(params.Store)
+	service := newService(params.Store, params.Github)
 
-	// Create Protected Grouping
-	protected := app.Group("/hello_protected")
-
-	// Register Middleware
-	protected.Use(middleware.Protected(&params.AuthHandler))
-
-	//Unprotected Routes
-	unprotected := app.Group("/hello")
+	routes := app.Group("/github")
 
 	//Endpoints
-	protected.Get("/world", service.HelloWorld)
-	unprotected.Get("/world", service.HelloWorld)
+	routes.Post("/webhook", middleware.ProtectedWebhook(&params.GithubAuthHandler), service.WebhookHandler)
+	routes.Get("/hello", service.HelloWorld)
 }

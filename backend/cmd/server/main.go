@@ -33,12 +33,13 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application 2")
 	}*/
 
-	GithubApi, err := api.New(&cfg.GitHub)
+	GithubApi, _ := api.New(&cfg.GithubAuthHandler)
 
 	app := server.New(types.Params{
-		AuthHandler: cfg.AuthHandler,
-		Store:       nil,
-		Github:      GithubApi,
+		AuthHandler:       cfg.AuthHandler,
+		GithubAuthHandler: cfg.GithubAuthHandler,
+		Store:             nil,
+		Github:            GithubApi,
 	})
 
 	go func() {

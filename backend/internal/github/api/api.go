@@ -13,7 +13,7 @@ type API struct {
 	client *github.Client
 }
 
-func New(config *config.GitHub) (*API, error) {
+func New(config *config.GithubAuthHandler) (*API, error) {
 	tr, err := ghinstallation.New(http.DefaultTransport, config.AppID, config.InstallationID, []byte(config.Key))
 	if err != nil {
 		println(err.Error())

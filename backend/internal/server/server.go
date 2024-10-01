@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
+	github "github.com/CamPlume1/khoury-classroom/internal/handlers/github"
 	hello "github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
@@ -20,7 +21,7 @@ func New(params types.Params) *fiber.App {
 
 	//Add Route Groupings here: @TODO
 	hello.Routes(app, params)
-	
+	github.Routes(app, params)
 
 	return app
 }
