@@ -43,7 +43,7 @@ backend-run:
 # Build backend
 .PHONY: backend-build
 backend-build:
-	cd backend && go build -o bin/nightlife cmd/server/main.go
+	cd backend && go build -o bin/classroom cmd/server/main.go
 
 # Run database
 .PHONY: db-run
