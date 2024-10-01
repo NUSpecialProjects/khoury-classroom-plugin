@@ -49,7 +49,10 @@ func main() {
     // }
     //
     // log.Println("Repos:", repos)
-    branch, err := GithubApi.GetBranch("")
+    branch, err := GithubApi.GetBranch(ctx, "NUSpecialProjects", "khoury-classroom-plugin", "feature/github-api")
+    log.Println("Branch:", branch)
+
+
 }
 
 func isLocal() bool {
