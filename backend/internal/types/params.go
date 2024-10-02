@@ -10,5 +10,5 @@ type Params struct {
 	AuthHandler       config.AuthHandler
 	GithubAuthHandler config.GithubAuthHandler
 	Store             storage.Storage
-	Github            github.Github
+	Github            github.GithubApp
 }

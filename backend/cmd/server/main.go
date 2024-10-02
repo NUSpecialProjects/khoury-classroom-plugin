@@ -1,19 +1,19 @@
 package main
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
-	"context"
-	"github.com/CamPlume1/khoury-classroom/internal/config"
-	"github.com/CamPlume1/khoury-classroom/internal/github/api"
-	"github.com/CamPlume1/khoury-classroom/internal/server"
-	"github.com/CamPlume1/khoury-classroom/internal/types"
-	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
-	"github.com/joho/godotenv"
 
+	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/github/app/api"
+	"github.com/CamPlume1/khoury-classroom/internal/server"
+	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
+	"github.com/CamPlume1/khoury-classroom/internal/types"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application 2")
 	}
 
-	GithubApi, _ := api.New(&cfg.GithubAuthHandler)
+	GithubApi, _ := api.New(&cfg.GitHubApp)
 
 	if err != nil {
 		log.Fatalf("Unable to establish connection with Github")
@@ -43,7 +43,7 @@ func main() {
 
 	app := server.New(types.Params{
 		AuthHandler:       cfg.AuthHandler,
-		GithubAuthHandler: cfg.GithubAuthHandler,
+		GithubAuthHandler: cfg.GitHubApp,
 		Store:             db,
 		Github:            GithubApi,
 	})
