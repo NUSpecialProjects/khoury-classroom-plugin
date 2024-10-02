@@ -10,11 +10,11 @@ import (
 
 // Create HelloGroup fiber route group
 func Routes(app *fiber.App, params types.Params) {
-	service := newService(params.Store, params.Github)
+	service := newService(params.Store, params.GithubApp)
 
 	routes := app.Group("/github")
 
 	//Endpoints
-	routes.Post("/webhook", middleware.ProtectedWebhook(&params.GithubAuthHandler), service.WebhookHandler)
+	routes.Post("/webhook", middleware.ProtectedWebhook(&params.GithubAppConfig), service.WebhookHandler)
 	routes.Get("/hello", service.HelloWorld)
 }

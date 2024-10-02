@@ -3,19 +3,10 @@ package main
 import (
 	"context"
 	"log"
-
-	// "log/slog"
 	"os"
-	// "os/signal"
-	// "syscall"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
-	// "github.com/CamPlume1/khoury-classroom/internal/github/app/api"
 	"github.com/CamPlume1/khoury-classroom/internal/github/client/api"
-
-	// "github.com/CamPlume1/khoury-classroom/internal/server"
-	// "github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
-	// "github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/joho/godotenv"
 )
 
@@ -32,7 +23,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to load environment variables necessary for application")
 	}
-	// log.Printf("Loaded GitHub Config: AppID=%d, InstallationID=%d", cfg.GitHubApp.AppID, cfg.GitHubApp.InstallationID)
 
 	GithubApi, err := api.New(&cfg.GitHubClient, "2caa55f67b8f897fb60b")
 

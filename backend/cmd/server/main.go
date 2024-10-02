@@ -35,7 +35,7 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application 2")
 	}
 
-	GithubApi, _ := api.New(&cfg.GitHubApp)
+	GithubAppApi, _ := api.New(&cfg.GitHubApp)
 
 	if err != nil {
 		log.Fatalf("Unable to establish connection with Github")
@@ -45,7 +45,7 @@ func main() {
 		AuthHandler:       cfg.AuthHandler,
 		GithubAuthHandler: cfg.GitHubApp,
 		Store:             db,
-		Github:            GithubApi,
+		Github:            GithubAppApi,
 	})
 
 	go func() {
