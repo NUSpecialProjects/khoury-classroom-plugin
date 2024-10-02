@@ -6,16 +6,18 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
+	"context"
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/api"
 	"github.com/CamPlume1/khoury-classroom/internal/server"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
+	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
 	"github.com/joho/godotenv"
+
 )
 
 func main() {
-	//ctx := context.Background()
+	ctx := context.Background()
 
 	if isLocal() {
 		if err := godotenv.Load("../../../.env"); err != nil {
@@ -28,10 +30,10 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application")
 	}
 
-	/*db, err := postgres.New(ctx, cfg.Database)
+	db, err := postgres.New(ctx, cfg.Database)
 	if err != nil {
 		log.Fatalf("Unable to load environment variables necessary for application 2")
-	}*/
+	}
 
 	GithubApi, _ := api.New(&cfg.GithubAuthHandler)
 
@@ -42,7 +44,7 @@ func main() {
 	app := server.New(types.Params{
 		AuthHandler:       cfg.AuthHandler,
 		GithubAuthHandler: cfg.GithubAuthHandler,
-		Store:             nil,
+		Store:             db,
 		Github:            GithubApi,
 	})
 
