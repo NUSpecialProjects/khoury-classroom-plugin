@@ -9,9 +9,14 @@ import (
 type Storage interface {
 	Close (context.Context) error
 	Test
+  KhouryClassroomDB
 }
 
 
 type Test interface {
 	GetTests(ctx context.Context) ([]models.Test, error)
+}
+
+type KhouryClassroomDB interface {
+  GetUsers(ctx context.Context) ([]models.Users, error)
 }

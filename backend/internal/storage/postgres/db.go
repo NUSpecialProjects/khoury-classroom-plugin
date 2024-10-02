@@ -31,14 +31,3 @@ func (db *DB) Close(ctx context.Context) error {
 }
 
 
-func (db *DB) GetUsers(ctx contect.Context) error {
-  rows, err := db.conn.Query(ctx, "SELECT * FROM users")
-  if err != nil {
-    return []models.User{}, err
-  }
-
-  defer rows.Close()
-  return pgx
-
-
-}
