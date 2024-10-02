@@ -1,7 +1,6 @@
 import { IconType } from "react-icons";
 import { FaTachometerAlt, FaStream, FaUsers, FaCog } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 
 interface NavItemProps {
   buttonName: string;
@@ -9,25 +8,15 @@ interface NavItemProps {
   IconDest: IconType;
 }
 
-const NavItem: React.FC<NavItemProps> = ({buttonName, buttonDest, IconDest}) => {
-  const navigate = useNavigate()
-  
-
-  const PageRouteFunction = () => {
-      navigate(buttonDest)
-  }
-  
-  return (<>
-  <button onClick={PageRouteFunction}>
-    <IconDest/> {buttonName}
-    </button>
-  </>)
-}
-
-
+const NavItem: React.FC<NavItemProps> = ({ buttonName, buttonDest, IconDest }) => {
+  return (
+    <Link to={buttonDest} className="nav-link">
+      <IconDest /> {buttonName}
+    </Link>
+  );
+};
 
 const NavStack = () => {
-
   const navItems: NavItemProps[] = [
     {
       buttonName: "Dashboard",
@@ -51,18 +40,18 @@ const NavStack = () => {
     },
   ];
 
-
-
-
   return (
     <div className="side-banner">
-      {
-        navItems.map(item => {
-          return <NavItem buttonName={item.buttonName} buttonDest={item.buttonDest} IconDest={item.IconDest} />
-})
-      }
+      {navItems.map((item, index) => (
+        <NavItem
+          key={index}
+          buttonName={item.buttonName}
+          buttonDest={item.buttonDest}
+          IconDest={item.IconDest}
+        />
+      ))}
     </div>
-  ); 
+  );
 };
 
 export default NavStack;
