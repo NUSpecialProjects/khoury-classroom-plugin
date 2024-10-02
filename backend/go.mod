@@ -2,13 +2,22 @@ module github.com/CamPlume1/khoury-classroom
 
 go 1.23
 
-require github.com/gofiber/fiber/v2 v2.52.5
+toolchain go1.23.1
 
 require (
+	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
+	github.com/gofiber/fiber/v2 v2.52.5
+)
+
+require (
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/google/go-github/v62 v62.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 )
 
