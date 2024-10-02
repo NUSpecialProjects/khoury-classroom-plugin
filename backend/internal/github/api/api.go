@@ -3,9 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
-    // "net/http"
 	gh "github.com/google/go-github/v52/github"
-    // "github.com/CamPlume1/khoury-classroom/internal/github"
 	"github.com/jferrl/go-githubauth"
 	"golang.org/x/oauth2"
     "github.com/CamPlume1/khoury-classroom/internal/config"
@@ -41,23 +39,37 @@ func New(cfg *config.GitHub) (*API, error) {
 	}, nil
 }
 
-func (api *API) TestFunc() (error) {
-    return nil
-}
-
-// Ping tests the connection to the GitHub API by calling the /zen endpoint.
 func (api *API) Ping(ctx context.Context) (string, error) {
-	// Call the /zen endpoint
 	message, _, err := api.client.Zen(ctx)
 	if err != nil {
 		return "", fmt.Errorf("failed to ping GitHub API: %v", err)
 	}
 
-	// Print the response message to verify connection
-	fmt.Println("GitHub API /zen response:", message)
-
 	return message, nil
 }
+
+// func (api *API) ListRepositories(ctx context.Context) ([]*gh.Repository, error) {
+//     // Construct the URL for the organization's repositories endpoint
+//     endpoint := fmt.Sprintf("/orgs/%s/repos", "NUSpecialProjects")
+//
+//     // Create a new GET request
+//     req, err := api.client.NewRequest("GET", endpoint, nil)
+//     if err != nil {
+//         return nil, fmt.Errorf("error creating request: %v", err)
+//     }
+//
+//     // Response container for repositories
+//     var repos []*gh.Repository
+//
+//     // Make the API call
+//     _, err = api.client.Do(ctx, req, &repos)
+//     if err != nil {
+//         return nil, fmt.Errorf("error fetching repositories: %v", err)
+//     }
+//
+//     return repos, nil
+// }
+//
 
 func (api *API) ListRepositories(ctx context.Context) ([]*gh.Repository, error) {
     repos, _, err := api.client.Repositories.ListByOrg(ctx, "NUSpecialProjects", nil)
@@ -82,7 +94,114 @@ func (api *API) GetBranch(ctx context.Context, owner_name string, repo_name stri
     return branch, err
 }
 
-//TODO: list assignment is not a method that is available in the github api wrapper
+
+type ClassroomAcceptedAssignment struct {
+	ID          int64                 `json:"id"`
+	Submitted   bool                  `json:"submitted"`
+	Passing     bool                  `json:"passing"`
+	CommitCount int                   `json:"commit_count"`
+	Grade       string                `json:"grade"`
+	Students    []*gh.User            `json:"students"` // Using GitHub User type for students
+	Repository  *gh.Repository        `json:"repository"` // Using GitHub Repository type
+	Assignment  ClassroomAssignment   `json:"assignment"`
+}
+
+type ClassroomAssignment struct {
+	ID                          int64        `json:"id"`
+	PublicRepo                  bool         `json:"public_repo"`
+	Title                       string       `json:"title"`
+	Type                        string       `json:"type"`
+	InviteLink                  string       `json:"invite_link"`
+	InvitationsEnabled          bool         `json:"invitations_enabled"`
+	Slug                        string       `json:"slug"`
+	StudentsAreRepoAdmins       bool         `json:"students_are_repo_admins"`
+	FeedbackPullRequestsEnabled bool         `json:"feedback_pull_requests_enabled"`
+	MaxTeams                    *int         `json:"max_teams,omitempty"` // Nullable int
+	MaxMembers                  *int         `json:"max_members,omitempty"` // Nullable int
+	Editor                      string       `json:"editor"`
+	Accepted                    int          `json:"accepted"`
+	Submitted                   int          `json:"submitted"`
+	Passing                     int          `json:"passing"`
+	Language                    string       `json:"language"`
+	Deadline                    *string      `json:"deadline,omitempty"` // Nullable datetime
+	Classroom                   Classroom    `json:"classroom"`
+}
+
+type Classroom struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Archived bool   `json:"archived"`
+	URL      string `json:"url"`
+}
+
+
+func (api *API) ListClassrooms(ctx context.Context) ([]Classroom, error) {
+    // Construct the URL for the classrooms endpoint
+    endpoint := "https://api.github.com/classrooms"
+
+    // Create a new GET request
+    req, err := api.client.NewRequest("GET", endpoint, nil)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Response container for classrooms
+    var classrooms []Classroom
+
+    // Make the API call
+    _, err = api.client.Do(ctx, req, &classrooms)
+    if err != nil {
+        return nil, fmt.Errorf("error fetching classrooms: %v", err)
+    }
+
+    return classrooms, nil
+}
+
+
+func (api *API) ListAssignmentsForClassroom(ctx context.Context, classroomID int64) ([]ClassroomAssignment, error) {
+    // Construct the URL for the list assignments endpoint
+    endpoint := fmt.Sprintf("/classrooms/%d/assignments", classroomID)
+
+    // Create a new GET request
+    req, err := api.client.NewRequest("GET", endpoint, nil)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Response container for assignments
+    var assignments []ClassroomAssignment
+
+    // Make the API call
+    _, err = api.client.Do(ctx, req, &assignments)
+    if err != nil {
+        return nil, fmt.Errorf("error fetching assignments: %v", err)
+    }
+
+    return assignments, nil
+}
+
+
+func (api *API) GetAcceptedAssignments(ctx context.Context, assignmentID int64) ([]ClassroomAcceptedAssignment, error) {
+    // Construct the URL for the assignment endpoint
+    endpoint := fmt.Sprintf("/assignments/%d/accepted_assignments", assignmentID)
+
+    // Create a new GET request
+    req, err := api.client.NewRequest("GET", endpoint, nil)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Response container for accepted assignments
+    var acceptedAssignments []ClassroomAcceptedAssignment
+
+    // Make the API call
+    _, err = api.client.Do(ctx, req, &acceptedAssignments)
+    if err != nil {
+        return nil, fmt.Errorf("error fetching accepted assignments: %v", err)
+    }
+
+    return acceptedAssignments, nil
+}
 
 func (api *API) CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error {
 	baseRef, _, err := api.client.Git.GetRef(ctx, owner, repo, "refs/heads/"+baseBranch)
@@ -109,8 +228,8 @@ func (api *API) CreateBranch(ctx context.Context, owner string, repo string, bas
 func (api *API) CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*gh.PullRequest, error) {
 	newPR := &gh.NewPullRequest{
 		Title: gh.String(title),            // Title of the PR
-		Head:  gh.String(headBranch),       // Source branch (head)
-		Base:  gh.String(baseBranch),       // Target branch (base)
+		Head:  gh.String(headBranch),       // Source branch
+		Base:  gh.String(baseBranch),       // Target branch
 		Body:  gh.String(body),             // PR description
 	}
 
