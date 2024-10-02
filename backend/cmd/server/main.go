@@ -11,17 +11,10 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/github/api"
 	"github.com/CamPlume1/khoury-classroom/internal/server"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	//ctx := context.Background()
-
-	if isLocal() {
-		if err := godotenv.Load("../../../.env"); err != nil {
-			log.Fatalf("Error loading .env file: %v", err)
-		}
-	}
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
