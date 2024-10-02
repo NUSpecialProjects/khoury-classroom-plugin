@@ -35,7 +35,12 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application 2")
 	}
 
-	GithubApi, err := api.New(&cfg.GitHub)
+  //err = db.Close(ctx) 
+  //if err != nil {
+  //  log.Fatalf("Unable to close db")
+  //}
+	
+  GithubApi, err := api.New(&cfg.GitHub)
 
 	app := server.New(types.Params{
 		AuthHandler: cfg.AuthHandler,
