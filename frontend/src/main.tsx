@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Correct imports
-import Layout from './layout';
+import Layout from './Layout';
 import { Assignments, Grading, Settings, Dashboard} from './pages';
 import "./index.css"
 

@@ -1,7 +1,7 @@
-import Settings from "./settings";
-import Dashboard from "./dashboard";
-import Assignments from "./assignments";
-import Grading from "./grading";
+import Settings from "./Settings";
+import Dashboard from "./Dashboard";
+import Assignments from "./Assignments";
+import Grading from "./Grading";
 
 
 export {Settings, Dashboard, Assignments, Grading}
