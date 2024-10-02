@@ -36,12 +36,18 @@ func main() {
 		log.Fatalf("Error creating GitHub API client: %v", err)
 	}
 
-	message, err := GithubApi.Ping(ctx)
-	if err != nil {
-		log.Fatalf("Ping failed: %v", err)
+    classrooms, err := GithubApi.ListClassrooms(ctx)
+    if err != nil {
+        log.Fatalf("Error getting classrooms: %v", err)
     }
+    log.Println(classrooms)
 
-	log.Println("Ping successful:", message)
+	// message, err := GithubApi.Ping(ctx)
+	// if err != nil {
+	// 	log.Fatalf("Ping failed: %v", err)
+ //    }
+	//
+	// log.Println("Ping successful:", message)
 
     // repos, err := GithubApi.ListRepositories(ctx)
     // if err != nil {
@@ -59,12 +65,14 @@ func main() {
    
     // comment, err := GithubApi.CreateMultilinePRComment(ctx, "NUSpecialProjects", "practicum-classroom-sample-nick-test-python-template", 2, "de2b5bb16a887610c2c6eaba9d3f30c2f237aa5b", "test.go", 30, 40, "LEFT", "this is a programatic multiline comment")
     
-    comment, err := GithubApi.CreateFilePRComment(ctx, "NUSpecialProjects", "practicum-classroom-sample-nick-test-python-template", 2, "de2b5bb16a887610c2c6eaba9d3f30c2f237aa5b", "test.go", "this is a programatic multiline comment")
+    // comment, err := GithubApi.CreateFilePRComment(ctx, "NUSpecialProjects", "practicum-classroom-sample-nick-test-python-template", 2, "de2b5bb16a887610c2c6eaba9d3f30c2f237aa5b", "test.go", "this is a programatic multiline comment")
     // comment, err := GithubApi.CreateRegularPRComment(ctx, "NUSpecialProjects", "practicum-classroom-sample-nick-test-python-template", 2, "this is a programatic comment")
-    if err != nil {
-        log.Printf("%v", err)
-    }
-    log.Printf("%v", comment)
+    // if err != nil {
+    //     log.Printf("%v", err)
+    // }
+    // log.Printf("%v", comment)
+
+    // acceptedAssignments, err := GithubApi.GetAcceptedAssignments(ctx, )
 }
 
 func isLocal() bool {
