@@ -1,5 +1,18 @@
 services:
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      target: final
+    ports:
+      - '3001:3001'
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
   db:
+    container_name: db
     image: postgres:14.1-alpine
     restart: always
     healthcheck:
