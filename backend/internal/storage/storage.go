@@ -18,5 +18,5 @@ type Test interface {
 }
 
 type KhouryClassroomDB interface {
-  GetUsers(ctx context.Context) ([]models.Users, error)
+  GetUsers(ctx context.Context) ([]models.User, error)
 }
