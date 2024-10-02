@@ -22,18 +22,23 @@ func New(ctx context.Context, config config.Database) (*DB, error) {
 	
   fmt.Println("Successfully connected to the database!")
 
-  // Testing writing queries
-  rows, err := db.conn.Query(ctx, "SELECT * FROM users")
-  if err != nil {
-    return []models.Users{}, err
-  }
-
-
-	
   return &DB{conn: conn}, nil
 }
 
 
 func (db *DB) Close(ctx context.Context) error {
 	return db.conn.Close(ctx)
+}
+
+
+func (db *DB) GetUsers(ctx contect.Context) error {
+  rows, err := db.conn.Query(ctx, "SELECT * FROM users")
+  if err != nil {
+    return []models.User{}, err
+  }
+
+  defer rows.Close()
+  return pgx
+
+
 }

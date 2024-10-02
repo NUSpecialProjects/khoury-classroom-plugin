@@ -6,7 +6,9 @@ CREATE DATABASE khouryclassroomdb;
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   role VARCHAR(50) NOT NULL,
-  name VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
+  gh_username VARCHAR(255) NOT NULL,
+  joined_on TIMESTAMP
 );
 
 CREATE TABLE classrooms (
@@ -18,7 +20,6 @@ CREATE TABLE classrooms (
 CREATE TABLE student_classroom (
   student_id INTEGER NOT NULL,
   classroom_id INTEGER NOT NULL,
-  joined_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (student_id, classroom_id),
   FOREIGN KEY (student_id) REFERENCES users(id),
   FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
