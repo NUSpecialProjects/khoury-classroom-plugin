@@ -7,12 +7,13 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) GetUsers(ctx contect.Context) error {
-  rows, err := db.conn.Query(ctx, "SELECT * FROM users")
+func (db *DB) GetUsers(ctx context.Context) ([]models.User, error) {
+  
+  rows, err := db.connPool.Query(ctx, "SELECT * FROM users")
   if err != nil {
     return []models.User{}, err
   }
 
   defer rows.Close()
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Test])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 }

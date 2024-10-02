@@ -6,7 +6,7 @@ import (
 )
 
 
-func routes(app *fiber.App, params types.Params) {
+func Routes(app *fiber.App, params types.Params) {
   service := newKCDBService(params.Store)
 
   protected := app.Group("/db")

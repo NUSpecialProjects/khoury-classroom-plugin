@@ -73,8 +73,28 @@ CREATE TABLE due_dates (
 );
 
 
-
-
 -- adding initial users
-INSERT INTO users (role, name) VALUES ('student', 'Alex Angione'); 
-INSERT INTO users (role, name) VALUES ('professor', 'Dr. Fontenot');  
+INSERT INTO users (role, name, gh_username, joined_on) VALUES ('student', 'Alex Angione', 'alexangione419', NOW()); 
+INSERT INTO users (role, name, gh_username, joined_on) VALUES ('professor', 'Dr. Fontenot', 'MarkFontenot', NOW());  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
