@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/CamPlume1/khoury-classroom/internal/config"
-	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -26,17 +25,9 @@ func New(ctx context.Context, config config.Database) (*DB, error) {
 	return &DB{connPool: connPool}, nil
 }
 
-// Closes a connection pool, pings to confirm closure
-func (db *DB) Close(ctx context.Context) error {
+// Closes a connection pool
+func (db *DB) Close(ctx context.Context) {
 	db.connPool.Close()
-
-  err := db.connPool.Ping(ctx)
-  if (err == nil) {
-    return errs.FailedDBClose()
-  } 
-  
-  fmt.Println("Successfully closed database pool")
-  return nil
   
 }
 

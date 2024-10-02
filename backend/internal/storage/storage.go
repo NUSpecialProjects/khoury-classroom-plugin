@@ -7,7 +7,7 @@ import (
 )
 
 type Storage interface {
-	Close (context.Context) error
+	Close (context.Context)
 	Test
   KhouryClassroomDB
 }
