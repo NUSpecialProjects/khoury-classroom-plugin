@@ -1,0 +1,17 @@
+.top-banner {
+    width: 100vw; 
+    padding: 10px 30px; 
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+.chime {
+    font-size: 40px;
+}
+
+
+.sst {
+    padding-left: 30px;
+    font-size: 25px;
+}

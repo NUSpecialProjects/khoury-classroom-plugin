@@ -1,5 +1,6 @@
 package github
 
 type Github interface {
-	Ping () error
+	Ping() error
+	ListRepos() []string
 }

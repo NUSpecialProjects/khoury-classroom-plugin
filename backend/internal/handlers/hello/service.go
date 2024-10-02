@@ -1,6 +1,8 @@
 package hello
 
-import "github.com/CamPlume1/khoury-classroom/internal/storage"
+import (
+	"github.com/CamPlume1/khoury-classroom/internal/storage"
+)
 
 type Service struct {
 	store storage.Storage

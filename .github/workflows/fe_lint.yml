@@ -1,0 +1,21 @@
+name: frontend-lint
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  frontend-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+
+      - name: Run frontend linter
+        working-directory: ./frontend
+        run: npx eslint
