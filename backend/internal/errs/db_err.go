@@ -12,7 +12,7 @@ type DatabaseError struct {
 }
 
 func (e DatabaseError) Error() string {
-	return fmt.Sprintf("db error: %d %v", e.Message)
+	return fmt.Sprintf("db error: %d", e.Message)
 }
 
 func NewDBError(err error) DatabaseError {
