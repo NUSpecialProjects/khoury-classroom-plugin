@@ -35,6 +35,10 @@ func main() {
 
 	GithubApi, _ := api.New(&cfg.GithubAuthHandler)
 
+	if err != nil {
+		log.Fatalf("Unable to establish connection with Github")
+	}
+
 	app := server.New(types.Params{
 		AuthHandler:       cfg.AuthHandler,
 		GithubAuthHandler: cfg.GithubAuthHandler,

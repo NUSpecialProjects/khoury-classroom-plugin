@@ -8,7 +8,7 @@ frontend-dep:
 # running the frontend
 .PHONY: frontend-run
 frontend-run:
-	cd frontend && npm start
+	cd frontend && npm run dev
 
 # Lint the frontend source code
 .PHONY: frontend-lint
