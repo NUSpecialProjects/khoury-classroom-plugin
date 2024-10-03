@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - s3_deploy
 
 jobs:
   build-and-deploy:
