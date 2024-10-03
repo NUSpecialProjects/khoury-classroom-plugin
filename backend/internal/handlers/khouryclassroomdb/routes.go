@@ -13,4 +13,5 @@ func Routes(app *fiber.App, params types.Params) {
   protected.Get("/allusers", service.GetUsers)
 
   protected.Get("/createclassroom", service.CreateCassroom)
+
 }

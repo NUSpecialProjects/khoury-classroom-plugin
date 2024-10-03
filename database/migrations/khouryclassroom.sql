@@ -85,17 +85,3 @@ INSERT INTO users (role, name, gh_username, joined_on) VALUES ('professor', 'Dr.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
