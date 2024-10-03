@@ -13,6 +13,8 @@ CREATE TABLE users (
 
 CREATE TABLE classrooms (
   id SERIAL PRIMARY KEY,
+  ghclassroom_id SERIAL NOT NULL,
+  name VARCHAR(255) NOT NULL,
   prof_id INTEGER NOT NULL,
   FOREIGN KEY (prof_id) REFERENCES users(id)
 );
@@ -76,7 +78,6 @@ CREATE TABLE due_dates (
 -- adding initial users
 INSERT INTO users (role, name, gh_username, joined_on) VALUES ('student', 'Alex Angione', 'alexangione419', NOW()); 
 INSERT INTO users (role, name, gh_username, joined_on) VALUES ('professor', 'Dr. Fontenot', 'MarkFontenot', NOW());  
-
 
 
 

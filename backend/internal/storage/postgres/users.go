@@ -16,3 +16,7 @@ func (db *DB) GetUsers(ctx context.Context) ([]models.User, error) {
   defer rows.Close()
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 }
+
+
+
+

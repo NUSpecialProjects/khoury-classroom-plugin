@@ -14,3 +14,16 @@ func (s *KCDBService) GetUsers(c *fiber.Ctx) error {
   return c.Status(http.StatusOK).JSON(users)
   
 }
+
+
+func (s *KCDBService) CreateClassroom(c *fiber.Ctx) error {
+
+  var classData Classroom
+  err := c.BodyParser(&classData)
+  if err != nil {
+    return InvalidJSON() 
+  }
+
+
+  err := s.store.CreateClassroom(c.Context(), classData)
+}
