@@ -1,5 +1,6 @@
 ################################################################################
 # Build stage: Compile the Go application.
+################################################################################
 ARG GO_VERSION=1.23
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine AS build
 
@@ -20,6 +21,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 
 ################################################################################
 # Final stage: Run the application using a minimal runtime environment.
+################################################################################
 FROM alpine:latest AS final
 
 # Install runtime dependencies
