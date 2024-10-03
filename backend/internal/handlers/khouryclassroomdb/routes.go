@@ -11,7 +11,8 @@ func Routes(app *fiber.App, params types.Params) {
 
   protected := app.Group("/db")
   protected.Get("/allusers", service.GetUsers)
+  protected.Get("/allclassrooms", service.GetAllClassrooms)
 
-  protected.Get("/createclassroom", service.CreateCassroom)
+  protected.Post("/createclassroom", service.CreateClassroom)
 
 }
