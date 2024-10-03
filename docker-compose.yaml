@@ -5,7 +5,7 @@ services:
       context: ./backend
       target: final
     ports:
-      - '3001:3001'
+      - '8080:8080'
     depends_on:
       db:
         condition: service_healthy
@@ -31,7 +31,7 @@ services:
       retries: 10
     environment:
       - POSTGRES_USER=user
-      - POSTGRES_DB=classroom
+      - POSTGRES_DB=khouryclassroomdb
       - POSTGRES_PASSWORD=pwd
     ports:
       - '5434:5432'
