@@ -10,8 +10,8 @@ func Routes(app *fiber.App, params types.Params) {
   service := newKCDBService(params.Store)
 
   protected := app.Group("/db")
-  protected.Get("/allusers", service.GetUsers)
   protected.Get("/allclassrooms", service.GetAllClassrooms)
+  protected.Get("/usersin/:classroomID", service.GetUsers)
 
   protected.Post("/createclassroom", service.CreateClassroom)
 
