@@ -1,4 +1,4 @@
-import Banner from "./Banner"
-import NavStack from "./NavStack"
+import Banner from "./Banner";
+import NavStack from "./NavStack";
 
-export { NavStack, Banner}
+export { NavStack, Banner };
