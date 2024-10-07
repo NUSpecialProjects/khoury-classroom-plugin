@@ -1,9 +1,4 @@
-DROP DATABASE IF EXISTS khouryclassroomdb;
-
-CREATE DATABASE khouryclassroomdb;
-
-
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   role VARCHAR(50) NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -11,7 +6,7 @@ CREATE TABLE users (
   joined_on TIMESTAMP
 );
 
-CREATE TABLE classrooms (
+CREATE TABLE IF NOT EXISTS classrooms (
   id SERIAL PRIMARY KEY,
   ghclassroom_id SERIAL NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -19,7 +14,7 @@ CREATE TABLE classrooms (
   FOREIGN KEY (prof_id) REFERENCES users(id)
 );
 
-CREATE TABLE student_classroom (
+CREATE TABLE IF NOT EXISTS student_classroom (
   student_id INTEGER NOT NULL,
   classroom_id INTEGER NOT NULL,
   PRIMARY KEY (student_id, classroom_id),
@@ -27,7 +22,7 @@ CREATE TABLE student_classroom (
   FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
-CREATE TABLE professor_ta (
+CREATE TABLE IF NOT EXISTS professor_ta (
   prof_id INTEGER NOT NULL,
   ta_id INTEGER,
   PRIMARY KEY (prof_id, ta_id),
@@ -35,18 +30,18 @@ CREATE TABLE professor_ta (
   FOREIGN KEY (ta_id) REFERENCES users(id)
 );
 
-CREATE TABLE rubrics (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS rubrics (
   content VARCHAR(255) NOT NULL 
+  id SERIAL PRIMARY KEY 
 );
 
-CREATE TABLE assignment_templates (
+CREATE TABLE IF NOT EXISTS assignment_templates (
   id SERIAL PRIMARY KEY,
   rubric_id INTEGER,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
 );
 
-CREATE TABLE assignments (
+CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY, 
   name VARCHAR(255) NOT NULL,
   description VARCHAR(255),
@@ -60,14 +55,14 @@ CREATE TABLE assignments (
   FOREIGN KEY (template_id) REFERENCES assignment_templates(id)
 );
 
-CREATE TABLE due_dates (
+CREATE TABLE IF NOT EXISTS due_dates (
   id SERIAL PRIMARY KEY,
   due TIMESTAMP DEFAULT NOW(),
   assignment_id INTEGER,
   FOREIGN KEY (assignment_id) REFERENCES assignments(id)
 );
 
-CREATE TABLE regrades (
+CREATE TABLE IF NOT EXISTS regrades (
   id SERIAL PRIMARY KEY,
   student_id INTEGER NOT NULL,
   ta_id INTEGER NOT NULL,
