@@ -33,8 +33,8 @@ func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	// Prepare the request
 	data := url.Values{}
-	data.Set("client_id", cfg.ClientID)
-	data.Set("client_secret", cfg.ClientSecret)
+	data.Set("client_id", cfg.AuthHandler.ClientID)
+	data.Set("client_secret", cfg.AuthHandler.ClientSecret)
 	data.Set("code", code)
 
 	// Create the request
