@@ -14,6 +14,5 @@ func Routes(app *fiber.App, params types.Params) {
   
   protected.Get("/:classroomID/users", service.UsersIn)
 
-	protected.Post("/createregrade", service.CreateRegrade)
 
 }

@@ -48,20 +48,3 @@ func (s *ClassroomService) CreateClassroom(c *fiber.Ctx) error {
 	return nil
 }
 
-func (s *ClassroomService) CreateRegrade(c *fiber.Ctx) error {
-
-	var regradeData models.Regrade
-	err := c.BodyParser(&regradeData)
-	if err != nil {
-		return errs.InvalidJSON()
-	}
-
-	error := s.store.CreateRegrade(c.Context(), regradeData)
-	if error != nil {
-		return error
-	}
-
-	c.Status(http.StatusOK)
-
-	return nil
-}

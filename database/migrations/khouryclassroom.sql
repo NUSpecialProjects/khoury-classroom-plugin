@@ -36,7 +36,8 @@ CREATE TABLE professor_ta (
 );
 
 CREATE TABLE rubrics (
-  id SERIAL PRIMARY KEY 
+  id SERIAL PRIMARY KEY,
+  content VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE assignment_templates (
@@ -83,7 +84,7 @@ INSERT INTO users (role, name, gh_username, joined_on) VALUES ('student', 'Alex 
 INSERT INTO users (role, name, gh_username, joined_on) VALUES ('professor', 'Dr. Fontenot', 'MarkFontenot', NOW());  
 
 
-
+INSERT INTO rubrics (content) VALUES ('rubric item');
 
 
 
