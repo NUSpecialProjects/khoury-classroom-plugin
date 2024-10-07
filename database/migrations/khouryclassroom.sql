@@ -41,7 +41,7 @@ CREATE TABLE rubrics (
 
 CREATE TABLE assignment_templates (
   id SERIAL PRIMARY KEY,
-  rubric_id INTEGER NOT NULL,
+  rubric_id INTEGER,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
 );
 
@@ -59,20 +59,23 @@ CREATE TABLE assignments (
   FOREIGN KEY (template_id) REFERENCES assignment_templates(id)
 );
 
+CREATE TABLE due_dates (
+  id SERIAL PRIMARY KEY,
+  due TIMESTAMP DEFAULT NOW(),
+  assignment_id INTEGER,
+  FOREIGN KEY (assignment_id) REFERENCES assignments(id)
+);
+
 CREATE TABLE regrades (
   id SERIAL PRIMARY KEY,
   student_id INTEGER NOT NULL,
   ta_id INTEGER NOT NULL,
+  due_date_id INTEGER NOT NULL,
   FOREIGN KEY (student_id) REFERENCES users(id),
-  FOREIGN KEY (ta_id) REFERENCES users(id)
+  FOREIGN KEY (ta_id) REFERENCES users(id),
+  FOREIGN KEY (due_date_id) REFERENCES due_dates(id)
 );
 
-CREATE TABLE due_dates (
-  id SERIAL PRIMARY KEY,
-  due TIMESTAMP DEFAULT NOW(),
-  regrade_id INTEGER,
-  FOREIGN KEY (regrade_id) REFERENCES regrades(id)
-);
 
 
 -- adding initial users

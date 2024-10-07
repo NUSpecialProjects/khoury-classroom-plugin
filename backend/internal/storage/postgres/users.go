@@ -7,8 +7,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) GetUsers(ctx context.Context) ([]models.User, error) {
-  rows, err := db.connPool.Query(ctx, "SELECT * FROM users")
+func (db *DB) UsersIn(ctx context.Context, classroomID string) ([]models.User, error) {
+  rows, err := db.connPool.Query(ctx, "SELECT * FROM users WHERE classroom_id = $1", classroomID)
   if err != nil {
     return nil, nil 
   }

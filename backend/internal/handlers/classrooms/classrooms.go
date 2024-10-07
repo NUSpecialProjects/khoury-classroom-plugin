@@ -1,4 +1,4 @@
-package khouryclassroomdb
+package classrooms
 
 import (
 	"net/http"
@@ -8,8 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (s *KCDBService) GetUsers(c *fiber.Ctx) error {
-	users, err := s.store.GetUsers(c.Context())
+func (s *ClassroomService) UsersIn(c *fiber.Ctx) error {
+  classroomID := c.Params("classroomID")
+
+	users, err := s.store.UsersIn(c.Context(), classroomID)
 	if err != nil {
 		return err
 	}
@@ -18,7 +20,7 @@ func (s *KCDBService) GetUsers(c *fiber.Ctx) error {
 
 }
 
-func (s *KCDBService) GetAllClassrooms(c *fiber.Ctx) error {
+func (s *ClassroomService) GetAllClassrooms(c *fiber.Ctx) error {
 	classrooms, err := s.store.GetAllClassrooms(c.Context())
 	if err != nil {
 		return err
@@ -28,7 +30,7 @@ func (s *KCDBService) GetAllClassrooms(c *fiber.Ctx) error {
 
 }
 
-func (s *KCDBService) CreateClassroom(c *fiber.Ctx) error {
+func (s *ClassroomService) CreateClassroom(c *fiber.Ctx) error {
 
 	var classData models.Classroom
 	err := c.BodyParser(&classData)
@@ -46,7 +48,7 @@ func (s *KCDBService) CreateClassroom(c *fiber.Ctx) error {
 	return nil
 }
 
-func (s *KCDBService) CreateRegrade(c *fiber.Ctx) error {
+func (s *ClassroomService) CreateRegrade(c *fiber.Ctx) error {
 
 	var regradeData models.Regrade
 	err := c.BodyParser(&regradeData)
