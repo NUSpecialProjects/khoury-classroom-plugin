@@ -20,12 +20,6 @@ import (
 func main() {
 	ctx := context.Background()
 
-	if isLocal() {
-		if err := godotenv.Load("../../../.env"); err != nil {
-			log.Fatalf("Error loading .env file: %v", err)
-		}
-	}
-
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Unable to load environment variables necessary for application")
