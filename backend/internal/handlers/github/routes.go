@@ -13,6 +13,7 @@ func Routes(app *fiber.App, params types.Params) {
 
 	routes := app.Group("/github")
 
+	// TODO: commented this out bc we shouldn't be passing config structs into params
 	//Endpoints
 	// routes.Post("/webhook", middleware.ProtectedWebhook(&params.GitHubAppConfig), service.WebhookHandler)
 	// routes.Get("/hello", service.HelloWorld)
