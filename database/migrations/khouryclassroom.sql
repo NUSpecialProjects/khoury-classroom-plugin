@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS professor_ta (
 );
 
 CREATE TABLE IF NOT EXISTS rubrics (
+  id SERIAL PRIMARY KEY,
   content VARCHAR(255) NOT NULL 
-  id SERIAL PRIMARY KEY 
 );
 
 CREATE TABLE IF NOT EXISTS assignment_templates (
