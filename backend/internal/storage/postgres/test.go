@@ -10,7 +10,7 @@ import (
 func (db *DB) GetTests(ctx context.Context) ([]models.Test, error) {
 	rows, err := db.conn.Query(ctx, "SELECT * FROM test")
 	if err != nil {
-		return []models.Test{}, err
+		return nil, err
 	}
 	defer rows.Close()
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Test])

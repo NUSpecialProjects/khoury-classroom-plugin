@@ -1,8 +1,6 @@
 package models
 
-import (
-	"github.com/google/go-github/v52/github"
-)
+import "github.com/google/go-github/github"
 
 type ClassroomAcceptedAssignment struct {
 	ID          int64               `json:"id"`

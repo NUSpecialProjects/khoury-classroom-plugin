@@ -2,7 +2,7 @@ package config
 
 import "golang.org/x/oauth2"
 
-type GitHubClient struct {
+type GitHubUserClient struct {
 	RedirectURL  string   `env:"REDIRECT_URL"`
 	TokenURL     string   `env:"TOKEN_URL"`
 	AuthURL      string   `env:"AUTH_URL"`
@@ -11,7 +11,7 @@ type GitHubClient struct {
 	Scopes       []string `env:"SCOPES"`
 }
 
-func (g *GitHubClient) OAuthConfig() *oauth2.Config {
+func (g *GitHubUserClient) OAuthConfig() *oauth2.Config {
 	return &oauth2.Config{
 		RedirectURL:  g.RedirectURL,
 		ClientID:     g.ClientID,

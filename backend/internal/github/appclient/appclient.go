@@ -1,22 +1,21 @@
-package github
+package appclient
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
-	gh "github.com/CamPlume1/khoury-classroom/internal/github"
-	"github.com/google/go-github/v52/github"
+	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
+	"github.com/google/go-github/github"
 	"github.com/jferrl/go-githubauth"
 	"golang.org/x/oauth2"
 )
 
-type API struct {
-	gh.GitHubBase
-	client *github.Client
+type AppAPI struct { //app API
+	sharedclient.CommonAPI
 }
 
-func New(cfg *config.GitHubApp) (*API, error) {
+func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
 	// Read private key and IDs from the config
 	privateKey := []byte(cfg.Key)
 	appID := cfg.AppID
@@ -37,7 +36,11 @@ func New(cfg *config.GitHubApp) (*API, error) {
 	// Create the GitHub client
 	githubClient := github.NewClient(httpClient)
 
-	return &API{
-		client: githubClient,
+	return &AppAPI{
+		CommonAPI: sharedclient.CommonAPI{
+			Client: githubClient,
+		},
 	}, nil
 }
+
+// Any APP specific implementations can go here

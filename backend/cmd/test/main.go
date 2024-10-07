@@ -24,7 +24,7 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application")
 	}
 
-	GithubApi, err := github_client.New(&cfg.GitHubClient, "2caa55f67b8f897fb60b")
+	GithubApi, err := github_client.New(&cfg.GitHubUserClient, "2caa55f67b8f897fb60b")
 
 	if err != nil {
 		log.Fatalf("Error creating GitHub API client: %v", err)

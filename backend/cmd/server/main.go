@@ -9,11 +9,11 @@ import (
 	"syscall"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
-	github_app "github.com/CamPlume1/khoury-classroom/internal/github/app/api"
-	github_client "github.com/CamPlume1/khoury-classroom/internal/github/client/api"
+	"github.com/CamPlume1/khoury-classroom/internal/github/appclient"
 	"github.com/CamPlume1/khoury-classroom/internal/server"
 	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/joho/godotenv"
 )
 
@@ -36,25 +36,18 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application 2")
 	}
 
-	GitHubApp, err := github_app.New(&cfg.GitHubApp)
-
-	if err != nil {
-		log.Fatalf("Unable to establish connection with Github")
-	}
-
-	GithubClient, err := github_client.New(&cfg.GitHubClient, "code")
+	GitHubApp, err := appclient.New(&cfg.GitHubAppClient)
 
 	if err != nil {
 		log.Fatalf("Unable to establish connection with Github")
 	}
 
 	app := server.New(types.Params{
-		AuthHandler:        cfg.AuthHandler,
-		GitHubAppConfig:    cfg.GitHubApp,
-		GitHubClientConfig: cfg.GitHubClient,
-		Store:              db,
-		GitHubApp:          GitHubApp,
-		GitHubClient:       GithubClient,
+		Store:          db,
+		GitHubApp:      GitHubApp,
+		UserCfg:        cfg.GitHubUserClient,
+		AuthHandler:    cfg.AuthHandler,
+		SessionManager: session.New(),
 	})
 
 	go func() {

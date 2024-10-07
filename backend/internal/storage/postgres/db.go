@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/jackc/pgx/v5"
 )
@@ -10,7 +11,6 @@ import (
 type DB struct {
 	conn *pgx.Conn
 }
-
 
 // ConnectSupabaseDB establishes a connection and returns it for querying.
 func New(ctx context.Context, config config.Database) (*DB, error) {

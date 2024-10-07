@@ -1,6 +1,6 @@
 package config
 
-type GitHubApp struct {
+type GitHubAppClient struct {
 	AppID          int64  `env:"ID"`
 	InstallationID int64  `env:"INSTALLATION_ID"`
 	Key            string `env:"PRIVATE_KEY"`
