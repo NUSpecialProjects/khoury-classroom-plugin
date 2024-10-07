@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
-	"github.com/CamPlume1/khoury-classroom/internal/github/client/api"
+	github_client "github.com/CamPlume1/khoury-classroom/internal/github/client/api"
 	"github.com/joho/godotenv"
 )
 
@@ -24,12 +24,12 @@ func main() {
 		log.Fatalf("Unable to load environment variables necessary for application")
 	}
 
-	GithubApi, err := api.New(&cfg.GitHubClient, "2caa55f67b8f897fb60b")
+	GithubApi, err := github_client.New(&cfg.GitHubClient, "2caa55f67b8f897fb60b")
 
-	// GithubApi, err := api.New(&cfg.GitHubApp)
 	if err != nil {
 		log.Fatalf("Error creating GitHub API client: %v", err)
 	}
+
 	//
 	classrooms, err := GithubApi.ListClassrooms(ctx)
 	if err != nil {
