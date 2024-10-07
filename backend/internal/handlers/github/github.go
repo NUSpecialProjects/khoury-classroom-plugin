@@ -12,16 +12,23 @@ import (
 )
 
 // Assuming lack of skill issues
-func (service *Service) Login(userCfg config.GitHubUserClient, authCfg config.AuthHandler, sessionManager *session.Store) fiber.Handler {
+func (service *Service) Login(userCfg config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
 
 	return func(c *fiber.Ctx) error {
-		code := c.Params("code")
+		// Extract code from the request body
+		var requestBody struct {
+			Code string `json:"code"`
+		}
+		if err := c.BodyParser(&requestBody); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		}
+		code := requestBody.Code
 		// create client
 		client, err := userclient.New(&userCfg, code)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
-		jwtToken, err := client.GitHubLogin(code, userCfg, authCfg)
+		jwtToken, err := client.GitHubLogin(code, userCfg, userCfg.AuthHandler)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
@@ -31,7 +38,7 @@ func (service *Service) Login(userCfg config.GitHubUserClient, authCfg config.Au
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrSignatureInvalid
 			}
-			return []byte(authCfg.JWTSecret), nil
+			return []byte(userCfg.AuthHandler.JWTSecret), nil
 		})
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})

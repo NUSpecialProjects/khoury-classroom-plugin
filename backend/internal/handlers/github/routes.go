@@ -17,6 +17,6 @@ func Routes(app *fiber.App, params types.Params) {
 	// routes.Post("/webhook", middleware.ProtectedWebhook(&params.GitHubAppConfig), service.WebhookHandler)
 	// routes.Get("/hello", service.HelloWorld)
 
-	routes.Post("/login/:code", service.Login(params.UserCfg, params.AuthHandler, params.SessionManager))
+	routes.Post("/login", service.Login(params.UserCfg, params.SessionManager))
 
 }
