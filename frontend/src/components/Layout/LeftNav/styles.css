@@ -1,0 +1,16 @@
+.LeftNav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ededed;
+  gap: 20px;
+  padding: 20px;
+
+  &__link {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+  }
+}

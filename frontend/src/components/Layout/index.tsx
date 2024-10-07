@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
 
@@ -10,7 +10,7 @@ const Layout: React.FC = () => {
       <div className="Layout__top">
         <TopNav />
       </div>
-      <div className="Layout_bottom">
+      <div className="Layout__bottom">
         <div className="Layout__left">
           <LeftNav />
         </div>
