@@ -1,0 +1,35 @@
+.AssignmentDetails {
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-direction: row;
+    gap: 10px;
+    border-bottom: 2px solid #eeeeee;
+    padding-bottom: 10px;
+  }
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+  }
+  &__dates {
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    color: #474747;
+
+    li {
+      list-style: none;
+    }
+  }
+
+  &__externalButtons {
+    display: flex;
+    flex-direction: row;
+    padding-top: 20px;
+    gap: 10px;
+  }
+}
