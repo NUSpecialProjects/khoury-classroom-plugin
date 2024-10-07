@@ -1,0 +1,9 @@
+html,
+body {
+  margin: 0;
+  font-family: Arial;
+}
+
+* {
+  box-sizing: border-box;
+}

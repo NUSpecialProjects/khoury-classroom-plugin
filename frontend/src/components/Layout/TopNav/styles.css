@@ -1,0 +1,13 @@
+.TopNav {
+  display: flex;
+  width: 100%;
+  padding: 20px 40px;
+  justify-content: space-between;
+  background: #eee;
+  align-items: center;
+
+  &__left {
+    font-size: 30px;
+    font-weight: bold;
+  }
+}
