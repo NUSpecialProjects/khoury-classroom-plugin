@@ -5,10 +5,34 @@
     "cpu": ${fargate_cpu},
     "memory": ${fargate_memory},
     "networkMode": "awsvpc",
-    "portMappings": [
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/cb-app",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "ecs"
+      }
+  },
+    "environment": [
       {
-        "containerPort": ${app_port},
-        "hostPort": ${app_port}
+        "name": "DB_HOST",
+        "value": "${db_host}"
+      },
+      {
+        "name": "DB_PORT",
+        "value": "${db_port}"
+      },
+      {
+        "name": "DB_NAME",
+        "value": "${db_name}"
+      },
+      {
+        "name": "DB_USER",
+        "value": "${db_user}"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "value": "${db_password}"
       }
     ]
   }

@@ -13,11 +13,17 @@ resource "aws_ecs_task_definition" "app" {
     memory                   = var.fargate_memory
     container_definitions     = templatefile("./templates/ecs/cb_app.json.tpl", {
         app_image      = var.app_image
-        app_port       = var.app_port
         fargate_cpu    = var.fargate_cpu
         fargate_memory = var.fargate_memory
         aws_region     = var.aws_region
+        db_host        = aws_db_instance.main.endpoint
+        db_port        = var.db_port
+        db_name        = var.db_name
+        db_user        = var.db_user
+        db_password    = var.db_password
     })
+
+    depends_on = [ aws_db_instance.main ]
 }
 
 resource "aws_ecs_service" "main" {

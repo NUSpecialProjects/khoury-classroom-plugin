@@ -1,15 +1,38 @@
 # variables.tf
 
-variable "aws_access_key" {
-    description = "The IAM public access key"
-}
-
-variable "aws_secret_key" {
-    description = "IAM secret access key"
-}
-
 variable "aws_region" {
     description = "The AWS region things are created in"
+    default = "us-east-2"
+}
+
+variable "aws_account_id" {
+    description = "The AWS account ID"
+    default = "058264409130"
+}
+
+variable "aws_profile" {
+    description = "The AWS profile to use"
+    default = "default"
+}
+
+variable "db_port" {
+    description = "Database port"
+    default = 5432
+}
+
+variable "db_name" {
+    description = "Database name"
+    default = "khoury_classroom_db"
+}
+
+variable "db_user" {
+    description = "Database username"
+    default = "db_user"
+}
+
+variable "db_password" {
+    description = "Database password"
+    default = "db_password"
 }
 
 variable "ec2_task_execution_role_name" {
@@ -24,17 +47,12 @@ variable "ecs_auto_scale_role_name" {
 
 variable "az_count" {
     description = "Number of AZs to cover in a given region"
-    default = "1"
+    default = "2"
 }
 
 variable "app_image" {
     description = "Docker image to run in the ECS cluster"
     default = "058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:latest"
-}
-
-variable "app_port" {
-    description = "Port exposed by the docker image to redirect traffic to"
-    default = 3000
 }
 
 variable "app_count" {
