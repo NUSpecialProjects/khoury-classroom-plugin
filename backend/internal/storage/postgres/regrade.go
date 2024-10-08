@@ -7,13 +7,12 @@ import (
 )
 
 func (db *DB) CreateRegrade(ctx context.Context, regradeData models.Regrade) error {
-	rows, err := db.connPool.Query(ctx,
+	_, err := db.connPool.Exec(ctx,
 		"INSERT INTO regrades (student_id, ta_id) VALUES ($1, $2)",
 		regradeData.Student_ID, regradeData.TA_ID)
 	if err != nil {
 		return err
 	}
 
-	defer rows.Close()
 	return nil
 }

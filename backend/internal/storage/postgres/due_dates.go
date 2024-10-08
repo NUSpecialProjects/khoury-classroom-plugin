@@ -8,7 +8,7 @@ import (
 
 
 func (db *DB) CreateDueDate(ctx context.Context, dueDateData models.DueDate) (error) {
-  rows, err := db.connPool.Query(ctx,
+  _, err := db.connPool.Exec(ctx,
     "INSERT INTO due_dates (assignment_id, due) VALUES ($1, $2)", 
     dueDateData.Assignment_ID,
     dueDateData.Due)
@@ -16,6 +16,5 @@ func (db *DB) CreateDueDate(ctx context.Context, dueDateData models.DueDate) (er
     return err
   }
 
-  defer rows.Close()
   return nil
 }

@@ -20,17 +20,16 @@ func (db *DB) GetAllAssignmentTemplates(ctx context.Context) ([]models.Assignmen
 }
 
 func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (error) {
-  rows, err := db.connPool.Query(ctx, "INSERT INTO assignment_templates (rubric_id) VALUES ($1)", assignmentTemplateData.Rubric_ID)
+  _, err := db.connPool.Exec(ctx, "INSERT INTO assignment_templates (rubric_id) VALUES ($1)", assignmentTemplateData.Rubric_ID)
   if err != nil {
     return err
   }
 
-  defer rows.Close()
   return nil
 }
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) (error) {
-  rows, err := db.connPool.Query(ctx,
+  _, err := db.connPool.Exec(ctx,
     "INSERT INTO assignments (name, ta_id, description, student_id, completed, started, template_id, github_classroom_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
     assignmentData.Name,
     assignmentData.TA_ID,
@@ -41,12 +40,10 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
     assignmentData.Template_ID,
     assignmentData.GithubClassroom_ID)
   if err != nil {
-    fmt.Println("Error in con pool query")
+    fmt.Println("Error in con pool exec")
     fmt.Println(err.Error())
     return err
   }
 
-
-  defer rows.Close()
   return nil
 }
