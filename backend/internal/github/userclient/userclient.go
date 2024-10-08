@@ -22,6 +22,11 @@ type UserAPI struct {
 	sharedclient.CommonAPI
 }
 
+/*
+Problem 1 -> Oauth config needs to be created
+
+*/
+
 //Poblem: UserAPI needs to be stored as part of a user session
 //TODO: Support sessions with UserAPI instances
 // Let's do it in memory for now.
@@ -33,8 +38,8 @@ func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	// Prepare the request
 	data := url.Values{}
-	data.Set("client_id", cfg.AuthHandler.ClientID)
-	data.Set("client_secret", cfg.AuthHandler.ClientSecret)
+	data.Set("client_id", cfg.ClientID)
+	data.Set("client_secret", cfg.ClientSecret)
 	data.Set("code", code)
 
 	// Create the request
@@ -82,8 +87,11 @@ func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 }
 
 // takes in the code from the github oauth callback and returns a JWT token as a string
-func (api *UserAPI) GitHubLogin(code string, clientCfg config.GitHubUserClient, authCfg config.AuthHandler) (string, error) {
+func (api *UserAPI) GitHubLogin(code string, clientCfg config.GitHubUserClient) (string, error) {
 	oAuthConfig := clientCfg.OAuthConfig()
+	fmt.Println("Config:")
+	fmt.Println(oAuthConfig)
+	fmt.Println("End Config")
 
 	token, err := oAuthConfig.Exchange(context.Background(), code)
 	if err != nil {
@@ -107,7 +115,7 @@ func (api *UserAPI) GitHubLogin(code string, clientCfg config.GitHubUserClient, 
 	}
 
 	// Generate JWT token
-	jwtToken, err := generateJWTToken(&authCfg, user, token.AccessToken)
+	jwtToken, err := generateJWTToken(&clientCfg, user, token.AccessToken)
 	if err != nil {
 		return "", err
 	}

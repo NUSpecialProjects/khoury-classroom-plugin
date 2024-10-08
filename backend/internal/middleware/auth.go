@@ -34,7 +34,7 @@ func parseJWTToken(token string, hmacSecret []byte) (id string, err error) {
 }
 
 // Middleware to protect routes
-func Protected(cfg *config.AuthHandler) fiber.Handler {
+func Protected(cfg *config.GitHubUserClient) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 

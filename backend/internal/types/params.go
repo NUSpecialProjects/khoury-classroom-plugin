@@ -9,7 +9,6 @@ import (
 
 type Params struct {
 	UserCfg        config.GitHubUserClient
-	AuthHandler    config.AuthHandler
 	SessionManager *session.Store
 	Store          storage.Storage
 	GitHubApp      github.GitHubAppClient

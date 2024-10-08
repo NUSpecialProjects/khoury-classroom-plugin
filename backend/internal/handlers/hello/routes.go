@@ -16,7 +16,7 @@ func Routes(app *fiber.App, params types.Params) {
 	protected := app.Group("/hello_protected")
 
 	// Register Middleware
-	protected.Use(middleware.Protected(&params.AuthHandler))
+	protected.Use(middleware.Protected(&params.UserCfg))
 
 	//Unprotected Routes
 	unprotected := app.Group("/hello")
