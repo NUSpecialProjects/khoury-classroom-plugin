@@ -123,8 +123,12 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
     "Statement": [
         {
             "Effect": "Allow",
+            "Action": "ecr:GetAuthorizationToken",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
             "Action": [
-                "ecr:GetAuthorizationToken",
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:PutImage",
                 "ecr:InitiateLayerUpload",
@@ -145,7 +149,7 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
             ],
             "Resource": [
               "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:cluster/cb-cluster",
-              "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:service/cb-cluster/cb-service"
+              "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:service/cb-cluster/*"
             ]
         }
     ]
