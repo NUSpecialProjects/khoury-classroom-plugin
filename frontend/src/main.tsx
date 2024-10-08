@@ -1,13 +1,15 @@
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Correct imports
-import Layout from './Layout';
-import { Assignments, Grading, Settings, Dashboard, LoginStub } from './pages';
-import './index.css';
-import React from 'react';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import { Assignments, Grading, Settings, Dashboard, LoginStub } from "./pages";
+import Layout from "./components/Layout";
+
+import "./global.css";
 
 export function App(): React.JSX.Element {
   return (
-    <Router basename="/khoury-classroom">
+    <Router>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="assignments" element={<Assignments />} />
@@ -22,9 +24,9 @@ export function App(): React.JSX.Element {
 }
 
 // Safely handle the root element -> Enforced by eslint
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 if (!rootElement) {
-  throw new Error('Root element not found. Unable to render React app.');
+  throw new Error("Root element not found. Unable to render React app.");
 }
 
 ReactDOM.createRoot(rootElement).render(<App />);
