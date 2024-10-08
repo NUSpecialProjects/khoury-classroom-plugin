@@ -18,6 +18,7 @@ type Test interface {
 
 type Assignments interface {
   GetAllAssignmentTemplates(ctx context.Context) ([]models.AssignmentTemplate, error)
+  CreateRubric(ctx context.Context, rubricData models.Rubric) (error)
   CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (error)
   CreateAssignment(ctx context.Context, assignmentData models.Assignment) (error)
   CreateDueDate(ctx context.Context, dueDateData models.DueDate) (error)

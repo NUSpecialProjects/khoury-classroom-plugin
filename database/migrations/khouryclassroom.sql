@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS assignments (
   ta_id INTEGER NOT NULL,
   github_classroom_id INTEGER NOT NULL,
   template_id INTEGER NOT NULL,
-  completed BOOLEAN DEFAULT FALSE NOT NULL,
-  started BOOLEAN DEFAULT FALSE NOT NULL,
+  completed BOOLEAN NOT NULL,
+  started BOOLEAN NOT NULL,
   FOREIGN KEY (student_id) REFERENCES users(id),
   FOREIGN KEY (ta_id) REFERENCES users(id),
   FOREIGN KEY (template_id) REFERENCES assignment_templates(id)

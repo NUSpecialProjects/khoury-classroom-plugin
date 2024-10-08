@@ -2,6 +2,7 @@ package assignments
 
 import (
 	"net/http"
+  "fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -19,6 +20,29 @@ func (s *AssignmentsService) GetAllAssignmentTemplates(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(assignments)
 }
 
+func (s *AssignmentsService) CreateRubric(c *fiber.Ctx) error {
+  var rubricData models.Rubric
+  
+  if c.Get("Content-Type") != "application/json" {
+    return errs.InvalidJSON()
+  }
+
+  error := c.BodyParser(&rubricData)
+  if error != nil {
+    return errs.InvalidJSON()
+  }
+
+  err := s.store.CreateRubric(c.Context(), rubricData)
+  if err != nil {
+    return err
+  }
+
+  return c.Status(http.StatusOK).JSON(fiber.Map{
+      "message": "Received rubric data",
+      "rubric":  rubricData,
+  })
+}
+
 func (s *AssignmentsService) CreateAssignmentTemplate(c *fiber.Ctx) error {
   var assignmentTemplateData models.AssignmentTemplate
   err := c.BodyParser(&assignmentTemplateData)
@@ -31,13 +55,16 @@ func (s *AssignmentsService) CreateAssignmentTemplate(c *fiber.Ctx) error {
     return error
   }
 
-  c.Status(http.StatusOK)
-  return nil
+  return c.Status(http.StatusOK).JSON(fiber.Map{
+    "message": "Received assignment template data",
+    "assignment_template":  assignmentTemplateData,
+  })
 }
 
 
 func (s *AssignmentsService) CreateAssignment(c *fiber.Ctx) error {
   var assignmentData models.Assignment
+  fmt.Println("Testing getting to assigme,tmn")
   err := c.BodyParser(&assignmentData)
   if err != nil {
     return errs.InvalidJSON()
@@ -45,26 +72,32 @@ func (s *AssignmentsService) CreateAssignment(c *fiber.Ctx) error {
 
   error := s.store.CreateAssignment(c.Context(), assignmentData)
   if error != nil {
+    fmt.Println(error.Error())
     return error
   }
 
-  c.Status(http.StatusOK)
-  return nil
+  return c.Status(http.StatusOK).JSON(fiber.Map{
+      "message": "Received assignment data",
+      "assignment":  assignmentData,
+  })
 }
 
 func (s *AssignmentsService) CreateDueDate(c *fiber.Ctx) error {
-  var dueDataData models.DueDate
-  err := c.BodyParser(&dueDataData)
+  var dueDateData models.DueDate
+  err := c.BodyParser(&dueDateData)
   if err != nil {
     return errs.InvalidJSON()
   }
 
-  error := s.store.CreateDueDate(c.Context(), dueDataData)
+  error := s.store.CreateDueDate(c.Context(), dueDateData)
   if error != nil {
     return error
   }
 
-  c.Status(http.StatusOK)
+  c.Status(http.StatusOK).JSON(fiber.Map{
+    "message": "Received due date data",
+    "due_date":  dueDateData,
+  })
   return nil
 }
 
@@ -82,6 +115,8 @@ func (s *AssignmentsService) CreateRegrade(c *fiber.Ctx) error {
 		return error
 	}
 
-	c.Status(http.StatusOK)
-	return nil
+  return c.Status(http.StatusOK).JSON(fiber.Map{
+    "message": "Received regrade data",
+    "regrade":  regradeData,
+  })
 }

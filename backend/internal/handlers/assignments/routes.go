@@ -7,12 +7,15 @@ import (
 
 func Routes(app *fiber.App, params types.Params) {
 	service := newAssignmentService(params.Store)
+ 
 
   protected := app.Group("/assignments")
   protected.Get("", service.GetAllAssignmentTemplates)
   protected.Post("", service.CreateAssignmentTemplate)
+  
+  protected.Post("/rubrics", service.CreateRubric)
 
-  protected.Post("/asignment", service.CreateAssignment)
+  protected.Post("/assignment", service.CreateAssignment)
 
   protected.Post("/due_dates", service.CreateDueDate)
 

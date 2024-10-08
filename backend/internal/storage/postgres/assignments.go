@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
-  "github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -30,15 +31,18 @@ func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateDa
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) (error) {
   rows, err := db.connPool.Query(ctx,
-    "INSERT INTO assignments (name, ta_id, description, student_id, completed, started, template_id) VALUES ($1, $2, $3, $4, $5, $6, $7)", 
+    "INSERT INTO assignments (name, ta_id, description, student_id, completed, started, template_id, github_classroom_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
     assignmentData.Name,
     assignmentData.TA_ID,
     assignmentData.Description,
     assignmentData.Student_ID,
-    assignmentData.Template_ID,
     assignmentData.Completed,
-    assignmentData.Started)
+    assignmentData.Started,
+    assignmentData.Template_ID,
+    assignmentData.GithubClassroom_ID)
   if err != nil {
+    fmt.Println("Error in con pool query")
+    fmt.Println(err.Error())
     return err
   }
 
