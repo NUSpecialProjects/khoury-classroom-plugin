@@ -13,7 +13,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
@@ -117,10 +117,12 @@ func (api *UserAPI) GitHubLogin(code string, clientCfg config.GitHubUserClient, 
 }
 
 func generateJWTToken(cfg *config.AuthHandler, user map[string]interface{}, accessToken string) (string, error) {
-	claims := jwt.MapClaims{
-		"user":  user,
-		"token": accessToken,
-		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+	claims := models.Claims{
+		User:  user,
+		Token: accessToken,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(cfg.JWTSecret))
