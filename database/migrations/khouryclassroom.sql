@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS classrooms (
   id SERIAL PRIMARY KEY,
-  ghclassroom_id SERIAL NOT NULL,
+  ghclassroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
   prof_id INTEGER NOT NULL,
   FOREIGN KEY (prof_id) REFERENCES users(id)
@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS assignments (
   description VARCHAR(255),
   student_id INTEGER NOT NULL,
   ta_id INTEGER NOT NULL,
+  github_classroom_id INTEGER NOT NULL,
   template_id INTEGER NOT NULL,
   completed BOOLEAN DEFAULT FALSE NOT NULL,
   started BOOLEAN DEFAULT FALSE NOT NULL,
@@ -57,8 +58,8 @@ CREATE TABLE IF NOT EXISTS assignments (
 
 CREATE TABLE IF NOT EXISTS due_dates (
   id SERIAL PRIMARY KEY,
-  due TIMESTAMP DEFAULT NOW(),
-  assignment_id INTEGER,
+  due TIMESTAMP DEFAULT NOW() NOT NULL,
+  assignment_id INTEGER NOT NULL,
   FOREIGN KEY (assignment_id) REFERENCES assignments(id)
 );
 
@@ -71,16 +72,5 @@ CREATE TABLE IF NOT EXISTS regrades (
   FOREIGN KEY (ta_id) REFERENCES users(id),
   FOREIGN KEY (due_date_id) REFERENCES due_dates(id)
 );
-
-
-
--- adding initial users
-INSERT INTO users (role, name, gh_username, joined_on) VALUES ('student', 'Alex Angione', 'alexangione419', NOW()); 
-INSERT INTO users (role, name, gh_username, joined_on) VALUES ('professor', 'Dr. Fontenot', 'MarkFontenot', NOW());  
-
-
-INSERT INTO rubrics (content) VALUES ('rubric item');
-
-
 
 

@@ -8,10 +8,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (s *ClassroomService) UsersIn(c *fiber.Ctx) error {
+func (s *ClassroomService) GetUsersInClassroom(c *fiber.Ctx) error {
   classroomID := c.Params("classroomID")
 
-	users, err := s.store.UsersIn(c.Context(), classroomID)
+	users, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
 	if err != nil {
 		return err
 	}
@@ -19,6 +19,7 @@ func (s *ClassroomService) UsersIn(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(users)
 
 }
+
 
 func (s *ClassroomService) GetAllClassrooms(c *fiber.Ctx) error {
 	classrooms, err := s.store.GetAllClassrooms(c.Context())

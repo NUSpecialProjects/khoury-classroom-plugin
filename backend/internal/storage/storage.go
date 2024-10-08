@@ -18,7 +18,7 @@ type Test interface {
 }
 
 type Classrooms interface {
-	UsersIn(ctx context.Context, classroomID string) ([]models.User, error)
+	GetUsersInClassroom(ctx context.Context, classroomID string) ([]models.User, error)
 	GetAllClassrooms(ctx context.Context) ([]models.Classroom, error)
 	CreateClassroom(ctx context.Context, classData models.Classroom) error
 	CreateRegrade(ctx context.Context, classData models.Regrade) error
