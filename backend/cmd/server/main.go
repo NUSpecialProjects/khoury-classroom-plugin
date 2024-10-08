@@ -14,10 +14,17 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	ctx := context.Background()
+
+	if isLocal() {
+		if err := godotenv.Load("../../../.env"); err != nil {
+			log.Fatalf("Unable to load environment variables necessary for application")
+		}
+	}
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -32,7 +39,7 @@ func main() {
 	GitHubApp, err := appclient.New(&cfg.GitHubAppClient)
 
 	if err != nil {
-		log.Fatalf("Unable to establish connection with Github")
+		log.Fatalf("Unable to establish connection with Github %v", err)
 	}
 
 	app := server.New(types.Params{
