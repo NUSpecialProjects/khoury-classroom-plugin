@@ -2,20 +2,12 @@ package userclient
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 )
 
 type UserAPI struct {
@@ -33,51 +25,29 @@ Problem 1 -> Oauth config needs to be created
 
 // A UserAPI should not exist outside of a session
 func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
-	// OAuth token URL for exchanging code for access token
-	tokenURL := "https://github.com/login/oauth/access_token"
+	fmt.Printf("Received authorization code: %s\n", code)
 
-	// Prepare the request
-	data := url.Values{}
-	data.Set("client_id", cfg.ClientID)
-	data.Set("client_secret", cfg.ClientSecret)
-	data.Set("code", code)
+	oAuthConfig := cfg.OAuthConfig()
+	fmt.Println("Config:")
+	fmt.Println(oAuthConfig)
+	fmt.Println("End Config")
 
-	// Create the request
-	req, err := http.NewRequest("POST", tokenURL, strings.NewReader(data.Encode()))
+	fmt.Println("Received code: ", code)
+
+	token, err := oAuthConfig.Exchange(context.Background(), code)
 	if err != nil {
-		return nil, fmt.Errorf("error creating token request: %v", err)
+		fmt.Println("Error exchanging code for token", err)
+		return nil, err
 	}
 
-	// Set headers
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Accept", "application/json")
+	fmt.Println("Successfully exchanged code for token: ", token)
 
-	// Make the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error making token request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Decode response & extract the access token
-	var tokenResponse struct {
-		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		Scope       string `json:"scope"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&tokenResponse); err != nil {
-		return nil, fmt.Errorf("error decoding token response: %v", err)
-	}
-
-	// Create an OAuth2 token with the access token
-	token := &oauth2.Token{AccessToken: tokenResponse.AccessToken}
-
-	// Create an OAuth2 HTTP client -> TODO: Handle refreshing
-	httpClient := oauth2.NewClient(context.Background(), oauth2.StaticTokenSource(token))
+	httpClient := oAuthConfig.Client(context.Background(), token)
 
 	// Create the GitHub client
 	githubClient := github.NewClient(httpClient)
+
+	fmt.Printf("Created GitHub client\n")
 
 	return &UserAPI{
 		CommonAPI: sharedclient.CommonAPI{
@@ -86,54 +56,23 @@ func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 	}, nil
 }
 
-// takes in the code from the github oauth callback and returns a JWT token as a string
-func (api *UserAPI) GitHubLogin(code string, clientCfg config.GitHubUserClient) (string, error) {
-	oAuthConfig := clientCfg.OAuthConfig()
-	fmt.Println("Config:")
-	fmt.Println(oAuthConfig)
-	fmt.Println("End Config")
+func (api *UserAPI) GetCurrentUser(ctx context.Context) (models.GitHubUser, error) {
+	endpoint := "https://api.github.com/user"
 
-	token, err := oAuthConfig.Exchange(context.Background(), code)
+	var user models.GitHubUser
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
 	if err != nil {
-		return "", err
+		return user, fmt.Errorf("error creating request: %v", err)
 	}
 
-	client := oAuthConfig.Client(context.Background(), token)
-	resp, err := client.Get("https://api.github.com/user")
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &user)
 	if err != nil {
-		return "", err
+		return user, fmt.Errorf("error fetching classrooms: %v", err)
 	}
-
-	userData, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var user map[string]interface{}
-	if err := json.Unmarshal(userData, &user); err != nil {
-		return "", err
-	}
-
-	// Generate JWT token
-	jwtToken, err := generateJWTToken(&clientCfg, user, token.AccessToken)
-	if err != nil {
-		return "", err
-	}
-
-	// Return JWT token to the client
-	return jwtToken, nil
-}
-
-func generateJWTToken(cfg *config.GitHubUserClient, user map[string]interface{}, accessToken string) (string, error) {
-	claims := models.Claims{
-		User:  user,
-		Token: accessToken,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(cfg.JWTSecret))
+	return user, nil
 }
 
 func (api *UserAPI) ListClassrooms(ctx context.Context) ([]models.Classroom, error) {
