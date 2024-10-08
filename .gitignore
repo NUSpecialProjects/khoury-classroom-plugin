@@ -49,3 +49,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Compiled files
+*.tfstate
+*.tfstate.backup
+.terraform.tfstate.lock.info
+*/terraform.tfvars
+
+# Module directory
+.terraform/
