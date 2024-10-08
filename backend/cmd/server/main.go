@@ -14,7 +14,6 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/joho/godotenv"
 )
 
 func main() {
