@@ -34,13 +34,13 @@ func parseJWTToken(token string, hmacSecret []byte) (email string, err error) {
 	return "", fmt.Errorf("error parsing token: %v", err)
 }
 
-
 // Middleware to protect routes
 func Protected(cfg *config.AuthHandler) fiber.Handler {
 
+	//TODO: Use a cookie instead of a header
 	return func(ctx *fiber.Ctx) error {
 
-		token := ctx.Get("Authorization", "")
+		token := ctx.Cookies("Authorization", "")
 		token = strings.TrimPrefix(token, "Bearer ")
 
 		if token == "" {
@@ -54,4 +54,3 @@ func Protected(cfg *config.AuthHandler) fiber.Handler {
 		return ctx.Next()
 	}
 }
-

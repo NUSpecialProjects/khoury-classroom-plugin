@@ -4,11 +4,13 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github"
 	"github.com/CamPlume1/khoury-classroom/internal/storage"
+	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
 type Params struct {
-	AuthHandler       config.AuthHandler
-	GithubAuthHandler config.GithubAuthHandler
-	Store             storage.Storage
-	Github            github.Github
+	UserCfg        config.GitHubUserClient
+	AuthHandler    config.AuthHandler
+	SessionManager *session.Store
+	Store          storage.Storage
+	GitHubApp      github.GitHubAppClient
 }
