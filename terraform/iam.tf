@@ -87,6 +87,7 @@ resource "aws_iam_role_policy_attachment" "ecs_auto_scale_role" {
 resource "aws_iam_role" "github_actions_deploy_role" {
   name = "github-actions-deploy-role"
 
+  # Trust policy for GitHub OIDC
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -94,17 +95,21 @@ resource "aws_iam_role" "github_actions_deploy_role" {
     {
       "Effect": "Allow",
       "Principal": {
-        "Service": [
-          "ecs.amazonaws.com",
-          "codebuild.amazonaws.com"
-        ]
+        "Federated": "arn:aws:iam::058264409130:oidc-provider/token.actions.githubusercontent.com"
       },
-      "Action": "sts:AssumeRole"
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub": "repo:NUSpecialProjects/khoury-classroom-plugin:ref:refs/heads/main"
+        }
+      }
     }
   ]
 }
 EOF
 }
+
 
 # Policies to allow GitHub Actions to push Docker images to ECR and update ECS service
 resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
