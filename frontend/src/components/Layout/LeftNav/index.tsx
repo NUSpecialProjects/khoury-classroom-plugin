@@ -1,7 +1,9 @@
 import { FaTachometerAlt, FaStream, FaUsers, FaCog } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const NavStack: React.FC = () => {
+import "./styles.css";
+
+const LeftNav: React.FC = () => {
   const navItems = [
     { name: "Dashboard", dest: "/dashboard", Icon: FaTachometerAlt },
     { name: "Grading", dest: "/grading", Icon: FaStream },
@@ -10,9 +12,9 @@ const NavStack: React.FC = () => {
   ];
 
   return (
-    <div className="side-banner">
+    <div className="LeftNav">
       {navItems.map((item, index) => (
-        <Link key={index} to={item.dest} className="nav-link">
+        <Link key={index} to={item.dest} className="LeftNav__link">
           <item.Icon /> {item.name}
         </Link>
       ))}
@@ -20,4 +22,4 @@ const NavStack: React.FC = () => {
   );
 };
 
-export default NavStack;
+export default LeftNav;
