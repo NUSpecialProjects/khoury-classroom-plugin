@@ -10,7 +10,7 @@ import (
 )
 
 type Claims struct {
-	Email string `json:"email"`
+	Email string `json:"email"` // Plug in whatever you 
 	jwt.RegisteredClaims
 }
 
@@ -35,7 +35,7 @@ func parseJWTToken(token string, hmacSecret []byte) (email string, err error) {
 }
 
 // Middleware to protect routes
-func Protected(cfg *config.AuthHandler) fiber.Handler {
+func Protected(cfg *config.GitHubUserClient) fiber.Handler {
 
 	//TODO: Use a cookie instead of a header
 	return func(ctx *fiber.Ctx) error {

@@ -46,7 +46,6 @@ func main() {
 		Store:          db,
 		GitHubApp:      GitHubApp,
 		UserCfg:        cfg.GitHubUserClient,
-		AuthHandler:    cfg.AuthHandler,
 		SessionManager: session.New(),
 	})
 

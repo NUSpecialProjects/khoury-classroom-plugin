@@ -18,7 +18,7 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	ListClassrooms(ctx context.Context) ([]models.Classroom, error)
 	ListAssignmentsForClassroom(ctx context.Context, classroomID int64) ([]models.ClassroomAssignment, error)
 	GetAcceptedAssignments(ctx context.Context, assignmentID int64) ([]models.ClassroomAcceptedAssignment, error)
-	GitHubCallback(code string, clientCfg config.GitHubUserClient, authCfg config.AuthHandler) (string, error)
+	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
 }
 
 type GitHubBaseClient interface { //All methods in the shared client

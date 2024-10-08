@@ -4,7 +4,6 @@ import "github.com/caarlos0/env/v11"
 
 type Config struct {
 	Database         `envPrefix:"DATABASE_"`
-	AuthHandler      `envPrefix:"AUTH_"`
 	GitHubAppClient  `envPrefix:"GITHUB_APP_"`
 	GitHubUserClient `envPrefix:"GITHUB_CLIENT_"`
 }
