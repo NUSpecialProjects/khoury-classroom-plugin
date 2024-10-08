@@ -10,7 +10,7 @@ import (
 )
 
 // Middleware to protect routes
-func ProtectedWebhook(cfg *config.GithubAuthHandler) fiber.Handler {
+func ProtectedWebhook(cfg *config.GitHubAppClient) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 

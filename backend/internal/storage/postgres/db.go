@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -10,7 +11,6 @@ import (
 type DB struct {
 	connPool *pgxpool.Pool
 }
-
 
 
 // Establishes a postgres connection pool and returns it for querying.
