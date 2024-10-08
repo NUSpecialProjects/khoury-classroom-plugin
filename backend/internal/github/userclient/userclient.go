@@ -124,7 +124,7 @@ func (api *UserAPI) GitHubLogin(code string, clientCfg config.GitHubUserClient) 
 	return jwtToken, nil
 }
 
-func generateJWTToken(cfg *config.AuthHandler, user map[string]interface{}, accessToken string) (string, error) {
+func generateJWTToken(cfg *config.GitHubUserClient, user map[string]interface{}, accessToken string) (string, error) {
 	claims := models.Claims{
 		User:  user,
 		Token: accessToken,
