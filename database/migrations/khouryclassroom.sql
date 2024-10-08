@@ -6,22 +6,6 @@ CREATE TABLE IF NOT EXISTS users (
   joined_on TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS classrooms (
-  id SERIAL PRIMARY KEY,
-  ghclassroom_id INTEGER NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  prof_id INTEGER NOT NULL,
-  FOREIGN KEY (prof_id) REFERENCES users(id)
-);
-
-CREATE TABLE IF NOT EXISTS student_classroom (
-  student_id INTEGER NOT NULL,
-  classroom_id INTEGER NOT NULL,
-  PRIMARY KEY (student_id, classroom_id),
-  FOREIGN KEY (student_id) REFERENCES users(id),
-  FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
-);
-
 CREATE TABLE IF NOT EXISTS professor_ta (
   prof_id INTEGER NOT NULL,
   ta_id INTEGER,
