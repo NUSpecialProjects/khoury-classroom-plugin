@@ -8,23 +8,22 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 )
 
 type UserAPI struct {
 	sharedclient.CommonAPI
+	Token *oauth2.Token
 }
 
-func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
+func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 	fmt.Printf("Received authorization code: %s\n", code)
 
-	oAuthConfig := cfg.OAuthConfig()
-	fmt.Println("Config:")
-	fmt.Println(oAuthConfig)
-	fmt.Println("End Config")
+	oAuthCfg := cfg.OAuthConfig()
 
 	fmt.Println("Received code: ", code)
 
-	token, err := oAuthConfig.Exchange(context.Background(), code)
+	token, err := oAuthCfg.Exchange(context.Background(), code)
 	if err != nil {
 		fmt.Println("Error exchanging code for token", err)
 		return nil, err
@@ -32,17 +31,22 @@ func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	fmt.Println("Successfully exchanged code for token: ", token)
 
-	httpClient := oAuthConfig.Client(context.Background(), token)
+	return NewFromToken(*oAuthCfg, *token)
+}
+
+func NewFromToken(oAuthCfg oauth2.Config, token oauth2.Token) (*UserAPI, error) {
+	httpClient := oAuthCfg.Client(context.Background(), &token)
 
 	// Create the GitHub client
 	githubClient := github.NewClient(httpClient)
 
-	fmt.Printf("Created GitHub client\n")
+	fmt.Printf("Created GitHub client with token: %v\n", token)
 
 	return &UserAPI{
 		CommonAPI: sharedclient.CommonAPI{
 			Client: githubClient,
 		},
+		Token: &token,
 	}, nil
 }
 

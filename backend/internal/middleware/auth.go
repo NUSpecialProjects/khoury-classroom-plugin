@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/oauth2"
 )
 
 func GenerateJWT(userID string, expirationTime time.Time, secret string) (string, error) {
@@ -67,17 +69,22 @@ func Protected(secret string) fiber.Handler {
 	}
 }
 
-func GetClientMiddleware(sessionManager *session.Store) fiber.Handler {
+func GetClientMiddleware(cfg *config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID := c.Locals("userID").(string)
-		clientData, err := sessionManager.Storage.Get(userID)
+		accessTokenData, err := sessionManager.Storage.Get(userID)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve client data"})
+			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve access token from session"})
 		}
 
-		var client userclient.UserAPI
-		if err := json.Unmarshal(clientData, &client); err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize client data"})
+		var accessToken oauth2.Token
+		if err := json.Unmarshal(accessTokenData, &accessToken); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize access token"})
+		}
+
+		client, err := userclient.NewFromToken(cfg, accessToken)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create GitHub client"})
 		}
 
 		// Store the client in the context
