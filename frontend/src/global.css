@@ -1,0 +1,14 @@
+html,
+body {
+  margin: 0;
+  font-family: Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
