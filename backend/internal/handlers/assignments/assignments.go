@@ -23,10 +23,6 @@ func (s *AssignmentsService) GetAllAssignmentTemplates(c *fiber.Ctx) error {
 func (s *AssignmentsService) CreateRubric(c *fiber.Ctx) error {
   var rubricData models.Rubric
   
-  if c.Get("Content-Type") != "application/json" {
-    return errs.InvalidJSON()
-  }
-
   error := c.BodyParser(&rubricData)
   if error != nil {
     return errs.InvalidJSON()
@@ -64,7 +60,6 @@ func (s *AssignmentsService) CreateAssignmentTemplate(c *fiber.Ctx) error {
 
 func (s *AssignmentsService) CreateAssignment(c *fiber.Ctx) error {
   var assignmentData models.Assignment
-  fmt.Println("Testing getting to assigme,tmn")
   err := c.BodyParser(&assignmentData)
   if err != nil {
     return errs.InvalidJSON()

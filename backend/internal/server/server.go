@@ -4,6 +4,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/assignments"
 	github "github.com/CamPlume1/khoury-classroom/internal/handlers/github"
+	users "github.com/CamPlume1/khoury-classroom/internal/handlers/users"
 	hello "github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
@@ -26,6 +27,7 @@ func New(params types.Params) *fiber.App {
 	github.Routes(app, params)
 	test.Routes(app, params)
   assignments.Routes(app, params)
+  users.Routes(app, params)
 
 	return app
 }

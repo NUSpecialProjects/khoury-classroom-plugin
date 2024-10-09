@@ -10,6 +10,7 @@ type Storage interface {
 	Close(context.Context)
 	Test
   Assignments
+  Users
 }
 
 type Test interface {
@@ -25,3 +26,6 @@ type Assignments interface {
   CreateRegrade(ctx context.Context, regradeData models.Regrade) (error)
 }
 
+type Users interface {
+  CreateTA(ctx context.Context, taData models.User) (error)
+}

@@ -29,13 +29,12 @@ CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY, 
   name VARCHAR(255) NOT NULL,
   description VARCHAR(255),
-  student_id INTEGER NOT NULL,
+  student_gh_username VARCHAR(255) NOT NULL,
   ta_id INTEGER NOT NULL,
   github_classroom_id INTEGER NOT NULL,
   template_id INTEGER NOT NULL,
   completed BOOLEAN NOT NULL,
   started BOOLEAN NOT NULL,
-  FOREIGN KEY (student_id) REFERENCES users(id),
   FOREIGN KEY (ta_id) REFERENCES users(id),
   FOREIGN KEY (template_id) REFERENCES assignment_templates(id)
 );

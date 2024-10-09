@@ -30,11 +30,11 @@ func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateDa
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) (error) {
   _, err := db.connPool.Exec(ctx,
-    "INSERT INTO assignments (name, ta_id, description, student_id, completed, started, template_id, github_classroom_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
+    "INSERT INTO assignments (name, ta_id, description, student_gh_username, completed, started, template_id, github_classroom_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
     assignmentData.Name,
     assignmentData.TA_ID,
     assignmentData.Description,
-    assignmentData.Student_ID,
+    assignmentData.Student_GH_Username,
     assignmentData.Completed,
     assignmentData.Started,
     assignmentData.Template_ID,
