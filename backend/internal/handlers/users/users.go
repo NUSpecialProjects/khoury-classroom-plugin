@@ -21,7 +21,7 @@ func (s *UsersService) CreateTA(c *fiber.Ctx) error {
   }
 
   return c.Status(http.StatusOK).JSON(fiber.Map{
-    "message": "Received rubric data",
+    "message": "Received ta data",
     "rubric":  taData,
   })
 }
