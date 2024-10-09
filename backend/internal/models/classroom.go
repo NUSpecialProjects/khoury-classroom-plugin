@@ -8,8 +8,8 @@ type ClassroomAcceptedAssignment struct {
 	Passing     bool                `json:"passing"`
 	CommitCount int                 `json:"commit_count"`
 	Grade       string              `json:"grade"`
-	Students    []*github.User      `json:"students"`   // Using GitHub User type for students
-	Repository  *github.Repository  `json:"repository"` // Using GitHub Repository type
+	Students    []*github.User      `json:"students"`
+	Repository  *github.Repository  `json:"repository"`
 	Assignment  ClassroomAssignment `json:"assignment"`
 }
 

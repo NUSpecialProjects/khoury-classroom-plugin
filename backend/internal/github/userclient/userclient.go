@@ -14,16 +14,6 @@ type UserAPI struct {
 	sharedclient.CommonAPI
 }
 
-/*
-Problem 1 -> Oauth config needs to be created
-
-*/
-
-//Poblem: UserAPI needs to be stored as part of a user session
-//TODO: Support sessions with UserAPI instances
-// Let's do it in memory for now.
-
-// A UserAPI should not exist outside of a session
 func New(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 	fmt.Printf("Received authorization code: %s\n", code)
 
@@ -140,5 +130,3 @@ func (api *UserAPI) GetAcceptedAssignments(ctx context.Context, assignmentID int
 
 	return acceptedAssignments, nil
 }
-
-// https://github.com/login/oauth/authorize?client_id=Ov23liswNMlwZUn1hnmS&scope=repo,read:org,classroom&allow_signup=false

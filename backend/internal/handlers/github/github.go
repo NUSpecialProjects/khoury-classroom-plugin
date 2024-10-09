@@ -13,7 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-// Assuming lack of skill issues
 func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
 	fmt.Println("Reached Login Service handler")
 
@@ -73,7 +72,6 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 	}
 }
 
-// Test function
 func (service *GitHubService) GetCurrentUserID(c *fiber.Ctx) error {
 	userID := c.Locals("userID")
 	// var client userclient.UserAPI
@@ -85,8 +83,6 @@ func (service *GitHubService) GetCurrentUserID(c *fiber.Ctx) error {
 		// "client": client,
 	})
 }
-
-// func (service *GitHubService)
 
 func (service *GitHubService) GetClient(sessionManager *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {

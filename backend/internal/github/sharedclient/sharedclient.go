@@ -11,8 +11,6 @@ type CommonAPI struct {
 	Client *github.Client
 }
 
-//Any shared implementations can go here
-
 func (api *CommonAPI) Ping(ctx context.Context) (string, error) {
 	message, _, err := api.Client.Zen(ctx)
 	if err != nil {

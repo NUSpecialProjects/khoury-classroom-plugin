@@ -28,6 +28,7 @@ type GitHubBaseClient interface { //All methods in the shared client
 	GetBranch(ctx context.Context, owner_name string, repo_name string, branch_name string) (*github.Branch, error)
 	CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error
 	CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error)
+	//TODO: these two methods need to be fixed with API change
 	// CreateInlinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, line int, side string, commentBody string) (*github.PullRequestComment, error)
 	// CreateMultilinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, startLine int, endLine int, side string, commentBody string) (*github.PullRequestComment, error)
 	CreateFilePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, commentBody string) (*github.PullRequestComment, error)
