@@ -71,6 +71,7 @@ func (service *Service) Login(userCfg config.GitHubUserClient, sessionManager *s
 			Expires:  expirationTime,
 			HTTPOnly: true,
 			Secure:   true,
+			SameSite: "Lax",
 		})
 
 		return c.Status(200).JSON("Successfully logged in")
