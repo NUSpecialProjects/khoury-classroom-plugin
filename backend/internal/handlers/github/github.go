@@ -26,10 +26,16 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 		}
 		code := requestBody.Code
 		// create client
-		client, err := userclient.New(&userCfg, code)
+		client, err := userclient.NewFromCode(&userCfg, code)
 		if err != nil {
 			fmt.Println("Error 1")
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		// Serialize the token
+		tokenData, err := json.Marshal(client.Token)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to serialize token"})
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
@@ -44,19 +50,13 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 		timeToExp := 24 * time.Hour
 		expirationTime := time.Now().Add(timeToExp)
 
+		sessionManager.Storage.Set(userID, tokenData, 0)
+
 		// Generate JWT token
 		jwtToken, err := middleware.GenerateJWT(userID, expirationTime, userCfg.JWTSecret)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to generate JWT token"})
 		}
-
-		clientData, err := json.Marshal(client)
-		if err != nil {
-			fmt.Println("Error 6")
-			return c.Status(500).JSON(fiber.Map{"error": "failed to serialize client data"})
-		}
-
-		sessionManager.Storage.Set(userID, clientData, timeToExp)
 
 		c.Cookie(&fiber.Cookie{
 			Name:     "jwt_cookie",
@@ -72,15 +72,23 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 	}
 }
 
-func (service *GitHubService) GetCurrentUserID(c *fiber.Ctx) error {
+func (service *GitHubService) GetCurrentUser(c *fiber.Ctx) error {
 	userID := c.Locals("userID")
-	// var client userclient.UserAPI
-	// client = c.Locals("client").(userclient.UserAPI)
+	client, ok := c.Locals("client").(*userclient.UserAPI)
+	if !ok {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve client from context"})
+	}
 	fmt.Println("UserID: ", userID)
-	// fmt.Println("Client: ", client)
+	fmt.Println("Client: ", client)
+
+	user, err := client.GetCurrentUser(c.Context())
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
+	}
+	fmt.Println("User: ", user)
 	return c.Status(200).JSON(fiber.Map{
-		"userID": userID,
-		// "client": client,
+		"userID":       userID,
+		"current user": user,
 	})
 }
 
