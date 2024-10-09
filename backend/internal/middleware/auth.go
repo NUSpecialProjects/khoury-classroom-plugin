@@ -82,7 +82,7 @@ func GetClientMiddleware(cfg *config.GitHubUserClient, sessionManager *session.S
 			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize access token"})
 		}
 
-		client, err := userclient.NewFromToken(cfg, accessToken)
+		client, err := userclient.NewFromToken(*cfg.OAuthConfig(), accessToken)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create GitHub client"})
 		}
