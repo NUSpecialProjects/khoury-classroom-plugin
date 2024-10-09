@@ -1,11 +1,12 @@
-import { useEffect } from "react";
+import { AuthContext } from "@/main";
+import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-const LoginStub: React.FC = () => {
+const Callback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
   const navigate = useNavigate();
-
+  const { login } = useContext(AuthContext);
 
   useEffect(()=> {
     //if code, good, else, route to home
@@ -24,20 +25,24 @@ const LoginStub: React.FC = () => {
 
                 if (!response.ok){
                     //Navgate back to login page
-                    navigate("")
+                    navigate("/")
+                }
+                else {
+                  login()
+                  // This is a child component. Update this component to take in the login handler, and call it in this success case
+                  navigate("/app/dashboard")
                 }
                 console.log(response)
             }
             catch (err: unknown){
                 //navigate to login page
-                navigate("")
+                navigate("/")
             }
-            navigate("/app/")
         }
         sendCode()
     }
     else {
-        navigate("")
+        navigate("/")
     }
   })
 
@@ -52,4 +57,4 @@ const LoginStub: React.FC = () => {
 
 
 
-export default LoginStub;
+export default Callback;

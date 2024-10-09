@@ -1,4 +1,4 @@
-const Splash: React.FC = () => {
+const Login: React.FC = () => {
     const clientId: string = import.meta.env.VITE_GITHUB_CLIENT_ID as string
 
     return(
@@ -10,4 +10,4 @@ const Splash: React.FC = () => {
     )
 } 
 
-export default Splash;
+export default Login;
