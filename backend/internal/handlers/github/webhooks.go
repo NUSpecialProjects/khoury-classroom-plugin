@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (s *Service) WebhookHandler(c *fiber.Ctx) error {
+func (s *GitHubService) WebhookHandler(c *fiber.Ctx) error {
 	var dispatch = map[string]func(c *fiber.Ctx) error{
 		"push":   s.Push,
 		"create": s.Create,
@@ -19,12 +19,12 @@ func (s *Service) WebhookHandler(c *fiber.Ctx) error {
 	return handler(c)
 }
 
-func (s *Service) Push(c *fiber.Ctx) error {
+func (s *GitHubService) Push(c *fiber.Ctx) error {
 	println("push webhook event")
 	return c.SendStatus(200)
 }
 
-func (s *Service) Create(c *fiber.Ctx) error {
+func (s *GitHubService) Create(c *fiber.Ctx) error {
 	println("create webhook event")
 	return c.SendStatus(200)
 }

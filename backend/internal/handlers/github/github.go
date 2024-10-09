@@ -8,13 +8,13 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/golang-jwt/jwt"
 )
 
 // Assuming lack of skill issues
-func (service *Service) Login(userCfg config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
+func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
 	fmt.Println("Reached Login Service handler")
 
 	return func(c *fiber.Ctx) error {
@@ -42,16 +42,12 @@ func (service *Service) Login(userCfg config.GitHubUserClient, sessionManager *s
 		// Convert user.ID to string
 		userID := strconv.FormatInt(user.ID, 10)
 
+		timeToExp := 24 * time.Hour
+		expirationTime := time.Now().Add(timeToExp)
+
 		// Generate JWT token
-		expirationTime := time.Now().Add(24 * time.Hour)
-		claims := &jwt.StandardClaims{
-			Subject:   userID,
-			ExpiresAt: expirationTime.Unix(),
-		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		jwtToken, err := token.SignedString([]byte(userCfg.JWTSecret))
+		jwtToken, err := middleware.GenerateJWT(userID, expirationTime, userCfg.JWTSecret)
 		if err != nil {
-			fmt.Println("Error 3")
 			return c.Status(500).JSON(fiber.Map{"error": "failed to generate JWT token"})
 		}
 
@@ -61,19 +57,53 @@ func (service *Service) Login(userCfg config.GitHubUserClient, sessionManager *s
 			return c.Status(500).JSON(fiber.Map{"error": "failed to serialize client data"})
 		}
 
-		duration := 24 * time.Hour
-
-		sessionManager.Storage.Set(userID, clientData, duration)
+		sessionManager.Storage.Set(userID, clientData, timeToExp)
 
 		c.Cookie(&fiber.Cookie{
-			Name:     "jwt_cookie",
-			Value:    jwtToken,
-			Expires:  expirationTime,
-			HTTPOnly: true,
-			Secure:   true,
-			SameSite: "Lax",
+			Name:  "jwt_cookie",
+			Value: jwtToken,
+			// Expires:  expirationTime,
+			// HTTPOnly: true,
+			Secure:   false,
+			SameSite: "None",
 		})
 
+		fmt.Println("COOKIE:", c.Cookies("jwt_cookie", "DEFAULT VALUE!!"))
+
 		return c.Status(200).JSON("Successfully logged in")
+	}
+}
+
+// Test function
+func (service *GitHubService) GetCurrentUserID(sessionManager *session.Store) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userID := c.Locals("userID").(string)
+		return c.Status(200).JSON(fiber.Map{"userID": userID})
+	}
+}
+
+func (service *GitHubService) GetClient(sessionManager *session.Store) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userID := c.Locals("userID").(string)
+		clientData, err := sessionManager.Storage.Get(userID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve client data"})
+		}
+
+		var client userclient.UserAPI
+		if err := json.Unmarshal(clientData, &client); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize client data"})
+		}
+
+		return c.Status(200).JSON(client)
+	}
+}
+
+func (service *GitHubService) Logout(sessionManager *session.Store) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userID := c.Locals("userID").(string)
+		sessionManager.Storage.Delete(userID)
+
+		return c.Status(200).JSON("Successfully logged out")
 	}
 }

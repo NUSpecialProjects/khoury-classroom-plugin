@@ -9,15 +9,21 @@ import (
 
 // Create HelloGroup fiber route group
 func Routes(app *fiber.App, params types.Params) {
-	service := newService(params.Store, params.GitHubApp, params.SessionManager)
-
-	routes := app.Group("/github")
+	service := newGitHubService(params.Store, params.GitHubApp, params.SessionManager)
 
 	// TODO: commented this out bc we shouldn't be passing config structs into params
 	//Endpoints
 	// routes.Post("/webhook", middleware.ProtectedWebhook(&params.GitHubAppConfig), service.WebhookHandler)
 	// routes.Get("/hello", service.HelloWorld)
 
-	routes.Post("/login", service.Login(params.UserCfg, params.SessionManager))
+	app.Post("/login", service.Login(params.UserCfg, params.SessionManager))
+	app.Get("/user", service.GetCurrentUserID(params.SessionManager))
+	app.Post("/logout", service.Logout(params.SessionManager))
+
+	// protected := app.Group("/github")
+	// protected.Use(middleware.Protected(params.UserCfg.JWTSecret))
+	// // protected.Use(middleware.GetClientMiddleware(params.SessionManager))
+	// protected.Get("/", service.GetClient(params.SessionManager))
+	// protected.Get("/user")
 
 }

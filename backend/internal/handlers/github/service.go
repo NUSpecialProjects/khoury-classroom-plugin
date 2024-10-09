@@ -6,12 +6,20 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-type Service struct {
-	store          storage.Storage
-	githubapp      github.GitHubAppClient
-	sessionmanager *session.Store
+type GitHubService struct {
+	store           storage.Storage
+	githubappclient github.GitHubAppClient
+	sessionmanager  *session.Store
 }
 
-func newService(store storage.Storage, githubapp github.GitHubAppClient, sessionmanager *session.Store) *Service {
-	return &Service{store: store, githubapp: githubapp, sessionmanager: sessionmanager}
+func newGitHubService(
+	store storage.Storage,
+	githubappclient github.GitHubAppClient,
+	sessionmanager *session.Store,
+) *GitHubService {
+	return &GitHubService{
+		store:           store,
+		githubappclient: githubappclient,
+		sessionmanager:  sessionmanager,
+	}
 }
