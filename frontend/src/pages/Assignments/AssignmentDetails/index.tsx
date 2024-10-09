@@ -1,7 +1,7 @@
 import { FaChevronLeft } from "react-icons/fa";
+import Button from "@/components/Button";
 
 import "./styles.css";
-import Button from "@/components/Button";
 
 const AssignmentDetails: React.FC = () => {
   return (
