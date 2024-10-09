@@ -11,7 +11,7 @@ import "./global.css";
 // Handle Auth State- Vulnerable to XSS?
 const AuthContext = createContext<{ isLoggedIn: boolean; login: () => void }>({
   isLoggedIn: false,
-  login: () => {},
+  login: () => { },
 });
 
 //If not logged in, route to login
@@ -25,26 +25,26 @@ const PrivateRoute = ({ element }: { element: JSX.Element }) => {
 export function App(): React.JSX.Element {
 
   //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const login = () => setIsLoggedIn(true);
 
 
 
   return (
-    <AuthContext.Provider value={{isLoggedIn, login}}>
-    <Router>
-      <Routes>
-      <Route path="" element={<Splash />}/>
-        <Route path="/app/" element={<Layout />}>
+    <AuthContext.Provider value={{ isLoggedIn, login }}>
+      <Router>
+        <Routes>
+          <Route path="" element={<Splash />} />
+          <Route path="/app/" element={<Layout />}>
             <Route path="assignments" element={<PrivateRoute element={<Assignments />} />} />
             <Route path="grading" element={<PrivateRoute element={<Grading />} />} />
             <Route path="settings" element={<PrivateRoute element={<Settings />} />} />
             <Route path="dashboard" element={<PrivateRoute element={<Dashboard />} />} />
             <Route path="oauth/callback" element={<LoginStub />} />
-        </Route>
-      </Routes>
-    </Router>
+          </Route>
+        </Routes>
+      </Router>
     </AuthContext.Provider>
   );
 }
