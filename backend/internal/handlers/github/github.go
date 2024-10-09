@@ -60,28 +60,33 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 		sessionManager.Storage.Set(userID, clientData, timeToExp)
 
 		c.Cookie(&fiber.Cookie{
-			Name:  "jwt_cookie",
-			Value: jwtToken,
-			Expires: time.Now().Add(24*time.Hour),
+			Name:     "jwt_cookie",
+			Value:    jwtToken,
+			Expires:  time.Now().Add(24 * time.Hour),
 			HTTPOnly: true,
 			Secure:   false,
 			SameSite: "Lax",
-			Path: "",
+			Path:     "",
 		})
-
-		fmt.Println("COOKIE:", c.GetReqHeaders())
 
 		return c.Status(200).JSON("Successfully logged in")
 	}
 }
 
 // Test function
-func (service *GitHubService) GetCurrentUserID(sessionManager *session.Store) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		userID := c.Locals("userID").(string)
-		return c.Status(200).JSON(fiber.Map{"userID": userID})
-	}
+func (service *GitHubService) GetCurrentUserID(c *fiber.Ctx) error {
+	userID := c.Locals("userID")
+	// var client userclient.UserAPI
+	// client = c.Locals("client").(userclient.UserAPI)
+	fmt.Println("UserID: ", userID)
+	// fmt.Println("Client: ", client)
+	return c.Status(200).JSON(fiber.Map{
+		"userID": userID,
+		// "client": client,
+	})
 }
+
+// func (service *GitHubService)
 
 func (service *GitHubService) GetClient(sessionManager *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
