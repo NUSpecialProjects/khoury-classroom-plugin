@@ -33,7 +33,7 @@ const AssignmentDetails: React.FC = () => {
           <div>Status</div>
           <div>Last Commit</div>
         </div>
-        {[...Array(20)].map((_, i) => (
+        {Array.from({ length: 20 }).map((_, i: number) => (
           <div key={i} className="AssignmentDetails__submission">
             <div>Jane Doe</div>
             <div>Passing</div>
