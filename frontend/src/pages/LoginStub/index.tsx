@@ -13,8 +13,9 @@ const LoginStub: React.FC = () => {
         console.log("Code: " + code)
         const sendCode = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_PUBLIC_API_DOMAIN}/github/login`, {
+                const response = await fetch(`${import.meta.env.VITE_PUBLIC_API_DOMAIN}/login`, {
                     method: "POST",
+                    credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
                     },

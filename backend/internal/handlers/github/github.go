@@ -62,13 +62,14 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 		c.Cookie(&fiber.Cookie{
 			Name:  "jwt_cookie",
 			Value: jwtToken,
-			// Expires:  expirationTime,
-			// HTTPOnly: true,
+			Expires: time.Now().Add(24*time.Hour),
+			HTTPOnly: true,
 			Secure:   false,
-			SameSite: "None",
+			SameSite: "Lax",
+			Path: "",
 		})
 
-		fmt.Println("COOKIE:", c.Cookies("jwt_cookie", "DEFAULT VALUE!!"))
+		fmt.Println("COOKIE:", c.GetReqHeaders())
 
 		return c.Status(200).JSON("Successfully logged in")
 	}
