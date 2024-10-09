@@ -7,12 +7,17 @@ import Layout from "./components/Layout";
 
 import "./global.css";
 
+interface AuthContextProps {
+  isLoggedIn: boolean;
+  login: () => void;
+}
+
 // Handle Auth State- Vulnerable to XSS?
-export const AuthContext = createContext<{ isLoggedIn: boolean; login: () => void }>({
+export const AuthContext: React.Context<AuthContextProps> = createContext<AuthContextProps>({
   isLoggedIn: false,
   login: () => {},
 });
-
+ 
 
 //If not logged in, route to login
 const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {

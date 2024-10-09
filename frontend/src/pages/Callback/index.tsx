@@ -6,37 +6,43 @@ const Callback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+const { login } = useContext(AuthContext);
 
   useEffect(()=> {
     //if code, good, else, route to home
     if (code) {
         console.log("Code: " + code)
-        const sendCode = async () => {
-            try {
-                const response: void | Response = await fetch(`${import.meta.env.VITE_PUBLIC_API_DOMAIN}/login`, {
+        const sendCode = () => {
+          const base_url : string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string
+                 fetch(`${base_url}/login`, {
                     method: "POST",
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body :JSON.stringify({code}),
-                });
-                if (!response.ok){
+                })
+                .then(response => {
+                  if (!response.ok){
                     //Navgate back to login page
                     navigate("/")
+                    return
                 }
                 else {
+
+                  //Successful login. Navigate to dashboard page and call login
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                   login()
-                  // This is a child component. Update this component to take in the login handler, and call it in this success case
                   navigate("/app/dashboard")
                 }
-                console.log(response)
-            }
-            catch (err: unknown){
-                //navigate to login page
-                navigate("/")
-            }
+                }
+
+                )
+                .catch((err: unknown) => {
+                  navigate("/")
+                  console.log("Error Occured: ", err)
+                return});
         }
         sendCode()
     }
