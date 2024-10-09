@@ -1,0 +1,6 @@
+.Dashboard {
+    &__classroomDetailsWrapper {
+        display: flex;
+        gap: 15px;
+    }
+}
