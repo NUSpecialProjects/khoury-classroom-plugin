@@ -14,7 +14,7 @@ const Callback: React.FC = () => {
         console.log("Code: " + code)
         const sendCode = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_PUBLIC_API_DOMAIN}/login`, {
+                const response: void | Response = await fetch(`${import.meta.env.VITE_PUBLIC_API_DOMAIN}/login`, {
                     method: "POST",
                     credentials: 'include',
                     headers: {
@@ -22,7 +22,6 @@ const Callback: React.FC = () => {
                     },
                     body :JSON.stringify({code}),
                 });
-
                 if (!response.ok){
                     //Navgate back to login page
                     navigate("/")

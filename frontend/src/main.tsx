@@ -15,7 +15,7 @@ export const AuthContext = createContext<{ isLoggedIn: boolean; login: () => voi
 
 
 //If not logged in, route to login
-const PrivateRoute = ({ element }: { element: JSX.Element }) => {
+const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
   const { isLoggedIn } = useContext(AuthContext);
   return isLoggedIn ? element : <Navigate to="/" />;
 };
