@@ -11,15 +11,22 @@ export function App(): React.JSX.Element {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="assignments" element={<Pages.Assignments />} />
-          <Route path="assignments/:id" element={<Pages.AssignmentDetails />} />
-          <Route path="grading" element={<Pages.Grading />} />
-          <Route path="settings" element={<Pages.Settings />} />
-          <Route path="dashboard" element={<Pages.Dashboard />} />
-        </Route>
+      <Route path="/" element={<Pages.Classrooms />}/>
+      
       </Routes>
     </Router>
+    // <Router>
+    //   <Routes>
+    //     <Route path="/" element={<Layout />}>
+    //       <Route path="classrooms" element={<Pages.Classrooms />}/>
+    //       <Route path="assignments" element={<Pages.Assignments />} />
+    //       <Route path="assignments/:id" element={<Pages.AssignmentDetails />} />
+    //       <Route path="grading" element={<Pages.Grading />} />
+    //       <Route path="settings" element={<Pages.Settings />} />
+    //       <Route path="dashboard" element={<Pages.Dashboard />} />
+    //     </Route>
+    //   </Routes>
+    // </Router>
   );
 }
 

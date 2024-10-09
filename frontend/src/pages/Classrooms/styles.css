@@ -1,0 +1,18 @@
+
+.Classrooms {
+    &__bottom {
+        display: flex;
+        flex-grow: 1;
+    }
+
+    &__content {
+        flex-grow: 1;
+        padding: 20px;
+    }
+    &__title {
+        font-size: 1.5rem;
+        color:darkolivegreen
+    }
+}
+
+
