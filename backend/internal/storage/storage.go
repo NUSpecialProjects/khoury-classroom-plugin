@@ -7,16 +7,25 @@ import (
 )
 
 type Storage interface {
-	Close (context.Context)
+	Close(context.Context)
 	Test
-  KhouryClassroomDB
+  Assignments
+  Users
 }
-
 
 type Test interface {
 	GetTests(ctx context.Context) ([]models.Test, error)
 }
 
-type KhouryClassroomDB interface {
-  GetUsers(ctx context.Context) ([]models.User, error)
+type Assignments interface {
+  GetAllAssignmentTemplates(ctx context.Context) ([]models.AssignmentTemplate, error)
+  CreateRubric(ctx context.Context, rubricData models.Rubric) (error)
+  CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (error)
+  CreateAssignment(ctx context.Context, assignmentData models.Assignment) (error)
+  CreateDueDate(ctx context.Context, dueDateData models.DueDate) (error)
+  CreateRegrade(ctx context.Context, regradeData models.Regrade) (error)
+}
+
+type Users interface {
+  CreateTA(ctx context.Context, taData models.User) (error)
 }

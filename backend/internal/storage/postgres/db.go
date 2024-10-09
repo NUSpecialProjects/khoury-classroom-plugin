@@ -28,7 +28,6 @@ func New(ctx context.Context, config config.Database) (*DB, error) {
 // Closes a connection pool
 func (db *DB) Close(ctx context.Context) {
 	db.connPool.Close()
-  
 }
 
 
