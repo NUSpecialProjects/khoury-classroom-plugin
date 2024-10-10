@@ -48,6 +48,14 @@ GITHUB_CLIENT_JWT_SECRET=<The Json Web Token secret>
 DATABASE_URL=<Your database URL>
 ```
 
+Create a second .env file in the frontend root directory:
+
+```
+VITE_PUBLIC_API_DOMAIN=<backend url>
+VITE_GITHUB_CLIENT_ID=Ov23liswNMlwZUn1hnmS
+```
+
+
 
 ## Running The Project in A Dev Environment
 
