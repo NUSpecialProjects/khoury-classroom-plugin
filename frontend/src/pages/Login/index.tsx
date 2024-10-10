@@ -12,7 +12,7 @@ const Login: React.FC = () => {
             <FiX className="Icon"/>
             <img src="src/assets/icons/Northeastern_LVX.svg.png" className="Logo" />
             </div>
-        <div className="LandingTitle">Khoury Classroom</div>
+        <div className="LandingTitle">FonteMarks</div>
         <a className="SignInLink" href={`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo,read:org,classroom&allow_signup=false`}>
             Log In With GitHub</a>
         </div>

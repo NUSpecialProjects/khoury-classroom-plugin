@@ -92,23 +92,3 @@ func GetClientMiddleware(cfg *config.GitHubUserClient, sessionManager *session.S
 		return c.Next()
 	}
 }
-
-// // Middleware to protect routes
-// func Protected(cfg *config.GitHubUserClient) fiber.Handler {
-
-// 	return func(ctx *fiber.Ctx) error {
-
-// 		token := ctx.Cookies("Authorization", "")
-// 		token = strings.TrimPrefix(token, "Bearer ")
-
-// 		if token == "" {
-// 			return ctx.Status(400).JSON(fiber.Map{"code": "unauthorized, token not found"})
-// 		}
-// 		_, err := parseJWTToken(token, []byte(cfg.JWTSecret))
-
-// 		if err != nil {
-// 			return ctx.Status(400).JSON(fiber.Map{"code": "unauthorized, error parsing token"})
-// 		}
-// 		return ctx.Next()
-// 	}
-// }
