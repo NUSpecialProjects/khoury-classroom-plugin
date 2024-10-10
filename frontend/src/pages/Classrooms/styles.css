@@ -20,6 +20,8 @@
         gap: 10px;
     }
     &__classLink {
+        background: none;    
+        border: none;              
         display: flex;
         justify-content: space-between;
         background-color: #F6F6F6;

@@ -2,6 +2,7 @@ import TopNav from "@/components/Layout/TopNav";
 
 import "./styles.css";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Classroom = {
     id: number;
@@ -13,6 +14,7 @@ type Classroom = {
 
 const Classrooms: React.FC = () => {
     const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+    const navigate = useNavigate()
 
     useEffect(() => {
         // Replace with your API endpoint
@@ -48,6 +50,11 @@ const Classrooms: React.FC = () => {
         setClassrooms(c)
     }, []);
 
+    const handleNavigation = () => {
+        // Navigate to a specific classroom page or any other route
+        navigate(`/app/dashboard`);
+      };
+
     return (
         <div className="Classrooms">
             <div>
@@ -62,10 +69,11 @@ const Classrooms: React.FC = () => {
                     ) : (
                         <div className="Classrooms__list">
                                 {classrooms.map(item => (
-                                    <div className="Classrooms__classLink">
+                                    <button className="Classrooms__classLink"
+                                            onClick={() => handleNavigation()}>
                                         <div>{item.name}</div>
                                         <div className="Classrooms__linkProf">PRofessor</div>
-                                    </div>
+                                    </button>
                                 ))}
                         </div>
                     )}

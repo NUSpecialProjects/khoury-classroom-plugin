@@ -34,7 +34,7 @@ const { login } = useContext(AuthContext);
                   //Successful login. Navigate to dashboard page and call login
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                   login()
-                  navigate("/app/dashboard")
+                  navigate("/classrooms")
                 }
                 }
 
