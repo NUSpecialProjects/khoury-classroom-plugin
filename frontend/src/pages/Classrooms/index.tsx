@@ -32,18 +32,18 @@ const Classrooms: React.FC = () => {
         //Fake data go brrrrrr
 
         const c: Classroom[] = [
-            // {
-            //     id: 13232,
-            //     name: "CS3200 Database Desgin",
-            //     archived: ", false",
-            //     url: "yes.com"
-            // },
-            // {
-            //     id: 13232,
-            //     name: "CS3200 Database Desgin",
-            //     archived: ", false",
-            //     url: "yes.com"
-            // }
+            {
+                id: 13232,
+                name: "CS3200 Database Desgin",
+                archived: ", false",
+                url: "yes.com"
+            },
+            {
+                id: 13232,
+                name: "CS3200 Database Desgin",
+                archived: ", false",
+                url: "yes.com"
+            }
         ]
         setClassrooms(c)
     }, []);
@@ -56,23 +56,19 @@ const Classrooms: React.FC = () => {
             <div className="Classrooms__bottom">
                 <div className="Classrooms__content">
                     <div className="Classrooms__title">Classrooms</div>
-                    <div className="Classrooms__list">
-                        {classrooms.length === 0 ? (
-                            <div className="Classrooms__none"> No Classrooms Found...</div>
-                        ) : (
-                            <div>
-                                {classrooms.map(item => (
-                                <div className="Classrooms__classLink">
-                                    <div>{item.name}</div>
-                                    <div className="Classrooms__linkProf">PRofessor</div>
-                                </div>
-                                ))}
-                            </div>
-                            
-                        )}
-                        
-                    </div>
 
+                    {classrooms.length === 0 ? (
+                        <div className="Classrooms__none"> No Classrooms Found...</div>
+                    ) : (
+                        <div className="Classrooms__list">
+                                {classrooms.map(item => (
+                                    <div className="Classrooms__classLink">
+                                        <div>{item.name}</div>
+                                        <div className="Classrooms__linkProf">PRofessor</div>
+                                    </div>
+                                ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
