@@ -13,24 +13,23 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/server"
 	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
-	// "github.com/joho/godotenv"
+	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	ctx := context.Background()
 
-	// if isLocal() {
-	// 	if err := godotenv.Load("../../../.env"); err != nil {
-	// 		log.Fatalf("Unable to load environment variables necessary for application")
-	// 	}
-	// }
+	if isLocal() {
+		if err := godotenv.Load("../../../.env"); err != nil {
+			log.Fatalf("Unable to load environment variables necessary for application")
+		}
+	}
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Println(err.Error())
-		log.Fatalf("Unable to load environment variables necessary for application???????????" + err.Error())
+		log.Fatalf("Unable to load environment variables necessary for application")
 	}
-	log.Println(cfg)
 
 	db, err := postgres.New(ctx, cfg.Database)
 	if err != nil {
@@ -44,9 +43,10 @@ func main() {
 	}
 
 	app := server.New(types.Params{
-		Store:     db,
-		GitHubApp: GitHubApp,
-		UserCfg:   cfg.GitHubUserClient,
+		Store:          db,
+		GitHubApp:      GitHubApp,
+		UserCfg:        cfg.GitHubUserClient,
+		SessionManager: session.New(),
 	})
 
 	go func() {
