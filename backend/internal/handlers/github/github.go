@@ -98,7 +98,11 @@ func (service *GitHubService) Logout() fiber.Handler {
 		if !ok {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve userID from context"})
 		}
-		service.store.DeleteSession(c.Context(), userID)
+
+		err := service.store.DeleteSession(c.Context(), userID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to delete session"})
+		}
 
 		return c.Status(200).JSON("Successfully logged out")
 	}

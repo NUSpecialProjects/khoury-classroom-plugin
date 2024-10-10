@@ -7,7 +7,7 @@ import (
 )
 
 func Routes(app *fiber.App, params types.Params) {
-	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
+	service := newGitHubService(params.Store, params.GitHubApp)
 
 	// TODO: commented this out bc we shouldn't be passing config structs into params
 	//Endpoints
