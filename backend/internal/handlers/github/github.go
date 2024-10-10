@@ -1,7 +1,6 @@
 package github
 
 import (
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -9,11 +8,11 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 )
 
-func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
+func (service *GitHubService) Login(userCfg config.GitHubUserClient) fiber.Handler {
 	fmt.Println("Reached Login Service handler")
 
 	return func(c *fiber.Ctx) error {
@@ -32,12 +31,6 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		// Serialize the token
-		tokenData, err := json.Marshal(client.Token)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to serialize token"})
-		}
-
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
 			fmt.Println("Error 2")
@@ -50,7 +43,17 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 		timeToExp := 24 * time.Hour
 		expirationTime := time.Now().Add(timeToExp)
 
-		sessionManager.Storage.Set(userID, tokenData, 0)
+		err = service.store.CreateSession(c.Context(), models.Session{
+			GitHubUserID: user.ID,
+			AccessToken:  client.Token.AccessToken,
+			TokenType:    client.Token.TokenType,
+			RefreshToken: client.Token.RefreshToken,
+			ExpiresIn:    int64(timeToExp.Seconds()),
+		})
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create session"})
+		}
 
 		// Generate JWT token
 		jwtToken, err := middleware.GenerateJWT(userID, expirationTime, userCfg.JWTSecret)
@@ -61,7 +64,7 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 		c.Cookie(&fiber.Cookie{
 			Name:     "jwt_cookie",
 			Value:    jwtToken,
-			Expires:  time.Now().Add(24 * time.Hour),
+			Expires:  expirationTime,
 			HTTPOnly: true,
 			Secure:   false,
 			SameSite: "Lax",
@@ -72,47 +75,59 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient, sessionMana
 	}
 }
 
-func (service *GitHubService) GetCurrentUser(c *fiber.Ctx) error {
-	userID := c.Locals("userID")
-	client, ok := c.Locals("client").(*userclient.UserAPI)
-	if !ok {
-		return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve client from context"})
-	}
-	fmt.Println("UserID: ", userID)
-	fmt.Println("Client: ", client)
-
-	user, err := client.GetCurrentUser(c.Context())
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
-	}
-	fmt.Println("User: ", user)
-	return c.Status(200).JSON(fiber.Map{
-		"userID":       userID,
-		"current user": user,
-	})
-}
-
-func (service *GitHubService) GetClient(sessionManager *session.Store) fiber.Handler {
+// test func to see if client is working
+func (service *GitHubService) GetCurrentUser(userCfg *config.GitHubUserClient) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		userID := c.Locals("userID").(string)
-		clientData, err := sessionManager.Storage.Get(userID)
+		userID, ok := c.Locals("userID").(int64)
+		if !ok {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve userID from context"})
+		}
+
+		session, err := service.store.GetSession(c.Context(), userID)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve client data"})
+			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve session"})
 		}
 
-		var client userclient.UserAPI
-		if err := json.Unmarshal(clientData, &client); err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize client data"})
-		}
+		client, err := userclient.NewFromSession(*userCfg.OAuthConfig(), session)
 
-		return c.Status(200).JSON(client)
+		fmt.Println("UserID: ", userID)
+		fmt.Println("Client: ", client)
+
+		user, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
+		}
+		fmt.Println("User: ", user)
+		return c.Status(200).JSON(fiber.Map{
+			"user": user,
+		})
 	}
 }
 
-func (service *GitHubService) Logout(sessionManager *session.Store) fiber.Handler {
+// func (service *GitHubService) GetClient(store storage.Storage) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		userID := c.Locals("userID").(string)
+// 		clientData, err := sessionManager.Storage.Get(userID)
+// 		if err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve client data"})
+// 		}
+
+// 		var client userclient.UserAPI
+// 		if err := json.Unmarshal(clientData, &client); err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize client data"})
+// 		}
+
+// 		return c.Status(200).JSON(client)
+// 	}
+// }
+
+func (service *GitHubService) Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		userID := c.Locals("userID").(string)
-		sessionManager.Storage.Delete(userID)
+		userID, ok := c.Locals("userID").(int64)
+		if !ok {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve userID from context"})
+		}
+		service.store.DeleteSession(c.Context(), userID)
 
 		return c.Status(200).JSON("Successfully logged out")
 	}
