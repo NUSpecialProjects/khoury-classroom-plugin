@@ -10,7 +10,7 @@ import (
 
 type GitHubAppClient interface { // All methods in the app client
 	GitHubBaseClient
-	// App only functionalities
+	GetWebhookSecret() string
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client

@@ -13,6 +13,7 @@ import (
 
 type AppAPI struct { //app API
 	sharedclient.CommonAPI
+	webhooksecret string
 }
 
 func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
@@ -40,7 +41,11 @@ func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
 		CommonAPI: sharedclient.CommonAPI{
 			Client: githubClient,
 		},
+		webhooksecret: cfg.WebhookSecret,
 	}, nil
 }
 
 // Any APP specific implementations can go here
+func (api *AppAPI) GetWebhookSecret() string {
+	return api.webhooksecret
+}
