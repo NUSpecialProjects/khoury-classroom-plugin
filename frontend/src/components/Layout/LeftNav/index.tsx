@@ -9,6 +9,7 @@ const LeftNav: React.FC = () => {
     { name: "Grading", dest: "/app/grading", Icon: FaStream },
     { name: "Assignments", dest: "/app/assignments", Icon: FaUsers },
     { name: "Settings", dest: "/app/settings", Icon: FaCog },
+    { name: "Kenny", dest: "/app/assignments/1", Icon: FaCog },
   ];
 
   return (
