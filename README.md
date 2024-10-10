@@ -36,13 +36,16 @@ frontend to backend code. Make an account for a stable link!
 Create an .env file in the root directory:
 
 ```
+GITHUB_APP_PRIVATE_KEY=<Your GitHub app private key>
+GITHUB_APP_ID=<Your GitHub app ID>
+GITHUB_APP_INSTALLATION_ID=<Your GitHub app installation ID>
+GITHUB_CLIENT_REDIRECT_URL=<The URL that GitHub should redirect back to>
+GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
+GITHUB_CLIENT_SECRET=<The client Secret of your GitHub OAuth app>
+GITHUB_CLIENT_URL=<The Authorization endpoint of your OAuth provider>
+GITHUB_CLIENT_TOKEN_URL=<The access token endpoint of your OAuth provider>
+GITHUB_CLIENT_JWT_SECRET=<The Json Web Token secret>
 DATABASE_URL=<Your database URL>
-AUTH_URL=<url for auth provider>
-AUTH_ANON_KEY=<api key for auth provider>
-AUTH_JWT_SECRET=<JWT Secret>
-GITHUB_URL=<Github API root URL>
-GITHUB_ANON_KEY=<Github public Api key>
-PUBLIC_API_DOMAIN=<Your backend API domain>
 ```
 
 
