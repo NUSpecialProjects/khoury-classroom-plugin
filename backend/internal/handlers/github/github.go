@@ -27,13 +27,11 @@ func (service *GitHubService) Login(userCfg config.GitHubUserClient) fiber.Handl
 		// create client
 		client, err := userclient.NewFromCode(&userCfg, code)
 		if err != nil {
-			fmt.Println("Error 1")
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			fmt.Println("Error 2")
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 
@@ -80,27 +78,34 @@ func (service *GitHubService) GetCurrentUser(userCfg *config.GitHubUserClient) f
 	return func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(int64)
 		if !ok {
+			fmt.Println("FAILED TO GET USERID")
 			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve userID from context"})
 		}
+		fmt.Println("UserID: ", userID)
 
 		session, err := service.store.GetSession(c.Context(), userID)
 		if err != nil {
+			fmt.Println("FAILED TO GET SESSION", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve session"})
 		}
 
 		client, err := userclient.NewFromSession(*userCfg.OAuthConfig(), session)
+
+		if err != nil {
+			fmt.Println("FAILED TO CREATE CLIENT", err)
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
 
 		fmt.Println("UserID: ", userID)
 		fmt.Println("Client: ", client)
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
+			fmt.Println("FAILED TO GET USER", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
 		}
 		fmt.Println("User: ", user)
-		return c.Status(200).JSON(fiber.Map{
-			"user": user,
-		})
+		return c.Status(200).JSON(user)
 	}
 }
 
