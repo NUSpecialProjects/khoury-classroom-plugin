@@ -10,8 +10,32 @@
         padding: 20px;
     }
     &__title {
-        font-size: 1.5rem;
-        color:darkolivegreen
+        font-size: 1.4rem;
+        font-weight: bold;
+        padding-bottom: 15px;
+    }
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    &__classLink {
+        display: flex;
+        justify-content: space-between;
+        background-color: #F6F6F6;
+        align-items: center;
+        padding:15px;
+    }
+    &__none {
+        display: flex;
+        justify-content: space-around;
+    }
+    &__linkProf {
+        background-color: #5D5D5D;
+        border-radius: 20px; 
+        padding: 5px 20px;
+        color:white;
+            
     }
 }
 
