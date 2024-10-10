@@ -1,20 +1,21 @@
 package github
 
-//NOTE: This is an example usage for auth demonstration purposes. In real configurations (beyond login) all route groups should be protected
-
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2"
 )
 
-// Create HelloGroup fiber route group
 func Routes(app *fiber.App, params types.Params) {
-	service := newService(params.Store, params.Github)
+	service := newGitHubService(params.Store, params.GitHubApp, params.SessionManager)
 
-	routes := app.Group("/github")
+	app.Post("/login", service.Login(params.UserCfg, params.SessionManager))
+	app.Post("/logout", service.Logout(params.SessionManager))
 
-	//Endpoints
-	routes.Post("/webhook", middleware.ProtectedWebhook(&params.GithubAuthHandler), service.WebhookHandler)
-	routes.Get("/hello", service.HelloWorld)
+	protected := app.Group("/github")
+	protected.Use(middleware.Protected(params.UserCfg.JWTSecret))
+	protected.Use(middleware.GetClientMiddleware(&params.UserCfg, params.SessionManager))
+	protected.Get("/user", service.GetCurrentUser)
+
+	app.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
 }

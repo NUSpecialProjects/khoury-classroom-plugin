@@ -11,6 +11,8 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    environment:
+      - APP_ENVIRONMENT=production
   db:
     container_name: db
     image: postgres:14.1-alpine

@@ -1,57 +1,94 @@
 package middleware
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"strings"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/golang-jwt/jwt"
+	"golang.org/x/oauth2"
 )
 
-type Claims struct {
-	Email string `json:"email"`
-	jwt.RegisteredClaims
-}
-
-func parseJWTToken(token string, hmacSecret []byte) (email string, err error) {
-	// Parse the token and validate the signatur
-	t, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-
-		return hmacSecret, nil
-	})
-
-	// Check if the token is valid
+func GenerateJWT(userID string, expirationTime time.Time, secret string) (string, error) {
+	claims := &jwt.StandardClaims{
+		Subject:   userID,
+		ExpiresAt: expirationTime.Unix(),
+		IssuedAt:  time.Now().Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	jwtToken, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return "", fmt.Errorf("error validating token: %v", err)
-	} else if claims, ok := t.Claims.(*Claims); ok {
-		return claims.Email, nil
+		return "", err
 	}
-
-	return "", fmt.Errorf("error parsing token: %v", err)
+	return jwtToken, nil
 }
 
+func ParseJWT(tokenString string, secret string) (*jwt.StandardClaims, error) {
+	claims := &jwt.StandardClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+	return claims, nil
+}
 
-// Middleware to protect routes
-func Protected(cfg *config.AuthHandler) fiber.Handler {
-
-	return func(ctx *fiber.Ctx) error {
-
-		token := ctx.Get("Authorization", "")
-		token = strings.TrimPrefix(token, "Bearer ")
-
+func Protected(secret string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Extract and validate JWT token
+		token := c.Cookies("jwt_cookie", "")
+		fmt.Println("Protected middleware got JWT!!", token)
 		if token == "" {
-			return ctx.Status(400).JSON(fiber.Map{"code": "unauthorized, token not found"})
+			return c.Status(401).JSON(fiber.Map{"error": "missing or invalid JWT token"})
 		}
-		_, err := parseJWTToken(token, []byte(cfg.JWTSecret))
 
+		claims, err := ParseJWT(token, secret)
 		if err != nil {
-			return ctx.Status(400).JSON(fiber.Map{"code": "unauthorized, error parsing token"})
+			return c.Status(401).JSON(fiber.Map{"error": "invalid JWT token"})
 		}
-		return ctx.Next()
+
+		// Set userID in context
+		userID := claims.Subject
+		c.Locals("userID", userID)
+
+		fmt.Println("Protected middleware got USERID!!", userID)
+
+		return c.Next()
 	}
 }
 
+func GetClientMiddleware(cfg *config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userID := c.Locals("userID").(string)
+		accessTokenData, err := sessionManager.Storage.Get(userID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve access token from session"})
+		}
+
+		var accessToken oauth2.Token
+		if err := json.Unmarshal(accessTokenData, &accessToken); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize access token"})
+		}
+
+		client, err := userclient.NewFromToken(*cfg.OAuthConfig(), accessToken)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create GitHub client"})
+		}
+
+		// Store the client in the context
+		c.Locals("client", &client)
+		return c.Next()
+	}
+}
