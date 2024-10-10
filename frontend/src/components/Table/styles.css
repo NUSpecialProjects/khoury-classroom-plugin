@@ -10,13 +10,8 @@
   color: #8f8f8f;
   background: #eee;
 
-  &__group {
-    display: table-row-group;
-  }
-
   &:not(.TableRow--labelRow) {
     .TableCell--primary {
-      width: 99%;
       font-weight: bold;
       color: #636363;
     }
@@ -49,4 +44,9 @@
   white-space: nowrap;
   padding: 15px 20px;
   border-color: white;
+  vertical-align: baseline;
+
+  &--primary {
+    width: 99%;
+  }
 }

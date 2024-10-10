@@ -1,56 +1,36 @@
 .Grading {
-  &__assignments {
-    display: table;
+  .Table {
     width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0 10px;
-  }
-}
-
-.GradingAssignmentRow {
-  display: table-row-group;
-  padding: 10px;
-
-  &__inner {
-    display: table-row;
-  }
-  &:not(:first-child) {
-    border-top: 2px solid #eee;
   }
 
-  &__cell {
-    display: table-cell;
-    white-space: nowrap;
-    padding: 15px 20px;
-  }
-  &__cell:nth-child(2) {
-    width: 99%;
-    font-weight: bold;
-    color: #636363;
-    text-decoration: underline;
-  }
+  .AssignmentsTable {
+    > .TableRow__group > .TableRow:not(.TableRow--labelRow) {
+      cursor: pointer;
+      transition: background 0.2s ease;
 
-  &__cell:not(:nth-child(2)) {
-    color: #8f8f8f;
+      &:hover {
+        background: #e0e0e0;
+      }
+    }
   }
 
-  /** Submissions table within assignment table-row**/
-  &__submissions {
-    display: table-row;
-  }
+  .SubmissionTable {
+    border-spacing: 0 2px;
 
-  &__submissionsList {
-    display: table-cell;
-  }
+    .TableRow {
+      background: white;
 
-  &__submission {
-    display: table-row;
-    padding: 10px;
+      &__group:first-child {
+        border: none;
+      }
+      &__group {
+        border-top: 2px solid #eee;
+        padding: 5px 30px;
+      }
+    }
 
-    > div {
-      display: table-cell;
-      white-space: nowrap;
-      padding: 15px 20px;
+    .TableCell {
+      padding: 0;
     }
   }
 }

@@ -4,46 +4,45 @@ import { ITable, ITableRow, ITableCell } from "./types";
 
 import "./styles.css";
 
-const Table: React.FC<ITable> = ({ children, primaryCol = null }) => {
+const Table: React.FC<ITable> = (props) => {
   return (
-    <div className="Table">
-      {React.Children.map(children, (child) => {
-        if (!React.isValidElement(child) || child.type !== TableRow) {
-          return child;
-        }
-        return React.cloneElement(child as React.ReactElement<ITableRow>, {
-          primaryCol,
-        });
-      })}
+    <div
+      {...props}
+      className={"Table" + (props.className ? " " + props.className : "")}
+    >
+      {props.children}
     </div>
   );
 };
 
-const TableRow: React.FC<ITableRow> = ({
-  children,
-  primaryCol = null,
-  labelRow = false,
-}) => {
+const TableRow: React.FC<ITableRow> = (props) => {
   return (
     <div className="TableRow__group">
-      <div className={"TableRow" + (labelRow ? " TableRow--labelRow" : "")}>
-        {React.Children.map(children, (child, index) => {
-          if (!React.isValidElement(child) || child.type !== TableCell) {
-            return child;
-          }
-          return React.cloneElement(child as React.ReactElement<ITableCell>, {
-            primary: index === primaryCol,
-          });
-        })}
+      <div
+        {...props}
+        className={
+          "TableRow" +
+          (props.labelRow ? " TableRow--labelRow" : "") +
+          (props.className ? " " + props.className : "")
+        }
+      >
+        {props.children}
       </div>
     </div>
   );
 };
 
-const TableCell: React.FC<ITableCell> = ({ children, primary = false }) => {
+const TableCell: React.FC<ITableCell> = (props) => {
   return (
-    <div className={"TableCell" + (primary ? " TableCell--primary" : "")}>
-      {children}
+    <div
+      {...props}
+      className={
+        "TableCell" +
+        (props.primary ? " TableCell--primary" : "") +
+        (props.className ? " " + props.className : "")
+      }
+    >
+      {props.children}
     </div>
   );
 };
