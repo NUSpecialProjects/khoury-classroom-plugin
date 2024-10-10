@@ -10,14 +10,20 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({ label, number }) => {
     let userIcons = [];
 
     if (number > 3) {
-        // Cap placeholders at 3
+        // Cap placeholders at 3, add overlap starting from the second icon
         userIcons = [1, 2, 3].map((_, index) => (
-            <div className="UserGroupCard__icon" key={index} />
+          <div
+            className={`UserGroupCard__icon ${index > 0 ? "UserGroupCard__icon-overlap" : ""}`}
+            key={index}
+          />
         ));
-    } else {
-        // Render placeholders equal to the number
+      } else {
+        // Render placeholders equal to the number, add overlap starting from the second icon
         userIcons = Array.from({ length: number }).map((_, index) => (
-            <div className="UserGroupCard__icon" key={index} />
+          <div
+            className={`UserGroupCard__icon ${index > 0 ? "UserGroupCard__icon-overlap" : ""}`}
+            key={index}
+          />
         ));
     }
 

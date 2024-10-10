@@ -3,4 +3,13 @@
         display: flex;
         gap: 15px;
     }
+
+    &__assignmentsWrapper {
+        padding: 30px;
+    }
+
+    &__assignmentsHeader {
+        font-size: 16pt;
+        font-weight: 500;
+    }
 }

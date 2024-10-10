@@ -9,6 +9,16 @@ const Dashboard: React.FC = () => {
                 <UserGroupCard label="TAs" number={12} />
                 <UserGroupCard label="Students" number={38} />
             </div>
+            <div className="Dashboard__assignmentsWrapper">
+                <div className="Dashboard__assignmentsHeader">
+                    Active Assignments (1)
+                    <div className="Dashboard__assignmentsTable"></div>
+                </div>
+                <div className="Dashboard__assignmentsHeader">
+                    Inactive Assignments (3)
+                    <div className="Dashboard__assignmentsTable"></div>
+                </div>
+            </div>
         </div>
     )
 } 
