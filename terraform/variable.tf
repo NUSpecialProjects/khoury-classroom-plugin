@@ -15,6 +15,11 @@ variable "aws_profile" {
     default = "default"
 }
 
+variable "app_port" {
+    description = "Application port"
+    default = 8080
+}
+
 variable "db_port" {
     description = "Database port"
     default = 5432

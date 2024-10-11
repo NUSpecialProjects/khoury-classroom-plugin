@@ -12,7 +12,13 @@
         "awslogs-region": "${aws_region}",
         "awslogs-stream-prefix": "ecs"
       }
-  },
+    },
+    "portMappings": [
+      {
+        "containerPort": ${app_port},
+        "hostPort": ${app_port} 
+      }
+    ],
     "environment": [
       {
         "name": "DB_HOST",
