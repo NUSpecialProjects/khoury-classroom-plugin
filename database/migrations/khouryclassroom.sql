@@ -56,4 +56,12 @@ CREATE TABLE IF NOT EXISTS regrades (
   FOREIGN KEY (due_date_id) REFERENCES due_dates(id)
 );
 
+CREATE TABLE IF NOT EXISTS sessions (
+  github_user_id INTEGER PRIMARY KEY,
+  access_token VARCHAR(255) NOT NULL,
+  token_type VARCHAR(255),
+  refresh_token VARCHAR(255),
+  expires_in INTEGER
+);
+
 
