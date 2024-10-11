@@ -28,14 +28,14 @@ const UserProfilePic: React.FC = () => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
-                const data: GitHubUser = await response.json();
+                const data: GitHubUser = await response.json() as GitHubUser;
                 setUser(data);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
         };
 
-        fetchUser();
+        void fetchUser();
     }, []);
 
     if (!user) {
