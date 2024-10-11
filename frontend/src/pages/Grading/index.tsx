@@ -13,7 +13,7 @@ import "./styles.css";
 
 const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   children,
-  submissions,
+  //submissions,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
 
@@ -21,7 +21,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
     <>
       <TableRow
         className={!collapsed ? "TableRow--expanded" : undefined}
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => {
+          setCollapsed(!collapsed);
+        }}
       >
         <TableCell>
           {collapsed ? <FaChevronRight /> : <FaChevronDown />}

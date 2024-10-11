@@ -1,6 +1,10 @@
 import "./styles.css"; // Assuming you will style this with CSS
 import React from "react";
-import { ITable, ITableRow, ITableCell } from "./types";
+
+interface ITable extends React.HTMLProps<HTMLDivElement> {
+  primaryCol?: number;
+  cols: number;
+}
 
 const Table: React.FC<ITable> = ({
   primaryCol = 0,
@@ -24,7 +28,11 @@ const Table: React.FC<ITable> = ({
   );
 };
 
-const TableRow: React.FC<ITableRow> = ({ className, children, ...props }) => {
+const TableRow: React.FC<React.HTMLProps<HTMLDivElement>> = ({
+  className,
+  children,
+  ...props
+}) => {
   return (
     <div className={"TableRow" + (className ? " " + className : "")}>
       {React.Children.map(children, (child) =>
@@ -35,7 +43,10 @@ const TableRow: React.FC<ITableRow> = ({ className, children, ...props }) => {
     </div>
   );
 };
-const TableCell: React.FC<ITableCell> = ({ className, ...props }) => {
+const TableCell: React.FC<React.HTMLProps<HTMLDivElement>> = ({
+  className,
+  ...props
+}) => {
   return (
     <div
       className={"TableCell" + (className ? " " + className : "")}
