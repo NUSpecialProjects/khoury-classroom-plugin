@@ -1,17 +1,13 @@
 package middleware
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
-	"github.com/CamPlume1/khoury-classroom/internal/config"
-	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/golang-jwt/jwt"
-	"golang.org/x/oauth2"
 )
 
 func GenerateJWT(userID string, expirationTime time.Time, secret string) (string, error) {
@@ -49,7 +45,7 @@ func Protected(secret string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract and validate JWT token
 		token := c.Cookies("jwt_cookie", "")
-		fmt.Println("Protected middleware got JWT!!", token)
+		// fmt.Println("Protected middleware got JWT!!", token)
 		if token == "" {
 			return c.Status(401).JSON(fiber.Map{"error": "missing or invalid JWT token"})
 		}
@@ -60,7 +56,10 @@ func Protected(secret string) fiber.Handler {
 		}
 
 		// Set userID in context
-		userID := claims.Subject
+		userID, err := strconv.ParseInt(claims.Subject, 10, 64)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to parse userID from token"})
+		}
 		c.Locals("userID", userID)
 
 		fmt.Println("Protected middleware got USERID!!", userID)
@@ -69,26 +68,46 @@ func Protected(secret string) fiber.Handler {
 	}
 }
 
-func GetClientMiddleware(cfg *config.GitHubUserClient, sessionManager *session.Store) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		userID := c.Locals("userID").(string)
-		accessTokenData, err := sessionManager.Storage.Get(userID)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve access token from session"})
-		}
+// func GetClientMiddleware(cfg *config.GitHubUserClient, store storage.Storage) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		userID := c.Locals("userID").(string)
+// 		accessTokenData, err := sessionManager.Storage.Get(userID)
+// 		if err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve access token from session"})
+// 		}
 
-		var accessToken oauth2.Token
-		if err := json.Unmarshal(accessTokenData, &accessToken); err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize access token"})
-		}
+// 		var accessToken oauth2.Token
+// 		if err := json.Unmarshal(accessTokenData, &accessToken); err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "failed to unserialize access token"})
+// 		}
 
-		client, err := userclient.NewFromToken(*cfg.OAuthConfig(), accessToken)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create GitHub client"})
-		}
+// 		client, err := userclient.NewFromToken(*cfg.OAuthConfig(), accessToken)
+// 		if err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "failed to create GitHub client"})
+// 		}
 
-		// Store the client in the context
-		c.Locals("client", &client)
-		return c.Next()
-	}
-}
+// 		// Store the client in the context
+// 		c.Locals("client", &client)
+// 		return c.Next()
+// 	}
+// }
+
+// // Middleware to protect routes
+// func Protected(cfg *config.GitHubUserClient) fiber.Handler {
+
+// 	return func(ctx *fiber.Ctx) error {
+
+// 		token := ctx.Cookies("Authorization", "")
+// 		token = strings.TrimPrefix(token, "Bearer ")
+
+// 		if token == "" {
+// 			return ctx.Status(400).JSON(fiber.Map{"code": "unauthorized, token not found"})
+// 		}
+// 		_, err := parseJWTToken(token, []byte(cfg.JWTSecret))
+
+// 		if err != nil {
+// 			return ctx.Status(400).JSON(fiber.Map{"code": "unauthorized, error parsing token"})
+// 		}
+// 		return ctx.Next()
+// 	}
+// }

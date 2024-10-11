@@ -9,6 +9,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/jferrl/go-githubauth v1.1.1
+	github.com/joho/godotenv v1.5.1
 	golang.org/x/oauth2 v0.23.0
 )
 
@@ -27,10 +28,9 @@ require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/caarlos0/env/v11 v11.2.2
 	github.com/goccy/go-json v0.10.3
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/jackc/pgx/v5 v5.7.1
-	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
