@@ -36,9 +36,11 @@ frontend to backend code. Make an account for a stable link!
 Create an .env file in the root directory:
 
 ```
+APP_ENVIRONMENT=<LOCAL | PRODUCTION> (use LOCAL if loading env variables through .env file)
 GITHUB_APP_PRIVATE_KEY=<Your GitHub app private key>
 GITHUB_APP_ID=<Your GitHub app ID>
 GITHUB_APP_INSTALLATION_ID=<Your GitHub app installation ID>
+GITHUB_APP_WEBHOOK_SECRET=<Your GitHub app's webhook secret>
 GITHUB_CLIENT_REDIRECT_URL=<The URL that GitHub should redirect back to>
 GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
 GITHUB_CLIENT_SECRET=<The client Secret of your GitHub OAuth app>
