@@ -37,7 +37,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: arn:aws:iam::058264409130:role/github_actions_s3_full_access
-        aws-region: us-east-1
+        aws-region: us-east-2
 
     - name: Sync to S3
       run: |
