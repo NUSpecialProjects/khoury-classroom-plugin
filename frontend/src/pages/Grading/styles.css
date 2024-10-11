@@ -1,0 +1,33 @@
+.Grading {
+  .Table {
+    width: 100%;
+  }
+
+  .AssignmentsTable {
+    > .TableRow:not(:first-child) {
+      transition: background 0.1s ease;
+      cursor: pointer;
+
+      .TableCell:nth-child(2) {
+        font-weight: 600;
+      }
+
+      &:hover {
+        background: #f1f1f1;
+      }
+    }
+    & .TableRow--expanded {
+      background: #f3f3f3;
+    }
+  }
+
+  .SubmissionTable {
+    padding: 0 40px;
+
+    .TableRow:not(:first-child) {
+      .TableCell:first-child {
+        font-weight: 500;
+      }
+    }
+  }
+}
