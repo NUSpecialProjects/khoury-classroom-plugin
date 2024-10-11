@@ -63,5 +63,3 @@ CREATE TABLE IF NOT EXISTS sessions (
   refresh_token VARCHAR(255),
   expires_in INTEGER
 );
-
-
