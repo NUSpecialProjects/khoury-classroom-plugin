@@ -2,8 +2,9 @@ package server
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/assignments"
 	github "github.com/CamPlume1/khoury-classroom/internal/handlers/github"
-	khouryclassroomdb "github.com/CamPlume1/khoury-classroom/internal/handlers/khouryclassroomdb"
+	users "github.com/CamPlume1/khoury-classroom/internal/handlers/users"
 	hello "github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
@@ -25,7 +26,8 @@ func New(params types.Params) *fiber.App {
 	hello.Routes(app, params)
 	github.Routes(app, params)
 	test.Routes(app, params)
-	khouryclassroomdb.Routes(app, params)
+  assignments.Routes(app, params)
+  users.Routes(app, params)
 
 	return app
 }
