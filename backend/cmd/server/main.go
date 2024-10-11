@@ -69,5 +69,5 @@ func main() {
 }
 
 func isLocal() bool {
-	return os.Getenv("APP_ENVIRONMENT") != "production"
+	return os.Getenv("APP_ENVIRONMENT") == "LOCAL"
 }
