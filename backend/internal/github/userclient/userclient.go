@@ -139,3 +139,52 @@ func (api *UserAPI) GetAcceptedAssignments(ctx context.Context, assignmentID int
 
 	return acceptedAssignments, nil
 }
+
+func (api *UserAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
+	team := &github.NewTeam{
+		Name: teamName,
+	}
+
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
+	if err != nil {
+		return nil, fmt.Errorf("error creating team: %v", err)
+	}
+
+	return createdTeam, nil
+}
+
+func (api *UserAPI) AddTeamMember(ctx context.Context, team int64, user string, opt *github.TeamAddTeamMembershipOptions) error {
+	_, _, err := api.Client.Teams.AddTeamMembership(ctx, team, user, opt)
+	if err != nil {
+		return fmt.Errorf("error adding member to team: %v", err)
+	}
+
+	return nil
+}
+
+func (api *UserAPI) AssignPermissionToTeam(ctx context.Context, team int64, owner string, repo string, permission string) error {
+	opt := &github.TeamAddTeamRepoOptions{
+		Permission: permission,
+	}
+
+	_, err := api.Client.Teams.AddTeamRepo(ctx, team, owner, repo, opt)
+	if err != nil {
+		return fmt.Errorf("error assigning permission to team: %v", err)
+	}
+
+	return nil
+}
+
+/*
+TA/Student permissions flow
+1. Prof creates an org for the course (i.e. cs-3500)
+2. Prof installs both apps to the org and logs in to the app
+3. App promotes prof to "professor" role in app, as they are the first admin of the org to login
+4. Prof creates a github classroom for the semester (i.e. cs-3500-fall-2021)
+5. Prof creates a github role with necessary permissions to be a TA (i.e. cs-3500-ta)
+6. Prof creates a github role with necessary permissions to be a student (i.e. cs-3500-student)
+7. Prof provides the app with a list of TAs and Students for the current semester
+8. App creates a team for the TAs and assigns the TA role to the team
+9. Any future logins will be checked against the list of TAs and Students, adding TAs to the TA team, and giving students the student role
+10. Once the semester is over, the app will remove all permissions from the TA group and Students
+*/

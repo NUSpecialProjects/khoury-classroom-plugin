@@ -19,14 +19,19 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	ListAssignmentsForClassroom(ctx context.Context, classroomID int64) ([]models.ClassroomAssignment, error)
 	GetAcceptedAssignments(ctx context.Context, assignmentID int64) ([]models.ClassroomAcceptedAssignment, error)
 	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
+	CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error)
+	AddTeamMember(ctx context.Context, team int64, user string, opt *github.TeamAddTeamMembershipOptions) error
+	AssignPermissionToTeam(ctx context.Context, team int64, owner string, repo string, permission string) error
 }
 
 type GitHubBaseClient interface { //All methods in the shared client
 	Ping(ctx context.Context) (string, error)
-	ListRepositories(ctx context.Context) ([]*github.Repository, error)
+	ListRepositoriesByOrg(ctx context.Context, orgName string) ([]*github.Repository, error)
 	ListCommits(ctx context.Context, owner string, repo string, opts *github.CommitsListOptions) ([]*github.RepositoryCommit, error)
 	GetBranch(ctx context.Context, owner_name string, repo_name string, branch_name string) (*github.Branch, error)
 	CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error
+	GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error)
+	GetPullRequestDiff(ctx context.Context, owner string, repo string, pullNumber int) (string, error)
 	CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error)
 	//TODO: these two methods need to be fixed with API change
 	// CreateInlinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, line int, side string, commentBody string) (*github.PullRequestComment, error)
