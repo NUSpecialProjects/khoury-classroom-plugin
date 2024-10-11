@@ -1,0 +1,24 @@
+.Table {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  width: 100%;
+}
+
+.TableRow {
+  display: contents;
+  width: 100%;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 2px solid #f3f3f3;
+  color: #6e6e6e;
+}
+
+.TableCell {
+  all: inherit;
+  display: flex;
+  text-align: left;
+}
+
+.TableDiv {
+  grid-column: 1 / -1;
+}

@@ -33,45 +33,14 @@
     gap: 10px;
   }
 
-  &__submissions {
-    display: table;
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px;
-  }
+  .Table {
+    .TableRow:not(:first-child) {
+      cursor: pointer;
 
-  &__submission {
-    display: table-row;
-    padding: 10px;
-
-    > div {
-      display: table-cell;
-      white-space: nowrap;
-      padding: 15px 20px;
-      border-color: white;
-    }
-  }
-
-  &__submission:not(:first-child) {
-    background: #eee;
-
-    > div:first-child {
-      border-left-style: solid;
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
-      width: 99%;
-      font-weight: bold;
-      color: #636363;
-    }
-
-    > div:last-child {
-      border-right-style: solid;
-      border-bottom-right-radius: 6px;
-      border-top-right-radius: 6px;
-    }
-
-    > div:not(:first-child) {
-      color: #8f8f8f;
+      .TableCell:first-child {
+        font-weight: 600;
+        text-decoration: underline;
+      }
     }
   }
 }
