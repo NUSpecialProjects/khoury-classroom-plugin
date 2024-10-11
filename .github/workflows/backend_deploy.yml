@@ -1,9 +1,10 @@
 name: Deploy Backend to ECS
 
+
 on:
   push:
     branches:
-      - terraform
+      - main
     paths:
       - 'backend/**'
       - 'terraform/**'
