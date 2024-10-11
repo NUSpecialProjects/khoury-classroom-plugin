@@ -1,50 +1,59 @@
+import "./styles.css"; // Assuming you will style this with CSS
 import React from "react";
-
 import { ITable, ITableRow, ITableCell } from "./types";
 
-import "./styles.css";
+const Table: React.FC<ITable> = ({
+  primaryCol = 0,
+  cols,
+  className,
+  style,
+  ...props
+}) => {
+  const columns = Array(cols).fill("auto");
+  columns[primaryCol] = "1fr"; // Make the specified column stretch
 
-const Table: React.FC<ITable> = (props) => {
+  const gridTemplateColumns = columns.join(" ");
   return (
     <div
+      className={"Table" + (className ? " " + className : "")}
+      style={{ gridTemplateColumns, ...style }}
       {...props}
-      className={"Table" + (props.className ? " " + props.className : "")}
     >
       {props.children}
     </div>
   );
 };
 
-const TableRow: React.FC<ITableRow> = (props) => {
+const TableRow: React.FC<ITableRow> = ({ className, children, ...props }) => {
   return (
-    <div className="TableRow__group">
-      <div
-        {...props}
-        className={
-          "TableRow" +
-          (props.labelRow ? " TableRow--labelRow" : "") +
-          (props.className ? " " + props.className : "")
-        }
-      >
-        {props.children}
-      </div>
+    <div className={"TableRow" + (className ? " " + className : "")}>
+      {React.Children.map(children, (child) =>
+        React.isValidElement(child)
+          ? React.cloneElement(child, { ...props })
+          : child
+      )}
     </div>
   );
 };
-
-const TableCell: React.FC<ITableCell> = (props) => {
+const TableCell: React.FC<ITableCell> = ({ className, ...props }) => {
   return (
     <div
+      className={"TableCell" + (className ? " " + className : "")}
       {...props}
-      className={
-        "TableCell" +
-        (props.primary ? " TableCell--primary" : "") +
-        (props.className ? " " + props.className : "")
-      }
     >
       {props.children}
     </div>
   );
 };
+const TableDiv: React.FC<React.HTMLProps<HTMLDivElement>> = ({
+  className,
+  ...props
+}) => {
+  return (
+    <div className={"TableDiv" + (className ? " " + className : "")} {...props}>
+      {props.children}
+    </div>
+  );
+};
 
-export { Table, TableRow, TableCell };
+export { Table, TableRow, TableCell, TableDiv };

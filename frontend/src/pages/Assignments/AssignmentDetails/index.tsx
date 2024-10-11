@@ -1,5 +1,10 @@
 import { FaChevronLeft } from "react-icons/fa";
-import { Table, TableRow, TableCell } from "@/components/Table";
+import {
+  Table,
+  TableRow,
+  TableCell,
+  TableDiv,
+} from "@/components/Table/index.tsx";
 import Button from "@/components/Button";
 
 import "./styles.css";
@@ -28,13 +33,13 @@ const AssignmentDetails: React.FC = () => {
       <div>Metrics go here</div>
 
       <h2 style={{ marginBottom: 0 }}>Submissions</h2>
-      <Table primaryCol={0}>
-        <TableRow labelRow>
+      <Table cols={3}>
+        <TableRow style={{ borderTop: "none" }}>
           <TableCell>Student Name</TableCell>
           <TableCell>Status</TableCell>
           <TableCell>Last Commit</TableCell>
         </TableRow>
-        {Array.from({ length: 20 }).map((_, i: number) => (
+        {Array.from({ length: 10 }).map((_, i: number) => (
           <TableRow key={i} className="AssignmentDetails__submission">
             <TableCell>Jane Doe</TableCell>
             <TableCell>Passing</TableCell>

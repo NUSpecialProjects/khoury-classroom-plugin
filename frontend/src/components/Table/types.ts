@@ -1,11 +1,8 @@
 export interface ITable extends React.HTMLProps<HTMLDivElement> {
-  primaryCol?: number | null;
+  primaryCol?: number;
+  cols: number;
 }
 
-export interface ITableRow extends ITable {
-  labelRow?: boolean;
-}
+export interface ITableRow extends React.HTMLProps<HTMLDivElement> {}
 
-export interface ITableCell extends React.HTMLProps<HTMLDivElement> {
-  primary?: boolean;
-}
+export interface ITableCell extends React.HTMLProps<HTMLDivElement> {}

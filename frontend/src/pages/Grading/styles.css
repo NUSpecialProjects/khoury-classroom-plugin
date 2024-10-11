@@ -4,33 +4,30 @@
   }
 
   .AssignmentsTable {
-    > .TableRow__group > .TableRow:not(.TableRow--labelRow) {
+    > .TableRow:not(:first-child) {
+      transition: background 0.1s ease;
       cursor: pointer;
-      transition: background 0.2s ease;
+
+      .TableCell:nth-child(2) {
+        font-weight: 600;
+      }
 
       &:hover {
-        background: #e0e0e0;
+        background: #f1f1f1;
       }
+    }
+    & .TableRow--expanded {
+      background: #f3f3f3;
     }
   }
 
   .SubmissionTable {
-    border-spacing: 0 2px;
+    padding: 0 40px;
 
-    .TableRow {
-      background: white;
-
-      &__group:first-child {
-        border: none;
+    .TableRow:not(:first-child) {
+      .TableCell:first-child {
+        font-weight: 500;
       }
-      &__group {
-        border-top: 2px solid #eee;
-        padding: 5px 30px;
-      }
-    }
-
-    .TableCell {
-      padding: 0;
     }
   }
 }
