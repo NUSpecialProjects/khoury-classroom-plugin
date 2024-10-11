@@ -1,4 +1,5 @@
 import { FaChevronLeft } from "react-icons/fa";
+
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import Button from "@/components/Button";
 

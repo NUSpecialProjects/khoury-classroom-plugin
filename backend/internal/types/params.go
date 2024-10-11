@@ -7,8 +7,7 @@ import (
 )
 
 type Params struct {
-	AuthHandler       config.AuthHandler
-	GithubAuthHandler config.GithubAuthHandler
-	Store             storage.Storage
-	Github            github.Github
+	UserCfg   config.GitHubUserClient
+	Store     storage.Storage
+	GitHubApp github.GitHubAppClient
 }
