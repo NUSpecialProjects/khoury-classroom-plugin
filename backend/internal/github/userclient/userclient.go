@@ -31,15 +31,15 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	fmt.Println("Successfully exchanged code for token: ", token)
 
-	return NewFromToken(oAuthCfg, token)
+	return newFromToken(oAuthCfg, token)
 }
 
 func NewFromSession(oAuthCfg *oauth2.Config, session *models.Session) (*UserAPI, error) {
 	token := session.CreateToken()
-	return NewFromToken(oAuthCfg, &token)
+	return newFromToken(oAuthCfg, &token)
 }
 
-func NewFromToken(oAuthCfg *oauth2.Config, token *oauth2.Token) (*UserAPI, error) {
+func newFromToken(oAuthCfg *oauth2.Config, token *oauth2.Token) (*UserAPI, error) {
 	httpClient := oAuthCfg.Client(context.Background(), token)
 
 	// Create the GitHub client
