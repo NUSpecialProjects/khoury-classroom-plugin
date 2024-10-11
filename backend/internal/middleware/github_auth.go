@@ -5,12 +5,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
-	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Middleware to protect routes
-func ProtectedWebhook(cfg *config.GitHubAppClient) fiber.Handler {
+func ProtectedWebhook(webhookSecret string) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 
@@ -21,7 +20,7 @@ func ProtectedWebhook(cfg *config.GitHubAppClient) fiber.Handler {
 		payload := ctx.Body()
 
 		// compute hmac using stored webhook secret
-		hash := hmac.New(sha256.New, []byte(cfg.WebhookSecret))
+		hash := hmac.New(sha256.New, []byte(webhookSecret))
 		_, err := hash.Write(payload)
 
 		if err != nil {

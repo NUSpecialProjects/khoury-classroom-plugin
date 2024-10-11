@@ -1,13 +1,15 @@
 package github
 
 import (
+	models "github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (s *GitHubService) WebhookHandler(c *fiber.Ctx) error {
 	var dispatch = map[string]func(c *fiber.Ctx) error{
-		"push":   s.Push,
-		"create": s.Create,
+		"pull_request":                s.PR,
+		"pull_request_review_comment": s.PRComment,
+		"pull_request_review_thread":  s.PRThread,
 	}
 	event := c.Get("X-GitHub-Event", "")
 
@@ -19,12 +21,23 @@ func (s *GitHubService) WebhookHandler(c *fiber.Ctx) error {
 	return handler(c)
 }
 
-func (s *GitHubService) Push(c *fiber.Ctx) error {
-	println("push webhook event")
+func (s *GitHubService) PR(c *fiber.Ctx) error {
+	println("PR webhook event")
 	return c.SendStatus(200)
 }
 
-func (s *GitHubService) Create(c *fiber.Ctx) error {
-	println("create webhook event")
+func (s *GitHubService) PRComment(c *fiber.Ctx) error {
+	payload := models.PRComment{}
+	if err := c.BodyParser(&payload); err != nil {
+		return err
+	}
+	if payload.Comment.AuthorAssociation == "COLLABORATOR" {
+		println("regrade request")
+	}
+	return c.SendStatus(200)
+}
+
+func (s *GitHubService) PRThread(c *fiber.Ctx) error {
+	println("PR thread webhook event")
 	return c.SendStatus(200)
 }
