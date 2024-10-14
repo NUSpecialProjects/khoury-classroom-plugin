@@ -13,7 +13,7 @@ interface AuthContextProps {
 
 // Handle Auth State- Vulnerable to XSS?
 export const AuthContext: React.Context<AuthContextProps> = createContext<AuthContextProps>({
-  isLoggedIn: false,
+  isLoggedIn: true,
   login: () => {},
 });
  
@@ -28,7 +28,7 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 
 export function App(): React.JSX.Element {
   //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   
   const login = () => {
     setIsLoggedIn(true);
