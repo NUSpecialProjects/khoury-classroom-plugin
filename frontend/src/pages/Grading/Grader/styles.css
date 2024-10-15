@@ -1,0 +1,32 @@
+.Grader {
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-direction: row;
+    gap: 10px;
+    border-bottom: 2px solid #eeeeee;
+    padding-bottom: 10px;
+  }
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+
+    h2 {
+      margin-bottom: 0;
+    }
+  }
+  &__dates {
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    color: #474747;
+
+    li {
+      list-style: none;
+    }
+  }
+}
