@@ -10,7 +10,6 @@ type Storage interface {
 	Close(context.Context)
 	Test
 	Assignments
-	Users
 }
 
 type Test interface {
@@ -18,17 +17,13 @@ type Test interface {
 }
 
 type Assignments interface {
-	GetAllAssignmentTemplates(ctx context.Context) ([]models.AssignmentTemplate, error)
+	GetAllAssignments(ctx context.Context) ([]models.Assignment, error)
 	CreateRubric(ctx context.Context, rubricData models.Rubric) error
-	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) error
-	CreateAssignment(ctx context.Context, assignmentData models.Assignment) error
+	CreateAssignment(x context.Context, assignmentData models.Assignment) error
+	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignment) error
 	CreateDueDate(ctx context.Context, dueDateData models.DueDate) error
 	CreateRegrade(ctx context.Context, regradeData models.Regrade) error
 	CreateSession(ctx context.Context, sessionData models.Session) error
 	GetSession(ctx context.Context, gitHubUserID int64) (models.Session, error)
 	DeleteSession(ctx context.Context, gitHubUserID int64) error
-}
-
-type Users interface {
-	CreateTA(ctx context.Context, taData models.User) error
 }

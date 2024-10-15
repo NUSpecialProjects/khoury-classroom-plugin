@@ -11,10 +11,11 @@ import (
 
 
 
-func (s *AssignmentsService) GetAllAssignmentTemplates(c *fiber.Ctx) error {
-	assignments, err := s.store.GetAllAssignmentTemplates(c.Context())
+func (s *AssignmentsService) GetAllAssignments(c *fiber.Ctx) error {
+	assignments, err := s.store.GetAllAssignments(c.Context())
 	if err != nil {
-		return err
+		fmt.Println("error in service func")
+    return err
 	}
 
 	return c.Status(http.StatusOK).JSON(assignments)
@@ -39,25 +40,6 @@ func (s *AssignmentsService) CreateRubric(c *fiber.Ctx) error {
   })
 }
 
-func (s *AssignmentsService) CreateAssignmentTemplate(c *fiber.Ctx) error {
-  var assignmentTemplateData models.AssignmentTemplate
-  err := c.BodyParser(&assignmentTemplateData)
-  if err != nil {
-    return errs.InvalidJSON()
-  }
-
-  error := s.store.CreateAssignmentTemplate(c.Context(), assignmentTemplateData)
-  if error != nil {
-    return error
-  }
-
-  return c.Status(http.StatusOK).JSON(fiber.Map{
-    "message": "Received assignment template data",
-    "assignment_template":  assignmentTemplateData,
-  })
-}
-
-
 func (s *AssignmentsService) CreateAssignment(c *fiber.Ctx) error {
   var assignmentData models.Assignment
   err := c.BodyParser(&assignmentData)
@@ -67,13 +49,32 @@ func (s *AssignmentsService) CreateAssignment(c *fiber.Ctx) error {
 
   error := s.store.CreateAssignment(c.Context(), assignmentData)
   if error != nil {
+    return error
+  }
+
+  return c.Status(http.StatusOK).JSON(fiber.Map{
+    "message": "Received assignment data",
+    "assignment_template":  assignmentData,
+  })
+}
+
+
+func (s *AssignmentsService) CreateStudentAssignment(c *fiber.Ctx) error {
+  var studentAssignmentData models.StudentAssignment
+  err := c.BodyParser(&studentAssignmentData)
+  if err != nil {
+    return errs.InvalidJSON()
+  }
+
+  error := s.store.CreateStudentAssignment(c.Context(), studentAssignmentData)
+  if error != nil {
     fmt.Println(error.Error())
     return error
   }
 
   return c.Status(http.StatusOK).JSON(fiber.Map{
-      "message": "Received assignment data",
-      "assignment":  assignmentData,
+      "message": "Received student assignment data",
+      "assignment":  studentAssignmentData,
   })
 }
 
