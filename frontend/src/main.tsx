@@ -39,6 +39,7 @@ export default function App(): React.JSX.Element {
             <Route path="assignments" element={<Pages.Assignments />} />
             <Route path="assignments/:id" element={<Pages.Assignment />} />
             <Route path="grading" element={<Pages.Grading />} />
+            <Route path="grading/:id" element={<Pages.Grader />} />
             <Route path="settings" element={<Pages.Settings />} />
             <Route path="dashboard" element={<Pages.Dashboard />} />
           </Route>

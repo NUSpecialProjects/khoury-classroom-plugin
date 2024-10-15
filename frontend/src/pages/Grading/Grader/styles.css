@@ -1,0 +1,62 @@
+.Grader {
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    border-bottom: 2px solid #eeeeee;
+    padding-bottom: 10px;
+  }
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+
+    h2 {
+      margin-bottom: 6px;
+    }
+
+    span {
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+  }
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .Button {
+      padding: 10px 38px;
+      gap: 10px;
+
+      &:first-child {
+        padding-left: 28px;
+      }
+      &:last-child {
+        padding-right: 28px;
+      }
+    }
+
+    > div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: row;
+  }
+  &__files {
+    padding: 20px;
+  }
+  &__code {
+    flex: 1;
+  }
+}
