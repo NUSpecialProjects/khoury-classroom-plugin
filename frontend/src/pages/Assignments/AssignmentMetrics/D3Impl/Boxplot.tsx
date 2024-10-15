@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import * as d3 from 'd3';
 import { getSummaryStats } from './summary-stats';
-//import { AxisLeft } from './AxisLeftCategoric';
 
 import { HorizontalBox } from './HorizontalBox';
 import { AxisBottom } from './AxisBottom';
@@ -29,16 +28,17 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
     return { chartMin, chartMax, groups };
   }, [data]);
 
+
   // Compute scales
   const xScale = d3
     .scaleLinear()
-    .domain([chartMin, chartMax])
+    .domain([0, 100])
     .range([0, boundsWidth]);
 
   const yScale = d3
     .scaleBand()
     .range([0, boundsHeight])
-    .domain(groups)
+    //.domain(groups)
     .padding(0.25);
 
   // Build the box shapes
@@ -50,11 +50,11 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
       return null;
     }
 
-    const { min, q1, median, q3, max } = sumStats;
+    const { min, q1, median, q3, max, outliers } = sumStats;
+    console.log(min)
 
     return (
-        <div>
-        <g key={i} transform={`translate(0,${yScale(group)})`}>
+        <g className="BoxPlotGraphic" key={i} transform={`translate(0,${yScale(group)})`}>
         <HorizontalBox
           height={yScale.bandwidth()}
           q1={xScale(q1)}
@@ -62,11 +62,10 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
           q3={xScale(q3)}
           min={xScale(min)}
           max={xScale(max)}
+          outliers ={outliers.map(outlier => xScale(outlier))} //Apply xScale to every point in this outliers array
           stroke="black"
           fill={'orange'}/>
       </g>
-      Something
-      </div>
     );
   });
 
@@ -78,18 +77,18 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
           height={boundsHeight}
           transform={`translate(${[MARGIN.left, MARGIN.top].join(',')})`}
         >
-        {allShapes}
 
           {/*<AxisLeft yScale={yScale} />*/}
 
           {/* X axis uses an additional translation to appear at the bottom */}
-          <g transform={`translate(0, ${boundsHeight})`}>
+          <g className="BoxPlotAxes" transform={`translate(0, ${boundsHeight})`}>
             <AxisBottom
               xScale={xScale}
               height={boundsHeight}
               pixelsPerTick={80}
             />
           </g>
+          {allShapes}
         </g>
       </svg>
     </div>

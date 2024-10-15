@@ -14,8 +14,10 @@ export const getSummaryStats = (data: number[]) => {
     }
 
     const interQuantileRange = q3 - q1
-    const min = q1 - 1.5 * interQuantileRange
+    const min = Math.max(q1 - 1.5 * interQuantileRange, 0)
     const max = q3 + 1.5 * interQuantileRange
+    const outliers = sortedData.filter(d => d < min || d > max);
+    console.log("Outliers" + outliers)
 
-    return {min, q1, median, q3, max}
+    return {min, q1, median, q3, max, outliers}
 }

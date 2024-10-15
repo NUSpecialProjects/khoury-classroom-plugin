@@ -20,6 +20,7 @@ export const AxisBottom = ({
   const ticks = useMemo(() => {
     const width = range[1] - range[0];
     const numberOfTicksTarget = Math.floor(width / pixelsPerTick);
+    console.log(range)
 
     return xScale.ticks(numberOfTicksTarget).map((value) => ({
       value,
@@ -31,7 +32,7 @@ export const AxisBottom = ({
     <>
       {/* Ticks and labels */}
       {ticks.map(({ value, xOffset }) => (
-        <g
+        <g className='BoxPlotAxes'
           key={value}
           transform={`translate(${xOffset}, 0)`}
           shapeRendering={'crispEdges'}

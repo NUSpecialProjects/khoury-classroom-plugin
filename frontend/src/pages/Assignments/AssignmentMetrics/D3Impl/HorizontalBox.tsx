@@ -10,6 +10,7 @@ type HorizontalBoxProps = {
   q3: number;
   max: number;
   height: number;
+  outliers: number[]
   stroke: string;
   fill: string;
 };
@@ -21,9 +22,10 @@ export const HorizontalBox = ({
   q3,
   max,
   height,
+  outliers,
   stroke,
   fill,
-}: HorizontalBoxProps) => { //TODO- add whisker lines
+}: HorizontalBoxProps) => {
   return (
     <>
       <line
@@ -50,6 +52,15 @@ export const HorizontalBox = ({
         stroke={stroke}
         width={STROKE_WIDTH}
       />
+      {outliers.map((outlier, index) => (
+        <circle
+          key={index}
+          cx={outlier}
+          cy={height / 2}
+          r={STROKE_WIDTH / 12} 
+          fill={stroke} 
+        />
+      ))}
     </>
   );
 };
