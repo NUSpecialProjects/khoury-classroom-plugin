@@ -21,7 +21,6 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 
 export default function App(): React.JSX.Element {
   //Handle loggedin state
-  console.log(import.meta.env.MODE);
   const [isLoggedIn, setIsLoggedIn] = useState(
     import.meta.env.MODE == "development"
   );
