@@ -1,10 +1,10 @@
-import { AutoTestingViz } from "./AssignmentMetrics"
+import { GradeDistBoxPlot } from "@/components/Viz/BoxPlot/GradeDistBoxPlot";
+
 
 const Assignments: React.FC = () => {
     return(
         <>
-        <div>Real Programmers Don't Eat Quiche</div>
-        <AutoTestingViz />
+        <GradeDistBoxPlot />
         </>
     )
 } 

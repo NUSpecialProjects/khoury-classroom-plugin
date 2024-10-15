@@ -26,11 +26,14 @@ export const HorizontalBox = ({
   stroke,
   fill,
 }: HorizontalBoxProps) => {
+  const adjustedHeight = height / 2; 
+  const verticalShift = height / 4;
+
   return (
     <>
       <line
-        y1={height / 2}
-        y2={height / 2}
+        y1={adjustedHeight / 2  + verticalShift}
+        y2={adjustedHeight / 2  + verticalShift}
         x1={min}
         x2={max}
         stroke={stroke}
@@ -38,15 +41,15 @@ export const HorizontalBox = ({
       />
       <rect
         x={q1}
-        y={0}
+        y={verticalShift}
         width={q3 - q1}
-        height={height}
+        height={adjustedHeight}
         stroke={stroke}
         fill={fill}
       />
       <line
-        y1={0}
-        y2={height}
+        y1={verticalShift}
+        y2={adjustedHeight + verticalShift}
         x1={median}
         x2={median}
         stroke={stroke}
@@ -61,6 +64,22 @@ export const HorizontalBox = ({
           fill={stroke} 
         />
       ))}
+     <line
+        y1={verticalShift + (verticalShift * 2 / 3)}
+        y2={adjustedHeight + (verticalShift/3)}
+        x1={max}
+        x2={max}
+        stroke={stroke}
+        width={STROKE_WIDTH}
+      />
+      <line
+        y1={verticalShift + (verticalShift * 2 / 3)}
+        y2={adjustedHeight + (verticalShift/3)}
+        x1={min}
+        x2={min}
+        stroke={stroke}
+        width={STROKE_WIDTH}
+      />
     </>
   );
 };

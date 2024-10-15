@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import * as d3 from 'd3';
 import { getSummaryStats } from './summary-stats';
 
@@ -16,17 +15,8 @@ type BoxplotProps = {
 export const Boxplot = ({ width, height, data }: BoxplotProps) => {
   // The bounds (= area inside the axis) is calculated by substracting the margins from total width / height
   const boundsWidth = width - MARGIN.right - MARGIN.left;
-  const boundsHeight = height - MARGIN.top - MARGIN.bottom;
+  const boundsHeight = (height - MARGIN.top - MARGIN.bottom);
 
-  // Compute everything derived from the dataset:
-  const { chartMin, chartMax, groups } = useMemo(() => {
-    const [chartMin, chartMax] = d3.extent(data.map((d) => d.value)) as [
-      number,
-      number,
-    ];
-    const groups = [...new Set(data.map((d) => d.name))];
-    return { chartMin, chartMax, groups };
-  }, [data]);
 
 
   // Compute scales
@@ -38,12 +28,10 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
   const yScale = d3
     .scaleBand()
     .range([0, boundsHeight])
-    //.domain(groups)
-    .padding(0.25);
+    //.padding(0.5);
 
   // Build the box shapes
-  const allShapes = groups.map((group, i) => {
-    const groupData = data.filter((d) => d.name === group).map((d) => d.value);
+    const groupData = data.map((d) => d.value);
     const sumStats = getSummaryStats(groupData);
 
     if (!sumStats) {
@@ -52,22 +40,6 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
 
     const { min, q1, median, q3, max, outliers } = sumStats;
     console.log(min)
-
-    return (
-        <g className="BoxPlotGraphic" key={i} transform={`translate(0,${yScale(group)})`}>
-        <HorizontalBox
-          height={yScale.bandwidth()}
-          q1={xScale(q1)}
-          median={xScale(median)}
-          q3={xScale(q3)}
-          min={xScale(min)}
-          max={xScale(max)}
-          outliers ={outliers.map(outlier => xScale(outlier))} //Apply xScale to every point in this outliers array
-          stroke="black"
-          fill={'orange'}/>
-      </g>
-    );
-  });
 
   return (
     <div>
@@ -88,7 +60,18 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
               pixelsPerTick={80}
             />
           </g>
-          {allShapes}
+          <g>
+        <HorizontalBox
+          height={yScale.bandwidth()}
+          q1={xScale(q1)}
+          median={xScale(median)}
+          q3={xScale(q3)}
+          min={xScale(min)}
+          max={xScale(max)}
+          outliers ={outliers.map(outlier => xScale(outlier))} //Apply xScale to every point in this outliers array
+          stroke="black"
+          fill={'orange'}/>
+        </g>
         </g>
       </svg>
     </div>
