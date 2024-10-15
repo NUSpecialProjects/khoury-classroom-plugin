@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import * as Pages from "./pages";
 import Layout from "./components/Layout";
-import { AuthContext } from "./contexts/auth.ts";
+import { AuthContext } from "./contexts/auth";
 
 import "./global.css";
 
@@ -21,7 +21,9 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 
 export default function App(): React.JSX.Element {
   //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    import.meta.env.MODE == "development"
+  );
 
   const login = () => {
     setIsLoggedIn(true);
@@ -35,11 +37,9 @@ export default function App(): React.JSX.Element {
           <Route path="oauth/callback" element={<Pages.Callback />} />
           <Route path="/app/" element={<PrivateRoute element={<Layout />} />}>
             <Route path="assignments" element={<Pages.Assignments />} />
-            <Route
-              path="assignments/:id"
-              element={<Pages.AssignmentDetails />}
-            />
+            <Route path="assignments/:id" element={<Pages.Assignment />} />
             <Route path="grading" element={<Pages.Grading />} />
+            <Route path="grading/:id" element={<Pages.Grader />} />
             <Route path="settings" element={<Pages.Settings />} />
             <Route path="dashboard" element={<Pages.Dashboard />} />
           </Route>
