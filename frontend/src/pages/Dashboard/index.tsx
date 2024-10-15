@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
                     </TableRow>
                     {Array.from({ length: 2 }).map((_, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
-                            <TableCell>Assignment 1</TableCell>
+                            <TableCell className="Dashboard__assignmentLink">Assignment 1</TableCell>
                             <TableCell>5 Sep, 9:00 AM</TableCell>
                             <TableCell>15 Sep, 11:59 PM</TableCell>
                         </TableRow>
