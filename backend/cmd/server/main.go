@@ -13,7 +13,6 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/server"
 	"github.com/CamPlume1/khoury-classroom/internal/storage/postgres"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
-	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/joho/godotenv"
 )
 
@@ -28,8 +27,10 @@ func main() {
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Unable to load environment variables necessary for application")
+		log.Println(err.Error())
+		log.Fatalf("Unable to load environment variables necessary for application???????????" + err.Error())
 	}
+	log.Println(cfg)
 
 	db, err := postgres.New(ctx, cfg.Database)
 	if err != nil {
@@ -43,10 +44,9 @@ func main() {
 	}
 
 	app := server.New(types.Params{
-		Store:          db,
-		GitHubApp:      GitHubApp,
-		UserCfg:        cfg.GitHubUserClient,
-		SessionManager: session.New(),
+		Store:     db,
+		GitHubApp: GitHubApp,
+		UserCfg:   cfg.GitHubUserClient,
 	})
 
 	go func() {
@@ -69,5 +69,5 @@ func main() {
 }
 
 func isLocal() bool {
-	return os.Getenv("APP_ENVIRONMENT") != "production"
+	return os.Getenv("APP_ENVIRONMENT") == "LOCAL"
 }

@@ -1,0 +1,52 @@
+.Table {
+  display: table;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.TableRow {
+  display: table-row;
+  padding: 10px;
+  color: #8f8f8f;
+  background: #eee;
+
+  &:not(.TableRow--labelRow) {
+    .TableCell--primary {
+      font-weight: bold;
+      color: #636363;
+    }
+
+    .TableCell:first-child {
+      border-left-style: solid;
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
+
+    .TableCell:last-child {
+      border-right-style: solid;
+      border-bottom-right-radius: 6px;
+      border-top-right-radius: 6px;
+    }
+  }
+
+  &--labelRow {
+    background: none;
+
+    .TableCell {
+      color: #636363;
+      font-weight: normal;
+    }
+  }
+}
+
+.TableCell {
+  display: table-cell;
+  white-space: nowrap;
+  padding: 15px 20px;
+  border-color: white;
+  vertical-align: baseline;
+
+  &--primary {
+    width: 99%;
+  }
+}
