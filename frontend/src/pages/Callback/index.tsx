@@ -12,6 +12,7 @@ const Callback: React.FC = () => {
   useEffect(() => {
     //if code, good, else, route to home
     if (code) {
+      console.log("Code: ", code);
       const sendCode = () => {
         const base_url: string = import.meta.env
           .VITE_PUBLIC_API_DOMAIN as string;
