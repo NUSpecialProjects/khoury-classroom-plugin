@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
                     </TableRow>
                     {Array.from({ length: 1 }).map((_, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
-                            <TableCell className="Dashboard__assignmentLink">Assignment 1</TableCell>
+                            <TableCell> <a href="#" className="Dashboard__assignmentLink">Assignment 1</a></TableCell>
                             <TableCell>5 Sep, 9:00 AM</TableCell>
                             <TableCell>15 Sep, 11:59 PM</TableCell>
                         </TableRow>
@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
                     </TableRow>
                     {Array.from({ length: 2 }).map((_, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
-                            <TableCell className="Dashboard__assignmentLink">Assignment 1</TableCell>
+                            <TableCell> <a href="#" className="Dashboard__assignmentLink">Assignment 1</a></TableCell>
                             <TableCell>5 Sep, 9:00 AM</TableCell>
                             <TableCell>15 Sep, 11:59 PM</TableCell>
                         </TableRow>
