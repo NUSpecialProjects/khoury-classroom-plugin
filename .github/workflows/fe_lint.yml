@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - bugfix/build_script
 
 jobs:
   frontend-lint:
