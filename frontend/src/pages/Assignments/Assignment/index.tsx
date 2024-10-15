@@ -28,7 +28,7 @@ const Assignment: React.FC = () => {
       <h2>Metrics</h2>
       <div>Metrics go here</div>
 
-      <h2 style={{ marginBottom: 0 }}>Submissions</h2>
+      <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
       <Table cols={3}>
         <TableRow style={{ borderTop: "none" }}>
           <TableCell>Student Name</TableCell>
