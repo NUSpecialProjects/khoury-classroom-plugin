@@ -18,7 +18,6 @@ func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error
   }
 
   defer rows.Close()
-  fmt.Println("Quereid pool", rows.RawValues())
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment])
 }
 
