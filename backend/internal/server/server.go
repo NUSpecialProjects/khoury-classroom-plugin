@@ -7,7 +7,8 @@ import (
 	hello "github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
 	users "github.com/CamPlume1/khoury-classroom/internal/handlers/users"
-	"github.com/CamPlume1/khoury-classroom/internal/middleware"
+
+	// "github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	go_json "github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -36,7 +37,7 @@ func setupApp() *fiber.App {
 		JSONDecoder:  go_json.Unmarshal,
 		ErrorHandler: errs.ErrorHandler,
 	})
-	app.Use(middleware.Cors())
+	// app.Use(middleware.Cors())
 	app.Use(recover.New())
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
