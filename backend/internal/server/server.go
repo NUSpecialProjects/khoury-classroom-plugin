@@ -4,9 +4,9 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/assignments"
 	github "github.com/CamPlume1/khoury-classroom/internal/handlers/github"
-	users "github.com/CamPlume1/khoury-classroom/internal/handlers/users"
 	hello "github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
+	users "github.com/CamPlume1/khoury-classroom/internal/handlers/users"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	go_json "github.com/goccy/go-json"
@@ -20,20 +20,14 @@ import (
 func New(params types.Params) *fiber.App {
 	app := setupApp()
 
-	useMiddlewares(app)
-
 	//Add Route Groupings here: @TODO
 	hello.Routes(app, params)
 	github.Routes(app, params)
 	test.Routes(app, params)
-  assignments.Routes(app, params)
-  users.Routes(app, params)
+	assignments.Routes(app, params)
+	users.Routes(app, params)
 
 	return app
-}
-
-func useMiddlewares(app *fiber.App) {
-	app.Use(middleware.Cors())
 }
 
 func setupApp() *fiber.App {
@@ -42,6 +36,7 @@ func setupApp() *fiber.App {
 		JSONDecoder:  go_json.Unmarshal,
 		ErrorHandler: errs.ErrorHandler,
 	})
+	app.Use(middleware.Cors())
 	app.Use(recover.New())
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
