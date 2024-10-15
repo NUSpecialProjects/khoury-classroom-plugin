@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import * as Pages from "./pages";
 import Layout from "./components/Layout";
-import { AuthContext } from "./contexts/auth.ts";
+import { AuthContext } from "./contexts/auth";
 
 import "./global.css";
 
@@ -21,7 +21,10 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 
 export default function App(): React.JSX.Element {
   //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  console.log(import.meta.env.MODE);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    import.meta.env.MODE == "development"
+  );
 
   const login = () => {
     setIsLoggedIn(true);
