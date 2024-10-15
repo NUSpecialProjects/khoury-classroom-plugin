@@ -21,7 +21,7 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 
 export default function App(): React.JSX.Element {
   //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const login = () => {
     setIsLoggedIn(true);
