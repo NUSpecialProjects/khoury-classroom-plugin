@@ -12,8 +12,11 @@ const LeftNav: React.FC = () => {
     { name: "Kenny", dest: "/app/assignments/1", Icon: FaCog },
   ];
 
+  const className = "CS 3200 Database Design"
+
   return (
     <div className="LeftNav">
+      <div className="LeftNav__classNameHeader">{className}</div>
       {navItems.map((item, index) => (
         <Link key={index} to={item.dest} className="LeftNav__link">
           <item.Icon /> {item.name}
