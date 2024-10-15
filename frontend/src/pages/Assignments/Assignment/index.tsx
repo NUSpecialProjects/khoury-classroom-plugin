@@ -5,21 +5,21 @@ import Button from "@/components/Button";
 
 import "./styles.css";
 
-const AssignmentDetails: React.FC = () => {
+const Assignment: React.FC = () => {
   return (
-    <div className="AssignmentDetails">
-      <div className="AssignmentDetails__head">
-        <div className="AssignmentDetails__title">
+    <div className="Assignment">
+      <div className="Assignment__head">
+        <div className="Assignment__title">
           <FaChevronLeft />
           <h2>Assignment 3</h2>
         </div>
-        <div className="AssignmentDetails__dates">
+        <div className="Assignment__dates">
           <span>Released: 5 Sep, 10:00am</span>
           <span>Due: 15 Sep, 11:59pm</span>
         </div>
       </div>
 
-      <div className="AssignmentDetails__externalButtons">
+      <div className="Assignment__externalButtons">
         <Button href="">View in Github Classroom</Button>
         <Button href="">View Starter Code</Button>
         <Button href="">View Rubric</Button>
@@ -36,7 +36,7 @@ const AssignmentDetails: React.FC = () => {
           <TableCell>Last Commit</TableCell>
         </TableRow>
         {Array.from({ length: 10 }).map((_, i: number) => (
-          <TableRow key={i} className="AssignmentDetails__submission">
+          <TableRow key={i} className="Assignment__submission">
             <TableCell>Jane Doe</TableCell>
             <TableCell>Passing</TableCell>
             <TableCell>12 Sep, 11:34pm</TableCell>
@@ -47,4 +47,4 @@ const AssignmentDetails: React.FC = () => {
   );
 };
 
-export default AssignmentDetails;
+export default Assignment;
