@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
 
 type AxisBottomProps = {
@@ -17,16 +16,14 @@ export const AxisBottom = ({
 }: AxisBottomProps) => {
   const range = xScale.range();
 
-  const ticks = useMemo(() => {
-    const width = range[1] - range[0];
-    const numberOfTicksTarget = Math.floor(width / pixelsPerTick);
-    console.log(range)
+  const width = range[1] - range[0];
+  const numberOfTicksTarget = Math.floor(width / pixelsPerTick);
 
-    return xScale.ticks(numberOfTicksTarget).map((value) => ({
+  const ticks = xScale.ticks(numberOfTicksTarget).map((value) => ({
       value,
       xOffset: xScale(value),
     }));
-  }, [xScale]);
+
 
   return (
     <>
@@ -34,7 +31,7 @@ export const AxisBottom = ({
       {ticks.map(({ value, xOffset }) => (
         <g className='BoxPlotAxes'
           key={value}
-          transform={`translate(${xOffset}, 0)`}
+          transform={`translate(${xOffset.toString()}, 0)`}
           shapeRendering={'crispEdges'}
         >
           <line
@@ -52,7 +49,7 @@ export const AxisBottom = ({
               fill: 'black',
             }}
           >
-            {value + "%"}
+            {value.toString() + "%"}
           </text>
         </g>
       ))}

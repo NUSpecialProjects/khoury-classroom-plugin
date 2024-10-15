@@ -53,7 +53,7 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
           {/*<AxisLeft yScale={yScale} />*/}
 
           {/* X axis uses an additional translation to appear at the bottom */}
-          <g className="BoxPlotAxes" transform={`translate(0, ${boundsHeight})`}>
+          <g className="BoxPlotAxes" transform={`translate(0, ${boundsHeight.toString()})`}>
             <AxisBottom
               xScale={xScale}
               height={boundsHeight}
