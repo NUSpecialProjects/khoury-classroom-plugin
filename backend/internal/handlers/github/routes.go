@@ -7,7 +7,7 @@ import (
 )
 
 func Routes(app *fiber.App, params types.Params) {
-	service := newGitHubService(params.Store, &params.GitHubApp, &params.UserCfg)
+	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
 
 	app.Post("/login", service.Login())
 	app.Post("/logout", service.Logout())
@@ -15,6 +15,8 @@ func Routes(app *fiber.App, params types.Params) {
 	protected := app.Group("/github")
 	protected.Use(middleware.Protected(params.UserCfg.JWTSecret))
 	protected.Get("/user", service.GetCurrentUser())
-
+	protected.Get("/classrooms", service.ListClassrooms())
+	protected.Post("/startup", service.AppInitialization())
+	protected.Get("/available-orgs", service.GetInstalledOrgs())
 	app.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
 }
