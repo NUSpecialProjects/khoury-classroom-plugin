@@ -6,6 +6,7 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 	"github.com/jferrl/go-githubauth"
 	"golang.org/x/oauth2"
@@ -48,4 +49,24 @@ func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
 // Any APP specific implementations can go here
 func (api *AppAPI) GetWebhookSecret() string {
 	return api.webhooksecret
+}
+
+func (api *AppAPI) GetStudentAssignmentFiles(owner string, repo string, path string) ([]models.StudentAssignmentFiles, error) {
+	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", owner, repo, path)
+
+	var files []models.StudentAssignmentFiles
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return files, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Make the API call
+	_, err = api.Client.Do(context.Background(), req, &files)
+	if err != nil {
+		return files, fmt.Errorf("error fetching assignment files: %v", err)
+	}
+
+	return files, nil
 }

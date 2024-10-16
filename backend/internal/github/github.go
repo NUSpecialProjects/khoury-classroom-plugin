@@ -11,6 +11,7 @@ import (
 type GitHubAppClient interface { // All methods in the app client
 	GitHubBaseClient
 	GetWebhookSecret() string
+	GetStudentAssignmentFiles(owner string, repo string, path string) ([]models.StudentAssignmentFiles, error)
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
