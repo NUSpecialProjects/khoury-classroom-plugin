@@ -3,9 +3,8 @@ services:
     container_name: backend
     build:
       context: ./backend
-      target: final
     ports:
-      - '8080:8080'
+      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -13,21 +12,14 @@ services:
       - .env
     environment:
       - APP_ENVIRONMENT=production
+    volumes:
+      - ./backend:/app
   db:
     container_name: db
     image: postgres:14.1-alpine
     restart: always
     healthcheck:
-      test:
-        [
-          "CMD",
-          "pg_isready",
-          "-q",
-          "-d",
-          "postgres",
-          "-U",
-          "user"
-        ]
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "user"]
       timeout: 45s
       interval: 10s
       retries: 10
@@ -36,7 +28,7 @@ services:
       - POSTGRES_DB=khouryclassroomdb
       - POSTGRES_PASSWORD=pwd
     ports:
-      - '5434:5432'
+      - "5434:5432"
     volumes:
       - ./database/migrations:/docker-entrypoint-initdb.d/
 volumes:
