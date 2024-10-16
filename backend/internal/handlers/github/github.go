@@ -133,3 +133,27 @@ func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, erro
 	fmt.Println("Client: ", client)
 	return client, nil
 }
+
+func (service *GitHubService) ListClassrooms() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := service.getClient(c)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
+		classrooms, err := client.GetUserClassrooms(c.Context())
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch classrooms"})
+		}
+
+		var assignments []models.ClassroomAssignment
+		for _, classroom := range classrooms {
+			assignments, err = client.ListAssignmentsForClassroom(c.Context(), classroom.ID)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "failed to fetch assignments"})
+			}
+		}
+
+		return c.Status(200).JSON(assignments)
+	}
+}
