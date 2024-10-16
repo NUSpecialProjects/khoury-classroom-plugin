@@ -45,6 +45,14 @@ func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
 	}, nil
 }
 
+func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
+	installations, _, err := api.Client.Apps.ListInstallations(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error listing installations: %v", err)
+	}
+	return installations, nil
+}
+
 // Any APP specific implementations can go here
 func (api *AppAPI) GetWebhookSecret() string {
 	return api.webhooksecret
