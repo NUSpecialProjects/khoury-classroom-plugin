@@ -18,5 +18,6 @@ func Routes(app *fiber.App, params types.Params) {
 	protected.Get("/classrooms", service.ListClassrooms())
 	protected.Post("/startup", service.AppInitialization())
 	protected.Get("/available-orgs", service.GetInstalledOrgs())
+	protected.Get("/org-classrooms", service.ListOrgClassrooms())
 	app.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
 }
