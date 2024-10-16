@@ -10,12 +10,12 @@ func Routes(app *fiber.App, params types.Params) {
  
 
   protected := app.Group("/assignments")
-  protected.Get("", service.GetAllAssignmentTemplates)
-  protected.Post("", service.CreateAssignmentTemplate)
+  protected.Get("", service.GetAllAssignments)
+  protected.Post("", service.CreateAssignment)
   
   protected.Post("/rubrics", service.CreateRubric)
 
-  protected.Post("/assignment", service.CreateAssignment)
+  protected.Post("/assignment", service.CreateStudentAssignment)
 
   protected.Post("/due_dates", service.CreateDueDate)
 
