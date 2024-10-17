@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 30vh;
   background: #ededed;
   gap: 20px;
   padding: 20px;
@@ -12,5 +13,12 @@
     flex-direction: row;
     width: 100%;
     gap: 10px;
+  }
+
+  &__classNameHeader {
+    font-size: 16pt;
+    text-wrap: wrap;
+    font-weight: 600;
+    padding-bottom: 20px;
   }
 }
