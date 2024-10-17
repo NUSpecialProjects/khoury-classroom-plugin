@@ -13,7 +13,8 @@ import (
 
 type AppAPI struct { //app API
 	sharedclient.CommonAPI
-	webhooksecret string
+	webhooksecret  string
+	appTokenSource oauth2.TokenSource
 }
 
 func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
@@ -41,17 +42,51 @@ func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
 		CommonAPI: sharedclient.CommonAPI{
 			Client: githubClient,
 		},
-		webhooksecret: cfg.WebhookSecret,
+		webhooksecret:  cfg.WebhookSecret,
+		appTokenSource: appTokenSource,
 	}, nil
 }
 
+// GetJWT generates a JWT from the appTokenSource
+func (api *AppAPI) GetJWT(ctx context.Context) (string, error) {
+	token, err := api.appTokenSource.Token()
+	if err != nil {
+		return "", fmt.Errorf("error getting token: %v", err)
+	}
+	return token.AccessToken, nil
+}
+
 func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
-	installations, _, err := api.Client.Apps.ListInstallations(ctx, nil)
+	// Create a new OAuth2 client with the JWT
+	token, err := api.GetJWT(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting app JWT: %v", err)
+	}
+
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: token},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	// Create a new GitHub client with the authenticated HTTP client
+	client := github.NewClient(tc)
+
+	// List installations
+	installations, _, err := client.Apps.ListInstallations(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error listing installations: %v", err)
 	}
+
 	return installations, nil
 }
+
+// func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
+// 	installations, _, err := api.Client.Apps.ListInstallations(ctx, nil)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error listing installations: %v", err)
+// 	}
+// 	return installations, nil
+// }
 
 // Any APP specific implementations can go here
 func (api *AppAPI) GetWebhookSecret() string {
