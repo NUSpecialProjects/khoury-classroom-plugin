@@ -51,10 +51,12 @@ func (api *AppAPI) GetWebhookSecret() string {
 	return api.webhooksecret
 }
 
-func (api *AppAPI) GetStudentAssignmentFiles(owner string, repo string, path string) ([]models.StudentAssignmentFiles, error) {
+func (api *AppAPI) GetStudentAssignmentFiles(assignmentID int32, studentAssignmentID int32, path string) ([]models.StudentAssignmentFiles, error) {
 	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", owner, repo, path)
 
 	var files []models.StudentAssignmentFiles
+
+	api.Client.Repositories.GetContents()
 
 	// Create a new GET request
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
