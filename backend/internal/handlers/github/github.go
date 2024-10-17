@@ -70,6 +70,8 @@ func (service *GitHubService) Login() fiber.Handler {
 			Path:     "",
 		})
 
+		//TODO: check the database if the user is a TA, if so, set their role accordingly
+
 		return c.Status(200).JSON("Successfully logged in")
 	}
 }
@@ -88,6 +90,8 @@ func (service *GitHubService) GetCurrentUser() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
 		}
 		fmt.Println("User: ", user)
+
+		//TODO: include the user's role (i.e. professor, TA, student) in the response
 		return c.Status(200).JSON(user)
 	}
 }
@@ -155,5 +159,91 @@ func (service *GitHubService) ListClassrooms() fiber.Handler {
 		}
 
 		return c.Status(200).JSON(assignments)
+	}
+}
+
+func (service *GitHubService) GetUserOrgs() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := service.getClient(c)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
+		orgs, err := client.GetUserOrgs(c.Context())
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+		}
+
+		return c.Status(200).JSON(orgs)
+	}
+}
+
+func (service *GitHubService) GetUserRoles() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := service.getClient(c)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
+		var requestBody struct {
+			OrgID int64 `json:"org_id"`
+		}
+		if err := c.BodyParser(&requestBody); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		}
+		org_id := requestBody.OrgID
+
+		roles, err := client.GetUserRoles(c.Context(), org_id)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+		}
+
+		return c.Status(200).JSON(roles)
+	}
+}
+
+// func (service *GitHubService) GetSemesters() fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		var requestBody struct {
+// 			OrgID int64 `json:"org_id"`
+// 		}
+// 		if err := c.BodyParser(&requestBody); err != nil {
+// 			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+// 		}
+// 		org_id := requestBody.OrgID
+
+// 		semesters, err := service.store.ListSemesters(c.Context(), org_id)
+// 		if err != nil {
+// 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch semesters"})
+// 		}
+
+// 		return c.Status(200).JSON(semesters)
+// 	}
+// }
+
+func (service *GitHubService) CreateSemester() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var requestBody struct {
+			ClassroomID   int64  `json:"classroom_id"`
+			ClassroomName string `json:"name"`
+			OrgID         int64  `json:"org_id"`
+		}
+		if err := c.BodyParser(&requestBody); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		}
+
+		semester := models.Semester{
+			ClassroomID: requestBody.ClassroomID,
+			Name:        requestBody.ClassroomName,
+			OrgID:       requestBody.OrgID,
+			Active:      false,
+		}
+
+		err := service.store.CreateSemester(c.Context(), semester)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create semester"})
+		}
+
+		return c.Status(200).JSON("Successfully created semester")
 	}
 }
