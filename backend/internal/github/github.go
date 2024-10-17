@@ -32,6 +32,7 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	RemoveOrgRoleFromUser(ctx context.Context, org_id int64, user_name string, role_id int64) error
 	GetOrgRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error)
 	GetUsersAssignedToRole(ctx context.Context, org_id int64, role_id int64) ([]models.GitHubUser, error)
+	GetUserRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error)
 }
 
 type GitHubBaseClient interface { //All methods in the shared client

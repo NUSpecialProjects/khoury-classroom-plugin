@@ -125,6 +125,7 @@ func (api *UserAPI) GetUserClassroomsInOrg(ctx context.Context, org_id int64) ([
 		return nil, fmt.Errorf("error fetching classrooms: %v", err)
 	}
 
+	res := []models.Classroom{}
 	for _, classroom := range all_classrooms {
 		full_classroom, err := api.GetClassroom(ctx, classroom.ID)
 		if err != nil {
@@ -132,11 +133,11 @@ func (api *UserAPI) GetUserClassroomsInOrg(ctx context.Context, org_id int64) ([
 		}
 		// should put a wait here
 		if full_classroom.Organization.ID == org_id {
-			all_classrooms = append(all_classrooms, full_classroom)
+			res = append(res, full_classroom)
 		}
 	}
 
-	return all_classrooms, nil
+	return res, nil
 }
 
 func (api *UserAPI) ListAssignmentsForClassroom(ctx context.Context, classroom_id int64) ([]models.ClassroomAssignment, error) {
@@ -306,6 +307,47 @@ func (api *UserAPI) RemoveOrgRoleFromUser(ctx context.Context, org_id int64, use
 	}
 
 	return nil
+}
+
+func (api *UserAPI) GetUserRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error) {
+	current_user, err := api.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching user: %v", err)
+	}
+
+	// get all the org's roles
+	org_roles, err := api.GetOrgRoles(ctx, org_id)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching roles: %v", err)
+	}
+
+	// get the ids of all the org's roles (sorted in permission order) (this is necessary bc we don't know the id of the roles, just their names)
+	var sorted_org_roles = []models.OrganizationRole{}
+	for _, role := range models.AllRoles {
+		for _, org_role := range org_roles {
+			if role.Name == org_role.Name {
+				sorted_org_roles = append(sorted_org_roles, org_role)
+			}
+		}
+	}
+	if len(sorted_org_roles) < len(models.AllRoles) {
+		return nil, fmt.Errorf("error fetching roles: not all roles are present in the organization")
+	}
+
+	var res []models.OrganizationRole
+
+	// for each id in the sorted list, check if the user has that role, if so, add to the result list
+	for _, role := range sorted_org_roles {
+		role_users, err := api.GetUsersAssignedToRole(ctx, org_id, role.ID)
+		if err == nil {
+			for _, user := range role_users {
+				if user.Login == current_user.Login {
+					res = append(res, role)
+				}
+			}
+		}
+	}
+	return res, nil
 }
 
 func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, org_id int64, role_id int64) ([]models.GitHubUser, error) {
