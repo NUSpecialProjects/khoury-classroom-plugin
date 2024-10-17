@@ -1,6 +1,8 @@
 package models
 
 type Assignment struct {
-	Rubric_ID    int32 `json:"rubric_id" db:"rubric_id"`
-	Classroom_ID int32 `json:"classroom_id" db:"classroom_id"`
+	LocalID    int32  `json:"local_id"`
+	RubricID   int32  `json:"rubric_id"`
+	SemesterID int32  `json:"semester_id"`
+	Name       string `json:"name"`
 }

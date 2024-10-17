@@ -7,23 +7,26 @@ CREATE TABLE IF NOT EXISTS semesters (
 
 CREATE TABLE IF NOT EXISTS rubrics (
   id SERIAL PRIMARY KEY,
-  content VARCHAR(255) NOT NULL 
+  content VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY,
+  local_id INTEGER NOT NULL,
   rubric_id INTEGER,
-  classroom_id INTEGER NOT NULL,
-  FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
+  semester_id INTEGER NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
+  FOREIGN KEY (semester_id) REFERENCES semesters(id)
 );
 
 CREATE TABLE IF NOT EXISTS student_assignments (
-  id SERIAL PRIMARY KEY, 
-  name VARCHAR(255) NOT NULL,
-  description VARCHAR(255),
-  student_gh_username VARCHAR(255) NOT NULL,
-  ta_gh_username VARCHAR(255) NOT NULL,
+  id SERIAL PRIMARY KEY,
+  local_id INTEGER NOT NULL,
   assignment_id INTEGER NOT NULL,
+  repo_name VARCHAR(255) NOT NULL,
+  student_gh_username VARCHAR(255) NOT NULL,
+  ta_gh_username VARCHAR(255),
   completed BOOLEAN NOT NULL,
   started BOOLEAN NOT NULL,
   FOREIGN KEY (assignment_id) REFERENCES assignments(id)
