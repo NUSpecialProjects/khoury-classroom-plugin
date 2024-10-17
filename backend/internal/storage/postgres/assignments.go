@@ -51,14 +51,17 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	return nil
 }
 
-/* func (db *DB) GetStudentAssignment(ctx context.Context) (models.StudentAssignment, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT (rubric_id, classroom_id) FROM assignments")
+func (db *DB) GetStudentAssignment(ctx context.Context, assignmentID int32, studentAssignmentID int32) (models.StudentAssignment, error) {
+	println(assignmentID)
+	println(studentAssignmentID)
+	rows, err := db.connPool.Query(ctx,
+		"SELECT local_id, assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM student_assignments")
 
 	if err != nil {
 		fmt.Println("Error in query")
-		return nil, err
+		return models.StudentAssignment{}, err
 	}
 
 	defer rows.Close()
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentAssignment])
-}*/
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.StudentAssignment])
+}
