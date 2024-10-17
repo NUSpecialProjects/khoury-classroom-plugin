@@ -35,7 +35,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 
 func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models.StudentAssignment) error {
 	_, err := db.connPool.Exec(ctx,
-		"INSERT INTO student_assignments (assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+		"INSERT INTO student_assignments (assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started) VALUES ($1, $2, $3, $4, $5, $6)",
 		assignmentData.AssignmentID,
 		assignmentData.RepoName,
 		assignmentData.StudentGHUsername,
