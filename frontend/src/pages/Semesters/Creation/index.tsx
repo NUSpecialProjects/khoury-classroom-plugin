@@ -70,7 +70,7 @@ const SemesterCreation: React.FC = () => {
             const fetchClassrooms = async () => {
                 try {
                     const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                    const response = await fetch(`${base_url}/github/user/orgs/${selectedOrg.id}/classrooms`, {
+                    const response = await fetch(`${base_url}/github/user/orgs/${selectedOrg.id.toString()}/classrooms`, {
                         method: "GET",
                         credentials: 'include',
                         headers: {
@@ -107,8 +107,8 @@ const SemesterCreation: React.FC = () => {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
-            const resp = await response.json();
-            const data: Organization = resp.org as Organization;
+            const resp = await response.json() as { org: Organization };
+            const data: Organization = (resp).org;
             setSelectedOrg(data);
             setSelectedClassroom(null);
         } catch (error) {
@@ -164,7 +164,9 @@ const SemesterCreation: React.FC = () => {
                         } else {
                             const selected = [...orgsWithApp, ...orgsWithoutApp].find(org => org.login === selectedLogin);
                             if (selected) {
-                                handleOrganizationSelect(selected);
+                                handleOrganizationSelect(selected).catch((error: unknown) => {
+                                    console.error("Error selecting organization:", error);
+                                });
                             }
                         }
                     }}
@@ -250,17 +252,17 @@ const SemesterCreation: React.FC = () => {
                     availableClassrooms.find(
                         classroom => classroom.id === selectedClassroom.id
                     ) && (
-                        <button onClick={handleCreateSemester} disabled={isCreatingSemester}>
-                            {isCreatingSemester ? `Creating ${selectedClassroom.name}...` : `Create Semester: \"${selectedOrg.login}:${selectedClassroom.name}\"`}
+                        <button onClick={() => handleCreateSemester} disabled={isCreatingSemester}>
+                            {isCreatingSemester ? `Creating ${selectedClassroom.name}...` : `Create Semester: "${selectedOrg.login}:${selectedClassroom.name}"`}
                         </button>
                     )}
                 {semesterCreated && (
-                    <button onClick={() => console.log("Navigate to select semester screen")}>
+                    <button onClick={() => { console.log("Navigate to select semester screen") }}>
                         Go to Select Semester
                     </button>
                 )}
             </div>
-            <button onClick={() => navigate("/semester-selection")}> Go to Select Semester Page</button>
+            <button onClick={() => { navigate("/semester-selection") }}> Go to Select Semester Page</button>
         </div>
     );
 };
