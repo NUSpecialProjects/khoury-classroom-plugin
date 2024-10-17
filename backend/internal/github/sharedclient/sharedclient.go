@@ -20,8 +20,8 @@ func (api *CommonAPI) Ping(ctx context.Context) (string, error) {
 	return message, nil
 }
 
-func (api *CommonAPI) ListRepositories(ctx context.Context) ([]*github.Repository, error) {
-	repos, _, err := api.Client.Repositories.ListByOrg(ctx, "NUSpecialProjects", nil)
+func (api *CommonAPI) ListRepositoriesByOrg(ctx context.Context, orgName string) ([]*github.Repository, error) {
+	repos, _, err := api.Client.Repositories.ListByOrg(ctx, orgName, nil)
 
 	if err != nil {
 		return repos, fmt.Errorf("error fetching repositories: %v", err)
@@ -59,9 +59,22 @@ func (api *CommonAPI) CreateBranch(ctx context.Context, owner string, repo strin
 	if err != nil {
 		return fmt.Errorf("error creating new branch: %v", err)
 	}
-
-	fmt.Printf("New branch '%s' created successfully in repo '%s'.\n", newBranchName, repo)
 	return nil
+}
+
+func (api *CommonAPI) GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error) {
+	pr, _, err := api.Client.PullRequests.Get(ctx, owner, repo, pullNumber)
+
+	return pr, err
+}
+
+func (api *CommonAPI) GetPullRequestDiff(ctx context.Context, owner string, repo string, pullNumber int) (string, error) {
+	diff, _, err := api.Client.PullRequests.GetRaw(ctx, owner, repo, pullNumber, github.RawOptions{Type: github.Diff})
+	if err != nil {
+		return "", fmt.Errorf("error getting pull request diff: %v", err)
+	}
+
+	return diff, nil
 }
 
 func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error) {
@@ -76,8 +89,6 @@ func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo 
 	if err != nil {
 		return nil, fmt.Errorf("error creating pull request: %v", err)
 	}
-
-	fmt.Printf("Pull Request created: #%d - %s\n", pr.GetNumber(), pr.GetHTMLURL())
 	return pr, nil
 }
 

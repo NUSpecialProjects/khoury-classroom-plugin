@@ -8,13 +8,13 @@ import (
 
 type GitHubService struct {
 	store           storage.Storage
-	githubappclient *github.GitHubAppClient
+	githubappclient github.GitHubAppClient
 	userCfg         *config.GitHubUserClient
 }
 
 func newGitHubService(
 	store storage.Storage,
-	githubappclient *github.GitHubAppClient,
+	githubappclient github.GitHubAppClient,
 	userCfg *config.GitHubUserClient,
 ) *GitHubService {
 	return &GitHubService{

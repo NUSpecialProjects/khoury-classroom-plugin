@@ -26,7 +26,6 @@ func (db *DB) CreateSession(ctx context.Context, sessionData models.Session) err
 		fmt.Println("Error while creating sessions", err)
 		return err
 	}
-	fmt.Println("Created Session!!")
 
 	return nil
 }
@@ -39,8 +38,6 @@ func (db *DB) GetSession(ctx context.Context, githubuserid int64) (models.Sessio
 	if err != nil {
 		return models.Session{}, err
 	}
-
-	fmt.Println("Got Session!!")
 
 	return session, nil
 }

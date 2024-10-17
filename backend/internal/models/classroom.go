@@ -35,8 +35,9 @@ type ClassroomAssignment struct {
 }
 
 type Classroom struct {
-	ID       int64  `json:"id"`
-	Name     string `json:"name"`
-	Archived bool   `json:"archived"`
-	URL      string `json:"url"`
+	ID           int64               `json:"id"`
+	Name         string              `json:"name"`
+	Archived     bool                `json:"archived"`
+	Organization *SimpleOrganization `json:"organization,omitempty"`
+	URL          string              `json:"url"`
 }
