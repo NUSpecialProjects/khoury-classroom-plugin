@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY,
   rubric_id INTEGER,
   classroom_id INTEGER NOT NULL,
+  assignment_classroom_id INTEGER NOT NULL,
+  active BOOLEAN NOT NULL, 
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
 );
 

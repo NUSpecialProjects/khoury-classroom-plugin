@@ -10,8 +10,8 @@ import (
 
 func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error) {
 
-  rows, err := db.connPool.Query(ctx, "SELECT (rubric_id, classroom_id) FROM assignments")
-
+  rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments")
+  fmt.Println(rows.RawValues())
   if err != nil {
     fmt.Println("Error in query")
     return nil, err 
@@ -22,13 +22,31 @@ func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error
 }
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) (error) {
-  _, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, classroom_id) VALUES ($1, $2)",
-    assignmentData.Rubric_ID,
-    assignmentData.Classroom_ID)
-  if err != nil {
-    return err
-  }
+ 
+  if (assignmentData.Rubric_ID == nil) {
+    fmt.Println("Creating Assignment without a rubric")
+    _, err := db.connPool.Exec(ctx, "INSERT INTO assignments (classroom_id, active, assignment_classroom_id) VALUES ($1, $2, $3)",
+    assignmentData.Classroom_ID,
+    assignmentData.Active,
+    assignmentData.Assignment_Classroom_ID)
+    
+    if err != nil {
+      return err
+    }
 
+  } else {
+    fmt.Println("Creating Assignment with a rubric")
+    _, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, classroom_id, active, assignment_classroom_id) VALUES ($1, $2, $3, $4)",
+    assignmentData.Rubric_ID,
+    assignmentData.Classroom_ID,
+    assignmentData.Active,
+    assignmentData.Assignment_Classroom_ID)
+    if err != nil {
+      return err
+    }
+
+  }
+   
   return nil
 }
 
@@ -49,4 +67,17 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
   }
 
   return nil
+}
+
+
+func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_CR_ID, error) {
+ 
+  rows, err := db.connPool.Query(ctx, "SELECT (assignment_classroom_id) FROM assignments")
+  if (err != nil) {
+    return nil, err 
+  }
+
+  defer rows.Close()
+  return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment_CR_ID])
+
 }
