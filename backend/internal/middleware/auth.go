@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -62,7 +61,7 @@ func Protected(secret string) fiber.Handler {
 		}
 		c.Locals("userID", userID)
 
-		fmt.Println("Protected middleware got USERID!!", userID)
+		// fmt.Println("Protected middleware got USERID!!", userID)
 
 		return c.Next()
 	}
