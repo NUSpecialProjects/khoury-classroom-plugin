@@ -16,6 +16,7 @@ type GitHubAppClient interface { // All methods in the app client
 
 type GitHubUserClient interface { // All methods in the OAUTH client
 	GitHubBaseClient
+	GetOrg(ctx context.Context, org_name string) (*github.Organization, error)
 	GetCurrentUser(ctx context.Context) (models.GitHubUser, error)
 	GetUserOrgs(ctx context.Context) ([]models.Organization, error)
 	GetUserClassrooms(ctx context.Context) ([]models.Classroom, error)

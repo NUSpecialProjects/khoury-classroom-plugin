@@ -22,7 +22,7 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	oAuthCfg := cfg.OAuthConfig()
 
-	fmt.Println("Received code: ", code)
+	// fmt.Println("Received code: ", code)
 
 	token, err := oAuthCfg.Exchange(context.Background(), code)
 	if err != nil {
@@ -30,7 +30,7 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 		return nil, err
 	}
 
-	fmt.Println("Successfully exchanged code for token: ", token)
+	// fmt.Println("Successfully exchanged code for token: ", token)
 
 	return newFromToken(oAuthCfg, token)
 }
@@ -46,7 +46,7 @@ func newFromToken(oAuthCfg *oauth2.Config, token *oauth2.Token) (*UserAPI, error
 	// Create the GitHub client
 	githubClient := github.NewClient(httpClient)
 
-	fmt.Printf("Created GitHub client with token: %v\n", token)
+	// fmt.Printf("Created GitHub client with token: %v\n", token)
 
 	return &UserAPI{
 		CommonAPI: sharedclient.CommonAPI{
@@ -182,6 +182,28 @@ func (api *UserAPI) GetAcceptedAssignments(ctx context.Context, assignment_id in
 	}
 
 	return acceptedAssignments, nil
+}
+
+func (api *UserAPI) GetOrg(ctx context.Context, org_name string) (*models.Organization, error) {
+	// Construct the URL for the org endpoint
+	endpoint := fmt.Sprintf("/orgs/%s", org_name)
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container for organization
+	var org models.Organization
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &org)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching organization: %v", err)
+	}
+
+	return &org, nil
 }
 
 func (api *UserAPI) CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error) {
