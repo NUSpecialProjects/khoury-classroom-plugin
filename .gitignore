@@ -53,7 +53,7 @@ dist-ssr
 # Compiled files
 *.tfstate
 *.tfstate.backup
-.terraform.tfstate.lock.info
+*/terraform.tfstate*
 */terraform.tfvars
 
 # Module directory

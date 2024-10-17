@@ -1,5 +1,5 @@
 # ------------------------------------------------
-# IAM Roles for ECS
+# ECS Task
 # ------------------------------------------------
 
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -52,7 +52,7 @@ resource "aws_iam_role_policy_attachment" "task_s3" {
 }
 
 # ------------------------------------------------
-# ECS Auto Scale Role
+# ECS Auto Scaling
 # ------------------------------------------------
 
 data "aws_iam_policy_document" "ecs_auto_scale_role" {
@@ -80,7 +80,7 @@ resource "aws_iam_role_policy_attachment" "ecs_auto_scale_role" {
 
 
 # ------------------------------------------------
-# IAM Role for GitHub Actions Deployment
+#  GitHub Actions Deployment
 # ------------------------------------------------
 
 # GitHub Actions Role for Deployment
@@ -134,7 +134,8 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
                 "ecr:InitiateLayerUpload",
                 "ecr:UploadLayerPart",
                 "ecr:CompleteLayerUpload",
-                "ecr:DescribeRepositories"
+                "ecr:DescribeRepositories",
+                "ecr:BatchDeleteImage"
             ],
             "Resource": "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/khoury-classroom/backend"
         },

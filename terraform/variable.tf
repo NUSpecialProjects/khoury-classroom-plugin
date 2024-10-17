@@ -1,5 +1,10 @@
 # variables.tf
 
+variable "environment" {
+    description = "The environment to deploy to"
+    default = "prod"
+}
+
 variable "aws_region" {
     description = "The AWS region things are created in"
     default = "us-east-2"
@@ -17,6 +22,7 @@ variable "aws_profile" {
 
 variable "app_port" {
     description = "Application port"
+    type = number
     default = 8080
 }
 
@@ -72,12 +78,14 @@ variable "health_check_path" {
 
 variable "fargate_cpu" {
     description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-    default = "256"
+    type = number
+    default = 256
 }
 
 variable "fargate_memory" {
     description = "Fargate instance memory to provision (in MiB)"
-    default = "512"
+    type = number
+    default = 512
 }
 
 variable "scaling_policy_interval" {
