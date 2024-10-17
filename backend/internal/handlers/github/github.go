@@ -14,8 +14,6 @@ import (
 )
 
 func (service *GitHubService) Login() fiber.Handler {
-	// fmt.Println("Reached Login Service handler")
-
 	return func(c *fiber.Ctx) error {
 		// Extract code from the request body
 		var requestBody struct {
@@ -89,7 +87,6 @@ func (service *GitHubService) GetCurrentUser() fiber.Handler {
 			fmt.Println("FAILED TO GET USER", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
 		}
-		// fmt.Println("User: ", user)
 
 		//TODO: include the user's role (i.e. professor, TA, student) in the response
 		return c.Status(200).JSON(user)
@@ -118,7 +115,6 @@ func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, erro
 		fmt.Println("FAILED TO GET USERID")
 		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
 	}
-	// fmt.Println("UserID: ", userID)
 
 	session, err := service.store.GetSession(c.Context(), userID)
 	if err != nil {
@@ -133,8 +129,6 @@ func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, erro
 		return nil, err
 	}
 
-	// fmt.Println("UserID: ", userID)
-	// fmt.Println("Client: ", client)
 	return client, nil
 }
 

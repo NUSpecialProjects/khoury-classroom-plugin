@@ -18,19 +18,13 @@ type UserAPI struct {
 }
 
 func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
-	fmt.Printf("Received authorization code: %s\n", code)
-
 	oAuthCfg := cfg.OAuthConfig()
-
-	// fmt.Println("Received code: ", code)
 
 	token, err := oAuthCfg.Exchange(context.Background(), code)
 	if err != nil {
 		fmt.Println("Error exchanging code for token", err)
 		return nil, err
 	}
-
-	// fmt.Println("Successfully exchanged code for token: ", token)
 
 	return newFromToken(oAuthCfg, token)
 }
@@ -45,8 +39,6 @@ func newFromToken(oAuthCfg *oauth2.Config, token *oauth2.Token) (*UserAPI, error
 
 	// Create the GitHub client
 	githubClient := github.NewClient(httpClient)
-
-	// fmt.Printf("Created GitHub client with token: %v\n", token)
 
 	return &UserAPI{
 		CommonAPI: sharedclient.CommonAPI{

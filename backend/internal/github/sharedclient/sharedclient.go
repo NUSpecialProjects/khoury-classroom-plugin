@@ -59,8 +59,6 @@ func (api *CommonAPI) CreateBranch(ctx context.Context, owner string, repo strin
 	if err != nil {
 		return fmt.Errorf("error creating new branch: %v", err)
 	}
-
-	fmt.Printf("New branch '%s' created successfully in repo '%s'.\n", newBranchName, repo)
 	return nil
 }
 
@@ -91,8 +89,6 @@ func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo 
 	if err != nil {
 		return nil, fmt.Errorf("error creating pull request: %v", err)
 	}
-
-	fmt.Printf("Pull Request created: #%d - %s\n", pr.GetNumber(), pr.GetHTMLURL())
 	return pr, nil
 }
 
