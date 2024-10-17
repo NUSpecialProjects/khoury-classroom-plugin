@@ -66,3 +66,14 @@ VITE_GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
 3. Then, open a new tab to run commands in: run `make backend-dep` then `make backend-run`
 4. Next, in a new tab run `make ngrok-run`
 5. Finally, open one last new tab: run `make frontend-run`
+
+
+## Running locally in dev mode without using Make (due to multi-line env variable issues):
+
+1. Launch Docker Desktop
+2. (On first run) In the repo root: run `docker-compose -f docker-compose.dev.yaml build`
+3. In the repo root: run `docker-compose -f docker-compose.dev.yaml up`
+4. In a new terminal: run `ngrok http --domain={<ngrok public url>} 8080`
+5. In a new terminal: run `cd frontend`
+6. (On first run) In the frontend directory: run `npm i`
+7. In the frontend directory: run `npm run dev`

@@ -37,7 +37,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker buildx build --platform linux/amd64 -t khoury-classroom-backend ./backend --load
+        docker buildx build --platform linux/amd64 -t khoury-classroom-backend ./backend --load -f ./backend/Dockerfile.prod
 
     - name: Tag Docker image
       run: |
