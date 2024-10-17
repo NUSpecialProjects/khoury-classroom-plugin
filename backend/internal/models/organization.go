@@ -52,3 +52,40 @@ type SimpleOrganization struct {
 	Name      string `json:"name"`
 	AvatarURL string `json:"avatar_url"`
 }
+
+var Prof_Role = OrganizationTemplateRole{
+	Name:        "Professor",
+	Description: "Professor",
+	Permissions: []string{},
+	BaseRole:    "admin",
+}
+
+var TA_Role = OrganizationTemplateRole{
+	Name:        "TA",
+	Description: "Teaching Assistant",
+	Permissions: []string{},
+	BaseRole:    "maintain",
+}
+
+var Inactive_TA_Role = OrganizationTemplateRole{
+	Name:        "Inactive TA",
+	Description: "Inactive Teaching Assistant",
+	Permissions: []string{},
+	BaseRole:    "read",
+}
+
+var Student_Role = OrganizationTemplateRole{
+	Name:        "Student",
+	Description: "Student",
+	Permissions: []string{},
+	BaseRole:    "read",
+}
+
+var Inactive_Student_Role = OrganizationTemplateRole{
+	Name:        "Inactive Student",
+	Description: "Inactive Student",
+	Permissions: []string{},
+	BaseRole:    "read",
+}
+
+var AllRoles = []OrganizationTemplateRole{Prof_Role, TA_Role, Inactive_TA_Role, Student_Role, Inactive_Student_Role}

@@ -3,6 +3,7 @@ package github
 import (
 	"context"
 	"log"
+	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -20,6 +21,7 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 		// Get the user client
 		userClient, err := service.getClient(c)
 		if err != nil {
+			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 		// Get the app client
@@ -28,92 +30,67 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
 		if err != nil {
+			log.Default().Println("Error getting user orgs: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
+			log.Default().Println("Error getting app installations: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get app installations"})
 		}
 
 		// Filter the organizations to include only those with the app installed
 		var orgsWithAppInstalled []models.Organization
+		var orgsWithoutAppInstalled []models.Organization
 		for _, org := range userOrgs {
 			for _, installation := range appInstallations {
 				if *installation.Account.Login == org.Login {
 					orgsWithAppInstalled = append(orgsWithAppInstalled, org)
 					break
+				} else {
+					orgsWithoutAppInstalled = append(orgsWithoutAppInstalled, org)
+					break
 				}
 			}
 		}
-		return c.Status(200).JSON(fiber.Map{"orgs": orgsWithAppInstalled})
+		log.Default().Println("Orgs with app installed: ", orgsWithAppInstalled)
+		return c.Status(200).JSON(fiber.Map{
+			"orgs_with_app":    orgsWithAppInstalled,
+			"orgs_without_app": orgsWithoutAppInstalled,
+		})
 	}
 }
 
 func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Extract code from the request body
-		var requestBody struct {
-			OrgID int64 `json:"org_id"`
+		// Extract org_id from the path
+		orgIDParam := c.Params("org")
+		org_id, err := strconv.ParseInt(orgIDParam, 10, 64)
+		if err != nil {
+			log.Default().Println("Error parsing org_id: ", err)
+			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
 		}
-		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
-		}
-		org_id := requestBody.OrgID
 
 		// Get the user client
 		userClient, err := service.getClient(c)
 		if err != nil {
+			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
 		// Get the list of classrooms for the organization
 		classrooms, err := userClient.GetUserClassroomsInOrg(c.Context(), org_id)
 		if err != nil {
+			log.Default().Println("Error getting classrooms: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get classrooms"})
 		}
 
+		log.Default().Println("Classrooms: ", classrooms)
 		return c.Status(200).JSON(fiber.Map{"classrooms": classrooms})
 	}
 }
-
-var Prof_Role = models.OrganizationTemplateRole{
-	Name:        "Professor",
-	Description: "Professor",
-	Permissions: []string{},
-	BaseRole:    "admin",
-}
-
-var TA_Role = models.OrganizationTemplateRole{
-	Name:        "TA",
-	Description: "Teaching Assistant",
-	Permissions: []string{},
-	BaseRole:    "maintain",
-}
-
-var Inactive_TA_Role = models.OrganizationTemplateRole{
-	Name:        "Inactive TA",
-	Description: "Inactive Teaching Assistant",
-	Permissions: []string{},
-	BaseRole:    "read",
-}
-
-var Student_Role = models.OrganizationTemplateRole{
-	Name:        "Student",
-	Description: "Student",
-	Permissions: []string{},
-	BaseRole:    "read",
-}
-
-var Inactive_Student_Role = models.OrganizationTemplateRole{
-	Name:        "Inactive Student",
-	Description: "Inactive Student",
-	Permissions: []string{},
-	BaseRole:    "read",
-}
-
-var allRoles = []models.OrganizationTemplateRole{Prof_Role, TA_Role, Inactive_TA_Role, Student_Role, Inactive_Student_Role}
 
 func (service *GitHubService) AppInitialization() fiber.Handler {
 	log.Default().Println("Initializing application")
@@ -139,7 +116,7 @@ func (service *GitHubService) AppInitialization() fiber.Handler {
 			log.Default().Println("Error getting roles: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get roles"})
 		}
-		for _, role := range allRoles {
+		for _, role := range models.AllRoles {
 			role_exists := false
 			for _, existing_role := range existing_roles {
 				if role.Name == existing_role.Name {
@@ -165,7 +142,7 @@ func (service *GitHubService) AppInitialization() fiber.Handler {
 		// Get the professor role id
 		var prof_role_id int64
 		for _, role := range existing_roles {
-			if role.Name == Prof_Role.Name {
+			if role.Name == models.Prof_Role.Name {
 				prof_role_id = role.ID
 				break
 			}
@@ -207,13 +184,12 @@ func (service *GitHubService) AppCleanup() fiber.Handler {
 			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
-		roles := []models.OrganizationTemplateRole{Prof_Role, TA_Role, Inactive_TA_Role, Student_Role, Inactive_Student_Role}
 		existing_roles, err := client.GetOrgRoles(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting roles: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get roles"})
 		}
-		for _, role := range roles {
+		for _, role := range models.AllRoles {
 			for _, existing_role := range existing_roles {
 				if role.Name == existing_role.Name {
 					err := client.DeleteOrgRole(c.Context(), org_id, existing_role.ID)
