@@ -1,6 +1,7 @@
 package models
 
 type Regrade struct {
-	Student_ID int32 `json:"student_id" db:"student_id"`
-	TA_ID      int32 `json:"ta_id" db:"ta_id"`
+	StudentGHUsername string `json:"student_gh_username" db:"student_gh_username"`
+	TAGHUsername      string `json:"ta_gh_username" db:"ta_gh_username"`
+	DueDateID         int32  `json:"due_date_id"`
 }
