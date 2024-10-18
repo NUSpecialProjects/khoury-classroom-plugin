@@ -14,8 +14,8 @@ type GitHubAppClient interface { // All methods in the app client
 	GetJWT(ctx context.Context) (string, error)
 	GetClientWithJWTAuth(ctx context.Context) (*github.Client, error)
 	ListInstallations(ctx context.Context) ([]*github.Installation, error)
-	GetRepoTree(owner string, repo string) ([]github.TreeEntry, error)
-	GetRepoFileContents(owner string, repo string, path string) (*github.RepositoryContent, error)
+	GetGitTree(owner string, repo string) ([]github.TreeEntry, error)
+	GetGitBlob(owner string, repo string, sha string) ([]byte, error)
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
