@@ -1,6 +1,11 @@
-interface IRepoObject {
+interface IRepoTreeNode {
   type: string;
-  name: string;
   path: string;
-  download_url: string;
+  url: string;
+}
+
+interface IRepoTreeBlob {
+  type: string;
+  path: string;
+  url: string;
 }

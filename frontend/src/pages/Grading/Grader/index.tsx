@@ -11,9 +11,9 @@ const Grader: React.FC = () => {
   const [cachedContents, setCachedContents] = useState<Record<string, string>>(
     {}
   );
-  const [currentFile, setCurrentFile] = useState<IRepoObject | null>(null);
+  const [currentFile, setCurrentFile] = useState<IRepoTreeNode | null>(null);
   const [currentContent, setCurrentContent] = useState<string | null>(null);
-  const [files, setFiles] = useState<IRepoObject[]>([]);
+  const [files, setFiles] = useState<IRepoTreeNode[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -21,21 +21,21 @@ const Grader: React.FC = () => {
       "http://localhost:8080/files/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
     )
       .then((response) => response.json())
-      .then((data: IRepoObject[]) => {
+      .then((data: IRepoTreeNode[]) => {
         setFiles(data);
       });
   }, []);
 
-  const openObject = (obj: IRepoObject) => {
+  const openObject = (obj: IRepoTreeNode) => {
     if (obj.type == "dir") {
       return openDir(obj);
     }
     return openFile(obj);
   };
 
-  const openDir = (dir: IRepoObject) => {};
+  const openDir = (dir: IRepoTreeNode) => {};
 
-  const openFile = (file: IRepoObject) => {
+  const openFile = (file: IRepoTreeNode) => {
     if (file.type == "dir") {
       return openDir;
     }
@@ -44,20 +44,20 @@ const Grader: React.FC = () => {
     setCurrentFile(file);
 
     // Check if the content is already cached
-    if (cachedContents[file.download_url]) {
-      setCurrentContent(cachedContents[file.download_url]);
+    if (cachedContents[file.path]) {
+      setCurrentContent(cachedContents[file.path]);
       setLoading(false);
       return;
     }
 
-    fetch(file.download_url)
-      .then((response) => response.text())
+    fetch(file.url)
+      .then((response) => response.json())
       .then((content) => {
         setCurrentContent(content);
         // Cache the content
         setCachedContents((prev) => ({
           ...prev,
-          [file.download_url]: content,
+          [file.path]: content,
         }));
       })
       .finally(() => {
@@ -100,7 +100,7 @@ const Grader: React.FC = () => {
                   openObject(obj);
                 }}
               >
-                {obj.name}
+                {obj.path}
               </div>
             );
           })}
