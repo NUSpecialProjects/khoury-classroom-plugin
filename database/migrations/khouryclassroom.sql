@@ -1,3 +1,5 @@
+\i /docker-entrypoint-initdb.d/gen_short_uuid.sql
+
 CREATE TABLE IF NOT EXISTS semesters (
   id SERIAL PRIMARY KEY,
   classroom_id INTEGER UNIQUE NOT NULL,
@@ -12,7 +14,7 @@ CREATE TABLE IF NOT EXISTS rubrics (
 
 CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY,
-  local_id INTEGER NOT NULL,
+  uuid VARCHAR(22) NOT NULL DEFAULT gen_short_uuid(),
   rubric_id INTEGER,
   semester_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -22,7 +24,7 @@ CREATE TABLE IF NOT EXISTS assignments (
 
 CREATE TABLE IF NOT EXISTS student_assignments (
   id SERIAL PRIMARY KEY,
-  local_id INTEGER NOT NULL,
+  uuid VARCHAR(22) NOT NULL DEFAULT gen_short_uuid(),
   assignment_id INTEGER NOT NULL,
   repo_name VARCHAR(255) NOT NULL,
   student_gh_username VARCHAR(255) NOT NULL,

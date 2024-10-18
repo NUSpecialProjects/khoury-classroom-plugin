@@ -10,7 +10,7 @@ import (
 
 func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error) {
 
-	rows, err := db.connPool.Query(ctx, "SELECT (local_id, rubric_id, semester_id, name) FROM assignments")
+	rows, err := db.connPool.Query(ctx, "SELECT (uuid, rubric_id, semester_id, name) FROM assignments")
 
 	if err != nil {
 		fmt.Println("Error in query")
@@ -51,15 +51,18 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	return nil
 }
 
-func (db *DB) GetStudentAssignment(ctx context.Context, assignmentID int32, studentAssignmentID int32) (models.StudentAssignment, error) {
-	println(assignmentID)
-	println(studentAssignmentID)
+func (db *DB) GetStudentAssignment(ctx context.Context, assignmentID string, studentAssignmentID string) (models.StudentAssignment, error) {
+	// TODO:
+	// use assignmentID to find the local index of the requested student assignment as well as the indices of the previous/next ones
 	rows, err := db.connPool.Query(ctx,
-		"SELECT local_id, assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM student_assignments")
+		"SELECT uuid, assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM student_assignments WHERE uuid = $1",
+		studentAssignmentID)
+
+	var studentAssignment models.StudentAssignment
 
 	if err != nil {
 		fmt.Println("Error in query")
-		return models.StudentAssignment{}, err
+		return studentAssignment, err
 	}
 
 	defer rows.Close()
