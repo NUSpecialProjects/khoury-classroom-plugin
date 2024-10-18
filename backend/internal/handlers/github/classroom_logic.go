@@ -29,7 +29,6 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 	}
 
 	assignments, err := client.ListAssignmentsForClassroom(c.Context(), syncData.Classroom_id)
-	fmt.Println(assignments)   
 	if err != nil {
 		fmt.Println("SyncAssignments - Could not get classroom assignments")
 		return err
@@ -65,9 +64,17 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 			  parsedTime, err := time.Parse(time.RFC3339, *dueDate)
 			  if err != nil {
 			  	fmt.Println("SyncAssignments - error parsing time data", err)
-			  	parsedTime = time.Now()
+        } else {
+          // Format the time to be user readable, then parse it back into the time type
+          parsedTimeStr := parsedTime.Format(time.RFC822)
+          fmt.Println(parsedTimeStr)
+          formattedTime, err := time.Parse(time.RFC822, parsedTimeStr)
+          if (err != nil) {
+            fmt.Println("SyncAssignments - couldn't make time user readable")
+          } else {
+			      assignmentData.MainDueDate = &formattedTime   
+          }
         }
-			  assignmentData.MainDueDate = &parsedTime  
       }
 
 

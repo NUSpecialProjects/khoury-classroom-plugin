@@ -14,12 +14,15 @@ interface Assignment {
     semester_id: number;
     name: string;
     local_id: number;
-    main_due_date: string;
+    main_due_date: Date;
   }
 
 const Dashboard: React.FC = () => {
     const [assignments, setAssignments] = useState<Assignment[]>([]);
-
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+      };
 
     // API call when the component is rendered
     useEffect(() => {
@@ -40,13 +43,17 @@ const Dashboard: React.FC = () => {
 
                 const data = await result.json();
                 console.log(data)
-                setAssignments(data); 
+                const assignmentGoodDate = data.map((assignment: any) => ({
+                    ...assignment,
+                    main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
+                }))
+                setAssignments(assignmentGoodDate); 
             } catch (error) {
                 console.error('Error fetching assignments:', error);
             }
         };
 
-        const handleButtonClick = async () => {
+        const SyncWithClassroom = async () => {
             try {
                 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
                 const result = await fetch(`${base_url}/github/sync`, {
@@ -71,11 +78,7 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        handleButtonClick();
-
-
-        
-
+        SyncWithClassroom();
     }, []);
 
 
@@ -99,7 +102,7 @@ const Dashboard: React.FC = () => {
                     {assignments.map((assignment, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
                             <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
-                            <TableCell>{assignment.main_due_date ? assignment.main_due_date : "N/A"}</TableCell>
+                            {assignment.main_due_date ? assignment.main_due_date.toLocaleDateString("en-US", options) : "N/A"}
                         </TableRow>
                     ))}
                 </Table>
