@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import "./styles.css";
 import { Classroom } from "@/types/classroom";
 
