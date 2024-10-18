@@ -6,7 +6,6 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
-	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 	"github.com/jferrl/go-githubauth"
 	"golang.org/x/oauth2"
@@ -92,22 +91,33 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-func (api *AppAPI) GetStudentAssignmentFiles(owner string, repo string, path string) ([]models.StudentAssignmentFiles, error) {
-	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", owner, repo, path)
-
-	var files []models.StudentAssignmentFiles
-
-	// Create a new GET request
-	req, err := api.Client.NewRequest("GET", endpoint, nil)
+func (api *AppAPI) GetRepoTree(owner string, repo string) ([]github.TreeEntry, error) {
+	// Get the reference to the branch
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
 	if err != nil {
-		return files, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
 
-	// Make the API call
-	_, err = api.Client.Do(context.Background(), req, &files)
+	// Get the commit from the ref
+	commitSHA := ref.Object.GetSHA()
+	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSHA)
 	if err != nil {
-		return files, fmt.Errorf("error fetching assignment files: %v", err)
+		return nil, fmt.Errorf("error fetching commit: %v", err)
 	}
 
-	return files, nil
+	treeSHA := commit.Tree.GetSHA()
+	tree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching tree: %v", err)
+	}
+
+	return tree.Entries, nil
+}
+
+func (api *AppAPI) GetRepoFileContents(owner string, repo string, path string) (*github.RepositoryContent, error) {
+	contents, _, _, err := api.Client.Repositories.GetContents(context.Background(), owner, repo, path, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching contents: %v", err)
+	}
+	return contents, nil
 }
