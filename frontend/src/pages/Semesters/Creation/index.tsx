@@ -108,12 +108,13 @@ const SemesterCreation: React.FC = () => {
                         selectedOrg={selectedOrg}
                         onSelect={handleOrganizationSelect}
                     />
-                    {selectedOrg && (<ClassroomDropdown
-                        availableClassrooms={availableClassrooms}
-                        unavailableClassrooms={unavailableClassrooms}
-                        selectedClassroom={selectedClassroom}
-                        onSelect={handleClassroomSelect}
-                    />)}
+                    {selectedOrg && orgsWithApp.find(org => org.id === selectedOrg.id) &&
+                        (<ClassroomDropdown
+                            availableClassrooms={availableClassrooms}
+                            unavailableClassrooms={unavailableClassrooms}
+                            selectedClassroom={selectedClassroom}
+                            onSelect={handleClassroomSelect}
+                        />)}
 
                 </>
             )}
