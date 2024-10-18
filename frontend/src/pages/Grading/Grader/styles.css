@@ -56,6 +56,14 @@
   &__files {
     padding: 20px;
   }
+  &__file {
+    padding: 5px;
+    background: #eee;
+    cursor: pointer;
+    &:hover {
+      background: #ddd;
+    }
+  }
   &__code {
     flex: 1;
   }

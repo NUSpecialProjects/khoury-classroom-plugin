@@ -1,35 +1,69 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Light as CodeViewer } from "react-syntax-highlighter";
 import { hybrid } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button";
 
 import "./styles.css";
 
 const Grader: React.FC = () => {
-  const codeText = `# Python Program to find the L.C.M. of two input number
+  const [cachedContents, setCachedContents] = useState<Record<string, string>>(
+    {}
+  );
+  const [currentFile, setCurrentFile] = useState<IRepoObject | null>(null);
+  const [currentContent, setCurrentContent] = useState<string | null>(null);
+  const [files, setFiles] = useState<IRepoObject[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-def compute_lcm(x, y):
+  useEffect(() => {
+    fetch(
+      "http://localhost:8080/files/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
+    )
+      .then((response) => response.json())
+      .then((data: IRepoObject[]) => {
+        setFiles(data);
+      });
+  }, []);
 
-    # choose the greater number
-    if x > y:
-        greater = x
-    else:
-        greater = y
+  const openObject = (obj: IRepoObject) => {
+    if (obj.type == "dir") {
+      return openDir(obj);
+    }
+    return openFile(obj);
+  };
 
-    while(True):
-        if((greater % x == 0) and (greater % y == 0)):
-            lcm = greater
-            break
-        greater += 1
+  const openDir = (dir: IRepoObject) => {};
 
-    return lcm
+  const openFile = (file: IRepoObject) => {
+    if (file.type == "dir") {
+      return openDir;
+    }
 
-num1 = 54
-num2 = 24
+    setLoading(true);
+    setCurrentFile(file);
 
-print("The L.C.M. is", compute_lcm(num1, num2))
-`;
+    // Check if the content is already cached
+    if (cachedContents[file.download_url]) {
+      setCurrentContent(cachedContents[file.download_url]);
+      setLoading(false);
+      return;
+    }
+
+    fetch(file.download_url)
+      .then((response) => response.text())
+      .then((content) => {
+        setCurrentContent(content);
+        // Cache the content
+        setCachedContents((prev) => ({
+          ...prev,
+          [file.download_url]: content,
+        }));
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="Grader">
@@ -57,9 +91,19 @@ print("The L.C.M. is", compute_lcm(num1, num2))
       </div>
       <div className="Grader__body">
         <div className="Grader__files">
-          <div className="Grader__file">file.txt</div>
-          <div className="Grader__file">file.txt</div>
-          <div className="Grader__file">file.txt</div>
+          {files.map((obj, i) => {
+            return (
+              <div
+                className="Grader__file"
+                key={i}
+                onClick={() => {
+                  openObject(obj);
+                }}
+              >
+                {obj.name}
+              </div>
+            );
+          })}
         </div>
         <CodeViewer
           className="Grader__code"
@@ -68,7 +112,7 @@ print("The L.C.M. is", compute_lcm(num1, num2))
           language="python"
           style={hybrid}
         >
-          {codeText}
+          {currentContent ?? ""}
         </CodeViewer>
       </div>
     </div>
