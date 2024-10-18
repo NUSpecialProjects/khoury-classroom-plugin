@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"log"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/jackc/pgx/v5"
@@ -13,12 +14,14 @@ func (db *DB) ListSemesters(ctx context.Context, orgID int64) ([]models.Semester
 		orgID,
 	)
 	if err != nil {
+		log.Default().Println("failed to list semesters")
 		return nil, err
 	}
 	defer rows.Close()
 
-	semesters, err := pgx.CollectRows(rows, pgx.RowToStructByPos[models.Semester])
+	semesters, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Semester])
 	if err != nil {
+		log.Default().Println("failed to collect semesters")
 		return nil, err
 	}
 
