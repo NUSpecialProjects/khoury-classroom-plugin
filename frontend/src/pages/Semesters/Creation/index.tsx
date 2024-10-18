@@ -1,29 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
+import OrganizationDropdown from "@/components/Dropdown/Organization";
+import { Organization, OrganizationsResponse } from "@/types/organization";
+import ClassroomDropdown from "@/components/Dropdown/Classroom";
+import { Classroom, ClassroomResponse } from "@/types/classroom";
+import { getClassrooms, getOrganizationDetails, getOrganizations, postSemester } from "@/api/requests";
 
-interface Organization {
-    login: string;
-    id: number;
-    html_url: string;
-    name: string;
-    avatar_url: string;
-}
-
-interface Classroom {
-    id: number;
-    name: string;
-    url: string;
-}
-
-interface OrganizationsResponse {
-    orgs_with_app: Organization[];
-    orgs_without_app: Organization[];
-}
-
-interface ClassroomResponse {
-    available_classrooms: Classroom[];
-    unavailable_classrooms: Classroom[];
+enum SemesterCreationStatus {
+    NONE = "NONE",
+    CREATING = "CREATING",
+    ERRORED = "ERRORED",
+    CREATED = "CREATED"
 }
 
 const SemesterCreation: React.FC = () => {
@@ -35,26 +23,14 @@ const SemesterCreation: React.FC = () => {
     const [unavailableClassrooms, setUnavailableClassrooms] = useState<Classroom[]>([]);
     const [selectedClassroom, setSelectedClassroom] = useState<Classroom | null>(null);
 
-    const [isCreatingSemester, setIsCreatingSemester] = useState(false);
-    const [semesterCreated, setSemesterCreated] = useState(false);
+    const [semesterCreationStatus, setSemesterCreationStatus] = useState(SemesterCreationStatus.NONE)
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchOrganizations = async () => {
             try {
-                const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                const response = await fetch(`${base_url}/github/user/orgs`, {
-                    method: "GET",
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const data: OrganizationsResponse = await response.json() as OrganizationsResponse;
+                const data: OrganizationsResponse = await getOrganizations();
                 setOrgsWithApp(data.orgs_with_app);
                 setOrgsWithoutApp(data.orgs_without_app);
             } catch (error) {
@@ -69,18 +45,7 @@ const SemesterCreation: React.FC = () => {
         if (selectedOrg) {
             const fetchClassrooms = async () => {
                 try {
-                    const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                    const response = await fetch(`${base_url}/github/user/orgs/${selectedOrg.id.toString()}/classrooms`, {
-                        method: "GET",
-                        credentials: 'include',
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    const data: ClassroomResponse = await response.json() as ClassroomResponse;
+                    const data: ClassroomResponse = await getClassrooms(selectedOrg.id);
                     setAvailableClassrooms(data.available_classrooms);
                     setUnavailableClassrooms(data.unavailable_classrooms);
                 } catch (error) {
@@ -96,19 +61,7 @@ const SemesterCreation: React.FC = () => {
 
     const handleOrganizationSelect = async (org: Organization) => {
         try {
-            const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-            const response = await fetch(`${base_url}/github/orgs/${org.login}`, {
-                method: "GET",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            const resp = await response.json() as { org: Organization };
-            const data: Organization = (resp).org;
+            const data: Organization = await getOrganizationDetails(org.login);
             setSelectedOrg(data);
             setSelectedClassroom(null);
         } catch (error) {
@@ -116,35 +69,28 @@ const SemesterCreation: React.FC = () => {
         }
     };
 
-    const handleClassroomSelect = (classroom: Classroom) => {
+    const handleClassroomSelect = async (classroom: Classroom) => {
+        setSemesterCreationStatus(SemesterCreationStatus.NONE)
         setSelectedClassroom(classroom);
     };
 
     const handleCreateSemester = async () => {
         if (selectedOrg && selectedClassroom) {
-            setIsCreatingSemester(true);
+            setSemesterCreationStatus(SemesterCreationStatus.CREATING)
             try {
-                const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                const response = await fetch(`${base_url}/github/semesters`, {
-                    method: "POST",
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        org_id: selectedOrg.id,
-                        classroom_id: selectedClassroom.id,
-                        name: selectedClassroom.name,
-                    }),
-                });
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                setSemesterCreated(true);
+                await postSemester(selectedOrg.id, selectedClassroom.id, `${selectedOrg.login}:${selectedClassroom.name}`);
+                setSemesterCreationStatus(SemesterCreationStatus.CREATED)
+                // Move selectedClassroom to unavailableClassrooms
+                setAvailableClassrooms(prevAvailableClassrooms =>
+                    prevAvailableClassrooms.filter(classroom => classroom.id !== selectedClassroom.id)
+                );
+                setUnavailableClassrooms(prevUnavailableClassrooms => [
+                    ...prevUnavailableClassrooms,
+                    selectedClassroom,
+                ]);
             } catch (error) {
+                setSemesterCreationStatus(SemesterCreationStatus.ERRORED)
                 console.error("Error creating semester:", error);
-            } finally {
-                setIsCreatingSemester(false);
             }
         }
     };
@@ -152,117 +98,57 @@ const SemesterCreation: React.FC = () => {
     return (
         <div className="SemesterCreation">
             <h1>Create a New Semester</h1>
-            <div className="form-group">
-                <label htmlFor="organization">Select Organization:</label>
-                <select
-                    id="organization"
-                    value={selectedOrg ? selectedOrg.login : ""}
-                    onChange={(e) => {
-                        const selectedLogin = e.target.value;
-                        if (selectedLogin === "create_new_org") {
-                            window.open("https://github.com/organizations/plan", "_blank");
-                        } else {
-                            const selected = [...orgsWithApp, ...orgsWithoutApp].find(org => org.login === selectedLogin);
-                            if (selected) {
-                                handleOrganizationSelect(selected).catch((error: unknown) => {
-                                    console.error("Error selecting organization:", error);
-                                });
-                            }
-                        }
-                    }}
-                >
-                    <option value="" disabled>Select an organization</option>
-                    {orgsWithApp.length > 0 && (
-                        <optgroup label="Organizations with GitGrader Installed">
-                            {orgsWithApp.map((org) => (
-                                <option
-                                    key={org.id}
-                                    value={org.login}
-                                    title="This organization has the GitGrader installed"
-                                >
-                                    {org.login} ✔️
-                                </option>
-                            ))}
-                        </optgroup>
-                    )}
-                    {orgsWithoutApp.length > 0 && (
-                        <optgroup label="Organizations without GitGrader Installed">
-                            {orgsWithoutApp.map((org) => (
-                                <option
-                                    key={org.id}
-                                    value={org.login}
-                                    title="GitGrader not installed on this organization"
-                                >
-                                    {org.login} ❌
-                                </option>
-                            ))}
-                        </optgroup>
-                    )}
-                    <option value="create_new_org">Create a New Organization ➕</option>
-                </select>
-                {selectedOrg && orgsWithoutApp.some(org => org.login === selectedOrg.login) && (
-                    <a href={selectedOrg.html_url} target="_blank" rel="noopener noreferrer">
-                        <button>Install GitGrader on {selectedOrg.login}</button>
-                    </a>
-                )}
-            </div>
-            {selectedOrg && orgsWithApp.find(org => org.login === selectedOrg.login) && (
-                <div className="form-group">
-                    <label htmlFor="classroom">Select Classroom:</label>
-                    <select
-                        id="classroom"
-                        value={selectedClassroom ? selectedClassroom.id : ""}
-                        onChange={(e) => {
-                            const selectedId = Number(e.target.value);
-                            if (selectedId === -1) {
-                                window.open("https://classroom.github.com/classrooms/new", "_blank");
-                            } else {
-                                const selected = [...availableClassrooms, ...unavailableClassrooms].find(classroom => classroom.id === selectedId);
-                                if (selected) {
-                                    handleClassroomSelect(selected);
-                                }
-                            }
-                        }}
-                    >
-                        <option value="" disabled>Select a classroom</option>
-                        {availableClassrooms.length > 0 && (
-                            <optgroup label="Available Classrooms">
-                                {availableClassrooms.map((classroom) => (
-                                    <option key={classroom.id} value={classroom.id}>
-                                        {classroom.name} ✔️
-                                    </option>
-                                ))}
-                            </optgroup>
-                        )}
-                        {unavailableClassrooms.length > 0 && (
-                            <optgroup label="Unavailable Classrooms">
-                                {unavailableClassrooms.map((classroom) => (
-                                    <option key={classroom.id} value={classroom.id}>
-                                        {classroom.name} ❌
-                                    </option>
-                                ))}
-                            </optgroup>
-                        )}
-                        <option value="-1">Create New Classroom ➕</option>
-                    </select>
-                </div>
+            {semesterCreationStatus == SemesterCreationStatus.NONE && (
+                <>
+                    <OrganizationDropdown
+                        orgsWithApp={orgsWithApp}
+                        orgsWithoutApp={orgsWithoutApp}
+                        selectedOrg={selectedOrg}
+                        onSelect={handleOrganizationSelect}
+                    />
+                    {selectedOrg && (<ClassroomDropdown
+                        availableClassrooms={availableClassrooms}
+                        unavailableClassrooms={unavailableClassrooms}
+                        selectedClassroom={selectedClassroom}
+                        onSelect={handleClassroomSelect}
+                    />)}
+
+                </>
+            )}
+            {semesterCreationStatus == SemesterCreationStatus.CREATED && (
+                <div>Semester successfully created!</div>
             )}
             <div>
-                {selectedClassroom && selectedOrg && !semesterCreated &&
+                {selectedClassroom && selectedOrg &&
                     availableClassrooms.find(
                         classroom => classroom.id === selectedClassroom.id
                     ) && (
-                        <button onClick={() => handleCreateSemester} disabled={isCreatingSemester}>
-                            {isCreatingSemester ? `Creating ${selectedClassroom.name}...` : `Create Semester: "${selectedOrg.login}:${selectedClassroom.name}"`}
-                        </button>
+                        <>
+                            {semesterCreationStatus === SemesterCreationStatus.CREATING && (
+                                <button onClick={handleCreateSemester} disabled={true}>
+                                    `Creating ${selectedClassroom.name}...`
+                                </button>
+                            )}
+                            {(
+                                semesterCreationStatus === SemesterCreationStatus.NONE ||
+                                semesterCreationStatus === SemesterCreationStatus.ERRORED
+                            ) && (
+                                    <button onClick={handleCreateSemester}>
+                                        {`Create Semester: "${selectedOrg.login}:${selectedClassroom.name}"`}
+                                    </button>
+                                )}
+                            {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
+                                <div>
+                                    Error creating semester. Please try again.
+                                </div>
+                            )}
+                        </>
                     )}
-                {semesterCreated && (
-                    <button onClick={() => { console.log("Navigate to select semester screen") }}>
-                        Go to Select Semester
-                    </button>
-                )}
             </div>
             <button onClick={() => { navigate("/semester-selection") }}> Go to Select Semester Page</button>
+            {semesterCreationStatus !== SemesterCreationStatus.NONE && (
+                <button onClick={() => { setSemesterCreationStatus(SemesterCreationStatus.NONE) }}> Create another semester</button>
+            )}
         </div>
     );
 };
