@@ -57,21 +57,24 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		if !inDB {
 			fmt.Println("SyncAssignments - Assignment not in DB, adding...")
 
-			dueDate := assignment.Deadline
-			parsedTime, err := time.Parse(time.RFC3339, *dueDate)
-			if err != nil {
-				fmt.Println("SyncAssignments - error parsing time data", err)
-				parsedTime = time.Now()
-			}
-			active := time.Now().After(parsedTime)
-
-
       assignmentData := models.Assignment{}
-			assignmentData.Active = active
-			assignmentData.Assignment_Classroom_ID = assignment.ID
+			
+      dueDate := assignment.Deadline
+      // ensure assignment has a deadline
+      if (dueDate != nil) {
+			  parsedTime, err := time.Parse(time.RFC3339, *dueDate)
+			  if err != nil {
+			  	fmt.Println("SyncAssignments - error parsing time data", err)
+			  	parsedTime = time.Now()
+        }
+			  assignmentData.MainDueDate = &parsedTime  
+      }
+
+
+      assignmentData.InsertedDate = time.Now()
+      assignmentData.Assignment_Classroom_ID = assignment.ID
       assignmentData.Name = assignment.Title
       assignmentData.SemesterID = 1 // TODO: NEEDS TO NOT BE HARD CODED
-      assignmentData.MainDueDate = parsedTime 
 
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
 			if error != nil {

@@ -23,8 +23,8 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 
 	if assignmentData.Rubric_ID == nil {
 		fmt.Println("Creating Assignment without a rubric")
-		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (active, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
-			assignmentData.Active,
+		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
+			assignmentData.InsertedDate,
 			assignmentData.Assignment_Classroom_ID,
 			assignmentData.SemesterID,
 			assignmentData.Name,
@@ -36,9 +36,9 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 
 	} else {
 		fmt.Println("Creating Assignment with a rubric")
-		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, active, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
+		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
 			assignmentData.Rubric_ID,
-			assignmentData.Active,
+			assignmentData.InsertedDate,
 			assignmentData.Assignment_Classroom_ID,
 			assignmentData.SemesterID,
 			assignmentData.Name,
