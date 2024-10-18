@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS assignments (
   active BOOLEAN NOT NULL, 
   semester_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
+  main_due_date TIMESTAMP NOT NULL,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
   FOREIGN KEY (semester_id) REFERENCES semesters(id)
 );
@@ -56,3 +57,11 @@ CREATE TABLE IF NOT EXISTS sessions (
   refresh_token VARCHAR(255),
   expires_in INTEGER
 );
+
+
+
+
+
+INSERT INTO semesters (classroom_id, active, org_id)
+VALUES 
+  (237209, TRUE, 501)

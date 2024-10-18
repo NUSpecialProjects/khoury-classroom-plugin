@@ -29,7 +29,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 	}
 
 	assignments, err := client.ListAssignmentsForClassroom(c.Context(), syncData.Classroom_id)
-	fmt.Println(assignments)
+	fmt.Println(assignments)   
 	if err != nil {
 		fmt.Println("SyncAssignments - Could not get classroom assignments")
 		return err
@@ -63,12 +63,15 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 				fmt.Println("SyncAssignments - error parsing time data", err)
 				parsedTime = time.Now()
 			}
-
 			active := time.Now().After(parsedTime)
 
-			assignmentData := models.Assignment{}
+
+      assignmentData := models.Assignment{}
 			assignmentData.Active = active
 			assignmentData.Assignment_Classroom_ID = assignment.ID
+      assignmentData.Name = assignment.Title
+      assignmentData.SemesterID = 1 // TODO: NEEDS TO NOT BE HARD CODED
+      assignmentData.MainDueDate = parsedTime 
 
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
 			if error != nil {
