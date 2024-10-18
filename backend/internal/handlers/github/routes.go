@@ -8,6 +8,7 @@ import (
 
 func Routes(app *fiber.App, params types.Params) {
 	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
+	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
 
 	app.Post("/login", service.Login())
 	app.Post("/logout", service.Logout())

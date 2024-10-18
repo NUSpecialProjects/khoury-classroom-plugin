@@ -70,6 +70,8 @@ func (service *GitHubService) Login() fiber.Handler {
 
 		//TODO: check the database if the user is a TA, if so, set their role accordingly
 
+		//TODO: check the database if the user is a TA, if so, set their role accordingly
+
 		return c.Status(200).JSON("Successfully logged in")
 	}
 }
@@ -87,6 +89,8 @@ func (service *GitHubService) GetCurrentUser() fiber.Handler {
 			fmt.Println("FAILED TO GET USER", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
 		}
+
+		//TODO: include the user's role (i.e. professor, TA, student) in the response
 
 		//TODO: include the user's role (i.e. professor, TA, student) in the response
 		return c.Status(200).JSON(user)

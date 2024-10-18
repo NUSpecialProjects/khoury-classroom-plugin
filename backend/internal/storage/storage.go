@@ -11,6 +11,7 @@ type Storage interface {
 	Test
 	Assignments
 	Semesters
+	Semesters
 }
 
 type Test interface {
