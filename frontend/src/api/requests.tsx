@@ -18,7 +18,7 @@ export const getOrganizations = async (): Promise<OrganizationsResponse> => {
 };
 
 export const getClassrooms = async (orgId: number): Promise<ClassroomResponse> => {
-    const response = await fetch(`${base_url}/github/user/orgs/${orgId}/classrooms`, {
+    const response = await fetch(`${base_url}/github/user/orgs/${orgId.toString()}/classrooms`, {
         method: "GET",
         credentials: 'include',
         headers: {
