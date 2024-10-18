@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/jackc/pgx/v5"
 )
 
 func (db *DB) ListSemesters(ctx context.Context, orgID int64) ([]models.Semester, error) {
@@ -16,21 +17,9 @@ func (db *DB) ListSemesters(ctx context.Context, orgID int64) ([]models.Semester
 	}
 	defer rows.Close()
 
-	var semesters []models.Semester
-	for rows.Next() {
-		var semester models.Semester
-		err := rows.Scan(
-			&semester.ID,
-			&semester.Name,
-			&semester.ClassroomID,
-			&semester.Active,
-			&semester.OrgID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		semesters = append(semesters, semester)
+	semesters, err := pgx.CollectRows(rows, pgx.RowToStructByPos[models.Semester])
+	if err != nil {
+		return nil, err
 	}
 
 	return semesters, nil
