@@ -38,8 +38,7 @@ func (db *DB) ListSemesters(ctx context.Context, orgID int64) ([]models.Semester
 
 func (db *DB) CreateSemester(ctx context.Context, semesterData models.Semester) error {
 	_, err := db.connPool.Exec(ctx,
-		"INSERT INTO semesters (id, name, classroom_id, active, org_id) VALUES ($1, $2, $3, $4, $5)",
-		semesterData.ID,
+		"INSERT INTO semesters (name, classroom_id, active, org_id) VALUES ($1, $2, $3, $4)",
 		semesterData.Name,
 		semesterData.ClassroomID,
 		semesterData.Active,
