@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/assignments"
-	"github.com/CamPlume1/khoury-classroom/internal/handlers/files"
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/file_tree"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/github"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
@@ -27,7 +27,7 @@ func New(params types.Params) *fiber.App {
 	github.Routes(app, params)
 	test.Routes(app, params)
 	assignments.Routes(app, params)
-	files.Routes(app, params)
+	file_tree.Routes(app, params)
 
 	return app
 }

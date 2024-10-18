@@ -91,7 +91,7 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-func (api *AppAPI) GetRepoTree(owner string, repo string) ([]github.TreeEntry, error) {
+func (api *AppAPI) GetGitTree(owner string, repo string) ([]github.TreeEntry, error) {
 	// Get the reference to the branch
 	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
 	if err != nil {
@@ -114,8 +114,8 @@ func (api *AppAPI) GetRepoTree(owner string, repo string) ([]github.TreeEntry, e
 	return tree.Entries, nil
 }
 
-func (api *AppAPI) GetRepoFileContents(owner string, repo string, path string) (*github.RepositoryContent, error) {
-	contents, _, _, err := api.Client.Repositories.GetContents(context.Background(), owner, repo, path, nil)
+func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, error) {
+	contents, _, err := api.Client.Git.GetBlobRaw(context.Background(), owner, repo, sha)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching contents: %v", err)
 	}
