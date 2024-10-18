@@ -4,13 +4,14 @@ import "./styles.css"
 
 const Login: React.FC = () => {
     const clientId: string = import.meta.env.VITE_GITHUB_CLIENT_ID as string
+    const publicUrl: string = import.meta.env.BASE_URL as string
 
     return(
         <div className="LandingPage">
             <div className="LogoBar">
             <FiGithub className="Icon"/>
             <FiX className="Icon"/>
-            <img src="`${import.meta.env.BASE_URL}/icons/Northeastern_LVX.svg.png" className="Logo" />
+            <img src={`${publicUrl}/icons/Northeastern_LVX.svg.png`} className="Logo" />
             </div>
         <div className="LandingTitle">FonteMarks</div>
         <a className="SignInLink" href={`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo,read:org,classroom&allow_signup=false`}>
