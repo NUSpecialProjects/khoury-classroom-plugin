@@ -1,0 +1,37 @@
+.FileTree {
+  background: #eee;
+}
+
+.FileTreeDirectory {
+  padding-left: 15px;
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  &--collapsed {
+    display: none;
+  }
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.FileTreeFile {
+  padding-left: 15px;
+}
+
+.FileTreeDirectory__name,
+.FileTreeFile {
+  transition: background 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #ddd;
+  }
+}

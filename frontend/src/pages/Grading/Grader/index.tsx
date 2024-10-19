@@ -3,65 +3,85 @@ import { Light as CodeViewer } from "react-syntax-highlighter";
 import { hybrid } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useEffect, useState } from "react";
 
+import {
+  buildTree,
+  sortTreeNode,
+  FileTree,
+  FileTreeDirectory,
+  FileTreeFile,
+} from "@/components/FileTree";
 import Button from "@/components/Button";
 
 import "./styles.css";
 
 const Grader: React.FC = () => {
+  // states
+  const [fileTree, setFileTree] = useState<IFileTreeNode>({
+    type: "tree",
+    sha: "",
+    childNodes: {},
+  });
   const [cachedContents, setCachedContents] = useState<Record<string, string>>(
     {}
   );
-  const [currentFile, setCurrentFile] = useState<IRepoTreeNode | null>(null);
   const [currentContent, setCurrentContent] = useState<string | null>(null);
-  const [files, setFiles] = useState<IRepoTreeNode[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+
+  // iterate through a tree and render appropriate components
+  const renderTree = (node: IFileTreeNode, name: string) => {
+    if (node.type === "blob") {
+      return (
+        <FileTreeFile
+          key={name}
+          name={name}
+          onClick={() => {
+            openFile(node);
+          }}
+        />
+      );
+    }
+
+    // if not a blob (file), must be a tree (directory)
+    return (
+      <FileTreeDirectory key={name} name={name}>
+        {sortTreeNode(node).map(([childName, childNode]) =>
+          renderTree(childNode, childName)
+        )}
+      </FileTreeDirectory>
+    );
+  };
 
   useEffect(() => {
     fetch(
-      "http://localhost:8080/files/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
+      "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
     )
       .then((response) => response.json())
-      .then((data: IRepoTreeNode[]) => {
-        setFiles(data);
+      .then((data: IGitTreeNode[]) => {
+        setFileTree(buildTree(data));
+        console.log(buildTree(data));
       });
   }, []);
 
-  const openObject = (obj: IRepoTreeNode) => {
-    if (obj.type == "dir") {
-      return openDir(obj);
-    }
-    return openFile(obj);
-  };
+  const openDir = (dir: IGitTreeNode) => {};
 
-  const openDir = (dir: IRepoTreeNode) => {};
-
-  const openFile = (file: IRepoTreeNode) => {
-    if (file.type == "dir") {
-      return openDir;
-    }
-
-    setLoading(true);
-    setCurrentFile(file);
-
+  const openFile = (file: IFileTreeNode) => {
     // Check if the content is already cached
-    if (cachedContents[file.path]) {
-      setCurrentContent(cachedContents[file.path]);
-      setLoading(false);
+    if (cachedContents[file.sha]) {
+      setCurrentContent(cachedContents[file.sha]);
       return;
     }
 
-    fetch(file.url)
-      .then((response) => response.json())
+    fetch(
+      "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg/blob/" +
+        file.sha
+    )
+      .then((response) => response.text())
       .then((content) => {
         setCurrentContent(content);
         // Cache the content
         setCachedContents((prev) => ({
           ...prev,
-          [file.path]: content,
+          [file.sha]: content,
         }));
-      })
-      .finally(() => {
-        setLoading(false);
       });
   };
 
@@ -90,26 +110,15 @@ const Grader: React.FC = () => {
         </div>
       </div>
       <div className="Grader__body">
-        <div className="Grader__files">
-          {files.map((obj, i) => {
-            return (
-              <div
-                className="Grader__file"
-                key={i}
-                onClick={() => {
-                  openObject(obj);
-                }}
-              >
-                {obj.path}
-              </div>
-            );
-          })}
-        </div>
+        <FileTree className="Grader__files">
+          {Object.entries(fileTree.childNodes).map(([name, node]) =>
+            renderTree(node, name)
+          )}
+        </FileTree>
         <CodeViewer
           className="Grader__code"
           showLineNumbers
           lineNumberStyle={{ color: "#999", margin: "0 5px" }}
-          language="python"
           style={hybrid}
         >
           {currentContent ?? ""}

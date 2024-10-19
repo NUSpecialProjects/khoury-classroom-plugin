@@ -1,11 +1,5 @@
-interface IRepoTreeNode {
+interface IGitTreeNode {
   type: string;
   path: string;
-  url: string;
-}
-
-interface IRepoTreeBlob {
-  type: string;
-  path: string;
-  url: string;
+  sha: string;
 }
