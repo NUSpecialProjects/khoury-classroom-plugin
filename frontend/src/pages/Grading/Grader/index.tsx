@@ -3,19 +3,14 @@ import { Light as CodeViewer } from "react-syntax-highlighter";
 import { hybrid } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useEffect, useState } from "react";
 
-import {
-  buildTree,
-  sortTreeNode,
-  FileTree,
-  FileTreeDirectory,
-  FileTreeFile,
-} from "@/components/FileTree";
+import { buildTree, renderTree, FileTree } from "@/components/FileTree";
 import Button from "@/components/Button";
 
 import "./styles.css";
 
 const Grader: React.FC = () => {
   // states
+  const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [fileTree, setFileTree] = useState<IFileTreeNode>({
     type: "tree",
     sha: "",
@@ -26,53 +21,28 @@ const Grader: React.FC = () => {
   );
   const [currentContent, setCurrentContent] = useState<string | null>(null);
 
-  // iterate through a tree and render appropriate components
-  const renderTree = (node: IFileTreeNode, name: string) => {
-    if (node.type === "blob") {
-      return (
-        <FileTreeFile
-          key={name}
-          name={name}
-          onClick={() => {
-            openFile(node);
-          }}
-        />
-      );
-    }
-
-    // if not a blob (file), must be a tree (directory)
-    return (
-      <FileTreeDirectory key={name} name={name}>
-        {sortTreeNode(node).map(([childName, childNode]) =>
-          renderTree(childNode, childName)
-        )}
-      </FileTreeDirectory>
-    );
-  };
-
   useEffect(() => {
     fetch(
       "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
     )
       .then((response) => response.json())
       .then((data: IGitTreeNode[]) => {
-        setFileTree(buildTree(data));
-        console.log(buildTree(data));
+        setGitTree(data);
       });
   }, []);
 
   const openDir = (dir: IGitTreeNode) => {};
 
-  const openFile = (file: IFileTreeNode) => {
+  const openFile = (sha: string) => {
     // Check if the content is already cached
-    if (cachedContents[file.sha]) {
-      setCurrentContent(cachedContents[file.sha]);
+    if (cachedContents[sha]) {
+      setCurrentContent(cachedContents[sha]);
       return;
     }
 
     fetch(
       "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg/blob/" +
-        file.sha
+        sha
     )
       .then((response) => response.text())
       .then((content) => {
@@ -80,7 +50,7 @@ const Grader: React.FC = () => {
         // Cache the content
         setCachedContents((prev) => ({
           ...prev,
-          [file.sha]: content,
+          [sha]: content,
         }));
       });
   };
@@ -110,11 +80,11 @@ const Grader: React.FC = () => {
         </div>
       </div>
       <div className="Grader__body">
-        <FileTree className="Grader__files">
-          {Object.entries(fileTree.childNodes).map(([name, node]) =>
-            renderTree(node, name)
-          )}
-        </FileTree>
+        <FileTree
+          className="Grader__files"
+          gitTree={gitTree}
+          selectFileCallback={openFile}
+        />
         <CodeViewer
           className="Grader__code"
           showLineNumbers

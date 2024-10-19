@@ -6,6 +6,11 @@ interface IFileTreeNode {
   };
 }
 
+interface IFileTree extends React.HTMLProps<HTMLDivElement> {
+  gitTree: IGitTreeNode[];
+  selectFileCallback: Function;
+}
+
 interface IFileTreeDirectory extends React.HTMLProps<HTMLDivElement> {
   name: string;
 }
