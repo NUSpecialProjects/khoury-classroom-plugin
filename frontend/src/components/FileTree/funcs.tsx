@@ -4,22 +4,24 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
   let root: IFileTreeNode = {
     type: "tree",
     sha: "",
+    name: "",
     childNodes: {},
   };
   tree1D.forEach((node) => {
     const path = node.path.split("/");
     let level: IFileTreeNode = root;
 
-    path.forEach((dir, i) => {
-      if (!level.childNodes[dir]) {
-        level.childNodes[dir] = {
+    path.forEach((seg, i) => {
+      if (!level.childNodes[seg]) {
+        level.childNodes[seg] = {
           type: i === path.length - 1 ? node.type : "tree",
           sha: i === path.length - 1 ? node.sha : "",
+          name: seg,
           childNodes: {},
         };
       }
 
-      level = level.childNodes[dir];
+      level = level.childNodes[seg];
     });
   });
 
@@ -29,15 +31,12 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
 export const sortTreeNode = (node: IFileTreeNode) => {
   return Object.entries(node.childNodes).sort(
     ([nameA, nodeA], [nameB, nodeB]) => {
-      console.log(nodeA.type + ":" + nodeB.type);
-      // Sort directories first and then by name
-      if (nodeA.type === "tree" && nodeB.type === "blob") {
-        console.log("test");
-        return -1;
-      }
-      // dir before file
-      if (nodeA.type === "blob" && nodeB.type === "tree") return 1; // file after dir
-      return nameA.localeCompare(nameB); // alphabetical order
+      // directories before file
+      if (nodeA.type == "tree" && nodeB.type == "blob") return -1;
+      // files after directories
+      if (nodeA.type == "blob" && nodeB.type == "tree") return 1;
+      // sort by alphabetical order afterwards
+      return nameA.localeCompare(nameB);
     }
   );
 };
@@ -54,7 +53,7 @@ export const renderTree = (
         key={name}
         name={name}
         onClick={() => {
-          selectFileCallback(node.sha);
+          selectFileCallback(node);
         }}
       />
     );

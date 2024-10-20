@@ -1,5 +1,6 @@
 interface IFileTreeNode {
   type: string;
+  name: string;
   sha: string;
   childNodes: {
     [name: string]: IFileTreeNode;

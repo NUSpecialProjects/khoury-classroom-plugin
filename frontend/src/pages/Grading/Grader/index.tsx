@@ -1,9 +1,19 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { Light as CodeViewer } from "react-syntax-highlighter";
-import { hybrid } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useEffect, useState } from "react";
+import Prism from "prismjs";
+import comps from "prismjs/components";
+import "prismjs/plugins/line-numbers/prism-line-numbers";
+import "prismjs/plugins/line-numbers/prism-line-numbers.css";
+//import "prismjs/plugins/autoloader/prism-autoloader";
+import "@/assets/prism-vs-dark.css";
 
-import { buildTree, renderTree, FileTree } from "@/components/FileTree";
+import {
+  dependencies,
+  ext2lang,
+  ext2langLoader,
+  extractExtension,
+} from "./funcs";
+import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 
 import "./styles.css";
@@ -11,15 +21,10 @@ import "./styles.css";
 const Grader: React.FC = () => {
   // states
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
-  const [fileTree, setFileTree] = useState<IFileTreeNode>({
-    type: "tree",
-    sha: "",
-    childNodes: {},
-  });
-  const [cachedContents, setCachedContents] = useState<Record<string, string>>(
+  const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
-  const [currentContent, setCurrentContent] = useState<string | null>(null);
+  const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
 
   useEffect(() => {
     fetch(
@@ -31,26 +36,52 @@ const Grader: React.FC = () => {
       });
   }, []);
 
-  const openDir = (dir: IGitTreeNode) => {};
+  useEffect(() => {
+    if (currentFile) {
+      const lang = ext2lang[extractExtension(currentFile.name)];
+      const highlight = async () => {
+        try {
+          const deps: string | string[] = dependencies[lang];
+          if (deps) {
+            console.log(deps);
+            if (typeof deps === "string") {
+              await ext2langLoader[deps]();
+            }
+            if (Array.isArray(deps)) {
+              for (const dep of deps) {
+                await ext2langLoader[dep]();
+              }
+            }
+          }
+          await ext2langLoader[lang]();
+          Prism.highlightAll();
+        } catch (err) {
+          // Prism does not support language or mapping does not exist
+        }
+      };
+      highlight();
+    }
+  }, [currentFile]);
 
-  const openFile = (sha: string) => {
+  const openFile = (node: IFileTreeNode) => {
     // Check if the content is already cached
-    if (cachedContents[sha]) {
-      setCurrentContent(cachedContents[sha]);
+    if (cachedFiles[node.sha]) {
+      setCurrentFile(cachedFiles[node.sha]);
       return;
     }
 
     fetch(
       "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg/blob/" +
-        sha
+        node.sha
     )
       .then((response) => response.text())
       .then((content) => {
-        setCurrentContent(content);
+        const file: IGraderFile = { content, name: node.name };
+        setCurrentFile(file);
         // Cache the content
-        setCachedContents((prev) => ({
+        setCachedFiles((prev) => ({
           ...prev,
-          [sha]: content,
+          [node.sha]: file,
         }));
       });
   };
@@ -85,14 +116,18 @@ const Grader: React.FC = () => {
           gitTree={gitTree}
           selectFileCallback={openFile}
         />
-        <CodeViewer
-          className="Grader__code"
-          showLineNumbers
-          lineNumberStyle={{ color: "#999", margin: "0 5px" }}
-          style={hybrid}
-        >
-          {currentContent ?? ""}
-        </CodeViewer>
+        <pre className="line-numbers">
+          <code
+            className={
+              "Grader__browser" +
+              (currentFile
+                ? " language-" + ext2lang[extractExtension(currentFile.name)]
+                : "")
+            }
+          >
+            {currentFile && currentFile.content}
+          </code>
+        </pre>
       </div>
     </div>
   );

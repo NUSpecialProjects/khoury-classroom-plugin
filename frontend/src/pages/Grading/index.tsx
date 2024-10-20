@@ -7,7 +7,7 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { IGradingAssignmentRow } from "./types.ts";
+import { IGradingAssignmentRow } from "@/types/Grading";
 
 import "./styles.css";
 

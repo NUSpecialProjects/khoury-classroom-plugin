@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
-import { buildTree, renderTree } from "./funcs";
+import { buildTree, renderTree, sortTreeNode } from "./funcs";
 
 import "./styles.css";
 
@@ -14,11 +14,11 @@ export const FileTree: React.FC<IFileTree> = ({
   className,
   ...props
 }) => {
-  const fileTree = buildTree(gitTree);
+  const root = buildTree(gitTree);
 
   return (
     <div className={"FileTree" + (className ? " " + className : "")} {...props}>
-      {Object.entries(fileTree.childNodes).map(([name, node]) =>
+      {sortTreeNode(root).map(([name, node]) =>
         renderTree(node, name, selectFileCallback)
       )}
       {children}

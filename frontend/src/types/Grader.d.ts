@@ -3,3 +3,8 @@ interface IGitTreeNode {
   path: string;
   sha: string;
 }
+
+interface IGraderFile {
+  name: string;
+  content: string;
+}
