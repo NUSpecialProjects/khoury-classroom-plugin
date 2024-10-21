@@ -7,10 +7,11 @@ interface Props {
     orgsWithApp: Organization[];
     orgsWithoutApp: Organization[];
     selectedOrg: Organization | null;
+    loading: boolean;
     onSelect: (org: Organization) => Promise<void>;
 }
 
-const OrganizationDropdown: React.FC<Props> = ({ orgsWithApp, orgsWithoutApp, selectedOrg, onSelect }) => {
+const OrganizationDropdown: React.FC<Props> = ({ orgsWithApp, orgsWithoutApp, selectedOrg, loading, onSelect }) => {
     return (
         <div className="form-group">
             <label htmlFor="organization">Select Organization:</label>
@@ -29,7 +30,11 @@ const OrganizationDropdown: React.FC<Props> = ({ orgsWithApp, orgsWithoutApp, se
                     }
                 }}
             >
-                <option value="" disabled>Select an organization</option>
+                {loading ? (
+                    <option value="" disabled>Loading organizations...</option>
+                ) : (
+                    <>
+                    <option value="" disabled>Select an organization</option>
                 {orgsWithApp.length > 0 && (
                     <optgroup label="Organizations with GitGrader Installed">
                         {orgsWithApp.map((org) => (
@@ -56,6 +61,8 @@ const OrganizationDropdown: React.FC<Props> = ({ orgsWithApp, orgsWithoutApp, se
                         ))}
                     </optgroup>
                 )}
+                </>
+            )}
                 <option value="create_new_org">Create a New Organization ➕</option>
             </select>
             {

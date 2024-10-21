@@ -19,10 +19,12 @@ enum SemesterCreationStatus {
 const SemesterCreation: React.FC = () => {
     const [orgsWithApp, setOrgsWithApp] = useState<Organization[]>([]);
     const [orgsWithoutApp, setOrgsWithoutApp] = useState<Organization[]>([]);
+    const [loadingOrganizations, setLoadingOrganizations] = useState(true);
     const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
 
     const [availableClassrooms, setAvailableClassrooms] = useState<Classroom[]>([]);
     const [unavailableClassrooms, setUnavailableClassrooms] = useState<Classroom[]>([]);
+    const [loadingClassrooms, setLoadingClassrooms] = useState(true);
     const [selectedClassroom, setSelectedClassroom] = useState<Classroom | null>(null);
 
     const [semesterCreationStatus, setSemesterCreationStatus] = useState(SemesterCreationStatus.NONE)
@@ -36,13 +38,13 @@ const SemesterCreation: React.FC = () => {
                 setOrgsWithApp(data.orgs_with_app);
                 setOrgsWithoutApp(data.orgs_without_app);
             } catch (error) {
-                setOrgsWithApp([]);
-                setOrgsWithoutApp([]);
                 console.error("Error fetching organizations:", error);
+            } finally {
+                setLoadingOrganizations(false);
             }
         };
 
-        fetchOrganizations();
+        void fetchOrganizations();
     }, []);
 
     useEffect(() => {
@@ -56,10 +58,12 @@ const SemesterCreation: React.FC = () => {
                     setAvailableClassrooms([]);
                     setUnavailableClassrooms([]);
                     console.error("Error fetching classrooms:", error);
+                } finally {
+                    setLoadingClassrooms(false);
                 }
             };
 
-            fetchClassrooms();
+            void fetchClassrooms();
         }
     }, [selectedOrg]);
 
@@ -105,19 +109,20 @@ const SemesterCreation: React.FC = () => {
             {semesterCreationStatus == SemesterCreationStatus.NONE && (
                 <>
                     <OrganizationDropdown
-                        orgsWithApp={orgsWithApp || []}
-                        orgsWithoutApp={orgsWithoutApp || []}
+                        orgsWithApp={orgsWithApp}
+                        orgsWithoutApp={orgsWithoutApp}
                         selectedOrg={selectedOrg}
+                        loading={loadingOrganizations}
                         onSelect={handleOrganizationSelect}
                     />
                     {selectedOrg && orgsWithApp.find(org => org.id === selectedOrg.id) &&
                         (<ClassroomDropdown
-                            availableClassrooms={availableClassrooms || []}
-                            unavailableClassrooms={unavailableClassrooms || []}
+                            availableClassrooms={availableClassrooms}
+                            unavailableClassrooms={unavailableClassrooms}
                             selectedClassroom={selectedClassroom}
+                            loading={loadingClassrooms}
                             onSelect={handleClassroomSelect}
                         />)}
-
                 </>
             )}
             {semesterCreationStatus == SemesterCreationStatus.CREATED && (
