@@ -26,8 +26,8 @@ func New(params types.Params) *fiber.App {
 	hello.Routes(app, params)
 	github.Routes(app, params)
 	test.Routes(app, params)
-  assignments.Routes(app, params)
-  grades.Routes(app, params)
+  	assignments.Routes(app, params)
+ 	grades.Routes(app, params)
 
 	return app
 }
