@@ -1,3 +1,6 @@
+/******************************
+ * Grading page component types
+ ******************************/
 interface IGradingSubmissionRow {
   name: string;
   score: number | null;
@@ -6,4 +9,18 @@ interface IGradingSubmissionRow {
 
 interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   submissions: IGradingSubmissionRow[];
+}
+
+/*********************
+ * Grader object types
+ *********************/
+interface IGitTreeNode {
+  type: string;
+  path: string;
+  sha: string;
+}
+
+interface IGraderFile {
+  name: string;
+  content: string;
 }
