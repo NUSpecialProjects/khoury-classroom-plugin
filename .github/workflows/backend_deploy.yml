@@ -51,7 +51,3 @@ jobs:
       - name: Deploy to Amazon ECS
         run: |
           aws ecs update-service --cluster cb-cluster --service cb-service --force-new-deployment
-
-      - name: Wait for ECS Service Deployment to Complete
-        run: |
-          aws ecs wait services-stable --cluster cb-cluster --services cb-service
