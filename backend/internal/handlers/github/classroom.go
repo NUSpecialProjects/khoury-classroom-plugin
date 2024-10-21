@@ -68,8 +68,13 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
       assignmentData.InsertedDate = time.Now()
       assignmentData.Assignment_Classroom_ID = assignment.ID
       assignmentData.Name = assignment.Title
-      assignmentData.SemesterID = 1 // TODO: NEEDS TO NOT BE HARD CODED WHEN ACTIVE SEMESTER IS IMPLEMENTED
-
+      sem, err := service.store.GetSemesterByClassroomID(c.Context(), syncData.Classroom_id)
+      if (err != nil) {
+        fmt.Println("SyncAssignments - Failed to get classroom id", err)
+      } else {
+        assignmentData.SemesterID = *sem.ID
+      }
+      
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
 			if error != nil {
 				fmt.Println("SyncAssignments - Failed to add assignment to db", error)

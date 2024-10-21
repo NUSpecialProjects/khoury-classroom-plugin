@@ -36,11 +36,13 @@ const SemesterCreation: React.FC = () => {
                 setOrgsWithApp(data.orgs_with_app);
                 setOrgsWithoutApp(data.orgs_without_app);
             } catch (error) {
+                setOrgsWithApp([]);
+                setOrgsWithoutApp([]);
                 console.error("Error fetching organizations:", error);
             }
         };
 
-        void fetchOrganizations();
+        fetchOrganizations();
     }, []);
 
     useEffect(() => {
@@ -57,7 +59,7 @@ const SemesterCreation: React.FC = () => {
                 }
             };
 
-            void fetchClassrooms();
+            fetchClassrooms();
         }
     }, [selectedOrg]);
 
@@ -103,15 +105,15 @@ const SemesterCreation: React.FC = () => {
             {semesterCreationStatus == SemesterCreationStatus.NONE && (
                 <>
                     <OrganizationDropdown
-                        orgsWithApp={orgsWithApp}
-                        orgsWithoutApp={orgsWithoutApp}
+                        orgsWithApp={orgsWithApp || []}
+                        orgsWithoutApp={orgsWithoutApp || []}
                         selectedOrg={selectedOrg}
                         onSelect={handleOrganizationSelect}
                     />
                     {selectedOrg && orgsWithApp.find(org => org.id === selectedOrg.id) &&
                         (<ClassroomDropdown
-                            availableClassrooms={availableClassrooms}
-                            unavailableClassrooms={unavailableClassrooms}
+                            availableClassrooms={availableClassrooms || []}
+                            unavailableClassrooms={unavailableClassrooms || []}
                             selectedClassroom={selectedClassroom}
                             onSelect={handleClassroomSelect}
                         />)}

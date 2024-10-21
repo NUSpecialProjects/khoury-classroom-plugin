@@ -3,6 +3,8 @@ import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
+import useSelectedSemester from "@/contexts/useClassroom";
+import { Semester } from "@/types/semester";
 
 interface IAssignment {
     id: number; 
@@ -17,6 +19,9 @@ interface IAssignment {
 
 const Dashboard: React.FC = () => {
     const [assignments, setAssignments] = useState<IAssignment[]>([]);
+    const [selectedSemester, _] = useSelectedSemester();
+
+
     const options: Intl.DateTimeFormatOptions = {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
         hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
@@ -24,10 +29,10 @@ const Dashboard: React.FC = () => {
 
     // API call when the component is rendered
     useEffect(() => {
-        const fetchAssignments = async () => {
+        const fetchAssignments = async (semester: Semester) => {
             try {
                 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                const result = await fetch(`${base_url}/assignments`, {
+                const result = await fetch(`${base_url}/assignments/${semester.classroom_id}`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -52,7 +57,7 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        const SyncWithClassroom = async () => {
+        const SyncWithClassroom = async (semester: Semester) => {
             try {
                 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
                 const result = await fetch(`${base_url}/github/sync`, {
@@ -61,7 +66,7 @@ const Dashboard: React.FC = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ classroom_id: 237210 }), //237209 // TODO: UnHardcode when we have this info programatically
+                    body: JSON.stringify({ classroom_id: semester.classroom_id}),
                 })
     
                 if (!result.ok) {
@@ -72,7 +77,7 @@ const Dashboard: React.FC = () => {
                 console.error('Error making API call:', error);
             } finally {
                 console.log("Successful Sync")
-                fetchAssignments().then(() => {
+                fetchAssignments(semester).then(() => {
                     console.log('Assignments fetched successfully');
                 }).catch((error: unknown) => {
                     console.error('Error fetching assignments:', error);
@@ -80,14 +85,16 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        
-        SyncWithClassroom().then(() => {
-            console.log('Synced successfully');
-        }).catch((error: unknown) => {
-            console.error('Error syncing:', error);
-        });
-    }, []);
+        console.log(selectedSemester)
+        if (selectedSemester != null) {
+            SyncWithClassroom(selectedSemester).then(() => {
+                console.log('Synced successfully');
+            }).catch((error: unknown) => {
+                console.error('Error syncing:', error);
+            });
+        }
 
+    }, []);
 
     return (
         <div className="Dashboard">

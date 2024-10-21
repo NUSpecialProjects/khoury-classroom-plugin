@@ -196,6 +196,45 @@ func (service *GitHubService) GetUserRoles() fiber.Handler {
 	}
 }
 
+func (service *GitHubService) GetUserSemesters() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := service.getClient(c)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
+		orgs, err := client.GetUserOrgs(c.Context())
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+		}
+
+		org_ids := []int64{}
+		for _, org := range orgs {
+			org_ids = append(org_ids, org.ID)
+		}
+
+		semesters, err := service.store.ListSemestersByOrgList(c.Context(), org_ids)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch semesters"})
+		}
+
+		active_semesters := []models.Semester{}
+		inactive_semesters := []models.Semester{}
+		for _, semester := range semesters {
+			if semester.Active {
+				active_semesters = append(active_semesters, semester)
+			} else {
+				inactive_semesters = append(inactive_semesters, semester)
+			}
+		}
+
+		return c.Status(200).JSON(fiber.Map{
+			"active_semesters":   active_semesters,
+			"inactive_semesters": inactive_semesters,
+		})
+	}
+}
+
 // func (service *GitHubService) GetSemesters() fiber.Handler {
 // 	return func(c *fiber.Ctx) error {
 // 		var requestBody struct {

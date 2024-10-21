@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments")
+func (db *DB) GetAssignmentsInSemester(ctx context.Context, semester_id int64) ([]models.Assignment, error) {
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where semester_id = $1", semester_id)
 	if err != nil {
 		fmt.Println("Error in query")
 		return nil, err
