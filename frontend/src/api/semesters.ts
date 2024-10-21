@@ -1,6 +1,6 @@
 import { ClassroomResponse } from "@/types/classroom";
 import { Organization, OrganizationsResponse } from "@/types/organization";
-import { SemestersResponse } from "@/types/semester";
+import { OrgSemestersResponse, Semester, UserSemestersResponse } from "@/types/semester";
 
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
@@ -47,8 +47,7 @@ export const getOrganizationDetails = async (login: string): Promise<Organizatio
     return resp.org;
 };
 
-//TODO: Change the post endpoint to return the new semester
-export const postSemester = async (orgId: number, classroomId: number, name: string): Promise<void> => {
+export const postSemester = async (orgId: number, classroomId: number, name: string): Promise<Semester> => {
     const response = await fetch(`${base_url}/github/semesters`, {
         method: "POST",
         credentials: 'include',
@@ -64,9 +63,11 @@ export const postSemester = async (orgId: number, classroomId: number, name: str
     if (!response.ok) {
         throw new Error("Network response was not ok");
     }
+    const data = await response.json() as { semester: Semester };
+    return data.semester;
 };
 
-export const getSemesters = async (): Promise<SemestersResponse> => {
+export const getUserSemesters = async (): Promise<UserSemestersResponse> => {
     const response = await fetch(`${base_url}/github/user/semesters`, {
         method: "GET",
         credentials: 'include',
@@ -79,3 +80,42 @@ export const getSemesters = async (): Promise<SemestersResponse> => {
     }
     return response.json();
 };
+
+export const getOrgSemesters = async (orgId: number): Promise<OrgSemestersResponse> => {
+    const response = await fetch(`${base_url}/github/orgs/${orgId.toString()}/semesters`, {
+        method: "GET",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if (!response.ok) {
+        throw new Error("Network response was not ok");
+    }
+    return response.json();
+}
+
+export const activateSemester = async (semesterId: number): Promise<Semester> => {
+    return modifySemester(semesterId, true);
+}
+
+export const deactivateSemester = async (semesterId: number): Promise<Semester> => {
+    return modifySemester(semesterId, false);
+}
+
+const modifySemester = async (semesterId: number, activate: boolean): Promise<Semester> => {
+    const response = await fetch(`${base_url}/github/semesters/${semesterId.toString()}`, {
+        method: "PUT",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activate }),
+    });
+    if (!response.ok) {
+        throw new Error("Network response was not ok");
+    }
+    const data = await response.json() as { semester: Semester };
+    return data.semester;
+}
+

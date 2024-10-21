@@ -6,7 +6,12 @@ export interface Semester {
     active: boolean;
 }
 
-export interface SemestersResponse {
+//TODO: refactor this to come in as a map of {orgid: Semester[]}
+export interface UserSemestersResponse {
     active_semesters: Semester[];
     inactive_semesters: Semester[];
+}
+
+export interface OrgSemestersResponse {
+    semesters: Semester[];
 }

@@ -7,7 +7,7 @@ import OrganizationDropdown from "@/components/Dropdown/Organization";
 import { Organization, OrganizationsResponse } from "@/types/organization";
 import ClassroomDropdown from "@/components/Dropdown/Classroom";
 import { Classroom, ClassroomResponse } from "@/types/classroom";
-import { getClassrooms, getOrganizationDetails, getOrganizations, postSemester } from "@/api/requests";
+import { getClassrooms, getOrganizationDetails, getOrganizations, postSemester } from "@/api/semesters";
 
 enum SemesterCreationStatus {
     NONE = "NONE",

@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import { Semester, SemestersResponse } from "@/types/semester";
-import { getSemesters } from "@/api/requests";
+import { Semester, UserSemestersResponse } from "@/types/semester";
+import { getUserSemesters } from "@/api/semesters";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import {
     Table,
@@ -25,7 +25,7 @@ const SemesterSelection: React.FC = () => {
     useEffect(() => {
         const fetchSemesters = async () => {
             try {
-                const data: SemestersResponse = await getSemesters();
+                const data: UserSemestersResponse = await getUserSemesters();
                 const groupedSemesters: { [key: number]: Semester[] } = {};
                 const initialCollapsedState: { [key: number]: boolean } = {};
 

@@ -32,8 +32,8 @@ type Assignments interface {
 type Semesters interface {
 	ListSemestersByOrgList(ctx context.Context, orgIDs []int64) ([]models.Semester, error)
 	ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Semester, error)
-	CreateSemester(ctx context.Context, semesterData models.Semester) error
+	CreateSemester(ctx context.Context, semesterData models.Semester) (models.Semester, error)
 	GetSemester(ctx context.Context, semesterID int64) (models.Semester, error)
-	DeactivateSemester(ctx context.Context, semesterID int64) error
-	ActivateSemester(ctx context.Context, semesterID int64) error
+	DeactivateSemester(ctx context.Context, semesterID int64) (models.Semester, error)
+	ActivateSemester(ctx context.Context, semesterID int64) (models.Semester, error)
 }

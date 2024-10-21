@@ -48,19 +48,26 @@ func (db *DB) ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Sem
 	return semesters, nil
 }
 
-func (db *DB) CreateSemester(ctx context.Context, semesterData models.Semester) error {
-	_, err := db.connPool.Exec(ctx,
-		"INSERT INTO semesters (name, classroom_id, active, org_id) VALUES ($1, $2, $3, $4)",
+func (db *DB) CreateSemester(ctx context.Context, semesterData models.Semester) (models.Semester, error) {
+	var newSemester models.Semester
+	err := db.connPool.QueryRow(ctx,
+		"INSERT INTO semesters (name, classroom_id, active, org_id) VALUES ($1, $2, $3, $4) RETURNING id, name, classroom_id, active, org_id",
 		semesterData.Name,
 		semesterData.ClassroomID,
 		semesterData.Active,
 		semesterData.OrgID,
+	).Scan(
+		&newSemester.ID,
+		&newSemester.Name,
+		&newSemester.ClassroomID,
+		&newSemester.Active,
+		&newSemester.OrgID,
 	)
 	if err != nil {
-		return err
+		return models.Semester{}, err
 	}
 
-	return nil
+	return newSemester, nil
 }
 
 func (db *DB) GetSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
@@ -82,26 +89,40 @@ func (db *DB) GetSemester(ctx context.Context, semesterID int64) (models.Semeste
 	return semester, nil
 }
 
-func (db *DB) DeactivateSemester(ctx context.Context, semesterID int64) error {
-	_, err := db.connPool.Exec(ctx,
-		"UPDATE semesters SET active = false WHERE id = $1 AND active = true",
+func (db *DB) DeactivateSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
+	var updatedSemester models.Semester
+	err := db.connPool.QueryRow(ctx,
+		"UPDATE semesters SET active = false WHERE id = $1 AND active = true RETURNING id, name, classroom_id, active, org_id",
 		semesterID,
+	).Scan(
+		&updatedSemester.ID,
+		&updatedSemester.Name,
+		&updatedSemester.ClassroomID,
+		&updatedSemester.Active,
+		&updatedSemester.OrgID,
 	)
 	if err != nil {
-		return err
+		return models.Semester{}, err
 	}
 
-	return nil
+	return updatedSemester, nil
 }
 
-func (db *DB) ActivateSemester(ctx context.Context, semesterID int64) error {
-	_, err := db.connPool.Exec(ctx,
-		"UPDATE semesters SET active = true WHERE id = $1 AND active = false",
+func (db *DB) ActivateSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
+	var updatedSemester models.Semester
+	err := db.connPool.QueryRow(ctx,
+		"UPDATE semesters SET active = true WHERE id = $1 AND active = false RETURNING id, name, classroom_id, active, org_id",
 		semesterID,
+	).Scan(
+		&updatedSemester.ID,
+		&updatedSemester.Name,
+		&updatedSemester.ClassroomID,
+		&updatedSemester.Active,
+		&updatedSemester.OrgID,
 	)
 	if err != nil {
-		return err
+		return models.Semester{}, err
 	}
 
-	return nil
+	return updatedSemester, nil
 }
