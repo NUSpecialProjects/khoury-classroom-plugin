@@ -1,11 +1,14 @@
 .Grader {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   &__head {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
     gap: 10px;
-    border-bottom: 2px solid #eeeeee;
     padding-bottom: 10px;
   }
   &__title {
@@ -50,11 +53,17 @@
   }
 
   &__body {
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: row;
   }
   &__files {
     padding: 20px;
+    height: 100%;
+    overflow: auto;
+    flex-shrink: 0;
   }
   &__file {
     padding: 5px;
@@ -64,7 +73,24 @@
       background: #ddd;
     }
   }
-  &__code {
-    flex: 1;
+  &__browser {
+    height: 100%;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: auto;
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      overflow: auto;
+      width: 100%;
+      height: 100%;
+    }
+    code {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   }
 }

@@ -1,10 +1,8 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import Prism from "prismjs";
-import comps from "prismjs/components";
 import "prismjs/plugins/line-numbers/prism-line-numbers";
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";
-//import "prismjs/plugins/autoloader/prism-autoloader";
 import "@/assets/prism-vs-dark.css";
 
 import {
@@ -26,6 +24,7 @@ const Grader: React.FC = () => {
   );
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
 
+  // fetch the git tree and extract file tree structure
   useEffect(() => {
     fetch(
       "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
@@ -36,10 +35,13 @@ const Grader: React.FC = () => {
       });
   }, []);
 
+  // when a new file is selected, import any necessary
+  // prismjs language syntax files and trigger a rehighlight
   useEffect(() => {
+    console.log(currentFile?.name);
     if (currentFile) {
       const lang = ext2lang[extractExtension(currentFile.name)];
-      const highlight = async () => {
+      const loadLanguages = async () => {
         try {
           const deps: string | string[] = dependencies[lang];
           if (deps) {
@@ -54,12 +56,15 @@ const Grader: React.FC = () => {
             }
           }
           await ext2langLoader[lang]();
-          Prism.highlightAll();
+          Promise.resolve();
         } catch (err) {
           // Prism does not support language or mapping does not exist
+          return Promise.reject();
         }
       };
-      highlight();
+      loadLanguages().then(() => {
+        Prism.highlightAll();
+      });
     }
   }, [currentFile]);
 
@@ -116,18 +121,22 @@ const Grader: React.FC = () => {
           gitTree={gitTree}
           selectFileCallback={openFile}
         />
-        <pre className="line-numbers">
-          <code
-            className={
-              "Grader__browser" +
-              (currentFile
-                ? " language-" + ext2lang[extractExtension(currentFile.name)]
-                : "")
-            }
-          >
-            {currentFile && currentFile.content}
-          </code>
-        </pre>
+        <div className="Grader__browser">
+          <pre className={currentFile ? "line-numbers" : "language-undefined"}>
+            <code
+              className={
+                currentFile
+                  ? "line-numbers language-" +
+                    ext2lang[extractExtension(currentFile.name)]
+                  : "language-undefined"
+              }
+            >
+              {currentFile
+                ? currentFile.content
+                : "Select a file to view its contents."}
+            </code>
+          </pre>
+        </div>
       </div>
     </div>
   );
