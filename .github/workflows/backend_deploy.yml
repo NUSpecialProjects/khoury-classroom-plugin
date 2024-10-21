@@ -38,11 +38,7 @@ jobs:
 
       - name: Build Docker image with cache
         run: |
-          IMAGE_URI=058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend
-          docker buildx build --platform linux/amd64 -t $IMAGE_URI:latest \
-          --cache-from type=registry,ref=$IMAGE_URI:cache \
-          --cache-to type=registry,ref=$IMAGE_URI:cache,mode=max \
-          -f ./backend/Dockerfile.prod ./backend --push
+          docker buildx build --platform linux/amd64 -t khoury-classroom-backend ./backend --load -f ./backend/Dockerfile.prod
 
       - name: Tag Docker image
         run: |
