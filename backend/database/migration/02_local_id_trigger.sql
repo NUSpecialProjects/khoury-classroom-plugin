@@ -17,9 +17,10 @@ BEGIN
         END;
         $$ LANGUAGE plpgsql;
 
-        CREATE TRIGGER trigger_set_assignment_local_id
-        BEFORE INSERT ON assignments
-        FOR EACH ROW EXECUTE FUNCTION set_assignment_local_id();
+        -- Create trigger using EXECUTE
+        EXECUTE 'CREATE TRIGGER trigger_set_assignment_local_id
+                 BEFORE INSERT ON assignments
+                 FOR EACH ROW EXECUTE FUNCTION set_assignment_local_id()';
     END IF;
 END $$;
 
@@ -42,8 +43,9 @@ BEGIN
         END;
         $$ LANGUAGE plpgsql;
 
-        CREATE TRIGGER trigger_set_student_assignment_local_id
-        BEFORE INSERT ON student_assignments
-        FOR EACH ROW EXECUTE FUNCTION set_student_assignment_local_id();
+        -- Create trigger using EXECUTE
+        EXECUTE 'CREATE TRIGGER trigger_set_student_assignment_local_id
+                 BEFORE INSERT ON student_assignments
+                 FOR EACH ROW EXECUTE FUNCTION set_student_assignment_local_id()';
     END IF;
 END $$;
