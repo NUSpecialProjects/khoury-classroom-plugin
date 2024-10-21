@@ -70,7 +70,7 @@ func (service *GitHubService) Login() fiber.Handler {
 			HTTPOnly: true,
 			Secure:   false,
 			SameSite: "Lax",
-			Path:     "",
+			Path:     "/",
 		})
 
 		return c.Status(200).JSON("Successfully logged in")

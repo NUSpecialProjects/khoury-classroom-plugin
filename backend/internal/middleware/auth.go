@@ -45,6 +45,7 @@ func Protected(secret string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract and validate JWT token
 		token := c.Cookies("jwt_cookie", "")
+
 		// fmt.Println("Protected middleware got JWT!!", token)
 		if token == "" {
 			return c.Status(401).JSON(fiber.Map{"error": "missing or invalid JWT token"})
