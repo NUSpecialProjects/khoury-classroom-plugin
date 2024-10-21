@@ -19,6 +19,15 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	ListAssignmentsForClassroom(ctx context.Context, classroomID int64) ([]models.ClassroomAssignment, error)
 	GetAcceptedAssignments(ctx context.Context, assignmentID int64) ([]models.ClassroomAcceptedAssignment, error)
 	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
+
+	/* Get all submissions under a GH assignment */
+	GetSubmissionsByID(ctx context.Context, assignmentID int64) ([]models.AutoGrade, error)
+
+	/* Get a certain submission by assignment and user ID*/
+	GetSubmissionByUIDAndAID(ctx context.Context, assignmentID int64, userGH string) (*models.AutoGrade, error)
+
+	/* Get a set of submissions by assignment and userID. This should only be used after checking cache, and returned values should be cached */
+	GetSubmissionByUID(ctx context.Context, assignmentIDs []int64, userGH string) (map[int64]*models.AutoGrade, error)
 }
 
 type GitHubBaseClient interface { //All methods in the shared client

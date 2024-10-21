@@ -37,6 +37,15 @@ func NotFound(title string, withKey string, withValue any) APIError {
 	return NewAPIError(http.StatusNotFound, fmt.Errorf("%s with %s='%s' not found", title, withKey, withValue))
 }
 
+func GithubIntegrationError(err error) APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("Error interfacing with Github: %s", err.Error()))
+}
+
+
+func MissingCookieError(cookie string) APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("Cookie %s not present. Fix it.", cookie))
+}
+
 func Conflict(title string, withKey string, withValue any) APIError {
 	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict: %s with %s='%s' already exists", title, withKey, withValue))
 }

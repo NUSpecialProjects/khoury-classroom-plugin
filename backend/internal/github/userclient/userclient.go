@@ -3,6 +3,7 @@ package userclient
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
@@ -138,4 +139,123 @@ func (api *UserAPI) GetAcceptedAssignments(ctx context.Context, assignmentID int
 	}
 
 	return acceptedAssignments, nil
+}
+
+/* Get the grades for an assignment by the assignment identifier */
+func (api *UserAPI) GetSubmissionsByID(ctx context.Context, assignmentID int64) ([]models.AutoGrade, error) {
+	endpoint := fmt.Sprintf(("/assignments/%d/grades"), assignmentID)
+
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("Error fetching assignment %d", assignmentID)
+	}
+	var autogradeResults []models.AutoGrade
+
+	_, err = api.Client.Do(ctx, req, &autogradeResults)
+
+	if err != nil {
+		return nil, fmt.Errorf("Error fetching assignment %d", assignmentID)
+	}
+
+	return autogradeResults, nil
+}
+
+
+
+
+func (api *UserAPI) GetSubmissionByUIDAndAID(ctx context.Context, assignmentID int64, userGH string) (*models.AutoGrade, error) {
+	
+	/* Get All Submissions: TODO: Cache layer*/
+	allSubs, err := api.GetSubmissionsByID(ctx, assignmentID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, element := range allSubs {
+		if element.GithubUsername == userGH {
+			return &element, nil
+		}
+	}
+
+	return nil, err
+}
+
+
+
+func (api *UserAPI) GetSubmissionByUID(ctx context.Context, classroomID int64, userGH string) (map[int64]*models.AutoGrade, error) {
+	
+	//Get assignments
+	assignments, err := api.ListAssignmentsForClassroom(ctx, classroomID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	
+	//TODO: Caching !!
+    if len(assignments) == 0 {
+        return nil, nil
+    }
+
+
+	//Declare slice, map
+	assignmentIDs := make([]int64, 0, len(assignments))
+	for _, element := range assignments {
+		assignmentIDs = append(assignmentIDs, element.ID)
+	}
+	
+
+    var (
+		retAcc = make(map[int64]*models.AutoGrade, len(assignmentIDs))
+		errChan   = make(chan error, len(assignmentIDs))
+		mu     sync.Mutex
+        wg     sync.WaitGroup
+    )
+
+	//For each assignment, get all the submissions, and search for userGH in the returned list
+    for _, assID := range assignmentIDs {
+        wg.Add(1)
+        go func(id int64) {
+            defer wg.Done()
+
+            // Fetch submissions for the current assignment ID
+            allSubs, err := api.GetSubmissionsByID(ctx, id)
+            if err != nil {
+                errChan <- err
+                return
+            }
+
+            // Find matching submission and append it
+            for _, element := range allSubs {
+                if element.GithubUsername == userGH {
+                    mu.Lock()
+                    retAcc[id] = &element
+                    mu.Unlock()
+                    break 
+                }
+            }
+        }(assID)
+    }
+
+    wg.Wait()
+
+	close(errChan)
+
+	//combine errors
+	var combinedError error
+	for err := range errChan {
+		if combinedError == nil {
+			combinedError = err // First error
+		} else {
+			combinedError = fmt.Errorf("%v; %v", combinedError, err) // Append subsequent errors
+		}
+	}
+
+	if combinedError != nil {
+		return nil, combinedError
+	}
+
+
+
+    return retAcc, nil
 }
