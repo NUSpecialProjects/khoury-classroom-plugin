@@ -32,7 +32,7 @@ const Dashboard: React.FC = () => {
         const fetchAssignments = async (semester: Semester) => {
             try {
                 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                const result = await fetch(`${base_url}/assignments/${semester.classroom_id}`, {
+                const result = await fetch(`${base_url}/assignments/${semester.id}`, {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -49,11 +49,10 @@ const Dashboard: React.FC = () => {
                     ...assignment,
                     main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
                 }))
+                console.log("Setting Assignment data: ", assignmentGoodDate)
                 setAssignments(assignmentGoodDate); 
             } catch (error) {
                 console.error('Error fetching assignments:', error);
-            } finally {
-                console.log("Successful Fetch")
             }
         };
 
@@ -75,26 +74,21 @@ const Dashboard: React.FC = () => {
     
             } catch (error: unknown) {
                 console.error('Error making API call:', error);
-            } finally {
-                console.log("Successful Sync")
-                fetchAssignments(semester).then(() => {
-                    console.log('Assignments fetched successfully');
-                }).catch((error: unknown) => {
-                    console.error('Error fetching assignments:', error);
-                });
             }
         };
 
-        console.log(selectedSemester)
+        console.log("We in dashboard: ", selectedSemester)
         if (selectedSemester != null) {
             SyncWithClassroom(selectedSemester).then(() => {
-                console.log('Synced successfully');
+                fetchAssignments(selectedSemester).catch((error: unknown) => {
+                    console.log("Error fetching:", error)
+                })
             }).catch((error: unknown) => {
                 console.error('Error syncing:', error);
             });
         }
 
-    }, []);
+    }, [selectedSemester]);
 
     return (
         <div className="Dashboard">

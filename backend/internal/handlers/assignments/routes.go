@@ -10,7 +10,7 @@ func Routes(app *fiber.App, params types.Params) {
  
 
   protected := app.Group("/assignments")
-  protected.Get("/semester_id", service.GetAssignmentsInSemester)
+  protected.Get("/:semester_id", service.GetAssignmentsInSemester)
   protected.Post("", service.CreateAssignment)
   
   protected.Post("/rubrics", service.CreateRubric)
