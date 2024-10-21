@@ -15,6 +15,6 @@ type Assignment struct {
   MainDueDate             *time.Time  `json:"main_due_date"`
 }
 
-type Assignment_CR_ID struct {
+type Assignment_Classroom_ID struct {
 	Assignment_Classroom_ID int64 `json:"assignment_classroom_id"`
 }

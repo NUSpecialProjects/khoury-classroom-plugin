@@ -11,7 +11,6 @@ import (
 
 
 func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
-	fmt.Println("SyncAssignments - Begun sync attempt")
 	// Get Assignments from GH Classroom
 	var syncData models.ClassroomSync
 	err := c.BodyParser(&syncData)
@@ -43,7 +42,6 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		// Check if assignment is in our db
 		for _, a_c_id := range assignment_classroom_ids {
 			if assignment.ID == a_c_id.Assignment_Classroom_ID {
-				fmt.Println("SyncAssignments - Found assignment in DB")
 				inDB = true
 				break
 			}

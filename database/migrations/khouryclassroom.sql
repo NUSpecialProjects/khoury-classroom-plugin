@@ -63,6 +63,3 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 
 
-INSERT INTO semesters (classroom_id, active, org_id)
-VALUES 
-  (237209, TRUE, 501)

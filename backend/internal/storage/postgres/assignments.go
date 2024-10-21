@@ -22,7 +22,6 @@ func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) error {
 
 	if assignmentData.Rubric_ID == nil {
-		fmt.Println("Creating Assignment without a rubric")
 		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
 			assignmentData.InsertedDate,
 			assignmentData.Assignment_Classroom_ID,
@@ -35,7 +34,6 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 		}
 
 	} else {
-		fmt.Println("Creating Assignment with a rubric")
 		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
 			assignmentData.Rubric_ID,
 			assignmentData.InsertedDate,
@@ -70,7 +68,7 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	return nil
 }
 
-func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_CR_ID, error) {
+func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classroom_ID, error) {
 
 	rows, err := db.connPool.Query(ctx, "SELECT (assignment_classroom_id) FROM assignments")
 	if err != nil {
@@ -78,6 +76,6 @@ func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_CR_ID, 
 	}
 
 	defer rows.Close()
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment_CR_ID])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment_Classroom_ID])
 
 }

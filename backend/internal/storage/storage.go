@@ -27,7 +27,7 @@ type Assignments interface {
 	CreateSession(ctx context.Context, sessionData models.Session) error
 	GetSession(ctx context.Context, gitHubUserID int64) (models.Session, error)
 	DeleteSession(ctx context.Context, gitHubUserID int64) error
-  GetAssignmentIDs(ctx context.Context) ([]models.Assignment_CR_ID, error)
+  GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classroom_ID, error)
   
 }
 

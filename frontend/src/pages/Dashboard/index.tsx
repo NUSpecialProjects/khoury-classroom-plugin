@@ -40,7 +40,6 @@ const Dashboard: React.FC = () => {
                 }
 
                 const data: IAssignment[] = (await result.json() as IAssignment[])
-                console.log(data)
                 const assignmentGoodDate = data.map((assignment: IAssignment) => ({
                     ...assignment,
                     main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
