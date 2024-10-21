@@ -14,7 +14,7 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
     /* Text */
   --primary-text: #0a0a0a;
   --secondary-text: #262626;
-  --caption-text: #404040;
+  --caption-text: #737373;
   --comment-code-text: #737373;
   --primary-text-white: #ffffff;
 
@@ -26,8 +26,6 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand-darkest: #233ea0;
   --brand-highlight: rgba(203, 214, 235, 20%);
   --brand-gradient: linear-gradient(180deg, #F3F5FC 0%, #CED6E6 100%);
-    /* Borders */
-  --borders-and-lines: #a3a3a3;
 
   /* Metrics and Accents */
   --teal: #0d9488;
@@ -46,6 +44,11 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --font-size-m: 1.3em;
   --font-size-s: 1.2em;
   --font-size-xs: 0.8em;
+
+  /* BORDERS */
+   --border-color: #e5e5e5;
+   --border-style: solid;
+   --border-width: 1px;
 }
 
 html,
@@ -59,7 +62,7 @@ body {
 h1 {
   font-size: var(--font-size-l);
   font-weight: 600;
-  margin: 0;
+  margin-top: 20px;
 }
 
 h2 {
@@ -81,4 +84,10 @@ h3 {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+.primary-border {
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--border-neutral);
 }

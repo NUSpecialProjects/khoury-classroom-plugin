@@ -2,41 +2,9 @@
     &__classroomDetailsWrapper {
         display: flex;
         gap: 15px;
-        padding-bottom: 20px;
     }
 
     &__assignmentsWrapper {
         padding: 20px;
-    }
-
-    &__assignmentLink {
-        text-decoration: underline !important;
-    }
-
-    &__assignments {
-        display: table;
-        width: 100%;
-        padding-bottom: 30px;
-    }
-
-    &__assignment {
-        display: table-row;
-        padding: 10px;
-
-        >div {
-            display: table-cell;
-            white-space: nowrap;
-            padding: 15px 20px;
-            border-bottom: solid 1px #C2C2C2;
-            color: #5D5D5D;
-            font-weight: 500;
-        }
-    }
-
-    &__assignment:not(:first-child) {
-
-        >div:not(:first-child) {
-            color: #8f8f8f;
-        }
     }
 }

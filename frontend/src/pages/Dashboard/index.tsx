@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
                 <UserGroupCard label="Students" number={38} />
             </div>
             <div className="Dashboard__assignmentsWrapper">
-                <h1 style={{ marginBottom: 0 }}>Active Assignments</h1>
+                <h1>Active Assignments</h1>
                 <Table cols={3}>
                     <TableRow style={{ borderTop: "none" }}>
                         <TableCell>Assignment Name</TableCell>
@@ -30,7 +30,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="Dashboard__assignmentsWrapper">
-                <h1 style={{ marginBottom: 0 }}>Inactive Assignments</h1>
+                <h1>Inactive Assignments</h1>
                 <Table cols={3}>
                     <TableRow style={{ borderTop: "none" }}>
                         <TableCell>Assignment Name</TableCell>
