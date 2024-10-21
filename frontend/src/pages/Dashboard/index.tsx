@@ -62,7 +62,7 @@ const Dashboard: React.FC = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ classroom_id: 237210 }), //237209
+                    body: JSON.stringify({ classroom_id: 237210 }), //237209 // TODO: UnHardcode when we have this info programatically
                 })
     
                 if (!result.ok) {
@@ -102,7 +102,7 @@ const Dashboard: React.FC = () => {
                     {assignments.map((assignment, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
                             <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
-                            {assignment.main_due_date ? assignment.main_due_date.toLocaleDateString("en-US", options) : "N/A"}
+                            <TableCell> {assignment.main_due_date ? assignment.main_due_date.toLocaleDateString("en-US", options) : "N/A"}</TableCell>
                         </TableRow>
                     ))}
                 </Table>

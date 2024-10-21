@@ -65,15 +65,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 			  if err != nil {
 			  	fmt.Println("SyncAssignments - error parsing time data", err)
         } else {
-          // Format the time to be user readable, then parse it back into the time type
-          parsedTimeStr := parsedTime.Format(time.RFC822)
-          fmt.Println(parsedTimeStr)
-          formattedTime, err := time.Parse(time.RFC822, parsedTimeStr)
-          if (err != nil) {
-            fmt.Println("SyncAssignments - couldn't make time user readable")
-          } else {
-			      assignmentData.MainDueDate = &formattedTime   
-          }
+			    assignmentData.MainDueDate = &parsedTime   
         }
       }
 
