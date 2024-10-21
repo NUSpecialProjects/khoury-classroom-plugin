@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
                     throw new Error('Network response was not ok');
                 }
 
-                const data = await result.json();
+                const data: Assignment[] = (await result.json())
                 console.log(data)
                 const assignmentGoodDate = data.map((assignment: any) => ({
                     ...assignment,
