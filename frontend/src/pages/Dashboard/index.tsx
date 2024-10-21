@@ -1,9 +1,16 @@
+/* eslint-disable */
+
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
+import useSelectedSemester from "@/contexts/useClassroom";
 
 const Dashboard: React.FC = () => {
+    const [selectedSemester, setSelectedSemester] = useSelectedSemester();
+
+    console.log("VIEWING DASHBOARD FOR SEMESTER: ", selectedSemester);
+    
     return (
         <div className="Dashboard">
             <div className="Dashboard__classroomDetailsWrapper">

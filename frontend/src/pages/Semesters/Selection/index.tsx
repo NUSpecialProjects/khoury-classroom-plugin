@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
@@ -10,10 +12,12 @@ import {
     TableCell,
     TableDiv,
 } from "@/components/Table/index.tsx";
+import useSelectedSemester from "@/contexts/useClassroom";
 
 const SemesterSelection: React.FC = () => {
     const [semestersByOrg, setSemestersByOrg] = useState<{ [key: number]: Semester[] }>({});
     const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
+    const [_, setSelectedSemester] = useSelectedSemester();
 
     const navigate = useNavigate();
 
@@ -33,7 +37,7 @@ const SemesterSelection: React.FC = () => {
                 });
 
                 setSemestersByOrg(groupedSemesters);
-                setCollapsed(initialCollapsedState); // Set initial collapsed state
+                setCollapsed(initialCollapsedState);
             } catch (error) {
                 console.error("Error fetching semesters:", error);
             }
@@ -44,7 +48,8 @@ const SemesterSelection: React.FC = () => {
 
     const handleSemesterSelect = (semester: Semester) => {
         console.log("Selected semester:", semester);
-        navigate(`/semester/${semester.id}`);
+        setSelectedSemester(semester);
+        navigate(`/app/dashboard`);
     };
 
     const toggleCollapse = (orgId: number) => {
