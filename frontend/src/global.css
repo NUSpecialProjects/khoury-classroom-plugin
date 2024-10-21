@@ -22,9 +22,10 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand: #405dc5;
   --brand-lighter: #3a68c5;
   --brand-lightest: #cbd6eb;
+  --brand-darker: #3953b4;
+  --brand-darkest: #233ea0;
   --brand-highlight: rgba(203, 214, 235, 20%);
   --brand-gradient: linear-gradient(180deg, #F3F5FC 0%, #CED6E6 100%);
-
     /* Borders */
   --borders-and-lines: #a3a3a3;
 
@@ -42,6 +43,10 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --body-font-size: 1em;
   --h1-font-size: 2.0em;
   --h2-font-size: 1.5em;
+  --h3-font-size: 1.3em;
+
+  /* LAYOUT */
+
 }
 
 html,
@@ -49,6 +54,25 @@ body {
   margin: 0;
   font-family: var(--primary-font);
   font-size: var(--body-font-size);
+  color: var(--primary-text);
+}
+
+h1 {
+  font-size: var(--h1-font-size);
+  font-weight: 700;
+  margin: 0;
+}
+
+h2 {
+  font-size: var(--h2-font-size);
+  font-weight: 600;
+  margin: 0;
+}
+
+h3 {
+  font-size: var(--h3-font-size);
+  font-weight: 600;
+  margin: 0;
 }
 
 * {
