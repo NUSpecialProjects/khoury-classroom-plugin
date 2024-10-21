@@ -68,8 +68,8 @@ func (service *GitHubService) Login() fiber.Handler {
 			Value:    jwtToken,
 			Expires:  expirationTime,
 			HTTPOnly: true,
-			Secure:   false,
-			SameSite: "Lax",
+			Secure:   true,
+			SameSite: "None",
 			Path:     "/",
 		})
 
