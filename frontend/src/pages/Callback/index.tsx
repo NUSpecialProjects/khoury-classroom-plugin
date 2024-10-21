@@ -10,6 +10,8 @@ const Callback: React.FC = () => {
   const { login } = useContext(AuthContext);
 
   useEffect(() => {
+    console.log("Hello!");
+
     //if code, good, else, route to home
     if (code) {
       const sendCode = () => {
