@@ -1,5 +1,7 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import Prism from "prismjs";
 import "prismjs/plugins/line-numbers/prism-line-numbers";
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";

@@ -26,7 +26,9 @@ export const FileTree: React.FC<IFileTree> = ({
       width={230}
       height={Infinity}
       resizeHandles={["e"]}
-      handle={<div className="ResizeHandle"></div>}
+      handle={
+        <div className="ResizeHandle" style={{ zIndex: treeDepth * 2 + 1 }} />
+      }
     >
       <div className="FileTree__head">Files</div>
       <div className="FileTree__body" {...props}>
@@ -78,7 +80,7 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
           marginLeft: (depth * 15 + 15).toString() + "px",
           zIndex: (treeDepth - depth) * 2 - 1,
         }}
-      ></div>
+      />
       <div
         className={
           "FileTreeDirectory__children" +
@@ -106,9 +108,15 @@ export const FileTreeFile: React.FC<IFileTreeFile> = ({
       style={{ paddingLeft: (depth * 15 + 10).toString() + "px" }}
       {...props}
     >
-      {name}
+      <span>{name}</span>
     </div>
   );
 };
+
+/*const ResizeHandle = forwardRef<HTMLDivElement, IResizeHandle>(
+  ({ zIndex }, ref) => {
+    return <div ref={ref} className="ResizeHandle" style={{ zIndex }} />;
+  }
+);*/
 
 export default FileTree;
