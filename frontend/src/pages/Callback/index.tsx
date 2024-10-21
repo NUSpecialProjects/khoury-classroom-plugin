@@ -14,6 +14,8 @@ const Callback: React.FC = () => {
 
     //if code, good, else, route to home
     if (code) {
+      console.log("Code: ", code);
+
       const sendCode = () => {
         const base_url: string = import.meta.env
           .VITE_PUBLIC_API_DOMAIN as string;
@@ -46,6 +48,7 @@ const Callback: React.FC = () => {
       };
       sendCode();
     } else {
+      console.log("No code found");
       navigate("/");
     }
   });
