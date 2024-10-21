@@ -1,7 +1,37 @@
+/*
+The following stylesheet defines global CSS variables and their usage through the Marks frontend app. 
+Many of the defined colors are referenced from the Tailwind CSS color library for consistency and to ensure WCAG ADA complicance standards.
+*/
+
+:root {
+  /* Colors */
+  --page-background: #ffffff;
+  --panels-background: #f5f5f5;
+
+  --primary-text: #0a0a0a;
+  --secondary-text: #404040;
+
+  --brand: #405dc5;
+  --brand-lighter: #3a68c5;
+  --brand-lightest: #cbd6eb;
+  --brand-highlight: rgba(203, 214, 235, 20%);
+  --brand-gradient: linear-gradient(180deg, #F3F5FC 0%, #CED6E6 100%);
+
+  --borders-and-lines: #d4d4d4
+
+
+  /* Typography */
+  --primary-font: font-family: "Inter", Arial, Helvetica, sans-serif;
+  --body-font-size: 1em;
+  --h1-font-size: 2.0em;
+  --h2-font-size: 1.5em;
+}
+
 html,
 body {
   margin: 0;
-  font-family: "Inter", Arial, Helvetica, sans-serif;
+  font-family: var(--primary-font);
+  font-size: var(--body-font-size);
 }
 
 * {
