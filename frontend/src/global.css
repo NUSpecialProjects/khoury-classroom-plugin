@@ -17,11 +17,11 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand-highlight: rgba(203, 214, 235, 20%);
   --brand-gradient: linear-gradient(180deg, #F3F5FC 0%, #CED6E6 100%);
 
-  --borders-and-lines: #d4d4d4
+  --borders-and-lines: #d4d4d4;
 
 
   /* Typography */
-  --primary-font: font-family: "Inter", Arial, Helvetica, sans-serif;
+  --primary-font: "Inter", Arial, Helvetica, sans-serif;
   --body-font-size: 1em;
   --h1-font-size: 2.0em;
   --h2-font-size: 1.5em;
