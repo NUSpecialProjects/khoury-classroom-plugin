@@ -17,6 +17,7 @@ import useSelectedSemester from "@/contexts/useClassroom";
 const SemesterSelection: React.FC = () => {
     const [semestersByOrg, setSemestersByOrg] = useState<{ [key: number]: Semester[] }>({});
     const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
+    const [loading, setLoading] = useState(true);
     const [_, setSelectedSemester] = useSelectedSemester();
 
     const navigate = useNavigate();
@@ -40,6 +41,8 @@ const SemesterSelection: React.FC = () => {
                 setCollapsed(initialCollapsedState);
             } catch (error) {
                 console.error("Error fetching semesters:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -56,9 +59,14 @@ const SemesterSelection: React.FC = () => {
         setCollapsed((prev) => ({ ...prev, [orgId]: !prev[orgId] }));
     };
 
+    const hasSemesters = Object.keys(semestersByOrg).length > 0;
+
     return (
         <div className="SemesterSelection">
             <h1>Select a Semester</h1>
+            {loading ? (
+                <p>Loading...</p>
+            ) : hasSemesters ? (
             <Table cols={5} primaryCol={1} className="SemestersTable">
                 {Object.keys(semestersByOrg).map((orgId) => (
                     <React.Fragment key={orgId}>
@@ -127,17 +135,14 @@ const SemesterSelection: React.FC = () => {
                     </React.Fragment>
                 ))}
             </Table>
-            <button onClick={() => navigate("/app/dashboard")}>Go to Dashboard Page</button>
+            ) : (
+                <div>
+                    <p>You have no semesters.</p>
+                </div>
+            )}
+            <button onClick={() => navigate("/semester-creation")}>Create a Semester</button>
         </div>
     );
 };
 
 export default SemesterSelection;
-
-
-{/* <TableRow style={{ borderTop: "none" }}>
-                                        <TableCell>Semester Name</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Classroom ID</TableCell>
-                                        <TableCell>Action</TableCell>
-                                    </TableRow> */}
