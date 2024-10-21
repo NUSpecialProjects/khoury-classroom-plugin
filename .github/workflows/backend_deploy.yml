@@ -36,15 +36,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build Docker image
+      - name: Build Docker image with cache
         run: |
-          docker buildx build --platform linux/amd64 -t khoury-classroom-backend ./backend --load -f ./backend/Dockerfile.prod
-      
-      - name: Delete Existing Docker Image from ECR
-        run: |
-          IMAGE_URI=058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:latest
-          aws ecr batch-delete-image --repository-name khoury-classroom/backend --image-ids imageTag=latest || echo "Image not found, skipping deletion."
-
+          docker buildx build --platform linux/amd64 -t khoury-classroom-backend:latest \
+          --cache-from type=registry,ref=058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:cache \
+          --cache-to type=inline \
+          -f ./backend/Dockerfile.prod ./backend --push
 
       - name: Tag Docker image
         run: |
@@ -57,3 +54,7 @@ jobs:
       - name: Deploy to Amazon ECS
         run: |
           aws ecs update-service --cluster cb-cluster --service cb-service --force-new-deployment
+
+      - name: Wait for ECS Service Deployment to Complete
+        run: |
+          aws ecs wait services-stable --cluster cb-cluster --services cb-service
