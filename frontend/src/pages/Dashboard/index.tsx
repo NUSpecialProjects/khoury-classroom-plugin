@@ -4,6 +4,16 @@ import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
 
+interface IAssignment {
+    id: number; 
+    rubric_id: number | null; 
+    active: boolean;
+    assignment_classroom_id: number;
+    semester_id: number;
+    name: string;
+    local_id: number;
+    main_due_date: Date | null;
+  }
 
 const Dashboard: React.FC = () => {
     const [assignments, setAssignments] = useState<IAssignment[]>([]);
