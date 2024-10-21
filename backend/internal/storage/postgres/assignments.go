@@ -9,9 +9,7 @@ import (
 )
 
 func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error) {
-
-	rows, err := db.connPool.Query(ctx, "SELECT (local_id, rubric_id, semester_id, name) FROM assignments")
-
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments")
 	if err != nil {
 		fmt.Println("Error in query")
 		return nil, err
@@ -22,15 +20,36 @@ func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error
 }
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) error {
-	_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, semester_id, name) VALUES ($1, $2, $3)",
-		assignmentData.RubricID,
-		assignmentData.SemesterID,
-		assignmentData.Name)
-	if err != nil {
-		return err
+
+	if assignmentData.Rubric_ID == nil {
+		fmt.Println("Creating Assignment without a rubric")
+		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
+			assignmentData.InsertedDate,
+			assignmentData.Assignment_Classroom_ID,
+			assignmentData.SemesterID,
+			assignmentData.Name,
+      assignmentData.MainDueDate)
+
+		if err != nil {
+			return err
+		}
+
+	} else {
+		fmt.Println("Creating Assignment with a rubric")
+		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
+			assignmentData.Rubric_ID,
+			assignmentData.InsertedDate,
+			assignmentData.Assignment_Classroom_ID,
+			assignmentData.SemesterID,
+			assignmentData.Name,
+      assignmentData.MainDueDate)
+		if err != nil {
+			return err
+		}
+
 	}
 
-	return nil
+  return nil
 }
 
 func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models.StudentAssignment) error {
@@ -49,4 +68,16 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	}
 
 	return nil
+}
+
+func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_CR_ID, error) {
+
+	rows, err := db.connPool.Query(ctx, "SELECT (assignment_classroom_id) FROM assignments")
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment_CR_ID])
+
 }

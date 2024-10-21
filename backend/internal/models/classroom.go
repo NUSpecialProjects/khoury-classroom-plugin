@@ -41,3 +41,7 @@ type Classroom struct {
 	Organization *SimpleOrganization `json:"organization,omitempty"`
 	URL          string              `json:"url"`
 }
+
+type ClassroomSync struct {
+	Classroom_id int64 `json:"classroom_id"`
+}

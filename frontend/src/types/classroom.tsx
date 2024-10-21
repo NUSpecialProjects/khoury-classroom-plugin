@@ -8,3 +8,4 @@ export interface ClassroomResponse {
     available_classrooms: Classroom[];
     unavailable_classrooms: Classroom[];
 }
+

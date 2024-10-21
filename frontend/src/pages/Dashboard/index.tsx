@@ -1,48 +1,120 @@
+import { useEffect, useState } from "react";
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
 
+interface IAssignment {
+    id: number; 
+    rubric_id: number | null; 
+    active: boolean;
+    assignment_classroom_id: number;
+    semester_id: number;
+    name: string;
+    local_id: number;
+    main_due_date: Date | null;
+  }
+
 const Dashboard: React.FC = () => {
+    const [assignments, setAssignments] = useState<IAssignment[]>([]);
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+      };
+
+    // API call when the component is rendered
+    useEffect(() => {
+        const fetchAssignments = async () => {
+            try {
+                const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+                const result = await fetch(`${base_url}/assignments`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!result.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data: IAssignment[] = (await result.json() as IAssignment[])
+                console.log(data)
+                const assignmentGoodDate = data.map((assignment: IAssignment) => ({
+                    ...assignment,
+                    main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
+                }))
+                setAssignments(assignmentGoodDate); 
+            } catch (error) {
+                console.error('Error fetching assignments:', error);
+            } finally {
+                console.log("Successful Fetch")
+            }
+        };
+
+        const SyncWithClassroom = async () => {
+            try {
+                const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+                const result = await fetch(`${base_url}/github/sync`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ classroom_id: 237210 }), //237209 // TODO: UnHardcode when we have this info programatically
+                })
+    
+                if (!result.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+            } catch (error: unknown) {
+                console.error('Error making API call:', error);
+            } finally {
+                console.log("Successful Sync")
+                fetchAssignments().then(() => {
+                    console.log('Assignments fetched successfully');
+                }).catch((error: unknown) => {
+                    console.error('Error fetching assignments:', error);
+                });
+            }
+        };
+
+        
+        SyncWithClassroom().then(() => {
+            console.log('Synced successfully');
+        }).catch((error: unknown) => {
+            console.error('Error syncing:', error);
+        });
+    }, []);
+
+
     return (
         <div className="Dashboard">
+            {/* Header group cards */}
             <div className="Dashboard__classroomDetailsWrapper">
                 <UserGroupCard label="Professors" number={1} />
                 <UserGroupCard label="TAs" number={12} />
                 <UserGroupCard label="Students" number={38} />
             </div>
+
+            {/* Assignments */}
             <div className="Dashboard__assignmentsWrapper">
-            <h2 style={{ marginBottom: 0 }}>Active Assignments</h2>
-                <Table cols={3}>
+                <h2 style={{ marginBottom: 0 }}>Assignments</h2>
+                <Table cols={2}>
                     <TableRow style={{ borderTop: "none" }}>
                         <TableCell>Assignment Name</TableCell>
-                        <TableCell>Released</TableCell>
                         <TableCell>Due Date</TableCell>
                     </TableRow>
-                    {Array.from({ length: 1 }).map((_, i: number) => (
+                    {assignments.map((assignment, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
-                            <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">Assignment 1</Link></TableCell>
-                            <TableCell>5 Sep, 9:00 AM</TableCell>
-                            <TableCell>15 Sep, 11:59 PM</TableCell>
+                            <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
+                            <TableCell> {assignment.main_due_date ? assignment.main_due_date.toLocaleDateString("en-US", options) : "N/A"}</TableCell>
                         </TableRow>
                     ))}
                 </Table>
 
-                <h2 style={{ marginBottom: 0 }}>Inactive Assignments</h2>
-                <Table cols={3}>
-                    <TableRow style={{ borderTop: "none" }}>
-                        <TableCell>Assignment Name</TableCell>
-                        <TableCell>Released</TableCell>
-                        <TableCell>Due Date</TableCell>
-                    </TableRow>
-                    {Array.from({ length: 2 }).map((_, i: number) => (
-                        <TableRow key={i} className="Assignment__submission">
-                            <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">Assignment 1</Link></TableCell>
-                            <TableCell>5 Sep, 9:00 AM</TableCell>
-                            <TableCell>15 Sep, 11:59 PM</TableCell>
-                        </TableRow>
-                    ))}
-                </Table>
             </div>
         </div>
     )

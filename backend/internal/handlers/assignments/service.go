@@ -1,7 +1,7 @@
 package assignments
 
 import (
-  "github.com/CamPlume1/khoury-classroom/internal/storage"
+	"github.com/CamPlume1/khoury-classroom/internal/storage"
 )
 
 
