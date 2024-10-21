@@ -133,11 +133,3 @@ const SemesterSelection: React.FC = () => {
 };
 
 export default SemesterSelection;
-
-
-{/* <TableRow style={{ borderTop: "none" }}>
-                                        <TableCell>Semester Name</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Classroom ID</TableCell>
-                                        <TableCell>Action</TableCell>
-                                    </TableRow> */}
