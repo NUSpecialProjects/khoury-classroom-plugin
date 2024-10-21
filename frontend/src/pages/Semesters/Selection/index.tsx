@@ -17,6 +17,7 @@ import useSelectedSemester from "@/contexts/useClassroom";
 const SemesterSelection: React.FC = () => {
     const [semestersByOrg, setSemestersByOrg] = useState<{ [key: number]: Semester[] }>({});
     const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
+    const [loading, setLoading] = useState(true);
     const [_, setSelectedSemester] = useSelectedSemester();
 
     const navigate = useNavigate();
@@ -40,6 +41,8 @@ const SemesterSelection: React.FC = () => {
                 setCollapsed(initialCollapsedState);
             } catch (error) {
                 console.error("Error fetching semesters:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -61,7 +64,9 @@ const SemesterSelection: React.FC = () => {
     return (
         <div className="SemesterSelection">
             <h1>Select a Semester</h1>
-            {hasSemesters ? (
+            {loading ? (
+                <p>Loading...</p>
+            ) : hasSemesters ? (
             <Table cols={5} primaryCol={1} className="SemestersTable">
                 {Object.keys(semestersByOrg).map((orgId) => (
                     <React.Fragment key={orgId}>
