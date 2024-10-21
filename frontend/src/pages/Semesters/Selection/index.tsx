@@ -56,9 +56,12 @@ const SemesterSelection: React.FC = () => {
         setCollapsed((prev) => ({ ...prev, [orgId]: !prev[orgId] }));
     };
 
+    const hasSemesters = Object.keys(semestersByOrg).length > 0;
+
     return (
         <div className="SemesterSelection">
             <h1>Select a Semester</h1>
+            {hasSemesters ? (
             <Table cols={5} primaryCol={1} className="SemestersTable">
                 {Object.keys(semestersByOrg).map((orgId) => (
                     <React.Fragment key={orgId}>
@@ -127,7 +130,12 @@ const SemesterSelection: React.FC = () => {
                     </React.Fragment>
                 ))}
             </Table>
-            <button onClick={() => navigate("/app/dashboard")}>Go to Dashboard Page</button>
+            ) : (
+                <div>
+                    <p>You have no semesters.</p>
+                </div>
+            )}
+            <button onClick={() => navigate("/semester-creation")}>Create a Semester</button>
         </div>
     );
 };
