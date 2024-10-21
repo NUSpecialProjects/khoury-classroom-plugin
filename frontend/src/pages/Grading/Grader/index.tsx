@@ -41,7 +41,6 @@ const Grader: React.FC = () => {
   // when a new file is selected, import any necessary
   // prismjs language syntax files and trigger a rehighlight
   useEffect(() => {
-    console.log(currentFile?.name);
     if (currentFile) {
       const lang = ext2lang[extractExtension(currentFile.name)];
       const loadLanguages = async () => {

@@ -61,7 +61,6 @@
     border-radius: 5px;
   }
   &__files {
-    padding: 5px 10px;
     height: 100%;
     overflow: hidden;
     flex-shrink: 0;
@@ -80,6 +79,8 @@
     flex-shrink: 1;
     min-width: 0;
     overflow: auto;
+    padding: 5px;
+    background: #1e1e1e;
 
     pre {
       margin: 0;

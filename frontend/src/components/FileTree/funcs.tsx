@@ -1,6 +1,7 @@
 import { FileTreeDirectory, FileTreeFile } from ".";
 
 export const buildTree = (tree1D: IGitTreeNode[]) => {
+  let treeDepth = 0;
   const root: IFileTreeNode = {
     type: "tree",
     sha: "",
@@ -10,6 +11,7 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
   tree1D.forEach((node) => {
     const path = node.path.split("/");
     let level: IFileTreeNode = root;
+    treeDepth = Math.max(treeDepth, path.length);
 
     path.forEach((seg, i) => {
       if (!(seg in level.childNodes)) {
@@ -25,7 +27,7 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
     });
   });
 
-  return root;
+  return { root, treeDepth };
 };
 
 export const sortTreeNode = (node: IFileTreeNode) => {
@@ -46,6 +48,7 @@ export const renderTree = (
   node: IFileTreeNode,
   name: string,
   depth: number,
+  treeDepth: number,
   selectedSha: string,
   selectFileCallback: (node: IFileTreeNode) => void
 ) => {
@@ -65,12 +68,18 @@ export const renderTree = (
 
   // if not a blob (file), must be a tree (directory)
   return (
-    <FileTreeDirectory key={name} name={name} depth={depth}>
+    <FileTreeDirectory
+      key={name}
+      name={name}
+      depth={depth}
+      treeDepth={treeDepth}
+    >
       {sortTreeNode(node).map(([childName, childNode]) =>
         renderTree(
           childNode,
           childName,
           depth + 1,
+          treeDepth,
           selectedSha,
           selectFileCallback
         )

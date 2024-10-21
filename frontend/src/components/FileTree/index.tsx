@@ -17,11 +17,12 @@ export const FileTree: React.FC<IFileTree> = ({
   ...props
 }) => {
   const [selectedSha, setSelectedSha] = useState<string>("");
-  const root = buildTree(gitTree);
+  const { root, treeDepth } = buildTree(gitTree);
 
   return (
     <ResizableBox
       className={"FileTree" + (className ? " " + className : "")}
+      style={{ zIndex: treeDepth * 2 }}
       width={230}
       height={Infinity}
       resizeHandles={["e"]}
@@ -30,7 +31,7 @@ export const FileTree: React.FC<IFileTree> = ({
       <div className="FileTree__head">Files</div>
       <div className="FileTree__body" {...props}>
         {sortTreeNode(root).map(([name, node]) =>
-          renderTree(node, name, 0, selectedSha, (n) => {
+          renderTree(node, name, 0, treeDepth, selectedSha, (n) => {
             setSelectedSha(n.sha);
             selectFileCallback(n);
           })
@@ -47,6 +48,7 @@ export const FileTree: React.FC<IFileTree> = ({
 export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
   name,
   depth,
+  treeDepth,
   children,
   className,
   ...props
@@ -59,7 +61,11 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
     >
       <div
         className="FileTreeDirectory__name"
-        style={{ paddingLeft: (depth * 15).toString() + "px" }}
+        style={{
+          paddingLeft: (depth * 15 + 10).toString() + "px",
+          top: (depth * 24).toString() + "px",
+          zIndex: (treeDepth - depth) * 2,
+        }}
         onClick={() => {
           setCollapsed(!collapsed);
         }}
@@ -68,7 +74,10 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
       </div>
       <div
         className="FileTreeDirectory__bars"
-        style={{ marginLeft: (depth * 15 + 5).toString() + "px" }}
+        style={{
+          marginLeft: (depth * 15 + 15).toString() + "px",
+          zIndex: (treeDepth - depth) * 2 - 1,
+        }}
       ></div>
       <div
         className={
@@ -94,7 +103,7 @@ export const FileTreeFile: React.FC<IFileTreeFile> = ({
   return (
     <div
       className={"FileTreeFile" + (className ? " " + className : "")}
-      style={{ paddingLeft: (depth * 15).toString() + "px" }}
+      style={{ paddingLeft: (depth * 15 + 10).toString() + "px" }}
       {...props}
     >
       {name}

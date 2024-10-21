@@ -15,6 +15,7 @@ interface IFileTree extends React.HTMLProps<HTMLDivElement> {
 interface IFileTreeDirectory extends React.HTMLProps<HTMLDivElement> {
   name: string;
   depth: number;
+  treeDepth: number;
 }
 
 interface IFileTreeFile extends React.HTMLProps<HTMLDivElement> {
