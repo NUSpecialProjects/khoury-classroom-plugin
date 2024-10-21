@@ -9,14 +9,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Sync struct {
-	Classroom_id int64 `json:"classroom_id"`
-}
 
 func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 	fmt.Println("SyncAssignments - Begun sync attempt")
 	// Get Assignments from GH Classroom
-	var syncData Sync
+	var syncData models.ClassroomSync
 	err := c.BodyParser(&syncData)
 	if err != nil {
 		return err
@@ -73,7 +70,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
       assignmentData.InsertedDate = time.Now()
       assignmentData.Assignment_Classroom_ID = assignment.ID
       assignmentData.Name = assignment.Title
-      assignmentData.SemesterID = 1 // TODO: NEEDS TO NOT BE HARD CODED
+      assignmentData.SemesterID = 1 // TODO: NEEDS TO NOT BE HARD CODED WHEN ACTIVE SEMESTER IS IMPLEMENTED
 
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
 			if error != nil {
@@ -83,6 +80,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		}
 
 	}
+
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "Synced data",
 	})

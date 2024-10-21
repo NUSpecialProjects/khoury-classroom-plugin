@@ -15,8 +15,10 @@ func Routes(app *fiber.App, params types.Params) {
 	protected := app.Group("/github")
 	protected.Use(middleware.Protected(params.UserCfg.JWTSecret))
 	protected.Get("/user", service.GetCurrentUser())
+  
   protected.Post("/sync", service.SyncAssignments)
-	protected.Get("/classrooms", service.ListClassrooms())
+
+  protected.Get("/classrooms", service.ListClassrooms())
 	protected.Post("/startup", service.AppInitialization())
 
 	protected.Get("/orgs/:org", service.GetOrg())
