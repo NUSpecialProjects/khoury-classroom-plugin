@@ -9,7 +9,7 @@ interface IFileTreeNode {
 
 interface IFileTree extends React.HTMLProps<HTMLDivElement> {
   gitTree: IGitTreeNode[];
-  selectFileCallback: Function;
+  selectFileCallback: (node: IFileTreeNode) => void;
 }
 
 interface IFileTreeDirectory extends React.HTMLProps<HTMLDivElement> {

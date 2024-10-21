@@ -43,7 +43,9 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
     >
       <div
         className="FileTreeDirectory__name"
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => {
+          setCollapsed(!collapsed);
+        }}
       >
         {collapsed ? <FaChevronRight /> : <FaChevronDown />} {name}
       </div>
@@ -77,5 +79,4 @@ export const FileTreeFile: React.FC<IFileTreeFile> = ({
   );
 };
 
-export { buildTree, renderTree };
 export default FileTree;

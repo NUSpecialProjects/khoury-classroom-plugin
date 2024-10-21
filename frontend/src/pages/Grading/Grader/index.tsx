@@ -32,6 +32,9 @@ const Grader: React.FC = () => {
       .then((response) => response.json())
       .then((data: IGitTreeNode[]) => {
         setGitTree(data);
+      })
+      .catch((err: unknown) => {
+        console.log(err);
       });
   }, []);
 
@@ -56,21 +59,24 @@ const Grader: React.FC = () => {
             }
           }
           await ext2langLoader[lang]();
-          Promise.resolve();
-        } catch (err) {
+        } catch (err: unknown) {
           // Prism does not support language or mapping does not exist
-          return Promise.reject();
+          console.log(err);
         }
       };
-      loadLanguages().then(() => {
-        Prism.highlightAll();
-      });
+      loadLanguages()
+        .then(() => {
+          Prism.highlightAll();
+        })
+        .catch((err: unknown) => {
+          console.log(err);
+        });
     }
   }, [currentFile]);
 
   const openFile = (node: IFileTreeNode) => {
     // Check if the content is already cached
-    if (cachedFiles[node.sha]) {
+    if (node.sha in cachedFiles) {
       setCurrentFile(cachedFiles[node.sha]);
       return;
     }
@@ -88,6 +94,9 @@ const Grader: React.FC = () => {
           ...prev,
           [node.sha]: file,
         }));
+      })
+      .catch((err: unknown) => {
+        console.log(err);
       });
   };
 

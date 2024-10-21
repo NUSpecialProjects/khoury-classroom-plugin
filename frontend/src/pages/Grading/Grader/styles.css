@@ -64,6 +64,7 @@
     height: 100%;
     overflow: auto;
     flex-shrink: 0;
+    resize: horizontal;
   }
   &__file {
     padding: 5px;
