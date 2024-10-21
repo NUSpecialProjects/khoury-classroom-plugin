@@ -69,7 +69,7 @@ func (service *GitHubService) Login() fiber.Handler {
 			Expires:  expirationTime,
 			HTTPOnly: true,
 			Secure:   true,
-			SameSite: "Strict",
+			SameSite: "None",
 			Path:     "/",
 		})
 
