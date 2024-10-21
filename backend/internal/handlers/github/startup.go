@@ -118,7 +118,7 @@ func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get classrooms"})
 		}
 
-		semesters, err := service.store.ListSemesters(c.Context(), org_id)
+		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting semesters: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
@@ -163,7 +163,7 @@ func (service *GitHubService) ListOrgSemesters() fiber.Handler {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
 		}
 
-		semesters, err := service.store.ListSemesters(c.Context(), org_id)
+		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting semesters: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})

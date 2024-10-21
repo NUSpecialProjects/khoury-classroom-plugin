@@ -27,7 +27,7 @@ func Routes(app *fiber.App, params types.Params) {
 	// protected.Get("/user/all-orgs", service.GetUserOrgs())
 
 	// // list the classrooms that are already associated with a "semester" in our app
-	// protected.Get("/user/semesters", service.GetSemesters())
+	protected.Get("/user/semesters", service.GetUserSemesters())
 
 	protected.Post("/semesters", service.CreateSemester())
 

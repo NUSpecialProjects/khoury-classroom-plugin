@@ -8,7 +8,27 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) ListSemesters(ctx context.Context, orgID int64) ([]models.Semester, error) {
+func (db *DB) ListSemestersByOrgList(ctx context.Context, orgIDs []int64) ([]models.Semester, error) {
+	rows, err := db.connPool.Query(ctx,
+		"SELECT id, name, classroom_id, active, org_id FROM semesters WHERE org_id = ANY($1)",
+		orgIDs,
+	)
+	if err != nil {
+		log.Default().Println("failed to list semesters")
+		return nil, err
+	}
+	defer rows.Close()
+
+	semesters, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Semester])
+	if err != nil {
+		log.Default().Println("failed to collect semesters")
+		return nil, err
+	}
+
+	return semesters, nil
+}
+
+func (db *DB) ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Semester, error) {
 	rows, err := db.connPool.Query(ctx,
 		"SELECT id, name, classroom_id, active, org_id FROM semesters WHERE org_id = $1",
 		orgID,
