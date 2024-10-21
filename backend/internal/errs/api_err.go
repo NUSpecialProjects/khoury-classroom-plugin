@@ -50,6 +50,10 @@ func Conflict(title string, withKey string, withValue any) APIError {
 	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict: %s with %s='%s' already exists", title, withKey, withValue))
 }
 
+func MissingApiFieldError(field string) APIError{
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("Missing field %s", field))
+}
+
 func InvalidRequestData(errors map[string]string) APIError {
 	return APIError{
 		StatusCode: http.StatusUnprocessableEntity,

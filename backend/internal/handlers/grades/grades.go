@@ -1,6 +1,9 @@
 package grades
 
 import (
+	"errors"
+	"strconv"
+
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/gofiber/fiber/v2"
@@ -9,9 +12,11 @@ import (
 func (service *GradeService) GetSubmissionsByID() fiber.Handler {
 
 	return func(c *fiber.Ctx) error {
-		assID = c.Params("assignmentID")
-		if assID == "" {
-			return errs.NewAPIError(404, errors.New("Malformed request: Missing assignment ID"))
+		
+		assID := c.Params("assignment-id")
+		assInt, err := strconv.ParseInt(assID, 10, 64)
+		if assID == "" || err != nil {
+			return errs.MissingApiFieldError("assignment-id")
 		}
 
 		client, err  := middleware.GetClient(c, service.store, service.userCfg)
@@ -20,7 +25,7 @@ func (service *GradeService) GetSubmissionsByID() fiber.Handler {
 			return errs.GithubIntegrationError(err)
 		}
 
-		assignments, err := client.GetSubmissionsByID(assID)
+		assignments, err := client.GetSubmissionsByID(c.Context(), assInt)
 		
 		if err != nil {
 			return errs.GithubIntegrationError(err)
@@ -35,13 +40,14 @@ func (service *GradeService) GetSubmissionsByID() fiber.Handler {
 func (service *GradeService) GetSubmissionsByUserID() fiber.Handler {
 	
 	return func(c *fiber.Ctx) error {
-		userGH = c.Params("userGH")
+		userGH := c.Params("userGH")
 		if userGH == "" {
 			return errs.NewAPIError(404, errors.New("Malformed request: Missing Github Username"))
 		}
 
-		ClassroomID = c.Cookies("classroom-id")
-		if ClassroomID == "" {
+		classroomID := c.Cookies("classroom-id")
+		classInt, err := strconv.ParseInt(classroomID, 10, 64)
+		if classroomID == "" || err != nil {
 			return errs.MissingCookieError("classroom-id")
 		}
 
@@ -52,7 +58,7 @@ func (service *GradeService) GetSubmissionsByUserID() fiber.Handler {
 		}
 	
 
-		assignments, err := client.GetSubmissionByUID(ctx, ClassroomID, userGH)
+		assignments, err := client.GetSubmissionByUID(c.Context(), classInt, userGH)
 		
 		if err != nil {
 			return errs.GithubIntegrationError(err)
@@ -65,7 +71,27 @@ func (service *GradeService) GetSubmissionsByUserID() fiber.Handler {
 func (service *GradeService) GetSubmissionByUIDAndAID() fiber.Handler {
 	
 	return func(c *fiber.Ctx) error {
-		ret, err := 
+		userGH := c.Params("userGH")
+		if userGH == "" {
+			return errs.NewAPIError(404, errors.New("Malformed request: Missing Github Username"))
+		}
+
+		assID := c.Params("assignment-id")
+		assInt, err := strconv.ParseInt(assID, 10, 64)
+		if assID == "" || err != nil {
+			return errs.MissingApiFieldError("assignment-id")
+		}
+
+		client, err  := middleware.GetClient(c, service.store, service.userCfg)
+
+		if err != nil {
+			return errs.GithubIntegrationError(err)
+		}
+
+
+		submission, err := client.GetSubmissionByUIDAndAID(c.Context(), assInt, userGH)
+
+		return c.Status(500).JSON(submission)
 	}
 
 }
