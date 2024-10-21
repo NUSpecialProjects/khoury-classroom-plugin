@@ -41,12 +41,11 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   /* TYPOGRAPHY */
   --primary-font: "Inter", Arial, Helvetica, sans-serif;
   --body-font-size: 1em;
-  --h1-font-size: 2.0em;
-  --h2-font-size: 1.5em;
-  --h3-font-size: 1.3em;
-
-  /* LAYOUT */
-
+  --font-size-xl: 2.0em;
+  --font-size-l: 1.5em;
+  --font-size-m: 1.3em;
+  --font-size-s: 1.2em;
+  --font-size-xs: 0.8em;
 }
 
 html,
@@ -58,19 +57,19 @@ body {
 }
 
 h1 {
-  font-size: var(--h1-font-size);
-  font-weight: 700;
+  font-size: var(--font-size-l);
+  font-weight: 600;
   margin: 0;
 }
 
 h2 {
-  font-size: var(--h2-font-size);
+  font-size: var(--font-size-m);
   font-weight: 600;
   margin: 0;
 }
 
 h3 {
-  font-size: var(--h3-font-size);
+  font-size: var(--font-size-s);
   font-weight: 600;
   margin: 0;
 }

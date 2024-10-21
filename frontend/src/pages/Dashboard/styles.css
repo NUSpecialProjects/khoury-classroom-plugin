@@ -2,6 +2,7 @@
     &__classroomDetailsWrapper {
         display: flex;
         gap: 15px;
+        padding-bottom: 20px;
     }
 
     &__assignmentsWrapper {
@@ -15,7 +16,6 @@
     &__assignments {
         display: table;
         width: 100%;
-        font-size: 12pt;
         padding-bottom: 30px;
     }
 
