@@ -1,6 +1,6 @@
 import { ClassroomResponse } from "@/types/classroom";
 import { Organization, OrganizationsResponse } from "@/types/organization";
-import { SemesterResponse } from "@/types/semester";
+import { SemestersResponse } from "@/types/semester";
 
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
@@ -66,7 +66,7 @@ export const postSemester = async (orgId: number, classroomId: number, name: str
     }
 };
 
-export const getSemesters = async (): Promise<SemesterResponse> => {
+export const getSemesters = async (): Promise<SemestersResponse> => {
     const response = await fetch(`${base_url}/github/user/semesters`, {
         method: "GET",
         credentials: 'include',

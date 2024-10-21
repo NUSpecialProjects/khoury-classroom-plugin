@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import useSelectedSemester from "@/contexts/useClassroom";
 
 const Dashboard: React.FC = () => {
-    const [selectedSemester, setSelectedSemester] = useSelectedSemester();
+    const [selectedSemester, _] = useSelectedSemester();
 
     console.log("VIEWING DASHBOARD FOR SEMESTER: ", selectedSemester);
     
