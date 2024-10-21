@@ -45,12 +45,16 @@ export const sortTreeNode = (node: IFileTreeNode) => {
 export const renderTree = (
   node: IFileTreeNode,
   name: string,
+  depth: number,
+  selectedSha: string,
   selectFileCallback: (node: IFileTreeNode) => void
 ) => {
   if (node.type === "blob") {
     return (
       <FileTreeFile
+        className={selectedSha == node.sha ? "FileTreeFile--selected" : ""}
         key={name}
+        depth={depth}
         name={name}
         onClick={() => {
           selectFileCallback(node);
@@ -61,9 +65,15 @@ export const renderTree = (
 
   // if not a blob (file), must be a tree (directory)
   return (
-    <FileTreeDirectory key={name} name={name}>
+    <FileTreeDirectory key={name} name={name} depth={depth}>
       {sortTreeNode(node).map(([childName, childNode]) =>
-        renderTree(childNode, childName, selectFileCallback)
+        renderTree(
+          childNode,
+          childName,
+          depth + 1,
+          selectedSha,
+          selectFileCallback
+        )
       )}
     </FileTreeDirectory>
   );

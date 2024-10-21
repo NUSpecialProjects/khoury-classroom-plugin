@@ -1,14 +1,64 @@
 .FileTree {
-  background: #eee;
+  background: #1e1e1e;
+  overflow: auto;
+  font-size: 0.9rem;
+  position: relative;
+  max-width: 80%;
+
+  &__head {
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px;
+    font-weight: 300;
+  }
+
+  &__body {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    ::-webkit-scrollbar {
+      background: transparent; /* Chrome/Safari/Webkit */
+      width: 0px;
+    }
+  }
+
+  .ResizeHandle {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    cursor: col-resize;
+    background: #353535;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--brand-lighter);
+    }
+  }
 }
 
 .FileTreeDirectory {
-  padding-left: 15px;
+  position: relative;
 
   &__name {
     display: flex;
     align-items: center;
     gap: 5px;
+    color: #d4d4d4;
+    font-weight: 400;
+  }
+
+  &__bars {
+    position: absolute;
+    width: 1px;
+    height: calc(100% - 23px);
+    background: #585858;
   }
 
   &--collapsed {
@@ -16,13 +66,15 @@
   }
 
   svg {
+    min-width: 10px;
     width: 10px;
     height: 10px;
   }
 }
 
 .FileTreeFile {
-  padding-left: 15px;
+  color: #c4c4c4;
+  font-weight: 300;
 }
 
 .FileTreeDirectory__name,
@@ -30,8 +82,21 @@
   transition: background 0.2s ease;
   user-select: none;
   cursor: pointer;
+  padding: 3px;
 
-  &:hover {
-    background: #ddd;
+  &:not(&--selected):hover {
+    background: #393939;
   }
+
+  &--selected {
+    background: #494949;
+  }
+}
+
+.FileTreeDirectory__name > span,
+.FileTreeFile {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

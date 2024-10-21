@@ -58,13 +58,13 @@
     overflow: hidden;
     display: flex;
     flex-direction: row;
+    border-radius: 5px;
   }
   &__files {
-    padding: 20px;
+    padding: 5px 10px;
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
     flex-shrink: 0;
-    resize: horizontal;
   }
   &__file {
     padding: 5px;
@@ -77,6 +77,7 @@
   &__browser {
     height: 100%;
     flex-grow: 1;
+    flex-shrink: 1;
     min-width: 0;
     overflow: auto;
 

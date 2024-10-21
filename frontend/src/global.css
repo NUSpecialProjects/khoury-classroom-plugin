@@ -1,7 +1,54 @@
+/*
+The following stylesheet defines global CSS variables and their usage through the Marks frontend app. 
+Many of the defined colors are referenced from the Tailwind CSS color library for consistency and to ensure WCAG ADA complicance standards.
+*/
+
+:root {
+  /* COLORS */
+  /* Backgrounds */
+  --page-background: #ffffff;
+  --panels-background: #f5f5f5;
+  --panels-darker-background: #e5e5e5;
+  --panels-lighter-background: #ffffff;
+
+  /* Text */
+  --primary-text: #0a0a0a;
+  --secondary-text: #262626;
+  --caption-text: #404040;
+  --comment-code-text: #737373;
+  --primary-text-white: #ffffff;
+
+  /* Brand */
+  --brand: #405dc5;
+  --brand-lighter: #3a68c5;
+  --brand-lightest: #cbd6eb;
+  --brand-highlight: rgba(203, 214, 235, 20%);
+  --brand-gradient: linear-gradient(180deg, #f3f5fc 0%, #ced6e6 100%);
+
+  /* Borders */
+  --borders-and-lines: #a3a3a3;
+
+  /* Metrics and Accents */
+  --teal: #0d9488;
+  --amber: #f59e0b;
+  --rose: #e11d48;
+  --blue: #2563eb;
+  --neutral: #d4d4d4;
+  --green: #15803d;
+  --red: #b91c1c;
+
+  /* TYPOGRAPHY */
+  --primary-font: "Inter", Arial, Helvetica, sans-serif;
+  --body-font-size: 1em;
+  --h1-font-size: 2em;
+  --h2-font-size: 1.5em;
+}
+
 html,
 body {
   margin: 0;
-  font-family: "Inter", Arial, Helvetica, sans-serif;
+  font-family: var(--primary-font);
+  font-size: var(--body-font-size);
 }
 
 * {
