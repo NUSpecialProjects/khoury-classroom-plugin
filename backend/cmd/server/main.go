@@ -30,7 +30,6 @@ func main() {
 		log.Println(err.Error())
 		log.Fatalf("Unable to load environment variables necessary for application???????????" + err.Error())
 	}
-	log.Println(cfg)
 
 	db, err := postgres.New(ctx, cfg.Database)
 	if err != nil {

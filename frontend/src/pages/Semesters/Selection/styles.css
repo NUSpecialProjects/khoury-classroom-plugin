@@ -1,0 +1,22 @@
+.fixed-width-button {
+    width: 60px;
+    text-align: center;
+}
+
+.fixed-width-id-column {
+    width: 175px;
+    text-align: center;
+}
+
+.SubTable {
+    padding-left: 60px;
+    /* same padding as the chevron */
+}
+
+.HeaderRow {
+    background-color: #f0f0f0;
+}
+
+.ChildRow {
+    background-color: #ffffff;
+}

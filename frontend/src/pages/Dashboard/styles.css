@@ -8,16 +8,8 @@
         padding: 20px;
     }
 
-    &__assignmentsHeader {
-        padding-top: 20px;
-        font-size: 16pt;
-        font-weight: 500;
-    }
-
     &__assignmentLink {
-        a& {
-            text-decoration: underline;
-        }
+        text-decoration: underline !important;
     }
 
     &__assignments {
