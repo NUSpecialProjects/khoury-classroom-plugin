@@ -10,6 +10,7 @@ type Storage interface {
 	Close(context.Context)
 	Test
 	Assignments
+	Semesters
 }
 
 type Test interface {
@@ -28,4 +29,12 @@ type Assignments interface {
 	DeleteSession(ctx context.Context, gitHubUserID int64) error
   GetAssignmentIDs(ctx context.Context) ([]models.Assignment_CR_ID, error)
   
+}
+
+type Semesters interface {
+	ListSemesters(ctx context.Context, orgID int64) ([]models.Semester, error)
+	CreateSemester(ctx context.Context, semesterData models.Semester) error
+	GetSemester(ctx context.Context, semesterID int64) (models.Semester, error)
+	DeactivateSemester(ctx context.Context, semesterID int64) error
+	ActivateSemester(ctx context.Context, semesterID int64) error
 }

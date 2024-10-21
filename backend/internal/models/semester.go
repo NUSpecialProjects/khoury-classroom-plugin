@@ -1,7 +1,9 @@
 package models
 
 type Semester struct {
-	ClassroomID    int32 `json:"classroom_id"`
-	OrganizationID int32 `json:"org_id"`
-	Active         bool  `json:"active"`
+	ID          *int64 `json:"id,omitempty"`
+	ClassroomID int64  `json:"classroom_id"`
+	Active      bool   `json:"active"`
+	OrgID       int64  `json:"org_id"`
+	Name        string `json:"name"`
 }
