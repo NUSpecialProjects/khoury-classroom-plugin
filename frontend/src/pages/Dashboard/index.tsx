@@ -5,20 +5,8 @@ import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
 
 
-
-interface Assignment {
-    id: number; 
-    rubric_id?: number | null; 
-    active: boolean;
-    assignment_classroom_id: number;
-    semester_id: number;
-    name: string;
-    local_id: number;
-    main_due_date: Date;
-  }
-
 const Dashboard: React.FC = () => {
-    const [assignments, setAssignments] = useState<Assignment[]>([]);
+    const [assignments, setAssignments] = useState<IAssignment[]>([]);
     const options: Intl.DateTimeFormatOptions = {
         weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
         hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
@@ -41,15 +29,17 @@ const Dashboard: React.FC = () => {
                     throw new Error('Network response was not ok');
                 }
 
-                const data: Assignment[] = (await result.json())
+                const data: IAssignment[] = (await result.json() as IAssignment[])
                 console.log(data)
-                const assignmentGoodDate = data.map((assignment: any) => ({
+                const assignmentGoodDate = data.map((assignment: IAssignment) => ({
                     ...assignment,
                     main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
                 }))
                 setAssignments(assignmentGoodDate); 
             } catch (error) {
                 console.error('Error fetching assignments:', error);
+            } finally {
+                console.log("Successful Fetch")
             }
         };
 
@@ -69,16 +59,24 @@ const Dashboard: React.FC = () => {
                     throw new Error('Network response was not ok');
                 }
     
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Error making API call:', error);
             } finally {
                 console.log("Successful Sync")
-                fetchAssignments();
-
+                fetchAssignments().then(() => {
+                    console.log('Assignments fetched successfully');
+                }).catch((error: unknown) => {
+                    console.error('Error fetching assignments:', error);
+                });
             }
         };
 
-        SyncWithClassroom();
+        
+        SyncWithClassroom().then(() => {
+            console.log('Synced successfully');
+        }).catch((error: unknown) => {
+            console.error('Error syncing:', error);
+        });
     }, []);
 
 
