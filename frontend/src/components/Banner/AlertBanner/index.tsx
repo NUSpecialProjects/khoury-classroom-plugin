@@ -24,21 +24,19 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
     useEffect(() => {
         const checkErrors = async () => {
             const orgSemesters: Semester[] = (await getOrgSemesters(semester.org_id)).semesters;
-            console.log("ORG SEMESTERS: ", orgSemesters);
             const activeSemesters = orgSemesters.filter((s: Semester) => s.active);
+            const otherActiveSemester = activeSemesters.find((s: Semester) => s.id !== semester.id);
             if (activeSemesters.length > 1) {
                 setError(SemesterError.MULTIPLE_ACTIVE);
-                return;
             }
-            const otherActiveSemester = activeSemesters.find((s: Semester) => s.id !== semester.id);
-            if (otherActiveSemester) {
+            else if (otherActiveSemester) {
                 setActiveSemester(otherActiveSemester);
                 setError(SemesterError.ALREADY_ACTIVE);
-                return;
             }
-            if (!semester.active) {
+            else if (!semester.active) {
                 setError(SemesterError.NOT_ACTIVE);
-                return;
+            } else if (semester.active && error !== SemesterError.API_ERROR) {
+                setError(null);
             }
         };
         void checkErrors();
