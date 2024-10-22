@@ -16,7 +16,6 @@ const Dashboard: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const handleActivate = async (newSemester: Semester) => {
-        console.log("Activated semester:", newSemester);
         setSelectedSemester(newSemester);
     }
 
@@ -27,7 +26,6 @@ const Dashboard: React.FC = () => {
                 handleActivate(newSemester);
                 setError(null);
             } catch (err) {
-                console.error("Error activating semester:", err);
                 setError("Failed to activate the semester. Please try again.");
             }
         }
@@ -40,7 +38,6 @@ const Dashboard: React.FC = () => {
                 handleActivate(newSemester);
                 setError(null);
             } catch (err) {
-                console.error("Error deactivating semester:", err);
                 setError("Failed to deactivate the semester. Please try again.");
             }
         }
@@ -49,7 +46,6 @@ const Dashboard: React.FC = () => {
     return (
         <div className="Dashboard">
             {selectedSemester && (
-                console.log("Showing alertbanner: ", selectedSemester),
                 <>
                     <AlertBanner semester={selectedSemester} onActivate={handleActivate} />
             <div className="Dashboard__classroomDetailsWrapper">
