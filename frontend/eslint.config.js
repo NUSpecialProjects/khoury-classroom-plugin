@@ -1,5 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
+import prettier from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 
@@ -9,6 +10,7 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  prettier,
   {
     rules: { "react/react-in-jsx-scope": "off", "react/prop-types": "off" },
     settings: {

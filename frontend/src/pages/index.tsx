@@ -9,13 +9,13 @@ import SemesterCreation from "./Semesters/Creation";
 import SemesterSelection from "./Semesters/Selection";
 
 export {
-    Settings,
-    Dashboard,
-    Assignments,
-    Assignment,
-    Grading,
-    Callback,
-    Login,
-    SemesterCreation,
-    SemesterSelection
+  Settings,
+  Dashboard,
+  Assignments,
+  Assignment,
+  Grading,
+  Callback,
+  Login,
+  SemesterCreation,
+  SemesterSelection,
 };
