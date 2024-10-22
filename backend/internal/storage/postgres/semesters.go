@@ -110,6 +110,17 @@ func (db *DB) DeactivateSemester(ctx context.Context, semesterID int64) (models.
 
 func (db *DB) ActivateSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
 	var updatedSemester models.Semester
+	// check if no other semesters with the same org_id are active
+	var activeSemesterCount int
+	db.connPool.QueryRow(ctx,
+		"SELECT COUNT(*) FROM semesters WHERE org_id = (SELECT org_id FROM semesters WHERE id = $1) AND active = true",
+		semesterID,
+	).Scan(&activeSemesterCount)
+	if activeSemesterCount > 0 {
+		log.Default().Println("WARNING: failed to activate semester: another semester is already active")
+		return models.Semester{}, pgx.ErrNoRows
+	}
+
 	err := db.connPool.QueryRow(ctx,
 		"UPDATE semesters SET active = true WHERE id = $1 AND active = false RETURNING id, name, classroom_id, active, org_id",
 		semesterID,
