@@ -1,6 +1,8 @@
 import { AuthContext } from "@/contexts/auth";
 import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
+import "./styles.css";
 
 const Callback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -49,8 +51,9 @@ const Callback: React.FC = () => {
   });
 
   return (
-    <div>
-      <p>Loading...</p>
+    <div className="callback-container">
+      <ClipLoader size={50} color={"#123abc"} loading={true} />
+      <p>Logging in...</p>
     </div>
   );
 };
