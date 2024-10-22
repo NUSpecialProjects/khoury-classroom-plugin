@@ -1,4 +1,4 @@
-export interface Semester {
+interface Semester {
     id: number;
     classroom_id: number;
     org_id: number;
@@ -6,7 +6,7 @@ export interface Semester {
     active: boolean;
 }
 
-export interface SemestersResponse {
+interface SemestersResponse {
     active_semesters: Semester[];
     inactive_semesters: Semester[];
 }

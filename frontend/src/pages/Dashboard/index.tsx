@@ -4,7 +4,7 @@ import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
 import useSelectedSemester from "@/contexts/useClassroom";
-import { Semester } from "@/types/semester";
+
 
 interface IAssignment {
     id: number; 
@@ -19,7 +19,7 @@ interface IAssignment {
 
 const Dashboard: React.FC = () => {
     const [assignments, setAssignments] = useState<IAssignment[]>([]);
-    const [selectedSemester, _] = useSelectedSemester();
+    const {selectedSemester} = useSelectedSemester();
 
 
     const options: Intl.DateTimeFormatOptions = {
@@ -31,27 +31,30 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         const fetchAssignments = async (semester: Semester) => {
             try {
-                const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                const result = await fetch(`${base_url}/assignments/${semester.id}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!result.ok) {
-                    throw new Error('Network response was not ok');
+                if (semester.id) {
+                    const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+                    const result = await fetch(`${base_url}/assignments/${semester.id}`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+    
+                    if (!result.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+    
+                    const data: IAssignment[] = (await result.json() as IAssignment[])
+                    const assignmentGoodDate = data.map((assignment: IAssignment) => ({
+                        ...assignment,
+                        main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
+                    }))
+                    console.log("Setting Assignment data: ", assignmentGoodDate)
+                    setAssignments(assignmentGoodDate); 
                 }
-
-                const data: IAssignment[] = (await result.json() as IAssignment[])
-                const assignmentGoodDate = data.map((assignment: IAssignment) => ({
-                    ...assignment,
-                    main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
-                }))
-                console.log("Setting Assignment data: ", assignmentGoodDate)
-                setAssignments(assignmentGoodDate); 
-            } catch (error) {
+                
+            } catch (error: unknown) {
                 console.error('Error fetching assignments:', error);
             }
         };
@@ -78,7 +81,7 @@ const Dashboard: React.FC = () => {
         };
 
         console.log("We in dashboard: ", selectedSemester)
-        if (selectedSemester != null) {
+        if (selectedSemester !== null && selectedSemester !== undefined) {
             SyncWithClassroom(selectedSemester).then(() => {
                 fetchAssignments(selectedSemester).catch((error: unknown) => {
                     console.log("Error fetching:", error)
@@ -109,7 +112,7 @@ const Dashboard: React.FC = () => {
                     </TableRow>
                     {assignments.map((assignment, i: number) => (
                         <TableRow key={i} className="Assignment__submission">
-                            <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
+                            <TableCell> <Link to={`/app/assignments/?id=${assignment.id}`} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
                             <TableCell> {assignment.main_due_date ? assignment.main_due_date.toLocaleDateString("en-US", options) : "N/A"}</TableCell>
                         </TableRow>
                     ))}

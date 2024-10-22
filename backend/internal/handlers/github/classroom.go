@@ -88,3 +88,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		"message": "Synced data",
 	})
 }
+
+
+
+func (s *GitHubService) GetAssignmentBy
