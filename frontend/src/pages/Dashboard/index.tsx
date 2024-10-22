@@ -8,9 +8,12 @@ import useSelectedSemester from "@/contexts/useClassroom";
 import AlertBanner from "@/components/Banner/AlertBanner";
 import { Semester } from "@/types/semester";
 import { activateSemester, deactivateSemester } from "@/api/semesters";
+import { useState } from "react";
+import ErrorMessage from "@/components/Error";
 
 const Dashboard: React.FC = () => {
     const [selectedSemester, setSelectedSemester] = useSelectedSemester();
+    const [error, setError] = useState<string | null>(null);
 
     console.log("VIEWING DASHBOARD FOR SEMESTER: ", selectedSemester);
 
@@ -21,33 +24,48 @@ const Dashboard: React.FC = () => {
 
     const handleActivateClick = async () => {
         if (selectedSemester) {
-            const newSemester = await activateSemester(selectedSemester.id);
-            handleActivate(newSemester);
+            try {
+                const newSemester = await activateSemester(selectedSemester.id);
+                handleActivate(newSemester);
+                setError(null);
+            } catch (err) {
+                console.error("Error activating semester:", err);
+                setError("Failed to activate the semester. Please try again.");
+            }
         }
     };
 
     const handleDeactivateClick = async () => {
         if (selectedSemester) {
-            const newSemester = await deactivateSemester(selectedSemester.id);
-            handleActivate(newSemester);
+            try {
+                const newSemester = await deactivateSemester(selectedSemester.id);
+                handleActivate(newSemester);
+                setError(null);
+            } catch (err) {
+                console.error("Error deactivating semester:", err);
+                setError("Failed to deactivate the semester. Please try again.");
+            }
         }
     };
 
-//TODO: think about where the deactivate button should be
     return (
         <div className="Dashboard">
             {selectedSemester && (
                 console.log("Showing alertbanner: ", selectedSemester),
                 <>
-                <AlertBanner semester={selectedSemester} onActivate={handleActivate} />
-                <div className="Dashboard__semesterActions">
-                {selectedSemester && !selectedSemester.active && (
-                    <button onClick={handleActivateClick}>Activate Class</button>
-                )}
-                {selectedSemester && selectedSemester.active && (
-                    <button onClick={handleDeactivateClick}>Deactivate Class</button>
-                )}
-            </div>
+                    <AlertBanner semester={selectedSemester} onActivate={handleActivate} />
+                    <div className="Dashboard__semesterActions">
+                        {selectedSemester && !selectedSemester.active && (
+                            <button onClick={handleActivateClick}>Activate Class</button>
+                        )}
+                        {selectedSemester && selectedSemester.active && (
+                            <button onClick={handleDeactivateClick}>Deactivate Class</button>
+                        )}
+                    </div>
+                    {error && (
+                        <ErrorMessage message={error} />
+                    )}
+                    
                 </>
             )}
             <div className="Dashboard__classroomDetailsWrapper">
