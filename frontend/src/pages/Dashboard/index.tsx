@@ -15,8 +15,6 @@ const Dashboard: React.FC = () => {
     const {selectedSemester, setSelectedSemester} = useSelectedSemester();
     const [error, setError] = useState<string | null>(null);
 
-    console.log("VIEWING DASHBOARD FOR SEMESTER: ", selectedSemester);
-
     const handleActivate = async (newSemester: Semester) => {
         console.log("Activated semester:", newSemester);
         setSelectedSemester(newSemester);
@@ -54,20 +52,6 @@ const Dashboard: React.FC = () => {
                 console.log("Showing alertbanner: ", selectedSemester),
                 <>
                     <AlertBanner semester={selectedSemester} onActivate={handleActivate} />
-                    <div className="Dashboard__semesterActions">
-                        {selectedSemester && !selectedSemester.active && (
-                            <button onClick={handleActivateClick}>Activate Class</button>
-                        )}
-                        {selectedSemester && selectedSemester.active && (
-                            <button onClick={handleDeactivateClick}>Deactivate Class</button>
-                        )}
-                    </div>
-                    {error && (
-                        <ErrorMessage message={error} />
-                    )}
-                    
-                </>
-            )}
             <div className="Dashboard__classroomDetailsWrapper">
                 <UserGroupCard label="Professors" number={1} />
                 <UserGroupCard label="TAs" number={12} />
@@ -106,6 +90,20 @@ const Dashboard: React.FC = () => {
                     ))}
                 </Table>
             </div>
+            <div>
+                <p>Temporary Classroom Settings</p>
+                        {selectedSemester && !selectedSemester.active && (
+                            <button onClick={handleActivateClick}>Activate Class</button>
+                        )}
+                        {selectedSemester && selectedSemester.active && (
+                            <button onClick={handleDeactivateClick}>Deactivate Class</button>
+                        )}
+                    </div>
+                    {error && (
+                        <ErrorMessage message={error} />
+                    )}
+            </>
+            )}
         </div>
     )
 }
