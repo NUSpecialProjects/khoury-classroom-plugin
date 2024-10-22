@@ -1,4 +1,4 @@
-package assignments 
+package assignments
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/types"
@@ -7,18 +7,19 @@ import (
 
 func Routes(app *fiber.App, params types.Params) {
 	service := newAssignmentService(params.Store)
- 
 
-  protected := app.Group("/assignments")
-  protected.Get("", service.GetAllAssignments)
-  protected.Post("", service.CreateAssignment)
-  
-  protected.Post("/rubrics", service.CreateRubric)
+	protected := app.Group("/assignments")
+	protected.Get("", service.GetAllAssignments)
+	protected.Get("/:assignmentID/student-assignments", service.GetStudentAssignments)
 
-  protected.Post("/assignment", service.CreateStudentAssignment)
+	protected.Post("", service.CreateAssignment)
 
-  protected.Post("/due_dates", service.CreateDueDate)
+	protected.Post("/rubrics", service.CreateRubric)
 
-  protected.Post("/regrades", service.CreateRegrade)
+	protected.Post("/assignment", service.CreateStudentAssignment)
+
+	protected.Post("/due_dates", service.CreateDueDate)
+
+	protected.Post("/regrades", service.CreateRegrade)
 
 }
