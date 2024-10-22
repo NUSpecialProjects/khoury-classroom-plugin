@@ -1,8 +1,27 @@
 import { FiGithub, FiX } from "react-icons/fi";
 import "./styles.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import ErrorMessage from "@/components/Error";
 
 const Login: React.FC = () => {
   const clientId: string = import.meta.env.VITE_GITHUB_CLIENT_ID as string;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const errorFromQuery = queryParams.get("error");
+  const [error, setError] = useState<string | null>(errorFromQuery);
+
+  useEffect(() => {
+    if (errorFromQuery) {
+      queryParams.delete("error");
+      setError(errorFromQuery);
+      navigate({ search: queryParams.toString() }, { replace: true });
+    }
+  }, [errorFromQuery, navigate, queryParams]);
 
   return (
     <div className="LandingPage">
@@ -18,6 +37,7 @@ const Login: React.FC = () => {
       >
         Log In With GitHub
       </a>
+      {error && <ErrorMessage message={error} />}
     </div>
   );
 };
