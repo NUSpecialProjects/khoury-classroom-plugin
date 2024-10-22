@@ -6,19 +6,23 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
     type: "tree",
     sha: "",
     name: "",
+    path: "",
     childNodes: {},
   };
   tree1D.forEach((node) => {
-    const path = node.path.split("/");
+    const fullPath = node.path.split("/");
     let level: IFileTreeNode = root;
-    treeDepth = Math.max(treeDepth, path.length);
+    treeDepth = Math.max(treeDepth, fullPath.length);
 
-    path.forEach((seg, i) => {
+    let path = "";
+    fullPath.forEach((seg, i) => {
+      path += "/" + seg;
       if (!(seg in level.childNodes)) {
         level.childNodes[seg] = {
-          type: i === path.length - 1 ? node.type : "tree",
-          sha: i === path.length - 1 ? node.sha : "",
+          type: i === fullPath.length - 1 ? node.type : "tree",
+          sha: i === fullPath.length - 1 ? node.sha : "",
           name: seg,
+          path: path.substring(1),
           childNodes: {},
         };
       }
@@ -46,19 +50,19 @@ export const sortTreeNode = (node: IFileTreeNode) => {
 // iterate through a tree and render appropriate components
 export const renderTree = (
   node: IFileTreeNode,
-  name: string,
   depth: number,
   treeDepth: number,
-  selectedSha: string,
+  selectedFile: string,
   selectFileCallback: (node: IFileTreeNode) => void
 ) => {
   if (node.type === "blob") {
     return (
       <FileTreeFile
-        className={selectedSha == node.sha ? "FileTreeFile--selected" : ""}
-        key={name}
+        className={selectedFile == node.path ? "FileTreeFile--selected" : ""}
+        key={node.path}
         depth={depth}
-        name={name}
+        name={node.name}
+        path={node.path}
         onClick={() => {
           selectFileCallback(node);
         }}
@@ -69,18 +73,17 @@ export const renderTree = (
   // if not a blob (file), must be a tree (directory)
   return (
     <FileTreeDirectory
-      key={name}
-      name={name}
+      key={node.name}
+      name={node.name}
       depth={depth}
       treeDepth={treeDepth}
     >
-      {sortTreeNode(node).map(([childName, childNode]) =>
+      {sortTreeNode(node).map(([_, childNode]) =>
         renderTree(
           childNode,
-          childName,
           depth + 1,
           treeDepth,
-          selectedSha,
+          selectedFile,
           selectFileCallback
         )
       )}

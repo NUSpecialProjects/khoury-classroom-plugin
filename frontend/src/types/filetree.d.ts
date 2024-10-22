@@ -1,6 +1,7 @@
 interface IFileTreeNode {
   type: string;
   name: string;
+  path: string;
   sha: string;
   childNodes: {
     [name: string]: IFileTreeNode;
@@ -20,5 +21,6 @@ interface IFileTreeDirectory extends React.HTMLProps<HTMLDivElement> {
 
 interface IFileTreeFile extends React.HTMLProps<HTMLDivElement> {
   name: string;
+  path: string;
   depth: number;
 }

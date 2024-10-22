@@ -53,7 +53,7 @@
 .FileTreeDirectory {
   position: relative;
 
-  &__name {
+  .FileTree__nodeName {
     position: sticky;
     display: flex;
     align-items: center;
@@ -86,7 +86,7 @@
   font-weight: 300;
 }
 
-.FileTreeDirectory__name,
+.FileTreeDirectory > .FileTree__nodeName,
 .FileTreeFile {
   transition: background 0.2s ease;
   user-select: none;
@@ -105,8 +105,7 @@
   }
 }
 
-.FileTreeDirectory__name > span,
-.FileTreeFile > span {
+.FileTree__nodeName {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;

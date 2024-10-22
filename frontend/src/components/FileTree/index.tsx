@@ -16,8 +16,9 @@ export const FileTree: React.FC<IFileTree> = ({
   className,
   ...props
 }) => {
-  const [selectedSha, setSelectedSha] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<string>("");
   const { root, treeDepth } = buildTree(gitTree);
+  console.log(root);
 
   return (
     <ResizableBox
@@ -32,9 +33,9 @@ export const FileTree: React.FC<IFileTree> = ({
     >
       <div className="FileTree__head">Files</div>
       <div className="FileTree__body" {...props}>
-        {sortTreeNode(root).map(([name, node]) =>
-          renderTree(node, name, 0, treeDepth, selectedSha, (n) => {
-            setSelectedSha(n.sha);
+        {sortTreeNode(root).map(([_, node]) =>
+          renderTree(node, 0, treeDepth, selectedFile, (n) => {
+            setSelectedFile(n.path);
             selectFileCallback(n);
           })
         )}
@@ -62,7 +63,7 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
       {...props}
     >
       <div
-        className="FileTreeDirectory__name"
+        className="FileTree__nodeName"
         style={{
           paddingLeft: (depth * 15 + 10).toString() + "px",
           top: (depth * 24).toString() + "px",
@@ -98,6 +99,7 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
  ****************/
 export const FileTreeFile: React.FC<IFileTreeFile> = ({
   name,
+  path,
   depth,
   className,
   ...props
@@ -108,7 +110,9 @@ export const FileTreeFile: React.FC<IFileTreeFile> = ({
       style={{ paddingLeft: (depth * 15 + 10).toString() + "px" }}
       {...props}
     >
-      <span>{name}</span>
+      <span className="FileTree__nodeName" data-path={path}>
+        {name}
+      </span>
     </div>
   );
 };
