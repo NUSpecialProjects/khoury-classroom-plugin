@@ -86,7 +86,7 @@ const SemesterSelection: React.FC = () => {
                                 onClick={() => toggleCollapse(Number(orgId))}>
                                 {collapsed[Number(orgId)] ? <FaChevronRight /> : <FaChevronDown />}
                             </TableCell>
-                            <TableCell>{`${semestersByOrg[Number(orgId)][0].name.split(':')[0]}`}</TableCell>
+                            <TableCell>{`${semestersByOrg[Number(orgId)][0].org_name}`}</TableCell>
                             <TableCell>{semestersByOrg[Number(orgId)].some((semester) => (
                                 semester.active)) ? "Active" : "Inactive"}
                             </TableCell>
@@ -113,9 +113,9 @@ const SemesterSelection: React.FC = () => {
                                         <TableCell>Action</TableCell>
                                     </TableRow>
                                     {semestersByOrg[Number(orgId)].map((semester) => (
-                                        <TableRow key={semester.id} className="SemesterRow">
+                                        <TableRow key={`${semester.org_id}-${semester.classroom_id}`} className="SemesterRow">
                                             {/* <TableCell className="fixed-width-button"></TableCell> */}
-                                            <TableCell>{semester.name.split(":")[1]}</TableCell>
+                                            <TableCell>{semester.classroom_name}</TableCell>
                                             <TableCell>{semester.active ? "Active" : "Inactive"}</TableCell>
                                             <TableCell
                                                 className="fixed-width-id-column">

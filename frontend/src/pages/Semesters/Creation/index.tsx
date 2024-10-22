@@ -86,7 +86,7 @@ const SemesterCreation: React.FC = () => {
         if (selectedOrg && selectedClassroom) {
             setSemesterCreationStatus(SemesterCreationStatus.CREATING)
             try {
-                await postSemester(selectedOrg.id, selectedClassroom.id, `${selectedOrg.login}:${selectedClassroom.name}`);
+                await postSemester(selectedOrg.id, selectedClassroom.id, selectedOrg.login, selectedClassroom.name);
                 setSemesterCreationStatus(SemesterCreationStatus.CREATED)
                 // Move selectedClassroom to unavailableClassrooms
                 setAvailableClassrooms(prevAvailableClassrooms =>

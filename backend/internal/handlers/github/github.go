@@ -238,19 +238,21 @@ func (service *GitHubService) GetUserSemesters() fiber.Handler {
 func (service *GitHubService) CreateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody struct {
-			ClassroomID   int64  `json:"classroom_id"`
-			ClassroomName string `json:"name"`
 			OrgID         int64  `json:"org_id"`
+			ClassroomID   int64  `json:"classroom_id"`
+			OrgName       string `json:"org_name"`
+			ClassroomName string `json:"classroom_name"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 		}
 
 		semester := models.Semester{
-			ClassroomID: requestBody.ClassroomID,
-			Name:        requestBody.ClassroomName,
-			OrgID:       requestBody.OrgID,
-			Active:      false,
+			OrgID:         requestBody.OrgID,
+			ClassroomID:   requestBody.ClassroomID,
+			OrgName:       requestBody.OrgName,
+			ClassroomName: requestBody.ClassroomName,
+			Active:        false,
 		}
 
 		semester, err := service.store.CreateSemester(c.Context(), semester)
@@ -264,9 +266,13 @@ func (service *GitHubService) CreateSemester() fiber.Handler {
 
 func (service *GitHubService) ActivateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		semesterID, err := strconv.ParseInt(c.Params("semester"), 10, 64)
+		orgID, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
 		if err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid semester id"})
+			return c.Status(400).JSON(fiber.Map{"error": "invalid org id"})
+		}
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid classroom id"})
 		}
 
 		var requestBody struct {
@@ -280,9 +286,9 @@ func (service *GitHubService) ActivateSemester() fiber.Handler {
 		err = nil
 
 		if requestBody.Activate {
-			semester, err = service.store.ActivateSemester(c.Context(), semesterID)
+			semester, err = service.store.ActivateSemester(c.Context(), orgID, classroomID)
 		} else {
-			semester, err = service.store.DeactivateSemester(c.Context(), semesterID)
+			semester, err = service.store.DeactivateSemester(c.Context(), orgID, classroomID)
 		}
 
 		if err != nil {

@@ -1,8 +1,8 @@
 export interface Semester {
-    id: number;
-    classroom_id: number;
     org_id: number;
-    name: string;
+    classroom_id: number;
+    org_name: string;
+    classroom_name: string;
     active: boolean;
 }
 

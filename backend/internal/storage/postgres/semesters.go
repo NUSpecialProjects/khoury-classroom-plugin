@@ -10,7 +10,7 @@ import (
 
 func (db *DB) ListSemestersByOrgList(ctx context.Context, orgIDs []int64) ([]models.Semester, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT id, name, classroom_id, active, org_id FROM semesters WHERE org_id = ANY($1)",
+		"SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE org_id = ANY($1)",
 		orgIDs,
 	)
 	if err != nil {
@@ -30,7 +30,7 @@ func (db *DB) ListSemestersByOrgList(ctx context.Context, orgIDs []int64) ([]mod
 
 func (db *DB) ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Semester, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT id, name, classroom_id, active, org_id FROM semesters WHERE org_id = $1",
+		"SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE org_id = $1",
 		orgID,
 	)
 	if err != nil {
@@ -51,17 +51,18 @@ func (db *DB) ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Sem
 func (db *DB) CreateSemester(ctx context.Context, semesterData models.Semester) (models.Semester, error) {
 	var newSemester models.Semester
 	err := db.connPool.QueryRow(ctx,
-		"INSERT INTO semesters (name, classroom_id, active, org_id) VALUES ($1, $2, $3, $4) RETURNING id, name, classroom_id, active, org_id",
-		semesterData.Name,
-		semesterData.ClassroomID,
-		semesterData.Active,
+		"INSERT INTO semesters (org_id, classroom_id, org_name, classroom_name, active) VALUES ($1, $2, $3, $4, $5) RETURNING org_id, classroom_id, org_name, classroom_name, active",
 		semesterData.OrgID,
+		semesterData.ClassroomID,
+		semesterData.OrgName,
+		semesterData.ClassroomName,
+		semesterData.Active,
 	).Scan(
-		&newSemester.ID,
-		&newSemester.Name,
-		&newSemester.ClassroomID,
-		&newSemester.Active,
 		&newSemester.OrgID,
+		&newSemester.ClassroomID,
+		&newSemester.OrgName,
+		&newSemester.ClassroomName,
+		&newSemester.Active,
 	)
 	if err != nil {
 		return models.Semester{}, err
@@ -70,17 +71,17 @@ func (db *DB) CreateSemester(ctx context.Context, semesterData models.Semester) 
 	return newSemester, nil
 }
 
-func (db *DB) GetSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
+func (db *DB) GetSemester(ctx context.Context, orgID int64, ClassroomID int64) (models.Semester, error) {
 	var semester models.Semester
 	err := db.connPool.QueryRow(ctx,
-		"SELECT id, name, classroom_id, active, org_id FROM semesters WHERE id = $1",
-		semesterID,
+		"SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE org_id = $1 AND classroom_id = $2",
+		orgID, ClassroomID,
 	).Scan(
-		&semester.ID,
-		&semester.Name,
-		&semester.ClassroomID,
-		&semester.Active,
 		&semester.OrgID,
+		&semester.ClassroomID,
+		&semester.OrgName,
+		&semester.ClassroomName,
+		&semester.Active,
 	)
 	if err != nil {
 		return models.Semester{}, err
@@ -89,17 +90,17 @@ func (db *DB) GetSemester(ctx context.Context, semesterID int64) (models.Semeste
 	return semester, nil
 }
 
-func (db *DB) DeactivateSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
+func (db *DB) DeactivateSemester(ctx context.Context, orgID int64, ClassroomID int64) (models.Semester, error) {
 	var updatedSemester models.Semester
 	err := db.connPool.QueryRow(ctx,
-		"UPDATE semesters SET active = false WHERE id = $1 AND active = true RETURNING id, name, classroom_id, active, org_id",
-		semesterID,
+		"UPDATE semesters SET active = false WHERE org_id = $1 AND classroom_id = $2 AND active = true RETURNING org_id, classroom_id, org_name, classroom_name, active",
+		orgID, ClassroomID,
 	).Scan(
-		&updatedSemester.ID,
-		&updatedSemester.Name,
-		&updatedSemester.ClassroomID,
-		&updatedSemester.Active,
 		&updatedSemester.OrgID,
+		&updatedSemester.ClassroomID,
+		&updatedSemester.OrgName,
+		&updatedSemester.ClassroomName,
+		&updatedSemester.Active,
 	)
 	if err != nil {
 		return models.Semester{}, err
@@ -108,13 +109,13 @@ func (db *DB) DeactivateSemester(ctx context.Context, semesterID int64) (models.
 	return updatedSemester, nil
 }
 
-func (db *DB) ActivateSemester(ctx context.Context, semesterID int64) (models.Semester, error) {
+func (db *DB) ActivateSemester(ctx context.Context, orgID int64, ClassroomID int64) (models.Semester, error) {
 	var updatedSemester models.Semester
 	// check if no other semesters with the same org_id are active
 	var activeSemesterCount int
 	db.connPool.QueryRow(ctx,
-		"SELECT COUNT(*) FROM semesters WHERE org_id = (SELECT org_id FROM semesters WHERE id = $1) AND active = true",
-		semesterID,
+		"SELECT COUNT(*) FROM semesters WHERE org_id = $1 AND active = true",
+		orgID,
 	).Scan(&activeSemesterCount)
 	if activeSemesterCount > 0 {
 		log.Default().Println("WARNING: failed to activate semester: another semester is already active")
@@ -122,14 +123,14 @@ func (db *DB) ActivateSemester(ctx context.Context, semesterID int64) (models.Se
 	}
 
 	err := db.connPool.QueryRow(ctx,
-		"UPDATE semesters SET active = true WHERE id = $1 AND active = false RETURNING id, name, classroom_id, active, org_id",
-		semesterID,
+		"UPDATE semesters SET active = true WHERE org_id = $1 AND classroom_id = $2 AND active = false RETURNING org_id, classroom_id, org_name, classroom_name, active",
+		orgID, ClassroomID,
 	).Scan(
-		&updatedSemester.ID,
-		&updatedSemester.Name,
-		&updatedSemester.ClassroomID,
-		&updatedSemester.Active,
 		&updatedSemester.OrgID,
+		&updatedSemester.ClassroomID,
+		&updatedSemester.OrgName,
+		&updatedSemester.ClassroomName,
+		&updatedSemester.Active,
 	)
 	if err != nil {
 		return models.Semester{}, err

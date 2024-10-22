@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
     const handleActivateClick = async () => {
         if (selectedSemester) {
             try {
-                const newSemester = await activateSemester(selectedSemester.id);
+                const newSemester = await activateSemester(selectedSemester.org_id, selectedSemester.classroom_id);
                 handleActivate(newSemester);
                 setError(null);
             } catch (err) {
@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
     const handleDeactivateClick = async () => {
         if (selectedSemester) {
             try {
-                const newSemester = await deactivateSemester(selectedSemester.id);
+                const newSemester = await deactivateSemester(selectedSemester.org_id, selectedSemester.classroom_id);
                 handleActivate(newSemester);
                 setError(null);
             } catch (err) {
@@ -47,7 +47,7 @@ const Dashboard: React.FC = () => {
         <div className="Dashboard">
             {selectedSemester && (
                 <>
-            <h1>{selectedSemester.name}</h1>
+            <h1>{selectedSemester.org_name + " - " + selectedSemester.classroom_name}</h1>
                     <AlertBanner semester={selectedSemester} onActivate={handleActivate} />
             <div className="Dashboard__classroomDetailsWrapper">
                 <UserGroupCard label="Professors" number={1} />

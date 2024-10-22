@@ -25,7 +25,7 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
         const checkErrors = async () => {
             const orgSemesters: Semester[] = (await getOrgSemesters(semester.org_id)).semesters;
             const activeSemesters = orgSemesters.filter((s: Semester) => s.active);
-            const otherActiveSemester = activeSemesters.find((s: Semester) => s.id !== semester.id);
+            const otherActiveSemester = activeSemesters.find((s: Semester) => s.classroom_id !== semester.classroom_id);
             if (activeSemesters.length > 1) {
                 setError(SemesterError.MULTIPLE_ACTIVE);
             } else if (otherActiveSemester) {
@@ -44,7 +44,7 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
         setLoading(true);
         setError(null);
         try {
-            const newSemester = await activateSemester(semester.id);
+            const newSemester = await activateSemester(semester.org_id, semester.classroom_id);
             onActivate(newSemester);
         } catch (err) {
             console.log(err);
@@ -58,7 +58,7 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
         setLoading(true);
         setError(null);
         try {
-            const newSemester = await deactivateSemester(semester.id);
+            const newSemester = await deactivateSemester(semester.org_id, semester.classroom_id);
             onActivate(newSemester);
         } catch (err) {
             console.log(err);
@@ -75,7 +75,7 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
     };
 
     const handleNavigateToActiveSemester = () => {
-        if (activeSemester && activeSemester.id) {
+        if (activeSemester && activeSemester.org_id && activeSemester.classroom_id) {
             onActivate(activeSemester);
         }
     };

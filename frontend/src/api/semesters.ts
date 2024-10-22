@@ -47,7 +47,7 @@ export const getOrganizationDetails = async (login: string): Promise<Organizatio
     return resp.org;
 };
 
-export const postSemester = async (orgId: number, classroomId: number, name: string): Promise<Semester> => {
+export const postSemester = async (orgId: number, classroomId: number, OrgName: string, ClassroomName: string): Promise<Semester> => {
     const response = await fetch(`${base_url}/github/semesters`, {
         method: "POST",
         credentials: 'include',
@@ -57,7 +57,8 @@ export const postSemester = async (orgId: number, classroomId: number, name: str
         body: JSON.stringify({
             org_id: orgId,
             classroom_id: classroomId,
-            name: name,
+            org_name: OrgName,
+            classroom_name: ClassroomName,
         }),
     });
     if (!response.ok) {
@@ -95,16 +96,16 @@ export const getOrgSemesters = async (orgId: number): Promise<OrgSemestersRespon
     return response.json();
 }
 
-export const activateSemester = async (semesterId: number): Promise<Semester> => {
-    return modifySemester(semesterId, true);
+export const activateSemester = async (orgId: number, classroomId: number): Promise<Semester> => {
+    return modifySemester(orgId, classroomId, true);
 }
 
-export const deactivateSemester = async (semesterId: number): Promise<Semester> => {
-    return modifySemester(semesterId, false);
+export const deactivateSemester = async (orgId: number, classroomId: number): Promise<Semester> => {
+    return modifySemester(orgId, classroomId, false);
 }
 
-const modifySemester = async (semesterId: number, activate: boolean): Promise<Semester> => {
-    const response = await fetch(`${base_url}/github/semesters/${semesterId.toString()}`, {
+const modifySemester = async (orgId: number, classroomId: number, activate: boolean): Promise<Semester> => {
+    const response = await fetch(`${base_url}/github/semesters/${orgId.toString()}/${classroomId.toString()}`, {
         method: "PUT",
         credentials: 'include',
         headers: {
