@@ -44,7 +44,7 @@ const OrganizationDropdown: React.FC<Props> = ({
             <option value="" disabled>
               Select an organization
             </option>
-            {orgsWithApp.length > 0 && (
+            {orgsWithoutApp && orgsWithApp.length > 0 && (
               <optgroup label="Organizations with GitGrader Installed">
                 {orgsWithApp.map((org) => (
                   <option
@@ -57,7 +57,7 @@ const OrganizationDropdown: React.FC<Props> = ({
                 ))}
               </optgroup>
             )}
-            {orgsWithoutApp.length > 0 && (
+            {orgsWithoutApp && orgsWithoutApp.length > 0 && (
               <optgroup label="Organizations without GitGrader Installed">
                 {orgsWithoutApp.map((org) => (
                   <option
