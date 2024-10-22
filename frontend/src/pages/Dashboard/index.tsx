@@ -12,7 +12,7 @@ import { useState } from "react";
 import ErrorMessage from "@/components/Error";
 
 const Dashboard: React.FC = () => {
-    const [selectedSemester, setSelectedSemester] = useSelectedSemester();
+    const {selectedSemester, setSelectedSemester} = useSelectedSemester();
     const [error, setError] = useState<string | null>(null);
 
     console.log("VIEWING DASHBOARD FOR SEMESTER: ", selectedSemester);

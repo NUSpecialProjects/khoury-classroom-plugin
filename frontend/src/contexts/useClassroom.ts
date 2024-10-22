@@ -21,7 +21,7 @@ const useSelectedSemester = () => {
         Cookies.set(COOKIE_NAME, JSON.stringify(semester), { expires: 30, sameSite: 'Strict' });
     };
 
-    return [selectedSemester, setSelectedSemester] as const;
+    return {selectedSemester, setSelectedSemester};
 };
 
 export default useSelectedSemester;
