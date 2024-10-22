@@ -20,7 +20,6 @@ const Dashboard: React.FC = () => {
     if (selectedSemester) {
       try {
         const newSemester = await activateSemester(
-          selectedSemester.org_id,
           selectedSemester.classroom_id
         );
         handleActivate(newSemester);
@@ -36,7 +35,6 @@ const Dashboard: React.FC = () => {
     if (selectedSemester) {
       try {
         const newSemester = await deactivateSemester(
-          selectedSemester.org_id,
           selectedSemester.classroom_id
         );
         handleActivate(newSemester);
