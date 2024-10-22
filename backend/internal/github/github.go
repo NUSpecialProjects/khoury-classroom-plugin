@@ -10,7 +10,6 @@ import (
 
 type GitHubAppClient interface { // All methods in the app client
 	GitHubBaseClient
-	ListInstallations(ctx context.Context) ([]*github.Installation, error)
 	GetWebhookSecret() string
 	GetJWT(ctx context.Context) (string, error)
 	GetClientWithJWTAuth(ctx context.Context) (*github.Client, error)

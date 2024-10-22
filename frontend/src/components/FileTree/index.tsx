@@ -18,7 +18,6 @@ export const FileTree: React.FC<IFileTree> = ({
 }) => {
   const [selectedFile, setSelectedFile] = useState<string>("");
   const { root, treeDepth } = buildTree(gitTree);
-  console.log(root);
 
   return (
     <ResizableBox
@@ -31,16 +30,18 @@ export const FileTree: React.FC<IFileTree> = ({
         <div className="ResizeHandle" style={{ zIndex: treeDepth * 2 + 1 }} />
       }
     >
-      <div className="FileTree__head">Files</div>
-      <div className="FileTree__body" {...props}>
-        {sortTreeNode(root).map(([_, node]) =>
-          renderTree(node, 0, treeDepth, selectedFile, (n) => {
-            setSelectedFile(n.path);
-            selectFileCallback(n);
-          })
-        )}
-        {children}
-      </div>
+      <>
+        <div className="FileTree__head">Files</div>
+        <div className="FileTree__body" {...props}>
+          {sortTreeNode(root).map((node) =>
+            renderTree(node, 0, treeDepth, selectedFile, (n) => {
+              setSelectedFile(n.path);
+              selectFileCallback(n);
+            })
+          )}
+          {children}
+        </div>
+      </>
     </ResizableBox>
   );
 };

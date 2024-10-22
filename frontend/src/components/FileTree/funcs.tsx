@@ -35,16 +35,14 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
 };
 
 export const sortTreeNode = (node: IFileTreeNode) => {
-  return Object.entries(node.childNodes).sort(
-    ([nameA, nodeA], [nameB, nodeB]) => {
-      // directories before file
-      if (nodeA.type == "tree" && nodeB.type == "blob") return -1;
-      // files after directories
-      if (nodeA.type == "blob" && nodeB.type == "tree") return 1;
-      // sort by alphabetical order afterwards
-      return nameA.localeCompare(nameB);
-    }
-  );
+  return Object.values(node.childNodes).sort((nodeA, nodeB) => {
+    // directories before file
+    if (nodeA.type == "tree" && nodeB.type == "blob") return -1;
+    // files after directories
+    if (nodeA.type == "blob" && nodeB.type == "tree") return 1;
+    // sort by alphabetical order afterwards
+    return nodeA.name.localeCompare(nodeB.name);
+  });
 };
 
 // iterate through a tree and render appropriate components
@@ -78,7 +76,7 @@ export const renderTree = (
       depth={depth}
       treeDepth={treeDepth}
     >
-      {sortTreeNode(node).map(([_, childNode]) =>
+      {sortTreeNode(node).map((childNode) =>
         renderTree(
           childNode,
           depth + 1,

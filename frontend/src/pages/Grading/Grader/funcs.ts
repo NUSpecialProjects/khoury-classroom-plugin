@@ -3,7 +3,6 @@ export const extractExtension = (name: string): string => {
   return parts.pop() ?? "";
 };
 
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 export const ext2langLoader: { [lang: string]: () => Promise<void> } = {
   markup: async () => await import("prismjs/components/prism-markup"),
   css: async () => await import("prismjs/components/prism-css"),
@@ -93,7 +92,6 @@ export const ext2langLoader: { [lang: string]: () => Promise<void> } = {
   batch: async () => await import("prismjs/components/prism-batch"),
   xquery: async () => await import("prismjs/components/prism-xquery"),
 };
-/* eslint-enable @typescript-eslint/no-unsafe-return */
 
 export const ext2lang: { [ext: string]: string } = {
   // Markup Languages
