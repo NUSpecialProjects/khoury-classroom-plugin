@@ -25,20 +25,20 @@ const Callback: React.FC = () => {
         })
           .then((response) => {
             if (!response.ok) {
-              //Navgate back to login page
+              // Navigate back to login page
               navigate("/");
               return;
             } else {
-              //Successful login. Navigate to dashboard page and call login
+              // Successful login. Navigate to dashboard page and call login
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call
               login();
               navigate("/semester-creation");
             }
           })
           .catch((err: unknown) => {
-            navigate("/");
-            // todo: better error handling
-            console.log("Error Occured: ", err);
+            // Navigate back to login page with an error message attached
+            navigate(`/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`);
+            console.log("Error Occurred: ", err);
             return;
           });
       };
