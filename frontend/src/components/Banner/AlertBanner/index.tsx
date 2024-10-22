@@ -79,7 +79,6 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
     const handleNavigateToActiveSemester = () => {
         if (activeSemester && activeSemester.id) {
             onActivate(activeSemester);
-            window.location.reload(); // there is probably a better way to refresh the contents of the screen
         }
     };
 
