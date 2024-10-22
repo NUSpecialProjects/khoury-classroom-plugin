@@ -6,7 +6,6 @@ const Callback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const { login } = useContext(AuthContext);
 
   useEffect(() => {
@@ -30,7 +29,6 @@ const Callback: React.FC = () => {
               return;
             } else {
               //Successful login. Navigate to dashboard page and call login
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
               login();
               navigate("/semester-creation");
             }
