@@ -39,7 +39,9 @@ const Callback: React.FC = () => {
           })
           .catch((err: unknown) => {
             // Navigate back to login page with an error message attached
-            navigate(`/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`);
+            navigate(
+              `/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`
+            );
             console.log("Error Occurred: ", err);
             return;
           });

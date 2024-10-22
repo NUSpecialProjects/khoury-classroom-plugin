@@ -1,4 +1,4 @@
-import { ScaleLinear } from 'd3';
+import { ScaleLinear } from "d3";
 
 type AxisBottomProps = {
   xScale: ScaleLinear<number, number>;
@@ -20,19 +20,19 @@ export const AxisBottom = ({
   const numberOfTicksTarget = Math.floor(width / pixelsPerTick);
 
   const ticks = xScale.ticks(numberOfTicksTarget).map((value) => ({
-      value,
-      xOffset: xScale(value),
-    }));
-
+    value,
+    xOffset: xScale(value),
+  }));
 
   return (
     <>
       {/* Ticks and labels */}
       {ticks.map(({ value, xOffset }) => (
-        <g className='BoxPlotAxes'
+        <g
+          className="BoxPlotAxes"
           key={value}
           transform={`translate(${xOffset.toString()}, 0)`}
-          shapeRendering={'crispEdges'}
+          shapeRendering={"crispEdges"}
         >
           <line
             y1={TICK_LENGTH}
@@ -43,10 +43,10 @@ export const AxisBottom = ({
           <text
             key={value}
             style={{
-              fontSize: '10px',
-              textAnchor: 'middle',
-              transform: 'translateY(20px)',
-              fill: 'black',
+              fontSize: "10px",
+              textAnchor: "middle",
+              transform: "translateY(20px)",
+              fill: "black",
             }}
           >
             {value.toString() + "%"}
