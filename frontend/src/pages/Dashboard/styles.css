@@ -1,8 +1,8 @@
 .Dashboard {
-    &__classroomDetailsWrapper {
-        display: flex;
-        gap: 15px;
-    }
+  &__classroomDetailsWrapper {
+    display: flex;
+    gap: 15px;
+  }
 
     &__assignmentsWrapper {
         padding: 20px;

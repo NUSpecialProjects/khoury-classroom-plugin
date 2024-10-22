@@ -11,7 +11,7 @@ const LeftNav: React.FC = () => {
     { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
   ];
 
-  const className = "CS 3200 Database Design"
+  const className = "CS 3200 Database Design";
 
   return (
     <div className="LeftNav">
