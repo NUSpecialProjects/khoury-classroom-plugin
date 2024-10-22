@@ -91,7 +91,7 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
             {error && <p className="error">{error}</p>}
             {error === SemesterError.ALREADY_ACTIVE && activeSemester && (
                 <button onClick={handleNavigateToActiveSemester}>
-                    Switch to Active Semester
+                    Go to Active Semester
                 </button>
             )}
             {semester.active && error === SemesterError.MULTIPLE_ACTIVE && (
