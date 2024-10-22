@@ -46,6 +46,14 @@ export default function App(): React.JSX.Element {
             <Route path="settings" element={<Pages.Settings />} />
             <Route path="dashboard" element={<Pages.Dashboard />} />
           </Route>
+          <Route
+            path="semester-creation"
+            element={<Pages.SemesterCreation />}
+          />
+          <Route
+            path="semester-selection"
+            element={<Pages.SemesterSelection />}
+          />
         </Routes>
       </Router>
     </AuthContext.Provider>

@@ -15,6 +15,8 @@ type AppAPI struct { //app API
 	sharedclient.CommonAPI
 	webhooksecret  string
 	appTokenSource oauth2.TokenSource
+	webhooksecret  string
+	appTokenSource oauth2.TokenSource
 }
 
 func New(cfg *config.GitHubAppClient) (*AppAPI, error) {

@@ -1,7 +1,10 @@
+/* eslint-disable */
+
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
+import useSelectedSemester from "@/contexts/useClassroom";
 
 const Dashboard: React.FC = () => {
     return (
@@ -26,21 +29,21 @@ const Dashboard: React.FC = () => {
                             <TableCell>15 Sep, 11:59 PM</TableCell>
                         </TableRow>
                     ))}
-                </Table>
-
-                <h2 style={{ marginBottom: 0 }}>Inactive Assignments</h2>
-                <Table cols={3}>
-                    <TableRow style={{ borderTop: "none" }}>
-                        <TableCell>Assignment Name</TableCell>
-                        <TableCell>Released</TableCell>
-                        <TableCell>Due Date</TableCell>
-                    </TableRow>
-                    {Array.from({ length: 2 }).map((_, i: number) => (
-                        <TableRow key={i} className="Assignment__submission">
-                            <TableCell> <Link to="/app/assignments/assignmentdetails" className="Dashboard__assignmentLink">Assignment 1</Link></TableCell>
-                            <TableCell>5 Sep, 9:00 AM</TableCell>
-                            <TableCell>15 Sep, 11:59 PM</TableCell>
-                        </TableRow>
+                </div>
+                <div className="Dashboard__assignmentsHeader">
+                    Inactive Assignments (3)</div>
+                <div className="Dashboard__assignments">
+                    <div className="Dashboard__assignment">
+                        <div>Assignment Name</div>
+                        <div>Released</div>
+                        <div>Due Date</div>
+                    </div>
+                    {Array.from({ length: 3 }).map((_, i: number) => (
+                        <div key={i} className="Dashboard__assignment">
+                            <div><a href="#" className="Dashboard__assignmentLink">Assignment 1</a></div>
+                            <div>5 Sep, 10:00AM</div>
+                            <div>15 Sep, 11:59pm</div>
+                        </div>
                     ))}
                 </Table>
             </div>
