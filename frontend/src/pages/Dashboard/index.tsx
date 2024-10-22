@@ -4,7 +4,7 @@ import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
 import { Link } from "react-router-dom";
-import useSelectedSemester from "@/contexts/useClassroom";
+import useSelectedSemester from "@/contexts/useSelectedSemester";
 import AlertBanner from "@/components/Banner/AlertBanner";
 import { Semester } from "@/types/semester";
 import { activateSemester, deactivateSemester } from "@/api/semesters";

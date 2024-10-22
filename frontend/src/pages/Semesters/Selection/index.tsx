@@ -12,19 +12,20 @@ import {
     TableCell,
     TableDiv,
 } from "@/components/Table/index.tsx";
-import useSelectedSemester from "@/contexts/useClassroom";
+import useSelectedSemester from "@/contexts/useSelectedSemester";
 
 const SemesterSelection: React.FC = () => {
     const [semestersByOrg, setSemestersByOrg] = useState<{ [key: number]: Semester[] }>({});
     const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
     const [loading, setLoading] = useState(true);
-    const [_, setSelectedSemester] = useSelectedSemester();
+    const {setSelectedSemester} = useSelectedSemester();
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSemesters = async () => {
             try {
+                setSelectedSemester(null);
                 const data: UserSemestersResponse = await getUserSemesters();
                 const groupedSemesters: { [key: number]: Semester[] } = {};
                 const initialCollapsedState: { [key: number]: boolean } = {};
