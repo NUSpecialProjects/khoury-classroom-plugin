@@ -4,7 +4,7 @@ interface Props {
   availableClassrooms: IClassroom[];
   unavailableClassrooms: IClassroom[];
   selectedClassroom: IClassroom | null;
-  loading: Boolean;
+  loading: boolean;
   onSelect: (classroom: IClassroom) => Promise<void>;
 }
 
