@@ -8,8 +8,8 @@ import {
   getOrganizationDetails,
   getOrganizations,
   postSemester,
-} from "@/api/requests";
-import useSelectedSemester from "@/contexts/useClassroom";
+} from "@/api/semesters";
+import useSelectedSemester from "@/contexts/useSelectedSemester";
 
 enum SemesterCreationStatus {
   NONE = "NONE",
@@ -101,7 +101,8 @@ const SemesterCreation: React.FC = () => {
         await postSemester(
           selectedOrg.id,
           selectedClassroom.id,
-          `${selectedOrg.login}:${selectedClassroom.name}`
+          selectedOrg.login,
+          selectedClassroom.name
         );
         setSemesterCreationStatus(SemesterCreationStatus.CREATED);
         // Move selectedClassroom to unavailableClassrooms

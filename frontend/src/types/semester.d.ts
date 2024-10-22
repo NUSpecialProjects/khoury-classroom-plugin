@@ -1,12 +1,16 @@
 interface ISemester {
-  id: number;
-  classroom_id: number;
   org_id: number;
-  name: string;
+  classroom_id: number;
+  org_name: string;
+  classroom_name: string;
   active: boolean;
 }
 
-interface ISemestersResponse {
-  active_semesters: Semester[];
-  inactive_semesters: Semester[];
+interface IUserSemestersResponse {
+  active_semesters: ISemester[];
+  inactive_semesters: ISemester[];
+}
+
+interface IOrgSemestersResponse {
+  semesters: ISemester[];
 }

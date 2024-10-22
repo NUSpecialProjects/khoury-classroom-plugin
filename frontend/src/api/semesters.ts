@@ -50,12 +50,12 @@ export const getOrganizationDetails = async (
   return resp.org;
 };
 
-//TODO: Change the post endpoint to return the new semester
 export const postSemester = async (
   orgId: number,
   classroomId: number,
-  name: string
-): Promise<void> => {
+  OrgName: string,
+  ClassroomName: string
+): Promise<ISemester> => {
   const response = await fetch(`${base_url}/github/semesters`, {
     method: "POST",
     credentials: "include",
@@ -65,15 +65,18 @@ export const postSemester = async (
     body: JSON.stringify({
       org_id: orgId,
       classroom_id: classroomId,
-      name: name,
+      org_name: OrgName,
+      classroom_name: ClassroomName,
     }),
   });
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
+  const data = (await response.json()) as { semester: ISemester };
+  return data.semester;
 };
 
-export const getSemesters = async (): Promise<ISemestersResponse> => {
+export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
   const response = await fetch(`${base_url}/github/user/semesters`, {
     method: "GET",
     credentials: "include",
@@ -85,4 +88,60 @@ export const getSemesters = async (): Promise<ISemestersResponse> => {
     throw new Error("Network response was not ok");
   }
   return response.json();
+};
+
+export const getOrgSemesters = async (
+  orgId: number
+): Promise<IOrgSemestersResponse> => {
+  const response = await fetch(
+    `${base_url}/github/orgs/${orgId.toString()}/semesters`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
+};
+
+export const activateSemester = async (
+  orgId: number,
+  classroomId: number
+): Promise<ISemester> => {
+  return modifySemester(orgId, classroomId, true);
+};
+
+export const deactivateSemester = async (
+  orgId: number,
+  classroomId: number
+): Promise<ISemester> => {
+  return modifySemester(orgId, classroomId, false);
+};
+
+const modifySemester = async (
+  orgId: number,
+  classroomId: number,
+  activate: boolean
+): Promise<ISemester> => {
+  const response = await fetch(
+    `${base_url}/github/semesters/${orgId.toString()}/${classroomId.toString()}`,
+    {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ activate }),
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const data = (await response.json()) as { semester: ISemester };
+  return data.semester;
 };
