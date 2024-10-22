@@ -60,9 +60,9 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         const fetchAssignments = async (semester: ISemester) => {
             try {
-                if (semester.id) {
+                if (semester.classroom_id) {
                     const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-                    const result = await fetch(`${base_url}/assignments/${semester.id}`, {
+                    const result = await fetch(`${base_url}/assignments/${semester.classroom_id}`, {
                         method: 'GET',
                         credentials: 'include',
                         headers: {

@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) GetAssignmentsInSemester(ctx context.Context, semester_id int64) ([]models.Assignment, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where semester_id = $1", semester_id)
+func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroom_id int64) ([]models.Assignment, error) {
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where classroom_id = $1", classroom_id)
 	if err != nil {
 		fmt.Println("Error in query")
 		return nil, err
@@ -22,10 +22,10 @@ func (db *DB) GetAssignmentsInSemester(ctx context.Context, semester_id int64) (
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) error {
 
 	if assignmentData.Rubric_ID == nil {
-		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
+		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (inserted_date, assignment_classroom_id, classroom_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
 			assignmentData.InsertedDate,
 			assignmentData.Assignment_Classroom_ID,
-			assignmentData.SemesterID,
+			assignmentData.ClassroomID,
 			assignmentData.Name,
       assignmentData.MainDueDate)
 
@@ -34,11 +34,11 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 		}
 
 	} else {
-		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, inserted_date, assignment_classroom_id, semester_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
+		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, inserted_date, assignment_classroom_id, classroom_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
 			assignmentData.Rubric_ID,
 			assignmentData.InsertedDate,
 			assignmentData.Assignment_Classroom_ID,
-			assignmentData.SemesterID,
+			assignmentData.ClassroomID,
 			assignmentData.Name,
       assignmentData.MainDueDate)
 		if err != nil {

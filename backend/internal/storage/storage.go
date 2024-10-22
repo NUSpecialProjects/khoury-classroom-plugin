@@ -18,7 +18,7 @@ type Test interface {
 }
 
 type Assignments interface {
-	GetAssignmentsInSemester(ctx context.Context, semester_id int64) ([]models.Assignment, error)
+	GetAssignmentsInSemester(ctx context.Context, classroom_id int64) ([]models.Assignment, error)
 	CreateRubric(ctx context.Context, rubricData models.Rubric) error
 	CreateAssignment(x context.Context, assignmentData models.Assignment) error
 	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignment) error

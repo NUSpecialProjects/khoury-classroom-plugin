@@ -6,7 +6,7 @@ BEGIN
     NEW.local_id := (
         SELECT COALESCE(MAX(local_id), 0) + 1
         FROM assignments
-        WHERE semester_id = NEW.semester_id
+        WHERE classroom_id = NEW.classroom_id
     );
     RETURN NEW;
 END;
