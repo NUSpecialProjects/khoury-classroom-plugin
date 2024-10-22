@@ -28,12 +28,10 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
             const otherActiveSemester = activeSemesters.find((s: Semester) => s.id !== semester.id);
             if (activeSemesters.length > 1) {
                 setError(SemesterError.MULTIPLE_ACTIVE);
-            }
-            else if (otherActiveSemester) {
+            } else if (otherActiveSemester) {
                 setActiveSemester(otherActiveSemester);
                 setError(SemesterError.ALREADY_ACTIVE);
-            }
-            else if (!semester.active) {
+            } else if (!semester.active) {
                 setError(SemesterError.NOT_ACTIVE);
             } else if (semester.active && error !== SemesterError.API_ERROR) {
                 setError(null);
