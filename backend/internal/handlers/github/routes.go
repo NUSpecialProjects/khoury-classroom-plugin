@@ -34,6 +34,8 @@ func Routes(app *fiber.App, params types.Params) {
 
 	protected.Post("/semesters", service.CreateSemester())
 
+	protected.Put("/semesters/:org_id/:classroom_id", service.ActivateSemester())
+
 	protected.Get("/orgs/:org/semesters", service.ListOrgSemesters())
 
 	// list the classrooms that the user has in the given org

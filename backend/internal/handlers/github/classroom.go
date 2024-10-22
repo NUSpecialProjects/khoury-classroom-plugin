@@ -72,7 +72,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
       if (err != nil) {
         fmt.Println("SyncAssignments - Failed to get classroom id", err)
       } else {
-        assignmentData.SemesterID = *sem.ID
+        assignmentData.SemesterID = sem.ClassroomID
       }
       
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
@@ -91,4 +91,3 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 
 
 
-func (s *GitHubService) GetAssignmentBy

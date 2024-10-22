@@ -6,12 +6,12 @@ import Cookies from "js-cookie";
 const COOKIE_NAME = "selectedSemester";
 
 interface ISelectedSemester {
-    selectedSemester: Semester | null;
-    setSelectedSemester: (semester: Semester) => void;
+    selectedSemester: ISemester | null;
+    setSelectedSemester: (semester: ISemester) => void;
 }
 
 const useSelectedSemester: () => ISelectedSemester = () => {
-    const [selectedSemester, setSelectedSemesterState] = useState<Semester | null>(null);
+    const [selectedSemester, setSelectedSemesterState] = useState<ISemester | null>(null);
 
     useEffect(() => {
         const cookieValue = Cookies.get(COOKIE_NAME);
@@ -19,7 +19,7 @@ const useSelectedSemester: () => ISelectedSemester = () => {
             
             try {            
                 const parsedValue = JSON.parse(cookieValue);
-                const sem:Semester = {
+                const sem:ISemester = {
                     id: parsedValue?.id,
                     classroom_id: parsedValue?.classroom_id,
                     org_id: parsedValue?.org_id,
@@ -34,7 +34,7 @@ const useSelectedSemester: () => ISelectedSemester = () => {
         }
     }, []);
 
-    const setSelectedSemester = (semester: Semester) => {
+    const setSelectedSemester = (semester: ISemester) => {
         setSelectedSemesterState(semester);
         Cookies.set(COOKIE_NAME, JSON.stringify(semester), { expires: 30, sameSite: 'Strict' });
     };

@@ -11,6 +11,8 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    environment:
+      - APP_ENVIRONMENT=production
     volumes:
       - ./backend:/app
   db:
