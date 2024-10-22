@@ -51,7 +51,7 @@ const SemesterSelection: React.FC = () => {
   }, []);
 
   const handleSemesterSelect = (semester: ISemester) => {
-    console.log("Selected semester:", semester);
+    console.log("Selected class:", semester);
     setSelectedSemester(semester);
     navigate(`/app/dashboard`);
   };
@@ -63,12 +63,12 @@ const SemesterSelection: React.FC = () => {
   const hasSemesters = Object.keys(semestersByOrg).length > 0;
 
   return (
-    <div className="SemesterSelection">
-      <h1>Select a Semester</h1>
+    <div>
+      <h1>Select a Class</h1>
       {loading ? (
         <p>Loading...</p>
       ) : hasSemesters ? (
-        <Table cols={5} primaryCol={1} className="SemestersTable">
+        <Table cols={5} primaryCol={1}>
           {Object.keys(semestersByOrg).map((orgId) => (
             <React.Fragment key={orgId}>
               <TableRow className="HeaderRow" style={{ borderTop: "none" }}>
@@ -121,7 +121,7 @@ const SemesterSelection: React.FC = () => {
                       style={{ borderTop: "none" }}
                     >
                       {/* <TableCell></TableCell> */}
-                      <TableCell>Semester Name</TableCell>
+                      <TableCell>Classroom Name</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Classroom ID</TableCell>
                       <TableCell>Action</TableCell>
@@ -129,7 +129,6 @@ const SemesterSelection: React.FC = () => {
                     {semestersByOrg[Number(orgId)].map((semester) => (
                       <TableRow
                         key={`${semester.org_id}-${semester.classroom_id}`}
-                        className="SemesterRow"
                       >
                         {/* <TableCell className="fixed-width-button"></TableCell> */}
                         <TableCell>{semester.classroom_name}</TableCell>
@@ -157,11 +156,11 @@ const SemesterSelection: React.FC = () => {
         </Table>
       ) : (
         <div>
-          <p>You have no semesters.</p>
+          <p>You have no classes.</p>
         </div>
       )}
-      <button onClick={() => navigate("/semester-creation")}>
-        Create a Semester
+      <button onClick={() => navigate("/class-creation")}>
+        Create a Class
       </button>
     </div>
   );
