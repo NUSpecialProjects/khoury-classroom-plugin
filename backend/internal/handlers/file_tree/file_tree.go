@@ -10,7 +10,6 @@ func (s *FileTreeService) GetGitTree(c *fiber.Ctx) error {
 	// get the requested student assignment
 	studentAssignment, err := s.store.GetStudentAssignment(
 		c.Context(),
-		c.Params("assignmentID"),
 		c.Params("studentAssignmentID"))
 	if err != nil {
 		return err
@@ -29,7 +28,6 @@ func (s *FileTreeService) GetGitBlob(c *fiber.Ctx) error {
 	// get the requested student assignment
 	studentAssignment, err := s.store.GetStudentAssignment(
 		c.Context(),
-		c.Params("assignmentID"),
 		c.Params("studentAssignmentID"))
 	if err != nil {
 		return err
