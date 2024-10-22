@@ -19,17 +19,28 @@ import Button from "@/components/Button";
 import "./styles.css";
 
 const Grader: React.FC = () => {
+  // url params
+  const { assignmentId, studentAssignmentId } = useParams();
+
   // states
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
+  const [studentAssignments, setStudentAssignments] = useState<string[]>([]);
 
+  // when requested assignment changes:
+  // fetch the ids of all student assignments to correctly index current one
+  useEffect(() => {
+    // TODO
+  }, [assignmentId]);
+
+  // when requested student assignment changes:
   // fetch the git tree and extract file tree structure
   useEffect(() => {
     fetch(
-      "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg"
+      `http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/${assignmentId}/student/${studentAssignmentId}`
     )
       .then((response) => response.json())
       .then((data: IGitTreeNode[]) => {
@@ -38,7 +49,7 @@ const Grader: React.FC = () => {
       .catch((err: unknown) => {
         console.log(err);
       });
-  }, []);
+  }, [studentAssignmentId]);
 
   // when a new file is selected, import any necessary
   // prismjs language syntax files and trigger a rehighlight
