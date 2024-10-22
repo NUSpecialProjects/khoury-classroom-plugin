@@ -1,12 +1,9 @@
-/* eslint-disable */
-
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
-import { Table, TableRow, TableCell } from "@/components/Table/index.tsx";
+import { Table, TableRow, TableCell } from "@/components/Table";
 import { Link } from "react-router-dom";
 import useSelectedSemester from "@/contexts/useSelectedSemester";
 import AlertBanner from "@/components/Banner/AlertBanner";
-import { Semester } from "@/types/semester";
 import { activateSemester, deactivateSemester } from "@/api/semesters";
 import { useState } from "react";
 import ErrorMessage from "@/components/Error";
@@ -15,7 +12,7 @@ const Dashboard: React.FC = () => {
   const { selectedSemester, setSelectedSemester } = useSelectedSemester();
   const [error, setError] = useState<string | null>(null);
 
-  const handleActivate = async (newSemester: Semester) => {
+  const handleActivate = async (newSemester: ISemester) => {
     setSelectedSemester(newSemester);
   };
 
@@ -29,6 +26,7 @@ const Dashboard: React.FC = () => {
         handleActivate(newSemester);
         setError(null);
       } catch (err) {
+        console.log(err);
         setError("Failed to activate the semester. Please try again.");
       }
     }
@@ -44,6 +42,7 @@ const Dashboard: React.FC = () => {
         handleActivate(newSemester);
         setError(null);
       } catch (err) {
+        console.log(err);
         setError("Failed to deactivate the semester. Please try again.");
       }
     }

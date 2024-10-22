@@ -1,14 +1,11 @@
-/* eslint-disable */
-
 import React from "react";
-import { Organization } from "@/types/organization";
 
 interface Props {
-  orgsWithApp: Organization[];
-  orgsWithoutApp: Organization[];
-  selectedOrg: Organization | null;
+  orgsWithApp: IOrganization[];
+  orgsWithoutApp: IOrganization[];
+  selectedOrg: IOrganization | null;
   loading: boolean;
-  onSelect: (org: Organization) => Promise<void>;
+  onSelect: (org: IOrganization) => Promise<void>;
 }
 
 const OrganizationDropdown: React.FC<Props> = ({

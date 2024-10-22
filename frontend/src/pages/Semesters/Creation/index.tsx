@@ -1,18 +1,15 @@
-/* eslint-disable */
-
 import React, { useEffect, useState } from "react";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import OrganizationDropdown from "@/components/Dropdown/Organization";
-import { Organization, OrganizationsResponse } from "@/types/organization";
 import ClassroomDropdown from "@/components/Dropdown/Classroom";
-import { Classroom, ClassroomResponse } from "@/types/classroom";
 import {
   getClassrooms,
   getOrganizationDetails,
   getOrganizations,
   postSemester,
 } from "@/api/semesters";
+import useSelectedSemester from "@/contexts/useSelectedSemester";
 
 enum SemesterCreationStatus {
   NONE = "NONE",
@@ -22,19 +19,19 @@ enum SemesterCreationStatus {
 }
 
 const SemesterCreation: React.FC = () => {
-  const [orgsWithApp, setOrgsWithApp] = useState<Organization[]>([]);
-  const [orgsWithoutApp, setOrgsWithoutApp] = useState<Organization[]>([]);
+  const [orgsWithApp, setOrgsWithApp] = useState<IOrganization[]>([]);
+  const [orgsWithoutApp, setOrgsWithoutApp] = useState<IOrganization[]>([]);
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
 
-  const [availableClassrooms, setAvailableClassrooms] = useState<Classroom[]>(
+  const [availableClassrooms, setAvailableClassrooms] = useState<IClassroom[]>(
     []
   );
   const [unavailableClassrooms, setUnavailableClassrooms] = useState<
-    Classroom[]
+    IClassroom[]
   >([]);
   const [loadingClassrooms, setLoadingClassrooms] = useState(true);
-  const [selectedClassroom, setSelectedClassroom] = useState<Classroom | null>(
+  const [selectedClassroom, setSelectedClassroom] = useState<IClassroom | null>(
     null
   );
 
@@ -42,12 +39,14 @@ const SemesterCreation: React.FC = () => {
     SemesterCreationStatus.NONE
   );
 
+  const { selectedSemester } = useSelectedSemester();
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(selectedSemester);
     const fetchOrganizations = async () => {
       try {
-        const data: OrganizationsResponse = await getOrganizations();
+        const data: IOrganizationsResponse = await getOrganizations();
         setOrgsWithApp(data.orgs_with_app);
         setOrgsWithoutApp(data.orgs_without_app);
       } catch (error) {
@@ -64,7 +63,7 @@ const SemesterCreation: React.FC = () => {
     if (selectedOrg) {
       const fetchClassrooms = async () => {
         try {
-          const data: ClassroomResponse = await getClassrooms(selectedOrg.id);
+          const data: IClassroomResponse = await getClassrooms(selectedOrg.id);
           setAvailableClassrooms(data.available_classrooms);
           setUnavailableClassrooms(data.unavailable_classrooms);
         } catch (error) {
@@ -80,9 +79,9 @@ const SemesterCreation: React.FC = () => {
     }
   }, [selectedOrg]);
 
-  const handleOrganizationSelect = async (org: Organization) => {
+  const handleOrganizationSelect = async (org: IOrganization) => {
     try {
-      const data: Organization = await getOrganizationDetails(org.login);
+      const data: IOrganization = await getOrganizationDetails(org.login);
       setSelectedOrg(data);
       setSelectedClassroom(null);
     } catch (error) {
@@ -90,7 +89,7 @@ const SemesterCreation: React.FC = () => {
     }
   };
 
-  const handleClassroomSelect = async (classroom: Classroom) => {
+  const handleClassroomSelect = async (classroom: IClassroom) => {
     setSemesterCreationStatus(SemesterCreationStatus.NONE);
     setSelectedClassroom(classroom);
   };

@@ -1,14 +1,6 @@
-import { ClassroomResponse } from "@/types/classroom";
-import { Organization, OrganizationsResponse } from "@/types/organization";
-import {
-  OrgSemestersResponse,
-  Semester,
-  UserSemestersResponse,
-} from "@/types/semester";
-
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-export const getOrganizations = async (): Promise<OrganizationsResponse> => {
+export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
   const response = await fetch(`${base_url}/github/user/orgs`, {
     method: "GET",
     credentials: "include",
@@ -19,12 +11,12 @@ export const getOrganizations = async (): Promise<OrganizationsResponse> => {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  return response.json() as Promise<OrganizationsResponse>;
+  return response.json() as Promise<IOrganizationsResponse>;
 };
 
 export const getClassrooms = async (
   orgId: number
-): Promise<ClassroomResponse> => {
+): Promise<IClassroomResponse> => {
   const response = await fetch(
     `${base_url}/github/user/orgs/${orgId.toString()}/classrooms`,
     {
@@ -38,12 +30,12 @@ export const getClassrooms = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  return response.json() as Promise<ClassroomResponse>;
+  return response.json() as Promise<IClassroomResponse>;
 };
 
 export const getOrganizationDetails = async (
   login: string
-): Promise<Organization> => {
+): Promise<IOrganization> => {
   const response = await fetch(`${base_url}/github/orgs/${login}`, {
     method: "GET",
     credentials: "include",
@@ -54,7 +46,7 @@ export const getOrganizationDetails = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as { org: Organization };
+  const resp = (await response.json()) as { org: IOrganization };
   return resp.org;
 };
 
@@ -63,7 +55,7 @@ export const postSemester = async (
   classroomId: number,
   OrgName: string,
   ClassroomName: string
-): Promise<Semester> => {
+): Promise<ISemester> => {
   const response = await fetch(`${base_url}/github/semesters`, {
     method: "POST",
     credentials: "include",
@@ -80,11 +72,11 @@ export const postSemester = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const data = (await response.json()) as { semester: Semester };
+  const data = (await response.json()) as { semester: ISemester };
   return data.semester;
 };
 
-export const getUserSemesters = async (): Promise<UserSemestersResponse> => {
+export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
   const response = await fetch(`${base_url}/github/user/semesters`, {
     method: "GET",
     credentials: "include",
@@ -100,7 +92,7 @@ export const getUserSemesters = async (): Promise<UserSemestersResponse> => {
 
 export const getOrgSemesters = async (
   orgId: number
-): Promise<OrgSemestersResponse> => {
+): Promise<IOrgSemestersResponse> => {
   const response = await fetch(
     `${base_url}/github/orgs/${orgId.toString()}/semesters`,
     {
@@ -120,14 +112,14 @@ export const getOrgSemesters = async (
 export const activateSemester = async (
   orgId: number,
   classroomId: number
-): Promise<Semester> => {
+): Promise<ISemester> => {
   return modifySemester(orgId, classroomId, true);
 };
 
 export const deactivateSemester = async (
   orgId: number,
   classroomId: number
-): Promise<Semester> => {
+): Promise<ISemester> => {
   return modifySemester(orgId, classroomId, false);
 };
 
@@ -135,7 +127,7 @@ const modifySemester = async (
   orgId: number,
   classroomId: number,
   activate: boolean
-): Promise<Semester> => {
+): Promise<ISemester> => {
   const response = await fetch(
     `${base_url}/github/semesters/${orgId.toString()}/${classroomId.toString()}`,
     {
@@ -150,6 +142,6 @@ const modifySemester = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const data = (await response.json()) as { semester: Semester };
+  const data = (await response.json()) as { semester: ISemester };
   return data.semester;
 };

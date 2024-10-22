@@ -1,10 +1,6 @@
-/* eslint-disable */
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import { Semester, UserSemestersResponse } from "@/types/semester";
-import { getUserSemesters } from "@/api/semesters";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import {
   Table,
@@ -13,10 +9,11 @@ import {
   TableDiv,
 } from "@/components/Table/index.tsx";
 import useSelectedSemester from "@/contexts/useSelectedSemester";
+import { getUserSemesters } from "@/api/semesters";
 
 const SemesterSelection: React.FC = () => {
   const [semestersByOrg, setSemestersByOrg] = useState<{
-    [key: number]: Semester[];
+    [key: number]: ISemester[];
   }>({});
   const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
   const [loading, setLoading] = useState(true);
@@ -27,9 +24,8 @@ const SemesterSelection: React.FC = () => {
   useEffect(() => {
     const fetchSemesters = async () => {
       try {
-        setSelectedSemester(null);
-        const data: UserSemestersResponse = await getUserSemesters();
-        const groupedSemesters: { [key: number]: Semester[] } = {};
+        const data: IUserSemestersResponse = await getUserSemesters();
+        const groupedSemesters: { [key: number]: ISemester[] } = {};
         const initialCollapsedState: { [key: number]: boolean } = {};
 
         data.active_semesters
@@ -54,7 +50,7 @@ const SemesterSelection: React.FC = () => {
     void fetchSemesters();
   }, []);
 
-  const handleSemesterSelect = (semester: Semester) => {
+  const handleSemesterSelect = (semester: ISemester) => {
     console.log("Selected semester:", semester);
     setSelectedSemester(semester);
     navigate(`/app/dashboard`);

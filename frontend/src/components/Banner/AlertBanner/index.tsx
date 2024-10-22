@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import {
   activateSemester,
@@ -6,11 +5,9 @@ import {
   getOrgSemesters,
 } from "@/api/semesters";
 import "./styles.css";
-import { Semester } from "@/types/semester";
-
 interface AlertBannerProps {
-  semester: Semester;
-  onActivate: (newSemester: Semester) => void;
+  semester: ISemester;
+  onActivate: (newSemester: ISemester) => void;
 }
 
 enum SemesterError {
@@ -23,15 +20,15 @@ enum SemesterError {
 const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeSemester, setActiveSemester] = useState<Semester | null>(null);
+  const [activeSemester, setActiveSemester] = useState<ISemester | null>(null);
 
   useEffect(() => {
     const checkErrors = async () => {
-      const orgSemesters: Semester[] = (await getOrgSemesters(semester.org_id))
+      const orgSemesters: ISemester[] = (await getOrgSemesters(semester.org_id))
         .semesters;
-      const activeSemesters = orgSemesters.filter((s: Semester) => s.active);
+      const activeSemesters = orgSemesters.filter((s: ISemester) => s.active);
       const otherActiveSemester = activeSemesters.find(
-        (s: Semester) => s.classroom_id !== semester.classroom_id
+        (s: ISemester) => s.classroom_id !== semester.classroom_id
       );
       if (activeSemesters.length > 1) {
         setError(SemesterError.MULTIPLE_ACTIVE);

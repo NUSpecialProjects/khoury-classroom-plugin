@@ -1,14 +1,11 @@
-/* eslint-disable */
-
 import "./styles.css";
-import { Classroom } from "@/types/classroom";
 
 interface Props {
-  availableClassrooms: Classroom[];
-  unavailableClassrooms: Classroom[];
-  selectedClassroom: Classroom | null;
-  loading: Boolean;
-  onSelect: (classroom: Classroom) => Promise<void>;
+  availableClassrooms: IClassroom[];
+  unavailableClassrooms: IClassroom[];
+  selectedClassroom: IClassroom | null;
+  loading: boolean;
+  onSelect: (classroom: IClassroom) => Promise<void>;
 }
 
 const ClassroomDropdown: React.FC<Props> = ({
