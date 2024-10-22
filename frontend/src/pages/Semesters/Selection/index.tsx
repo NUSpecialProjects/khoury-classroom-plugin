@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
-import { getSemesters } from "@/api/requests";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
-import { Table, TableRow, TableCell, TableDiv } from "@/components/Table";
-import useSelectedSemester from "@/contexts/useClassroom";
+import {
+  Table,
+  TableRow,
+  TableCell,
+  TableDiv,
+} from "@/components/Table/index.tsx";
+import useSelectedSemester from "@/contexts/useSelectedSemester";
+import { getUserSemesters } from "@/api/semesters";
 
 const SemesterSelection: React.FC = () => {
   const [semestersByOrg, setSemestersByOrg] = useState<{
@@ -19,7 +24,7 @@ const SemesterSelection: React.FC = () => {
   useEffect(() => {
     const fetchSemesters = async () => {
       try {
-        const data: ISemestersResponse = await getSemesters();
+        const data: IUserSemestersResponse = await getUserSemesters();
         const groupedSemesters: { [key: number]: ISemester[] } = {};
         const initialCollapsedState: { [key: number]: boolean } = {};
 
@@ -74,9 +79,7 @@ const SemesterSelection: React.FC = () => {
                 <TableCell>Action</TableCell>
               </TableRow>
               <TableRow
-                className={`ChildRow ${
-                  !collapsed[Number(orgId)] ? "TableRow--expanded" : ""
-                }`}
+                className={`ChildRow ${!collapsed[Number(orgId)] ? "TableRow--expanded" : ""}`}
               >
                 <TableCell
                   className="fixed-width-button"
@@ -88,9 +91,7 @@ const SemesterSelection: React.FC = () => {
                     <FaChevronDown />
                   )}
                 </TableCell>
-                <TableCell>{`${
-                  semestersByOrg[Number(orgId)][0].name.split(":")[0]
-                }`}</TableCell>
+                <TableCell>{`${semestersByOrg[Number(orgId)][0].org_name}`}</TableCell>
                 <TableCell>
                   {semestersByOrg[Number(orgId)].some(
                     (semester) => semester.active
@@ -126,9 +127,12 @@ const SemesterSelection: React.FC = () => {
                       <TableCell>Action</TableCell>
                     </TableRow>
                     {semestersByOrg[Number(orgId)].map((semester) => (
-                      <TableRow key={semester.id} className="SemesterRow">
+                      <TableRow
+                        key={`${semester.org_id}-${semester.classroom_id}`}
+                        className="SemesterRow"
+                      >
                         {/* <TableCell className="fixed-width-button"></TableCell> */}
-                        <TableCell>{semester.name.split(":")[1]}</TableCell>
+                        <TableCell>{semester.classroom_name}</TableCell>
                         <TableCell>
                           {semester.active ? "Active" : "Inactive"}
                         </TableCell>
