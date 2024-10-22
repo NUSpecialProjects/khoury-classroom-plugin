@@ -47,6 +47,7 @@ const Dashboard: React.FC = () => {
         <div className="Dashboard">
             {selectedSemester && (
                 <>
+            <h1>{selectedSemester.name}</h1>
                     <AlertBanner semester={selectedSemester} onActivate={handleActivate} />
             <div className="Dashboard__classroomDetailsWrapper">
                 <UserGroupCard label="Professors" number={1} />
