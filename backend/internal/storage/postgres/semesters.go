@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -137,4 +138,23 @@ func (db *DB) ActivateSemester(ctx context.Context, ClassroomID int64) (models.S
 	}
 
 	return updatedSemester, nil
+}
+
+func (db *DB) GetSemesterByClassroomID(ctx context.Context, classroomID int64) (models.Semester, error) {
+  var sem models.Semester
+  err := db.connPool.QueryRow(ctx, "SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE classroom_id = $1", 
+    classroomID,
+    ).Scan(
+      &sem.OrgID,
+      &sem.ClassroomID,
+		  &sem.OrgName,
+		  &sem.ClassroomName,
+		  &sem.Active,
+    )
+  if (err != nil) {
+    fmt.Println("Error getting semester by classroomID: ", err)
+    return models.Semester{}, err
+  }
+  
+  return sem, nil
 }
