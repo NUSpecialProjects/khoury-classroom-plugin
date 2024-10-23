@@ -18,12 +18,11 @@ CREATE TABLE IF NOT EXISTS assignments (
   rubric_id INTEGER,
   assignment_classroom_id INTEGER NOT NULL,
   inserted_date TIMESTAMP NOT NULL, 
-  org_id INTEGER NOT NULL,
   classroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
   main_due_date TIMESTAMP,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
-  FOREIGN KEY (org_id, classroom_id) REFERENCES semesters(org_id, classroom_id)
+  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS student_assignments (

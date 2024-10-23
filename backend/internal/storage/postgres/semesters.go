@@ -31,7 +31,7 @@ func (db *DB) ListSemestersByOrgList(ctx context.Context, orgIDs []int64) ([]mod
 
 func (db *DB) ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Semester, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE org_id = $1",
+		"SELECT classroom_id, org_name, classroom_name, active FROM semesters WHERE org_id = $1",
 		orgID,
 	)
 	if err != nil {
