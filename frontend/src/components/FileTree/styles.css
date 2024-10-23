@@ -53,7 +53,7 @@
 .FileTreeDirectory {
   position: relative;
 
-  .FileTree__nodeName {
+  > .FileTree__nodeName {
     position: sticky;
     display: flex;
     align-items: center;
