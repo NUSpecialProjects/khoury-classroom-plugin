@@ -90,4 +90,27 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 }
 
 
+func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
+	var syncData models.AssignmentSync
+	err := c.BodyParser(&syncData)
+	if err != nil {
+		return err
+    }
 
+	client, err := service.getClient(c)
+	if err != nil {
+		fmt.Println("SyncAssignments - Failed to get Client", err)
+		return err
+	}
+
+	assignments, err := client.GetAcceptedAssignments(c.Context(), syncData.AssignmentID)
+	if err != nil {
+		fmt.Println("SyncAssignments - Could not get classroom assignments")
+		return err
+    }
+
+    fmt.Println(assignments)
+
+
+    return nil
+}
