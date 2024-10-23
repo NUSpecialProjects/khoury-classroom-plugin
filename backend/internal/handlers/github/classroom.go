@@ -89,7 +89,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 	})
 }
 
-/*
+
 func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 	var syncData models.AssignmentSync
 	err := c.BodyParser(&syncData)
@@ -113,4 +113,4 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 
 
     return nil
-}*/
+}
