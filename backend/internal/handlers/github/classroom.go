@@ -30,7 +30,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		return err
 	}
 
-	// Get ids of assignments in the db
+	// Get ids of assignments in docsthe db
 	assignment_classroom_ids, err := service.store.GetAssignmentIDs(c.Context())
 	if err != nil {
 		return err
@@ -71,7 +71,9 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
       assignmentData.Name = assignment.Title
       sem, err := service.store.GetSemesterByClassroomID(c.Context(), syncData.Classroom_id)
       if (err != nil) {
-        fmt.Println("SyncAssignments - Failed to get classroom id", err)
+        fmt.Println(sem.ClassroomID)
+        fmt.Println(sem)
+        fmt.Println("SyncAssignments - Failed to get classroom id: ", err)
       } else {
         assignmentData.ClassroomID = sem.ClassroomID
       }

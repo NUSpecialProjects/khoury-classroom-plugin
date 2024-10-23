@@ -2,9 +2,9 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"log"
 
-	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/jackc/pgx/v5"
 )
@@ -141,23 +141,23 @@ func (db *DB) ActivateSemester(ctx context.Context, ClassroomID int64) (models.S
 }
 
 func (db *DB) GetSemesterByClassroomID(ctx context.Context, classroomID int64) (models.Semester, error) {
-  row, err := db.connPool.Query(ctx, "SELECT id, name, classroom_id, active, org_id FROM semesters WHERE classroom_id = $1", 
-    classroomID,)
+  var sem models.Semester
+  fmt.Println("ClassroomID:", classroomID)
+  err := db.connPool.QueryRow(ctx, "SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE classroom_id = $1", 
+    classroomID,
+    ).Scan(
+      &sem.OrgID,
+      &sem.ClassroomID,
+		  &sem.OrgName,
+		  &sem.ClassroomName,
+		  &sem.Active,
+    )
   if (err != nil) {
+    fmt.Println("Error getting semester by classroomID: ", err)
     return models.Semester{}, err
   }
   
-  sems, err := pgx.CollectRows(row, pgx.RowToStructByName[models.Semester])
-  if err != nil {
-    return models.Semester{}, err
-  }
-
-  if (len(sems) > 1) {
-    return models.Semester{}, errs.NewDBError(errs.DBSemesterLogicError())
-  }
-
-  defer row.Close()
-  return sems[0], nil
+  return sem, nil
 }
 
 
