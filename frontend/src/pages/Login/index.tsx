@@ -3,9 +3,9 @@ import "./styles.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import ErrorMessage from "@/components/Error";
+import { getCallbackURL } from "@/api/login";
 
 const Login: React.FC = () => {
-  const clientId: string = import.meta.env.VITE_GITHUB_CLIENT_ID as string;
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = useMemo(
@@ -14,6 +14,19 @@ const Login: React.FC = () => {
   );
   const errorFromQuery = queryParams.get("error");
   const [error, setError] = useState<string | null>(errorFromQuery);
+  const [callbackURL, setCallbackURL] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCallbackURL = async () => {
+      try {
+        const url = await getCallbackURL();
+        setCallbackURL(url);
+      } catch (error) {
+        console.error("Error fetching callback URL:", error);
+      }
+    }
+    fetchCallbackURL();
+  }, []);
 
   useEffect(() => {
     if (errorFromQuery) {
@@ -23,6 +36,7 @@ const Login: React.FC = () => {
     }
   }, [errorFromQuery, navigate, queryParams]);
 
+
   return (
     <div className="LandingPage">
       <div className="LogoBar">
@@ -31,12 +45,15 @@ const Login: React.FC = () => {
         <img src="src/assets/icons/Northeastern_LVX.svg.png" className="Logo" />
       </div>
       <div className="LandingTitle">FonteMarks</div>
-      <a
+      {callbackURL && (
+        <a
         className="SignInLink"
-        href={`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo,read:org,classroom&allow_signup=false`}
+        href={callbackURL}
       >
         Log In With GitHub
       </a>
+        )}
+      
       {error && <ErrorMessage message={error} />}
     </div>
   );

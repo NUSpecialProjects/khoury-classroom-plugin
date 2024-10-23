@@ -3,9 +3,11 @@ package userclient
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/core"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
@@ -139,7 +141,7 @@ func (api *UserAPI) ListAssignmentsForClassroom(ctx context.Context, classroom_i
 	// Create a new GET request
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
 	if err != nil {
-    fmt.Println("ListAssignmentForCls - could not create a request", err)
+		fmt.Println("ListAssignmentForCls - could not create a request", err)
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
@@ -149,7 +151,7 @@ func (api *UserAPI) ListAssignmentsForClassroom(ctx context.Context, classroom_i
 	// Make the API call
 	_, err = api.Client.Do(ctx, req, &assignments)
 	if err != nil {
-    fmt.Println("ListAssignmentForCls - could not make api call", err)
+		fmt.Println("ListAssignmentForCls - could not make api call", err)
 		return nil, fmt.Errorf("error fetching assignments: %v", err)
 	}
 
@@ -325,28 +327,28 @@ func (api *UserAPI) RemoveOrgRoleFromUser(ctx context.Context, org_id int64, use
 	return nil
 }
 
-func (api *UserAPI) GetUserRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error) {
+func (api *UserAPI) GetUserRoles(ctx context.Context, semester models.Semester) ([]models.OrganizationRole, error) {
 	current_user, err := api.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching user: %v", err)
 	}
 
 	// get all the org's roles
-	org_roles, err := api.GetOrgRoles(ctx, org_id)
+	org_roles, err := api.GetOrgRoles(ctx, semester.OrgName)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching roles: %v", err)
 	}
 
 	// get the ids of all the org's roles (sorted in permission order) (this is necessary bc we don't know the id of the roles, just their names)
 	var sorted_org_roles = []models.OrganizationRole{}
-	for _, role := range models.AllRoles {
+	for _, role := range core.GetSemesterTemplateRoles(semester) {
 		for _, org_role := range org_roles {
 			if role.Name == org_role.Name {
 				sorted_org_roles = append(sorted_org_roles, org_role)
 			}
 		}
 	}
-	if len(sorted_org_roles) < len(models.AllRoles) {
+	if len(sorted_org_roles) < len(core.GetSemesterTemplateRoles(semester)) {
 		return nil, fmt.Errorf("error fetching roles: not all roles are present in the organization")
 	}
 
@@ -354,7 +356,7 @@ func (api *UserAPI) GetUserRoles(ctx context.Context, org_id int64) ([]models.Or
 
 	// for each id in the sorted list, check if the user has that role, if so, add to the result list
 	for _, role := range sorted_org_roles {
-		role_users, err := api.GetUsersAssignedToRole(ctx, org_id, role.ID)
+		role_users, err := api.GetUsersAssignedToRole(ctx, semester.OrgID, role.ID)
 		if err == nil {
 			for _, user := range role_users {
 				if user.Login == current_user.Login {
@@ -408,9 +410,10 @@ func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, org_id int64, ro
 	return allUsers, nil
 }
 
-func (api *UserAPI) GetOrgRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error) {
+func (api *UserAPI) GetOrgRoles(ctx context.Context, org_name string) ([]models.OrganizationRole, error) {
 	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles", org_id)
+	log.Default().Println("Getting roles for org: ", org_name)
+	endpoint := fmt.Sprintf("/orgs/%s/organization-roles", org_name)
 
 	// Create a new GET request
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
@@ -419,15 +422,17 @@ func (api *UserAPI) GetOrgRoles(ctx context.Context, org_id int64) ([]models.Org
 	}
 
 	// Response container
-	var roles []models.OrganizationRole
+	var rolesResponse models.RolesResponse
 
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &roles)
+	// Make the API call and unmarshal the response directly into the rolesResponse struct
+	_, err = api.Client.Do(ctx, req, &rolesResponse)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching roles: %v", err)
 	}
 
-	return roles, nil
+	log.Default().Println("Got roles: ", rolesResponse.Roles)
+
+	return rolesResponse.Roles, nil
 }
 
 func (api *UserAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
@@ -450,6 +455,52 @@ func (api *UserAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, err
 	}
 
 	return orgs, nil
+}
+
+func (api *UserAPI) CreateSemesterRoles(ctx context.Context, semester models.Semester) error {
+	log.Default().Println("Creating semester roles")
+	res := []models.OrganizationRole{}
+
+	// Create roles if they don't exist (also checks if they are an admin, since this requires admin permissions)
+	existing_roles, err := api.GetOrgRoles(ctx, semester.OrgName)
+	if err != nil {
+		log.Default().Println("Error getting roles: ", err)
+		return err
+	}
+	for _, template_role := range core.GetSemesterTemplateRoles(semester) {
+		role_exists := false
+		for _, existing_role := range existing_roles {
+			if template_role.Name == existing_role.Name {
+				role_exists = true
+				log.Default().Println("WARNING: Role already exists, skipping role creation")
+				break
+			}
+		}
+		if !role_exists {
+			role, err := api.CreateOrgRoleFromTemplate(ctx, semester.OrgID, template_role)
+			if err != nil {
+				log.Default().Println("Error creating role: ", err)
+				return err
+			}
+			res = append(res, *role)
+		}
+	}
+	log.Default().Println("Successfully created roles: ", res)
+	return nil
+}
+
+func (api *UserAPI) GetProfessorRoleID(ctx context.Context, org_name string) (int64, error) {
+	existing_roles, err := api.GetOrgRoles(ctx, org_name)
+	if err != nil {
+		return 0, err
+	}
+
+	for _, role := range existing_roles {
+		if role.Name == core.Prof_Role.Name {
+			return role.ID, nil
+		}
+	}
+	return 0, nil
 }
 
 // Helper function to parse the Link header and extract the URL for the next page

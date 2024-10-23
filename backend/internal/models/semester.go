@@ -8,7 +8,10 @@ type Semester struct {
 	Active        bool   `json:"active"`
 }
 
+func (semester *Semester) GetName() string {
+	return semester.OrgName + "-" + semester.ClassroomName
+}
 
 type GetSemester struct {
-  SemesterID  int64  `json:"semester_id"`
+	SemesterID int64 `json:"semester_id"`
 }

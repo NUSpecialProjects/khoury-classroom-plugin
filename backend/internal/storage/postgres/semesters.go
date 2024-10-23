@@ -72,6 +72,18 @@ func (db *DB) CreateSemester(ctx context.Context, semesterData models.Semester) 
 	return newSemester, nil
 }
 
+func (db *DB) DeleteSemester(ctx context.Context, classroomID int64) error {
+	_, err := db.connPool.Exec(ctx,
+		"DELETE FROM semesters WHERE classroom_id = $1",
+		classroomID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (db *DB) GetSemester(ctx context.Context, ClassroomID int64) (models.Semester, error) {
 	var semester models.Semester
 	err := db.connPool.QueryRow(ctx,
@@ -141,20 +153,20 @@ func (db *DB) ActivateSemester(ctx context.Context, ClassroomID int64) (models.S
 }
 
 func (db *DB) GetSemesterByClassroomID(ctx context.Context, classroomID int64) (models.Semester, error) {
-  var sem models.Semester
-  err := db.connPool.QueryRow(ctx, "SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE classroom_id = $1", 
-    classroomID,
-    ).Scan(
-      &sem.OrgID,
-      &sem.ClassroomID,
-		  &sem.OrgName,
-		  &sem.ClassroomName,
-		  &sem.Active,
-    )
-  if (err != nil) {
-    fmt.Println("Error getting semester by classroomID: ", err)
-    return models.Semester{}, err
-  }
-  
-  return sem, nil
+	var sem models.Semester
+	err := db.connPool.QueryRow(ctx, "SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE classroom_id = $1",
+		classroomID,
+	).Scan(
+		&sem.OrgID,
+		&sem.ClassroomID,
+		&sem.OrgName,
+		&sem.ClassroomName,
+		&sem.Active,
+	)
+	if err != nil {
+		fmt.Println("Error getting semester by classroomID: ", err)
+		return models.Semester{}, err
+	}
+
+	return sem, nil
 }
