@@ -9,6 +9,6 @@ func Routes(router fiber.Router, params types.Params) {
 	service := newFileService(params.Store, params.GitHubApp)
 
 	protected := router.Group("/file-tree")
-	protected.Get("/:studentAssignmentID", service.GetGitTree)
-	protected.Get("/:studentAssignmentID/blob/:sha", service.GetGitBlob)
+	protected.Get("/org/:orgName/repo/:repoName", service.GetGitTree)
+	protected.Get("/org/:orgName/repo/:repoName/blob/:sha", service.GetGitBlob)
 }

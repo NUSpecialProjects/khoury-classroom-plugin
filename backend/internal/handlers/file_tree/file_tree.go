@@ -7,14 +7,6 @@ import (
 )
 
 func (s *FileTreeService) GetGitTree(c *fiber.Ctx) error {
-	// get the requested student assignment
-	semester, err := s.store.GetSemester(
-		c.Context(),
-		c.Params("semesterID"),
-	if err != nil {
-		return err
-	}
-
 	tree, err := s.githubappclient.GetGitTree(c.Params("orgName"), c.Params("repoName"))
 	if err != nil {
 		return err

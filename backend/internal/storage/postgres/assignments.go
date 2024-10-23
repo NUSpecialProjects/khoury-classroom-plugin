@@ -10,7 +10,7 @@ import (
 
 func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error) {
 
-	rows, err := db.connPool.Query(ctx, "SELECT (rubric_id, semester_id, name) FROM assignments")
+	rows, err := db.connPool.Query(ctx, "SELECT (rubric_id, classroom_id, name) FROM assignments")
 
 	if err != nil {
 		fmt.Println("Error in query")
@@ -22,7 +22,7 @@ func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error
 }
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) error {
-	_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, semester_id, name) VALUES ($1, $2, $3)",
+	_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, classroom_id, name) VALUES ($1, $2, $3)",
 		assignmentData.RubricID,
 		assignmentData.SemesterID,
 		assignmentData.Name)
@@ -51,10 +51,10 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	return nil
 }
 
-func (db *DB) GetStudentAssignment(ctx context.Context, orgID string, assignmentID string, studentAssignmentID string) (models.StudentAssignment, error) {
+func (db *DB) GetStudentAssignment(ctx context.Context, classroomID int64, assignmentID int64, studentAssignmentID int64) (models.StudentAssignment, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT * FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE org_id = $1 OFFSET $2 LIMIT 1 ORDER BY name ASC) OFFSET $3 LIMIT 1 ORDER BY student_gh_username ASC",
-		orgID, assignmentID, studentAssignmentID)
+		"SELECT * FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE classroom_id = $1 OFFSET $2 LIMIT 1 ORDER BY name ASC) OFFSET $3 LIMIT 1 ORDER BY student_gh_username ASC",
+		classroomID, assignmentID, studentAssignmentID)
 
 	var studentAssignment models.StudentAssignment
 

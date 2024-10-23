@@ -8,10 +8,3 @@ type StudentAssignment struct {
 	Completed         bool    `json:"completed" db:"completed"`
 	Started           bool    `json:"started" db:"started"`
 }
-
-type StudentAssignmentFiles struct {
-	Type        string `json:"type"`
-	Name        string `json:"name"`
-	Path        string `json:"path"`
-	DownloadURL string `json:"download_url"`
-}
