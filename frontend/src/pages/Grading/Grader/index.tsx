@@ -1,5 +1,5 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import Prism from "prismjs";
@@ -16,30 +16,45 @@ import {
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { getStudentAssignment } from "@/api/student_assignments";
+
 import "./styles.css";
 
 const Grader: React.FC = () => {
-  // url params
+  // params
   const { assignmentId, studentAssignmentId } = useParams();
+  const { selectedSemester } = useContext(SelectedSemesterContext);
 
   // states
+  const [studentAssignment, setStudentAssignment] =
+    useState<IStudentAssignment | null>(null);
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
 
-  // when requested assignment changes:
-  // fetch the ids of all student assignments to correctly index current one
+  // fetch requested student assignment
   useEffect(() => {
-    // TODO
-  }, [assignmentId]);
+    console.log(selectedSemester);
+    // TODO: reroute 404
+    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
 
-  // when requested student assignment changes:
-  // fetch the git tree and extract file tree structure
+    getStudentAssignment(
+      selectedSemester?.classroom_id,
+      Number(assignmentId),
+      Number(studentAssignmentId)
+    ).then((resp) => {
+      setStudentAssignment(resp);
+      console.log(resp);
+    });
+  }, [studentAssignmentId]);
+
+  // fetch git tree from student assignment repo
   useEffect(() => {
     fetch(
-      `http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/${assignmentId}/student/${studentAssignmentId}`
+      `http://localhost:8080/file-tree/org/${selectedSemester?.org_name}/assignment/${assignmentId}/student/${studentAssignment?.repo_name}`
     )
       .then((response) => response.json())
       .then((data: IGitTreeNode[]) => {
@@ -48,7 +63,7 @@ const Grader: React.FC = () => {
       .catch((err: unknown) => {
         console.log(err);
       });
-  }, [studentAssignmentId]);
+  }, [studentAssignment]);
 
   // when a new file is selected, import any necessary
   // prismjs language syntax files and trigger a rehighlight

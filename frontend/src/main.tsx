@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 import {
@@ -9,54 +9,66 @@ import {
 } from "react-router-dom";
 import * as Pages from "./pages";
 import Layout from "./components/Layout";
-import { AuthContext } from "./contexts/auth";
+import AuthProvider, { AuthContext } from "./contexts/auth";
 
 import "./global.css";
+import SelectedSemesterProvider, {
+  SelectedSemesterContext,
+} from "./contexts/selectedSemester";
 
-//If not logged in, route to login
+// If not logged in, route to login
 const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
   const { isLoggedIn } = useContext(AuthContext);
   return isLoggedIn ? element : <Navigate to="/" />;
 };
 
+// An inner-app route that requires user to have selected a classroom
+const AppRoute = ({ element }: { element: React.JSX.Element }) => {
+  const { selectedSemester } = useContext(SelectedSemesterContext);
+  useEffect(() => {
+    console.log(selectedSemester);
+  }, []);
+  return selectedSemester ? element : <Navigate to="/class-selection" />;
+};
+
 export default function App(): React.JSX.Element {
-  //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    import.meta.env.MODE == "development"
-  );
-
-  const login = () => {
-    setIsLoggedIn(true);
-  };
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login }}>
-      <Router>
-        <Routes>
-          <Route path="" element={<Pages.Login />} />
-          <Route path="oauth/callback" element={<Pages.Callback />} />
-          <Route path="/app/" element={<PrivateRoute element={<Layout />} />}>
-            <Route path="assignments" element={<Pages.Assignments />} />
-            <Route path="assignments/:id" element={<Pages.Assignment />} />
-            <Route path="grading" element={<Pages.Grading />} />
+    <AuthProvider>
+      <SelectedSemesterProvider>
+        <Router>
+          <Routes>
+            <Route path="" element={<Pages.Login />} />
+            <Route path="oauth/callback" element={<Pages.Callback />} />
+
             <Route
-              path="grading/assignment/:assignmentId/student/:studentAssignmentId"
-              element={<Pages.Grader />}
+              path="/app/"
+              element={
+                <PrivateRoute element={<AppRoute element={<Layout />} />} />
+              }
+            >
+              <Route path="assignments" element={<Pages.Assignments />} />
+              <Route path="assignments/:id" element={<Pages.Assignment />} />
+              <Route path="grading" element={<Pages.Grading />} />
+              <Route
+                path="grading/assignment/:assignmentId/student/:studentAssignmentId"
+                element={<Pages.Grader />}
+              />
+              <Route path="settings" element={<Pages.Settings />} />
+              <Route path="dashboard" element={<Pages.Dashboard />} />
+            </Route>
+
+            <Route
+              path="class-creation"
+              element={<PrivateRoute element={<Pages.SemesterCreation />} />}
             />
-            <Route path="settings" element={<Pages.Settings />} />
-            <Route path="dashboard" element={<Pages.Dashboard />} />
-          </Route>
-          <Route
-            path="class-creation"
-            element={<Pages.SemesterCreation />}
-          />
-          <Route
-            path="class-selection"
-            element={<Pages.SemesterSelection />}
-          />
-        </Routes>
-      </Router>
-    </AuthContext.Provider>
+            <Route
+              path="class-selection"
+              element={<PrivateRoute element={<Pages.SemesterSelection />} />}
+            />
+          </Routes>
+        </Router>
+      </SelectedSemesterProvider>
+    </AuthProvider>
   );
 }
 

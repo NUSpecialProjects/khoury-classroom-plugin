@@ -1,20 +1,27 @@
-
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect, createContext, useEffect } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 
 const COOKIE_NAME = "selectedSemester";
-interface ISelectedSemester {
+
+interface ISelectedSemesterContext {
   selectedSemester: ISemester | null;
   setSelectedSemester: (semester: ISemester) => void;
 }
 
-const useSelectedSemester = (): ISelectedSemester => {
+export const SelectedSemesterContext: React.Context<ISelectedSemesterContext> =
+  createContext<ISelectedSemesterContext>({
+    selectedSemester: null,
+    setSelectedSemester: (_: ISemester) => {},
+  });
+
+const SelectedSemesterProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [selectedSemester, setSelectedSemesterState] =
     useState<ISemester | null>(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const cookieValue = Cookies.get(COOKIE_NAME);
     if (cookieValue) {
       try {
@@ -23,10 +30,9 @@ const useSelectedSemester = (): ISelectedSemester => {
       } catch (error: unknown) {
         console.log("Error parsing semester cookie: ", error);
       }
-    } else {
-      navigate("/class-selection");
     }
-  }, [navigate]);
+    setLoading(false);
+  }, []);
 
   const setSelectedSemester = (semester: ISemester | null) => {
     if (!semester) {
@@ -41,7 +47,15 @@ const useSelectedSemester = (): ISelectedSemester => {
     }
   };
 
-  return { selectedSemester, setSelectedSemester };
+  return (
+    !loading && (
+      <SelectedSemesterContext.Provider
+        value={{ selectedSemester, setSelectedSemester }}
+      >
+        {children}
+      </SelectedSemesterContext.Provider>
+    )
+  );
 };
 
-export default useSelectedSemester;
+export default SelectedSemesterProvider;
