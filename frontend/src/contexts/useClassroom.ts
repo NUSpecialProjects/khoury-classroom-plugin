@@ -19,10 +19,10 @@ const useSelectedSemester: () => ISelectedSemester = () => {
             try {            
                 const parsedValue = JSON.parse(cookieValue);
                 const sem:ISemester = {
-                    id: parsedValue?.id,
                     classroom_id: parsedValue?.classroom_id,
                     org_id: parsedValue?.org_id,
-                    name: parsedValue?.name,
+                    classroom_name: parsedValue?.classroom_name,
+                    org_name: parsedValue?.name,
                     active: parsedValue?.active
                 }
                 setSelectedSemesterState(sem)
