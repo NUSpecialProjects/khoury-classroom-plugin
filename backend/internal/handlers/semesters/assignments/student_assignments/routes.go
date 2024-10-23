@@ -9,5 +9,7 @@ func Routes(router fiber.Router, params types.Params) {
 	service := newStudentAssignmentService(params.Store, params.GitHubApp)
 
 	protected := router.Group("/student-assignments")
+
+	protected.Get("", service.GetStudentAssignments)
 	protected.Get("/:studentAssignmentID", service.GetStudentAssignment)
 }

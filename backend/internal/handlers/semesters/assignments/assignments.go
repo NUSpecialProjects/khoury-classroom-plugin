@@ -3,20 +3,39 @@ package assignments
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
-func (s *AssignmentsService) GetAllAssignments(c *fiber.Ctx) error {
-	assignments, err := s.store.GetAllAssignments(c.Context())
+func (s *AssignmentsService) GetAssignmentsInSemester(c *fiber.Ctx) error {
+	classroomID, err := strconv.ParseInt(c.Params("classroomID"), 10, 64)
 	if err != nil {
-		fmt.Println("error in service func")
+		return err
+	}
+
+	assignments, err := s.store.GetAssignmentsInSemester(c.Context(), classroomID)
+	if err != nil {
+		fmt.Println("error in service func", err)
 		return err
 	}
 
 	return c.Status(http.StatusOK).JSON(assignments)
+}
+
+func (s *AssignmentsService) GetAssignment(c *fiber.Ctx) error {
+	classroomID, _ := strconv.ParseInt(c.Params("classroomID"), 10, 64)
+	assignmentID, _ := strconv.ParseInt(c.Params("assignmentID"), 10, 64)
+
+	assignment, err := s.store.GetAssignment(c.Context(), classroomID, assignmentID)
+	if err != nil {
+		fmt.Println("error in service func", err)
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(assignment)
 }
 
 func (s *AssignmentsService) CreateRubric(c *fiber.Ctx) error {
@@ -87,11 +106,10 @@ func (s *AssignmentsService) CreateDueDate(c *fiber.Ctx) error {
 		return error
 	}
 
-	c.Status(http.StatusOK).JSON(fiber.Map{
+	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message":  "Received due date data",
 		"due_date": dueDateData,
 	})
-	return nil
 }
 
 func (s *AssignmentsService) CreateRegrade(c *fiber.Ctx) error {

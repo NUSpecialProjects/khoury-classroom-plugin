@@ -10,18 +10,16 @@ func Routes(router fiber.Router, params types.Params) {
 	service := newAssignmentService(params.Store)
 
 	protected := router.Group("/assignments")
-	student_assignments.Routes(protected, params)
 
-	protected.Get("", service.GetAllAssignments)
-
+	protected.Get("", service.GetAssignmentsInSemester)
 	protected.Post("", service.CreateAssignment)
-
 	protected.Post("/rubrics", service.CreateRubric)
-
 	protected.Post("/assignment", service.CreateStudentAssignment)
-
 	protected.Post("/due_dates", service.CreateDueDate)
-
 	protected.Post("/regrades", service.CreateRegrade)
+
+	specific := router.Group("/assignments/:assignmentID")
+	specific.Get("", service.GetAssignment)
+	student_assignments.Routes(specific, params)
 
 }

@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroom_id int64) ([]models.Assignment, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where classroom_id = $1", classroom_id)
+func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroomID int64) ([]models.Assignment, error) {
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where classroom_id = $1", classroomID)
 	if err != nil {
 		fmt.Println("Error in query")
 		return nil, err
@@ -80,37 +80,16 @@ func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classro
 
 }
 
-func (db *DB) GetStudentAssignment(ctx context.Context, classroomID int64, assignmentID int64, studentAssignmentID int64) (models.StudentAssignment, error) {
+func (db *DB) GetAssignment(ctx context.Context, classroomID int64, localAssignmentID int64) (models.Assignment, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT * FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE classroom_id = $1 OFFSET $2 LIMIT 1 ORDER BY name ASC) OFFSET $3 LIMIT 1 ORDER BY student_gh_username ASC",
-		classroomID, assignmentID, studentAssignmentID)
-
-	var studentAssignment models.StudentAssignment
-
+		"SELECT * FROM assignments WHERE classroom_id = $1 ORDER BY inserted_date ASC OFFSET $2 LIMIT 1",
+		classroomID,
+		localAssignmentID-1)
 	if err != nil {
-		fmt.Println("Error in query")
-		return studentAssignment, err
+		return models.Assignment{}, err
 	}
 
 	defer rows.Close()
-	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.StudentAssignment])
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Assignment])
+
 }
-
-/*func (db *DB) GetStudentAssignments(ctx context.Context, assignmentID string) ([]models.StudentAssignment, error) {
-	// todo: first get db id of assignment, then get * from student assignments where assignmentid=dbid
-
-	rows, err := db.connPool.Query(ctx,
-		"SELECT uuid, assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM assignments WHERE uuid = $1",
-		assignmentID)
-
-	var studentAssignment []models.StudentAssignment
-
-	if err != nil {
-		fmt.Println("Error in query")
-		return studentAssignment, err
-	}
-
-	defer rows.Close()
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentAssignment])
-}
-*/

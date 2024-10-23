@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY,
   rubric_id INTEGER,
   assignment_classroom_id INTEGER NOT NULL,
-  inserted_date TIMESTAMP NOT NULL, 
+  inserted_date TIMESTAMP DEFAULT NOW() NOT NULL, 
   classroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
   main_due_date TIMESTAMP,
