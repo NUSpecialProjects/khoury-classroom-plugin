@@ -28,7 +28,6 @@ const Grader: React.FC = () => {
     {}
   );
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
-  //const [studentAssignments, setStudentAssignments] = useState<string[]>([]);
 
   // when requested assignment changes:
   // fetch the ids of all student assignments to correctly index current one

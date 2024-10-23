@@ -1,5 +1,3 @@
-\i /docker-entrypoint-initdb.d/gen_short_uuid.sql
-
 CREATE TABLE IF NOT EXISTS semesters (
   classroom_id INTEGER UNIQUE NOT NULL,
   org_name VARCHAR(255) NOT NULL,

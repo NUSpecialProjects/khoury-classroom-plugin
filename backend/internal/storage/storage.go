@@ -22,7 +22,7 @@ type Assignments interface {
 	CreateRubric(ctx context.Context, rubricData models.Rubric) error
 	CreateAssignment(x context.Context, assignmentData models.Assignment) error
 	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignment) error
-	GetStudentAssignment(ctx context.Context, studentAssignmentID string) (models.StudentAssignment, error)
+	GetStudentAssignment(ctx context.Context, orgID string, assignmentID string, studentAssignmentID string) (models.StudentAssignment, error)
 	CreateDueDate(ctx context.Context, dueDateData models.DueDate) error
 	CreateRegrade(ctx context.Context, regradeData models.Regrade) error
 	CreateSession(ctx context.Context, sessionData models.Session) error

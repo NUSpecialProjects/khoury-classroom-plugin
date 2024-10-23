@@ -51,10 +51,10 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	return nil
 }
 
-func (db *DB) GetStudentAssignment(ctx context.Context, studentAssignmentID string) (models.StudentAssignment, error) {
+func (db *DB) GetStudentAssignment(ctx context.Context, orgID string, assignmentID string, studentAssignmentID string) (models.StudentAssignment, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM student_assignments WHERE uuid = $1",
-		studentAssignmentID)
+		"SELECT * FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE org_id = $1 OFFSET $2 LIMIT 1 ORDER BY name ASC) OFFSET $3 LIMIT 1 ORDER BY student_gh_username ASC",
+		orgID, assignmentID, studentAssignmentID)
 
 	var studentAssignment models.StudentAssignment
 
