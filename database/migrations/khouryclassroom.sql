@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS assignments (
   classroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
-  FOREIGN KEY (org_id, classroom_id) REFERENCES semesters(org_id, classroom_id)
+  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS student_assignments (
