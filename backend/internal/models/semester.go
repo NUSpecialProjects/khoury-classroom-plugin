@@ -7,3 +7,8 @@ type Semester struct {
 	ClassroomName string `json:"classroom_name"`
 	Active        bool   `json:"active"`
 }
+
+
+type GetSemester struct {
+  SemesterID  int64  `json:"semester_id"`
+}

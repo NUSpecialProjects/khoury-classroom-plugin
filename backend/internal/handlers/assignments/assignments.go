@@ -3,18 +3,23 @@ package assignments
 import (
 	"net/http"
   "fmt"
+  "strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
+func (s *AssignmentsService) GetAssignmentsInSemester(c *fiber.Ctx) error {
+  semester_id := c.Params("semester_id")
+  s_id, err := strconv.ParseInt(semester_id, 10, 64)
+  if err != nil {
+    return err
+  }
 
-
-func (s *AssignmentsService) GetAllAssignments(c *fiber.Ctx) error {
-	assignments, err := s.store.GetAllAssignments(c.Context())
+  assignments, err := s.store.GetAssignmentsInSemester(c.Context(), s_id)
 	if err != nil {
-		fmt.Println("error in service func")
+		fmt.Println("error in service func", err)
     return err
 	}
 
@@ -90,11 +95,10 @@ func (s *AssignmentsService) CreateDueDate(c *fiber.Ctx) error {
     return error
   }
 
-  c.Status(http.StatusOK).JSON(fiber.Map{
+  return c.Status(http.StatusOK).JSON(fiber.Map{
     "message": "Received due date data",
     "due_date":  dueDateData,
   })
-  return nil
 }
 
 
@@ -116,3 +120,13 @@ func (s *AssignmentsService) CreateRegrade(c *fiber.Ctx) error {
     "regrade":  regradeData,
   })
 }
+
+
+
+
+
+
+
+
+
+
