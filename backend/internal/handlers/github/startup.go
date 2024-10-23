@@ -35,16 +35,12 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
 		}
 
-		log.Default().Println("userOrgs: ", userOrgs)
-
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
 			log.Default().Println("Error getting app installations: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get app installations"})
 		}
-
-		log.Default().Println("appInstallations: ", appInstallations)
 
 		// Filter the organizations to include only those with the app installed
 		var orgsWithAppInstalled []models.Organization
@@ -60,9 +56,6 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 				}
 			}
 		}
-
-		log.Default().Println("orgsWithAppInstalled: ", orgsWithAppInstalled)
-		log.Default().Println("orgsWithoutAppInstalled: ", orgsWithoutAppInstalled)
 		return c.Status(200).JSON(fiber.Map{
 			"orgs_with_app":    orgsWithAppInstalled,
 			"orgs_without_app": orgsWithoutAppInstalled,
