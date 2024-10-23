@@ -49,7 +49,6 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
     setError(null);
     try {
       const newSemester = await activateSemester(
-        semester.org_id,
         semester.classroom_id
       );
       onActivate(newSemester);
@@ -66,7 +65,6 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
     setError(null);
     try {
       const newSemester = await deactivateSemester(
-        semester.org_id,
         semester.classroom_id
       );
       onActivate(newSemester);

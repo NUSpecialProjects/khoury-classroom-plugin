@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +23,7 @@ const useSelectedSemester = (): ISelectedSemester => {
         console.log("Error parsing semester cookie: ", error);
       }
     } else {
-      navigate("/semester-selection");
+      navigate("/class-selection");
     }
   }, [navigate]);
 

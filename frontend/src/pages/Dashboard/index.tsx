@@ -12,6 +12,7 @@ const Dashboard: React.FC = () => {
   const { selectedSemester, setSelectedSemester } = useSelectedSemester();
   const [error, setError] = useState<string | null>(null);
   const handleActivate = async (newSemester: ISemester) => {
+    setError(null);
     setSelectedSemester(newSemester);
   };
 
@@ -19,14 +20,13 @@ const Dashboard: React.FC = () => {
     if (selectedSemester) {
       try {
         const newSemester = await activateSemester(
-          selectedSemester.org_id,
           selectedSemester.classroom_id
         );
         handleActivate(newSemester);
         setError(null);
       } catch (err) {
         console.log(err);
-        setError("Failed to activate the semester. Please try again.");
+        setError("Failed to activate the class. Please try again.");
       }
     }
   };
@@ -35,14 +35,13 @@ const Dashboard: React.FC = () => {
     if (selectedSemester) {
       try {
         const newSemester = await deactivateSemester(
-          selectedSemester.org_id,
           selectedSemester.classroom_id
         );
         handleActivate(newSemester);
         setError(null);
       } catch (err) {
         console.log(err);
-        setError("Failed to deactivate the semester. Please try again.");
+        setError("Failed to deactivate the class. Please try again.");
       }
     }
   };
