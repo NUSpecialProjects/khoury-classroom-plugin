@@ -18,7 +18,7 @@ const ClassroomDropdown: React.FC<Props> = ({
 }) => {
   return (
     <div className="Dropdown__wrapper">
-      <label className="Dropdown__label" htmlFor="classroom">Select Classroom:</label>
+      <label className="Dropdown__label" htmlFor="classroom">Select a Classroom</label>
       <select
         id="classroom"
         className="Dropdown"

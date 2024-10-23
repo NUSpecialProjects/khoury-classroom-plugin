@@ -10,6 +10,7 @@
     border-color: var(--button-border-color);
     cursor: pointer;
     transition: background 0.2s ease;
+    padding-bottom: 10px;
 
     &__wrapper {
         display: flex;
@@ -21,7 +22,8 @@
 
     &__label {
         font-size: var(--font-size-s);
-        padding-bottom: 5px;
+        font-weight: 500;
+        padding-bottom: 10px;
     }
 
     &__option {

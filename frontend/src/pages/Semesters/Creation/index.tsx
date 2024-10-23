@@ -3,7 +3,7 @@ import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import OrganizationDropdown from "@/components/Dropdown/Organization";
 import ClassroomDropdown from "@/components/Dropdown/Classroom";
-
+import Panel from "@/components/Panel";
 import {
   getClassrooms,
   getOrganizationDetails,
@@ -127,8 +127,7 @@ const SemesterCreation: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Create a New Class</h1>
+    <Panel title="Create a New Classroom">
       {semesterCreationStatus == SemesterCreationStatus.NONE && (
         <>
           <OrganizationDropdown
@@ -167,10 +166,10 @@ const SemesterCreation: React.FC = () => {
               )}
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
-                <button onClick={handleCreateSemester}>
-                  {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
-                </button>
-              )}
+                  <button onClick={handleCreateSemester}>
+                    {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
+                  </button>
+                )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
                 <div>Error creating class. Please try again.</div>
               )}
@@ -195,7 +194,7 @@ const SemesterCreation: React.FC = () => {
           Create another class
         </button>
       )}
-    </div>
+    </Panel>
   );
 };
 
