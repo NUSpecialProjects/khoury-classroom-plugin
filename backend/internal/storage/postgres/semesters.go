@@ -142,7 +142,6 @@ func (db *DB) ActivateSemester(ctx context.Context, ClassroomID int64) (models.S
 
 func (db *DB) GetSemesterByClassroomID(ctx context.Context, classroomID int64) (models.Semester, error) {
   var sem models.Semester
-  fmt.Println("ClassroomID:", classroomID)
   err := db.connPool.QueryRow(ctx, "SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE classroom_id = $1", 
     classroomID,
     ).Scan(

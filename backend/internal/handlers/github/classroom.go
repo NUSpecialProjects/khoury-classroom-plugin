@@ -49,7 +49,6 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 
 		// Add to db if not in it
 		if !inDB {
-			fmt.Println("SyncAssignments - Assignment not in DB, adding...")
 
       assignmentData := models.Assignment{}
 			
@@ -71,8 +70,6 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
       assignmentData.Name = assignment.Title
       sem, err := service.store.GetSemesterByClassroomID(c.Context(), syncData.Classroom_id)
       if (err != nil) {
-        fmt.Println(sem.ClassroomID)
-        fmt.Println(sem)
         fmt.Println("SyncAssignments - Failed to get classroom id: ", err)
       } else {
         assignmentData.ClassroomID = sem.ClassroomID
