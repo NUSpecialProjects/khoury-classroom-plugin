@@ -116,6 +116,10 @@ const Grader: React.FC = () => {
     getGitBlob(selectedSemester.org_name, studentAssignment.repo_name, node)
       .then((resp) => {
         setCurrentFile(resp);
+        setCachedFiles((prev) => ({
+          ...prev,
+          [node.sha]: resp,
+        }));
       })
       .catch((err: unknown) => {
         // todo: reroute 404

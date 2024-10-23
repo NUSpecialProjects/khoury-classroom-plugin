@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, createContext, useEffect } from "react";
+import { useState, useLayoutEffect, createContext } from "react";
 import Cookies from "js-cookie";
 
 const COOKIE_NAME = "selectedSemester";
