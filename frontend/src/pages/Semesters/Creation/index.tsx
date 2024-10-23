@@ -52,8 +52,6 @@ const SemesterCreation: React.FC = () => {
         if (data.orgs_without_app) {
           setOrgsWithoutApp(data.orgs_without_app);
         }
-        
-        console.log(data);
       } catch (error) {
         console.error("Error fetching organizations:", error);
       } finally {
