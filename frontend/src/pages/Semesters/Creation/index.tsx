@@ -44,8 +44,16 @@ const SemesterCreation: React.FC = () => {
     const fetchOrganizations = async () => {
       try {
         const data: IOrganizationsResponse = await getOrganizations();
-        setOrgsWithApp(data.orgs_with_app);
-        setOrgsWithoutApp(data.orgs_without_app);
+
+        //checking if data exists before populating and setting lists
+        if (data.orgs_with_app) {
+          setOrgsWithApp(data.orgs_with_app);
+        }
+        if (data.orgs_without_app) {
+          setOrgsWithoutApp(data.orgs_without_app);
+        }
+        
+        console.log(data);
       } catch (error) {
         console.error("Error fetching organizations:", error);
       } finally {
