@@ -9,7 +9,6 @@ import {
   getOrganizations,
   postSemester,
 } from "@/api/semesters";
-import useSelectedSemester from "@/contexts/useSelectedSemester";
 
 enum SemesterCreationStatus {
   NONE = "NONE",
@@ -39,11 +38,9 @@ const SemesterCreation: React.FC = () => {
     SemesterCreationStatus.NONE
   );
 
-  const { selectedSemester } = useSelectedSemester();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(selectedSemester);
     const fetchOrganizations = async () => {
       try {
         const data: IOrganizationsResponse = await getOrganizations();
