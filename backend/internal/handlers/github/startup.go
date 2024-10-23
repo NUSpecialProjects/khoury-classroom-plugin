@@ -93,6 +93,7 @@ func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract org_id from the path
 		orgIDParam := c.Params("org")
+		log.Default().Println("orgIDParam: ", orgIDParam)
 		if orgIDParam == "" || orgIDParam == "undefined" {
 			log.Default().Println("Error getting org_id: ", orgIDParam)
 			return c.Status(400).JSON(fiber.Map{"error": "invalid or missing org_id"})
@@ -113,12 +114,14 @@ func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
 
 		// Get the list of classrooms for the organization
 		classrooms, err := userClient.GetUserClassroomsInOrg(c.Context(), org_id)
+		log.Default().Println("classrooms: ", classrooms)
 		if err != nil {
 			log.Default().Println("Error getting classrooms: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get classrooms"})
 		}
 
 		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
+		log.Default().Println("semesters: ", semesters)
 		if err != nil {
 			log.Default().Println("Error getting semesters: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
@@ -140,6 +143,8 @@ func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
 				unavailableClassrooms = append(unavailableClassrooms, classroom)
 			}
 		}
+		log.Default().Println("availableClassrooms: ", availableClassrooms)
+		log.Default().Println("unavailableClassrooms: ", unavailableClassrooms)
 
 		return c.Status(200).JSON(fiber.Map{
 			"available_classrooms":   availableClassrooms,
