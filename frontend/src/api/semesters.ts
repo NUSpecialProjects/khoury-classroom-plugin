@@ -110,26 +110,23 @@ export const getOrgSemesters = async (
 };
 
 export const activateSemester = async (
-  orgId: number,
   classroomId: number
 ): Promise<ISemester> => {
-  return modifySemester(orgId, classroomId, true);
+  return modifySemester(classroomId, true);
 };
 
 export const deactivateSemester = async (
-  orgId: number,
   classroomId: number
 ): Promise<ISemester> => {
-  return modifySemester(orgId, classroomId, false);
+  return modifySemester(classroomId, false);
 };
 
 const modifySemester = async (
-  orgId: number,
   classroomId: number,
   activate: boolean
 ): Promise<ISemester> => {
   const response = await fetch(
-    `${base_url}/github/semesters/${orgId.toString()}/${classroomId.toString()}`,
+    `${base_url}/github/semesters/${classroomId.toString()}`,
     {
       method: "PUT",
       credentials: "include",

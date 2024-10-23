@@ -3,22 +3,39 @@
   flex-direction: column;
   height: 100%;
   width: 30vh;
-  background: #ededed;
-  gap: 20px;
+  background: var(--brand-gradient);
+  gap: 10px;
   padding: 20px;
 
   &__link {
-    padding: 10px;
+    padding: 15px;
     display: flex;
     flex-direction: row;
     width: 100%;
     gap: 10px;
+    border-radius: 10px;
+  }
+
+  &__link:hover {
+    background-color: var(--brand-lightest);
+  }
+
+  &__link {
+    &.active {
+      background-color: var(--brand-lightest);
+      color: var(--brand-darkest);
+    }
   }
 
   &__classNameHeader {
-    font-size: 16pt;
     text-wrap: wrap;
-    font-weight: 600;
     padding-bottom: 20px;
+    padding-top: 10px;
+  }
+
+  &__navBar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 }

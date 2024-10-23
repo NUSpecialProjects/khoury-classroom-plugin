@@ -266,10 +266,6 @@ func (service *GitHubService) CreateSemester() fiber.Handler {
 
 func (service *GitHubService) ActivateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		orgID, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
-		if err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org id"})
-		}
 		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 		if err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid classroom id"})
@@ -286,9 +282,9 @@ func (service *GitHubService) ActivateSemester() fiber.Handler {
 		err = nil
 
 		if requestBody.Activate {
-			semester, err = service.store.ActivateSemester(c.Context(), orgID, classroomID)
+			semester, err = service.store.ActivateSemester(c.Context(), classroomID)
 		} else {
-			semester, err = service.store.DeactivateSemester(c.Context(), orgID, classroomID)
+			semester, err = service.store.DeactivateSemester(c.Context(), classroomID)
 		}
 
 		if err != nil {

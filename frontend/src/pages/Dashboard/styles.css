@@ -4,38 +4,7 @@
     gap: 15px;
   }
 
-  &__assignmentsWrapper {
-    padding: 20px;
-  }
-
-  &__assignmentLink {
-    text-decoration: underline !important;
-  }
-
-  &__assignments {
-    display: table;
-    width: 100%;
-    font-size: 12pt;
-    padding-bottom: 30px;
-  }
-
-  &__assignment {
-    display: table-row;
-    padding: 10px;
-
-    > div {
-      display: table-cell;
-      white-space: nowrap;
-      padding: 15px 20px;
-      border-bottom: solid 1px #c2c2c2;
-      color: #5d5d5d;
-      font-weight: 500;
+    &__assignmentsWrapper {
+        padding: 20px;
     }
-  }
-
-  &__assignment:not(:first-child) {
-    > div:not(:first-child) {
-      color: #8f8f8f;
-    }
-  }
 }

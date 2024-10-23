@@ -47,11 +47,11 @@ export default function App(): React.JSX.Element {
             <Route path="dashboard" element={<Pages.Dashboard />} />
           </Route>
           <Route
-            path="semester-creation"
+            path="class-creation"
             element={<Pages.SemesterCreation />}
           />
           <Route
-            path="semester-selection"
+            path="class-selection"
             element={<Pages.SemesterSelection />}
           />
         </Routes>
