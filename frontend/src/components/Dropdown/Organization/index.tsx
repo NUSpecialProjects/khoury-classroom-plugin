@@ -1,4 +1,5 @@
 import React from "react";
+import '../styles.css'
 
 interface Props {
   orgsWithApp: IOrganization[];
@@ -16,10 +17,11 @@ const OrganizationDropdown: React.FC<Props> = ({
   onSelect,
 }) => {
   return (
-    <div className="form-group">
-      <label htmlFor="organization">Select Organization:</label>
+    <div className="Dropdown__wrapper">
+      <label className="Dropdown__label" htmlFor="organization">Select Organization:</label>
       <select
         id="organization"
+        className="Dropdown"
         value={selectedOrg ? selectedOrg.login : ""}
         onChange={async (e) => {
           const selectedLogin = e.target.value;
@@ -36,18 +38,19 @@ const OrganizationDropdown: React.FC<Props> = ({
         }}
       >
         {loading ? (
-          <option value="" disabled>
+          <option className="Dropdown__option" value="" disabled>
             Loading organizations...
           </option>
         ) : (
           <>
-            <option value="" disabled>
+            <option className="Dropdown__option" value="" disabled>
               Select an organization
             </option>
             {orgsWithoutApp && orgsWithApp.length > 0 && (
               <optgroup label="Organizations with GitGrader Installed">
                 {orgsWithApp.map((org) => (
                   <option
+                    className="Dropdown__option"
                     key={org.id}
                     value={org.login}
                     title="This organization has the GitGrader installed"
@@ -61,6 +64,7 @@ const OrganizationDropdown: React.FC<Props> = ({
               <optgroup label="Organizations without GitGrader Installed">
                 {orgsWithoutApp.map((org) => (
                   <option
+                    className="Dropdown__option"
                     key={org.id}
                     value={org.login}
                     title="GitGrader not installed on this organization"
@@ -72,7 +76,7 @@ const OrganizationDropdown: React.FC<Props> = ({
             )}
           </>
         )}
-        <option value="create_new_org">Create a New Organization ➕</option>
+        <option className="Dropdown__option" value="create_new_org">Create a New Organization ➕</option>
       </select>
       {selectedOrg &&
         orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
