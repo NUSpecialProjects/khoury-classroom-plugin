@@ -117,14 +117,14 @@ const SemesterCreation: React.FC = () => {
         ]);
       } catch (error) {
         setSemesterCreationStatus(SemesterCreationStatus.ERRORED);
-        console.error("Error creating semester:", error);
+        console.error("Error creating class:", error);
       }
     }
   };
 
   return (
-    <div className="SemesterCreation">
-      <h1>Create a New Semester</h1>
+    <div>
+      <h1>Create a New Class</h1>
       {semesterCreationStatus == SemesterCreationStatus.NONE && (
         <>
           <OrganizationDropdown
@@ -147,7 +147,7 @@ const SemesterCreation: React.FC = () => {
         </>
       )}
       {semesterCreationStatus == SemesterCreationStatus.CREATED && (
-        <div>Semester successfully created!</div>
+        <div>Class successfully created!</div>
       )}
       <div>
         {selectedClassroom &&
@@ -164,22 +164,22 @@ const SemesterCreation: React.FC = () => {
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
                 <button onClick={handleCreateSemester}>
-                  {`Create Semester: "${selectedOrg.login}:${selectedClassroom.name}"`}
+                  {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
                 </button>
               )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
-                <div>Error creating semester. Please try again.</div>
+                <div>Error creating class. Please try again.</div>
               )}
             </>
           )}
       </div>
       <button
         onClick={() => {
-          navigate("/semester-selection");
+          navigate("/class-selection");
         }}
       >
         {" "}
-        Go to Select Semester Page
+        Go to Select Class Page
       </button>
       {semesterCreationStatus !== SemesterCreationStatus.NONE && (
         <button
@@ -188,7 +188,7 @@ const SemesterCreation: React.FC = () => {
           }}
         >
           {" "}
-          Create another semester
+          Create another class
         </button>
       )}
     </div>
