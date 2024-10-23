@@ -10,7 +10,7 @@ import (
 
 func (db *DB) GetAllAssignments(ctx context.Context) ([]models.Assignment, error) {
 
-	rows, err := db.connPool.Query(ctx, "SELECT (uuid, rubric_id, semester_id, name) FROM assignments")
+	rows, err := db.connPool.Query(ctx, "SELECT (rubric_id, semester_id, name) FROM assignments")
 
 	if err != nil {
 		fmt.Println("Error in query")
@@ -51,11 +51,9 @@ func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models
 	return nil
 }
 
-func (db *DB) GetStudentAssignment(ctx context.Context, assignmentID string, studentAssignmentID string) (models.StudentAssignment, error) {
-	// TODO:
-	// use assignmentID to find the local index of the requested student assignment as well as the indices of the previous/next ones
+func (db *DB) GetStudentAssignment(ctx context.Context, studentAssignmentID string) (models.StudentAssignment, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT uuid, assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM student_assignments WHERE uuid = $1",
+		"SELECT assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM student_assignments WHERE uuid = $1",
 		studentAssignmentID)
 
 	var studentAssignment models.StudentAssignment
@@ -68,3 +66,22 @@ func (db *DB) GetStudentAssignment(ctx context.Context, assignmentID string, stu
 	defer rows.Close()
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.StudentAssignment])
 }
+
+/*func (db *DB) GetStudentAssignments(ctx context.Context, assignmentID string) ([]models.StudentAssignment, error) {
+	// todo: first get db id of assignment, then get * from student assignments where assignmentid=dbid
+
+	rows, err := db.connPool.Query(ctx,
+		"SELECT uuid, assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started FROM assignments WHERE uuid = $1",
+		assignmentID)
+
+	var studentAssignment []models.StudentAssignment
+
+	if err != nil {
+		fmt.Println("Error in query")
+		return studentAssignment, err
+	}
+
+	defer rows.Close()
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentAssignment])
+}
+*/
