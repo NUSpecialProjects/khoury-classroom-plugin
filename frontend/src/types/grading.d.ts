@@ -11,9 +11,9 @@ interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   submissions: IGradingSubmissionRow[];
 }
 
-/*********************
- * Grader object types
- *********************/
+/******************************
+ * GitHub response object types
+ ******************************/
 interface IGitTreeNode {
   type: string;
   path: string;

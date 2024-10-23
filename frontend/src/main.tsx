@@ -25,9 +25,6 @@ const PrivateRoute = ({ element }: { element: React.JSX.Element }) => {
 // An inner-app route that requires user to have selected a classroom
 const AppRoute = ({ element }: { element: React.JSX.Element }) => {
   const { selectedSemester } = useContext(SelectedSemesterContext);
-  useEffect(() => {
-    console.log(selectedSemester);
-  }, []);
   return selectedSemester ? element : <Navigate to="/class-selection" />;
 };
 

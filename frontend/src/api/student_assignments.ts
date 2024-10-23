@@ -21,3 +21,47 @@ export const getStudentAssignment = async (
   const resp = (await response.json()) as IStudentAssignment;
   return resp;
 };
+
+export const getGitTree = async (
+  orgName: string,
+  repoName: string
+): Promise<IGitTreeNode[]> => {
+  const response = await fetch(
+    `${base_url}/file-tree/org/${orgName}/repo/${repoName}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = (await response.json()) as IGitTreeNode[];
+  return resp;
+};
+
+export const getGitBlob = async (
+  orgName: string,
+  repoName: string,
+  node: IFileTreeNode
+): Promise<IGraderFile> => {
+  const response = await fetch(
+    `${base_url}/file-tree/org/${orgName}/repo/${repoName}/blob/${node.sha}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const content = await response.text();
+  const file: IGraderFile = { content, name: node.name };
+  return file;
+};

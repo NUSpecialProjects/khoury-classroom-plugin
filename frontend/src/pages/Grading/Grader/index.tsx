@@ -15,9 +15,12 @@ import {
 } from "./funcs";
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
-
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
-import { getStudentAssignment } from "@/api/student_assignments";
+import {
+  getStudentAssignment,
+  getGitTree,
+  getGitBlob,
+} from "@/api/student_assignments";
 
 import "./styles.css";
 
@@ -37,30 +40,32 @@ const Grader: React.FC = () => {
 
   // fetch requested student assignment
   useEffect(() => {
-    console.log(selectedSemester);
-    // TODO: reroute 404
     if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
 
     getStudentAssignment(
-      selectedSemester?.classroom_id,
+      selectedSemester.classroom_id,
       Number(assignmentId),
       Number(studentAssignmentId)
-    ).then((resp) => {
-      setStudentAssignment(resp);
-      console.log(resp);
-    });
+    )
+      .then((resp) => {
+        setStudentAssignment(resp);
+      })
+      .catch((err: unknown) => {
+        // todo: reroute 404
+        console.log(err);
+      });
   }, [studentAssignmentId]);
 
   // fetch git tree from student assignment repo
   useEffect(() => {
-    fetch(
-      `http://localhost:8080/file-tree/org/${selectedSemester?.org_name}/assignment/${assignmentId}/student/${studentAssignment?.repo_name}`
-    )
-      .then((response) => response.json())
-      .then((data: IGitTreeNode[]) => {
-        setGitTree(data);
+    if (!selectedSemester || !studentAssignment) return;
+
+    getGitTree(selectedSemester.org_name, studentAssignment.repo_name)
+      .then((resp) => {
+        setGitTree(resp);
       })
       .catch((err: unknown) => {
+        // todo: reroute 404
         console.log(err);
       });
   }, [studentAssignment]);
@@ -107,21 +112,13 @@ const Grader: React.FC = () => {
       return;
     }
 
-    fetch(
-      "http://localhost:8080/file-tree/org/NUSpecialProjects/assignment/1/student/92pLytz-SgW~mKeuxDyuJg/blob/" +
-        node.sha
-    )
-      .then((response) => response.text())
-      .then((content) => {
-        const file: IGraderFile = { content, name: node.name };
-        setCurrentFile(file);
-        // Cache the content
-        setCachedFiles((prev) => ({
-          ...prev,
-          [node.sha]: file,
-        }));
+    if (!selectedSemester || !studentAssignment) return;
+    getGitBlob(selectedSemester.org_name, studentAssignment.repo_name, node)
+      .then((resp) => {
+        setCurrentFile(resp);
       })
       .catch((err: unknown) => {
+        // todo: reroute 404
         console.log(err);
       });
   };
