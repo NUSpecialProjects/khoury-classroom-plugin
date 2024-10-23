@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import OrganizationDropdown from "@/components/Dropdown/Organization";
 import ClassroomDropdown from "@/components/Dropdown/Classroom";
 import Panel from "@/components/Panel";
+import Button from "@/components/Button";
 import {
   getClassrooms,
   getOrganizationDetails,
@@ -160,15 +161,17 @@ const SemesterCreation: React.FC = () => {
           ) && (
             <>
               {semesterCreationStatus === SemesterCreationStatus.CREATING && (
-                <button onClick={handleCreateSemester} disabled={true}>
-                  `Creating ${selectedClassroom.name}...`
-                </button>
+                <Button variant="secondary" onClick={handleCreateSemester} disabled={true}>Creating classroom...</Button>
+                // <button onClick={handleCreateSemester} disabled={true}>
+                //   `Creating ${selectedClassroom.name}...`
+                // </button>
               )}
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
-                  <button onClick={handleCreateSemester}>
-                    {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
-                  </button>
+                  <Button variant="secondary" onClick={handleCreateSemester}>Create Classroom</Button>
+                  // <button onClick={handleCreateSemester}>
+                  //   {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
+                  // </button>
                 )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
                 <div>Error creating class. Please try again.</div>
@@ -176,24 +179,18 @@ const SemesterCreation: React.FC = () => {
             </>
           )}
       </div>
-      <button
-        onClick={() => {
+
+      <div className="Creation__buttonWrapper">
+        <Button variant="primary" onClick={() => {
           navigate("/class-selection");
-        }}
-      >
-        {" "}
-        Go to Select Class Page
-      </button>
-      {semesterCreationStatus !== SemesterCreationStatus.NONE && (
-        <button
-          onClick={() => {
+        }}>Go to Select Class Page</Button>
+
+        {semesterCreationStatus !== SemesterCreationStatus.NONE && (
+          <Button variant="secondary" onClick={() => {
             setSemesterCreationStatus(SemesterCreationStatus.NONE);
-          }}
-        >
-          {" "}
-          Create another class
-        </button>
-      )}
+          }}>Create another class</Button>
+        )}
+      </div>
     </Panel>
   );
 };
