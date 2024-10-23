@@ -20,9 +20,9 @@ const Assignment: React.FC = () => {
       </div>
 
       <div className="Assignment__externalButtons">
-        <Button href="">View in Github Classroom</Button>
-        <Button href="">View Starter Code</Button>
-        <Button href="">View Rubric</Button>
+        <Button href="" variant="secondary">View in Github Classroom</Button>
+        <Button href="" variant="secondary">View Starter Code</Button>
+        <Button href="" variant="secondary">View Rubric</Button>
       </div>
 
       <div className="Assignment__contentWrapper">
