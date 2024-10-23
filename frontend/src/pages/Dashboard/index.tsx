@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
             </TableRow>
             {assignments.map((assignment, i: number) => (
               <TableRow key={i} className="Assignment__submission">
-                <TableCell> <Link to={`/app/assignments/?id=${assignment.id}`} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
+                <TableCell> <Link to={`/app/assignment/${i}`} state={{assignment}} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
                 <TableCell> {assignment.main_due_date ? assignment.main_due_date.toLocaleDateString("en-US", options) : "N/A"}</TableCell>
               </TableRow>
             ))}
