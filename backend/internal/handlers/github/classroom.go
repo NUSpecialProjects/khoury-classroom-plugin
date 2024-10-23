@@ -64,7 +64,6 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
       }
 
 
-
       assignmentData.InsertedDate = time.Now()
       assignmentData.Assignment_Classroom_ID = assignment.ID
       assignmentData.Name = assignment.Title
@@ -79,10 +78,8 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 			if error != nil {
 				fmt.Println("SyncAssignments - Failed to add assignment to db", error)
 			}
-
-		}
-
 	}
+    }
 
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "Synced data",
@@ -99,18 +96,26 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 
 	client, err := service.getClient(c)
 	if err != nil {
-		fmt.Println("SyncAssignments - Failed to get Client", err)
+		fmt.Println("SyncStudentAssignments - Failed to get Client", err)
 		return err
 	}
 
-	assignments, err := client.GetAcceptedAssignments(c.Context(), syncData.AssignmentID)
+    // get all currently accepted student assignments from cr
+	accepted_student_assignments, err := client.GetAcceptedAssignments(c.Context(), syncData.AssignmentID)
 	if err != nil {
-		fmt.Println("SyncAssignments - Could not get classroom assignments")
+		fmt.Println("SyncStudentAssignments - Could not get classroom assignments")
 		return err
     }
 
-    fmt.Println(assignments)
 
+    // get list of student assignments currently in the db under this assignment
+
+    for _, assignment := range accepted_student_assignments {
+        fmt.Println(assignment)
+
+    }
+    // store any student assignments that aren't already in the db
+    
 
     return nil
 }

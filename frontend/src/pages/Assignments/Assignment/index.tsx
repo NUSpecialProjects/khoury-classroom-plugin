@@ -24,12 +24,13 @@ const Assignment: React.FC = () => {
       try {
         if (sem.classroom_id) {
           const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-          const result = await fetch(`${base_url}/${sem.classroom_id}/${assignment.assignment_classroom_id}`, {
-            method: 'GET',
+          const result = await fetch(`${base_url}/github/sync/assignment/student`, {
+            method: 'POST',
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },
+            body: JSON.stringify( { classroom_id: sem.classroom_id, assignment_id: assignment.assignment_classroom_id} ) 
           });
 
           if (!result.ok) {
@@ -75,9 +76,8 @@ const Assignment: React.FC = () => {
     // check if assignment has been passed through 
     if (location.state) {
       setAssignment(location.state.assignment)
-      // sync student assignments
       const a = location.state.assignment
-
+      // sync student assignments
       if (selectedSemester !== null && selectedSemester !== undefined) {
         SyncStudentAssignments(selectedSemester, a).then(() => {
           console.log(studentAssignment)
@@ -101,7 +101,7 @@ const Assignment: React.FC = () => {
 
 
 
-  }, []);
+  }, [selectedSemester]);
 
 
 
