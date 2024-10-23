@@ -25,37 +25,35 @@ const Dashboard: React.FC = () => {
         setSelectedSemester(newSemester);
     };
 
-    const handleActivateClick = async () => {
-        if (selectedSemester) {
-            try {
-                const newSemester = await activateSemester(
-                    selectedSemester.org_id,
-                    selectedSemester.classroom_id
-                );
-                handleActivate(newSemester);
-                setError(null);
-            } catch (err) {
-                console.log(err);
-                setError("Failed to activate the semester. Please try again.");
-            }
-        }
-    };
+  const handleActivateClick = async () => {
+    if (selectedSemester) {
+      try {
+        const newSemester = await activateSemester(
+          selectedSemester.classroom_id
+        );
+        handleActivate(newSemester);
+        setError(null);
+      } catch (err) {
+        console.log(err);
+        setError("Failed to activate the class. Please try again.");
+      }
+    }
+  };
 
-    const handleDeactivateClick = async () => {
-        if (selectedSemester) {
-            try {
-                const newSemester = await deactivateSemester(
-                    selectedSemester.org_id,
-                    selectedSemester.classroom_id
-                );
-                handleActivate(newSemester);
-                setError(null);
-            } catch (err) {
-                console.log(err);
-                setError("Failed to deactivate the semester. Please try again.");
-            }
-        }
-    };
+  const handleDeactivateClick = async () => {
+    if (selectedSemester) {
+      try {
+        const newSemester = await deactivateSemester(
+          selectedSemester.classroom_id
+        );
+        handleActivate(newSemester);
+        setError(null);
+      } catch (err) {
+        console.log(err);
+        setError("Failed to deactivate the class. Please try again.");
+      }
+    }
+  };
 
     useEffect(() => {
         const fetchAssignments = async (semester: ISemester) => {
@@ -154,19 +152,20 @@ const Dashboard: React.FC = () => {
                         ))}
                     </Table>
 
-                </div>
-                <div>
-                    <p>Temporary Classroom Settings</p>
-                    {selectedSemester && !selectedSemester.active && (
-                        <button onClick={handleActivateClick}>Activate Class</button>
-                    )}
-                    {selectedSemester && selectedSemester.active && (
-                        <button onClick={handleDeactivateClick}>Deactivate Class</button>
-                    )}
-                </div>
-                {error && <ErrorMessage message={error} />}
-            </>
-        )}
+          
+          </div>
+          <div>
+            <p>Temporary Classroom Settings</p>
+            {selectedSemester && !selectedSemester.active && (
+              <button onClick={handleActivateClick}>Activate Class</button>
+            )}
+            {selectedSemester && selectedSemester.active && (
+              <button onClick={handleDeactivateClick}>Deactivate Class</button>
+            )}
+          </div>
+          {error && <ErrorMessage message={error} />}
+        </>
+      )}
     </div>
     );
 

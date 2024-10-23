@@ -5,7 +5,9 @@
     align-items: baseline;
     flex-direction: row;
     gap: 10px;
-    border-bottom: 2px solid #eeeeee;
+    border-bottom-width: var(--border-width);
+    border-bottom-style: var(--border-style);
+    border-bottom-color: var(--border-color);
     padding-bottom: 10px;
   }
   &__title {
@@ -19,7 +21,7 @@
     display: flex;
     flex-direction: row;
     gap: 30px;
-    color: #474747;
+    color: var(--caption-text);
 
     li {
       list-style: none;
@@ -29,18 +31,19 @@
   &__externalButtons {
     display: flex;
     flex-direction: row;
-    padding-top: 20px;
+    padding: 20px;
     gap: 10px;
   }
 
-  .Table {
-    .TableRow:not(:first-child) {
-      cursor: pointer;
+  &____contentWrapper {
+    padding: 20px;
+  }
 
-      .TableCell:first-child {
-        font-weight: 600;
-        text-decoration: underline;
-      }
-    }
+  &__metricsWrapper {
+    padding: 20px;
+  }
+
+  &__assignmentsWrapper {
+    padding: 20px;
   }
 }

@@ -34,7 +34,7 @@ func Routes(app *fiber.App, params types.Params) {
 
 	protected.Post("/semesters", service.CreateSemester())
 
-	protected.Put("/semesters/:org_id/:classroom_id", service.ActivateSemester())
+	protected.Put("/semesters/:classroom_id", service.ActivateSemester())
 
 	protected.Get("/orgs/:org/semesters", service.ListOrgSemesters())
 

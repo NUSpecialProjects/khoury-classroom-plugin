@@ -24,7 +24,7 @@ const useSelectedSemester = (): ISelectedSemester => {
         console.log("Error parsing semester cookie: ", error);
       }
     } else {
-      navigate("/semester-selection");
+      navigate("/class-selection");
     }
   }, [navigate]);
 

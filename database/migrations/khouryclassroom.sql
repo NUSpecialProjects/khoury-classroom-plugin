@@ -1,10 +1,9 @@
 CREATE TABLE IF NOT EXISTS semesters (
-  classroom_id INTEGER UNIQUE NOT NULL,
+  classroom_id INTEGER UNIQUE PRIMARY KEY,
   org_name VARCHAR(255) NOT NULL,
   classroom_name VARCHAR(255) NOT NULL,
   active BOOLEAN NOT NULL,
-  org_id INTEGER NOT NULL,
-  PRIMARY KEY (classroom_id, org_id)
+  org_id INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS rubrics (
