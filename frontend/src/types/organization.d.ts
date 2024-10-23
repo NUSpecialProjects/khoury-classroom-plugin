@@ -7,6 +7,6 @@ interface IOrganization {
 }
 
 interface IOrganizationsResponse {
-  orgs_with_app: Organization[];
-  orgs_without_app: Organization[];
+  orgs_with_app: IOrganization[];
+  orgs_without_app: IOrganization[];
 }

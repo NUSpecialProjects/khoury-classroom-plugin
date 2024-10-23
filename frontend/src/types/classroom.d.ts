@@ -5,6 +5,6 @@ interface IClassroom {
 }
 
 interface IClassroomResponse {
-  available_classrooms: Classroom[];
-  unavailable_classrooms: Classroom[];
+  available_classrooms: IClassroom[];
+  unavailable_classrooms: IClassroom[];
 }
