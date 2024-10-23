@@ -3,17 +3,32 @@
   flex: 1;
   justify-content: center;
   padding: 14px 38px;
-  background: var(--page-background);
-  color: var(--primary-text);
   font-size: var(--body-font-size);
   border-radius: 10px;
-  border-width: var(--border-width);
-  border-style: var(--border-style);
-  border-color: var(--button-border-color);
   cursor: pointer;
   transition: background 0.2s ease;
+  margin: 10px;
 
-  &:hover {
-    background: var(--panels-background);
+  &.primary {
+    background: var(--brand);
+    color: var(--primary-text-white);
+    border: none;
+
+    &:hover {
+      background: var(--brand-lighter);
+    }
+  }
+
+  &.secondary {
+    background: var(--page-background);
+    color: var(--primary-text);
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--button-border-color);
+
+    &:hover {
+      background: var(--panels-background);
+    }
   }
 }
+
