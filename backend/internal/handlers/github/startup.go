@@ -18,6 +18,7 @@ call ListClassrooms, getting list of classrooms available to the current user
 
 func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		log.Default().Println("GetInstalledOrgs")
 		// Get the user client
 		userClient, err := service.getClient(c)
 		if err != nil {
