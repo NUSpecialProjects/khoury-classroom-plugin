@@ -43,6 +43,27 @@ export const getStudentAssignments = async (
   return resp;
 };
 
+export const getTotalStudentAssignments = async (
+  semesterID: number,
+  assignmentID: number
+): Promise<number> => {
+  const response = await fetch(
+    `${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments/total`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = (await response.json()) as number;
+  return resp;
+};
+
 export const getGitTree = async (
   orgName: string,
   repoName: string

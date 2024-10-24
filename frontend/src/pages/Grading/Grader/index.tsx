@@ -20,6 +20,7 @@ import {
   getStudentAssignment,
   getGitTree,
   getGitBlob,
+  getTotalStudentAssignments,
 } from "@/api/student_assignments";
 
 import "./styles.css";
@@ -32,6 +33,7 @@ const Grader: React.FC = () => {
   const { selectedSemester } = useContext(SelectedSemesterContext);
 
   // states
+  const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
   const [studentAssignment, setStudentAssignment] =
     useState<IStudentAssignment | null>(null);
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
@@ -39,6 +41,22 @@ const Grader: React.FC = () => {
     {}
   );
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
+
+  // fetch totals for indexing purposes
+  useEffect(() => {
+    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
+
+    getTotalStudentAssignments(
+      selectedSemester.classroom_id,
+      Number(assignmentId)
+    )
+      .then((resp) => {
+        setTotalStudentAssignments(resp);
+      })
+      .catch((err: unknown) => {
+        console.log(err);
+      });
+  }, [selectedSemester, assignmentId]);
 
   // fetch requested student assignment
   useEffect(() => {
@@ -56,7 +74,7 @@ const Grader: React.FC = () => {
         console.log(err);
         navigate("/404", { replace: true });
       });
-  }, [studentAssignmentId]);
+  }, [selectedSemester, assignmentId, studentAssignmentId]);
 
   // fetch git tree from student assignment repo
   useEffect(() => {
@@ -143,16 +161,30 @@ const Grader: React.FC = () => {
             </div>
           </div>
           <div className="Grader__nav">
-            <span>Submission 2/74</span>
+            <span>
+              Student Assignment {studentAssignmentId}/{totalStudentAssignments}
+            </span>
             <div>
-              <Button variant="secondary">
-                <FaChevronLeft />
-                Previous
-              </Button>
-              <Button>
-                Next
-                <FaChevronRight />
-              </Button>
+              {Number(studentAssignmentId) > 1 && (
+                <Link
+                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) - 1}`}
+                >
+                  <Button variant="secondary">
+                    <FaChevronLeft />
+                    Previous
+                  </Button>
+                </Link>
+              )}
+              {Number(studentAssignmentId) < totalStudentAssignments && (
+                <Link
+                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) + 1}`}
+                >
+                  <Button variant="secondary">
+                    Next
+                    <FaChevronRight />
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

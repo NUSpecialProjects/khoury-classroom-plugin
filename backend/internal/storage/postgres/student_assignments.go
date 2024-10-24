@@ -8,6 +8,21 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+func (db *DB) GetTotalStudentAssignments(ctx context.Context, classroomID int64, localAssignmentID int64) (int64, error) {
+	rows, err := db.connPool.Query(ctx,
+		"SELECT COUNT(*) FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE classroom_id = $1 ORDER BY name ASC OFFSET $2 LIMIT 1)",
+		classroomID, localAssignmentID-1)
+	// -1 for 1-indexing
+
+	if err != nil {
+		fmt.Println("Error in query")
+		return 0, err
+	}
+
+	defer rows.Close()
+	return pgx.CollectOneRow(rows, pgx.RowTo[int64])
+}
+
 func (db *DB) GetStudentAssignments(ctx context.Context, classroomID int64, localAssignmentID int64) ([]models.StudentAssignment, error) {
 	rows, err := db.connPool.Query(ctx,
 		"WITH a as (SELECT id, name AS assignment_name FROM assignments WHERE classroom_id = $1 ORDER BY name ASC OFFSET $2 LIMIT 1) "+
