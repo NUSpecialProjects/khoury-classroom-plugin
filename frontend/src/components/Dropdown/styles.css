@@ -11,7 +11,6 @@
     cursor: pointer;
     transition: background 0.2s ease;
     padding-bottom: 10px;
-    margin: 5px;
 
     &__wrapper {
         display: flex;
