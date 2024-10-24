@@ -1,6 +1,6 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import Prism from "prismjs";
 import "prismjs/plugins/line-numbers/prism-line-numbers";
@@ -130,53 +130,59 @@ const Grader: React.FC = () => {
   };
 
   return (
-    <div className="Grader">
-      <div className="Grader__head">
-        <div className="Grader__title">
-          <FaChevronLeft />
-          <div>
-            <h2>Assignment 3</h2>
-            <span>Jane Doe</span>
-          </div>
-        </div>
-        <div className="Grader__nav">
-          <span>Submission 2/74</span>
-          <div>
-            <Button variant="secondary">
+    studentAssignment && (
+      <div className="Grader">
+        <div className="Grader__head">
+          <div className="Grader__title">
+            <Link to="/app/grading">
               <FaChevronLeft />
-              Previous
-            </Button>
-            <Button>
-              Next
-              <FaChevronRight />
-            </Button>
+            </Link>
+            <div>
+              <h2>{studentAssignment.assignment_name}</h2>
+              <span>{studentAssignment.student_gh_username}</span>
+            </div>
+          </div>
+          <div className="Grader__nav">
+            <span>Submission 2/74</span>
+            <div>
+              <Button variant="secondary">
+                <FaChevronLeft />
+                Previous
+              </Button>
+              <Button>
+                Next
+                <FaChevronRight />
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="Grader__body">
+          <FileTree
+            className="Grader__files"
+            gitTree={gitTree}
+            selectFileCallback={openFile}
+          />
+          <div className="Grader__browser">
+            <pre
+              className={currentFile ? "line-numbers" : "language-undefined"}
+            >
+              <code
+                className={
+                  currentFile
+                    ? "line-numbers language-" +
+                      ext2lang[extractExtension(currentFile.name)]
+                    : "language-undefined"
+                }
+              >
+                {currentFile
+                  ? currentFile.content
+                  : "Select a file to view its contents."}
+              </code>
+            </pre>
           </div>
         </div>
       </div>
-      <div className="Grader__body">
-        <FileTree
-          className="Grader__files"
-          gitTree={gitTree}
-          selectFileCallback={openFile}
-        />
-        <div className="Grader__browser">
-          <pre className={currentFile ? "line-numbers" : "language-undefined"}>
-            <code
-              className={
-                currentFile
-                  ? "line-numbers language-" +
-                    ext2lang[extractExtension(currentFile.name)]
-                  : "language-undefined"
-              }
-            >
-              {currentFile
-                ? currentFile.content
-                : "Select a file to view its contents."}
-            </code>
-          </pre>
-        </div>
-      </div>
-    </div>
+    )
   );
 };
 
