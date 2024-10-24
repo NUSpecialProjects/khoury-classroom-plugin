@@ -6,10 +6,15 @@ import { AxisBottom } from './AxisBottom';
 
 const MARGIN = { top: 30, right: 30, bottom: 30, left: 50 };
 
+export type GradeEntry = {
+  name: string,
+  value: number
+}
+
 type BoxplotProps = {
   width: number;
   height: number;
-  data: { name: string; value: number }[];
+  data: GradeEntry[];
 };
 
 export const Boxplot = ({ width, height, data }: BoxplotProps) => {
