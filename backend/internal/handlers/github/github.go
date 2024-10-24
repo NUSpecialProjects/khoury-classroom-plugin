@@ -58,14 +58,17 @@ func (service *GitHubService) Login() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to generate JWT token"})
 		}
 
+		// Log JWT token
+		fmt.Println("JWT Token: ", jwtToken)
+
 		c.Cookie(&fiber.Cookie{
 			Name:     "jwt_cookie",
 			Value:    jwtToken,
 			Expires:  expirationTime,
 			HTTPOnly: true,
-			Secure:   false,
-			SameSite: "Lax",
-			Path:     "",
+			Secure:   true,
+			SameSite: "None",
+			Path:     "/",
 		})
 
 		//TODO: check the database if the user is a TA, if so, set their role accordingly

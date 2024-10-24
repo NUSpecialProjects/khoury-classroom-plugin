@@ -1,10 +1,12 @@
+data "aws_region" "current" {}
+
 # ------------------------------------------------
-# IAM Roles for ECS
+# ECS Task
 # ------------------------------------------------
 
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "role-name"
- 
+
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -23,7 +25,7 @@ EOF
 }
 resource "aws_iam_role" "ecs_task_role" {
   name = "role-name-task"
- 
+
   assume_role_policy = <<EOF
 {
  "Version": "2012-10-17",
@@ -47,18 +49,18 @@ resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attach
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 resource "aws_iam_role_policy_attachment" "task_s3" {
-  role       = "${aws_iam_role.ecs_task_role.name}"
+  role       = aws_iam_role.ecs_task_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 # ------------------------------------------------
-# ECS Auto Scale Role
+# ECS Auto Scaling
 # ------------------------------------------------
 
 data "aws_iam_policy_document" "ecs_auto_scale_role" {
   version = "2012-10-17"
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -80,7 +82,7 @@ resource "aws_iam_role_policy_attachment" "ecs_auto_scale_role" {
 
 
 # ------------------------------------------------
-# IAM Role for GitHub Actions Deployment
+#  GitHub Actions Deployment
 # ------------------------------------------------
 
 # GitHub Actions Role for Deployment
@@ -134,9 +136,12 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
                 "ecr:InitiateLayerUpload",
                 "ecr:UploadLayerPart",
                 "ecr:CompleteLayerUpload",
-                "ecr:DescribeRepositories"
+                "ecr:DescribeRepositories",
+                "ecr:BatchDeleteImage",
+                "ecr:ListImages",
+                "ecr:GetDownloadUrlForLayer"
             ],
-            "Resource": "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/khoury-classroom/backend"
+            "Resource": "arn:aws:ecr:${data.aws_region.current.name}:${var.aws_account_id}:repository/khoury-classroom/backend"
         },
         {
             "Effect": "Allow",
@@ -145,11 +150,13 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
                 "ecs:RegisterTaskDefinition",
                 "ecs:DescribeServices",
                 "ecs:DescribeTaskDefinition",
-                "ecs:DescribeTasks"
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:DescribeClusters"
             ],
             "Resource": [
-              "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:cluster/cb-cluster",
-              "arn:aws:ecs:${var.aws_region}:${var.aws_account_id}:service/cb-cluster/*"
+              "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:cluster/gitmarks-cluster",
+              "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:service/gitmarks-cluster/*"
             ]
         }
     ]

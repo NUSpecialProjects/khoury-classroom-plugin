@@ -25,7 +25,12 @@ func New(params types.Params) *fiber.App {
 	hello.Routes(app, params)
 	github.Routes(app, params)
 	test.Routes(app, params)
-  assignments.Routes(app, params)
+	assignments.Routes(app, params)
+
+	// heartbeat route
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
 
 	return app
 }

@@ -16,6 +16,9 @@ const Callback: React.FC = () => {
       const sendCode = () => {
         const base_url: string = import.meta.env
           .VITE_PUBLIC_API_DOMAIN as string;
+        console.log("Sending code to server: ", base_url);
+
+        
         fetch(`${base_url}/login`, {
           method: "POST",
           credentials: "include",
@@ -46,6 +49,7 @@ const Callback: React.FC = () => {
       };
       sendCode();
     } else {
+      console.log("No code found");
       navigate("/");
     }
   });

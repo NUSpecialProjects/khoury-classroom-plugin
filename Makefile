@@ -15,13 +15,7 @@ frontend-run:
 frontend-lint:
 	cd frontend && npx eslint
 
-# Run database
+# Run backend
 .PHONY: db-run
 db-run:
 	docker-compose up
-
-# convert the backend link to an ngrok link
-.PHONY: backend-ngrok
-backend-ngrok:
-	@echo ${PUBLIC_API_DOMAIN}
-	cd backend && ngrok http --domain=${PUBLIC_API_DOMAIN} 8080
