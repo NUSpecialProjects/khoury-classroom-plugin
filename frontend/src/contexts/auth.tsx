@@ -16,9 +16,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   //Handle loggedin state
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    import.meta.env.MODE == "development"
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const login = () => {
     setIsLoggedIn(true);

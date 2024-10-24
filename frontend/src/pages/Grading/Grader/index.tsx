@@ -54,7 +54,7 @@ const Grader: React.FC = () => {
       })
       .catch((err: unknown) => {
         console.log(err);
-        navigate("/404");
+        navigate("/404", { replace: true });
       });
   }, [studentAssignmentId]);
 
@@ -142,7 +142,7 @@ const Grader: React.FC = () => {
         <div className="Grader__nav">
           <span>Submission 2/74</span>
           <div>
-            <Button>
+            <Button variant="secondary">
               <FaChevronLeft />
               Previous
             </Button>
