@@ -144,7 +144,7 @@ const SemesterCreation: React.FC = () => {
   }, []);
 
   return (
-    <Panel title="Create a New Classroom">
+    <Panel title="Create a New Classroom" logo={true}>
       {semesterCreationStatus == SemesterCreationStatus.NONE && (
         <>
           <OrganizationDropdown

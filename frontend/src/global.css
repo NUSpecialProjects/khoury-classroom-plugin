@@ -25,8 +25,11 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand-lightest: #cbd6eb;
   --brand-darker: #3953b4;
   --brand-darkest: #233ea0;
-  --brand-highlight: rgba(203, 214, 235, 20%);
+  --brand-highlight: rgba(132, 135, 139, 0.3);
   --brand-gradient: linear-gradient(180deg, #F3F5FC 0%, #CED6E6 100%);
+  --brand-gradient-bright: linear-gradient(160deg, #255ac5 0%, #5f8be3 100%);
+  --brand-gradient-dark: linear-gradient(160deg, #0f3072 0%, #7996cf 100%);
+
 
   /* Metrics and Accents */
   --teal: #0d9488;

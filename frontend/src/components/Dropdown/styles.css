@@ -1,5 +1,5 @@
 .Dropdown {
-    max-width: 450px;
+    max-width: 400px;
     padding: 10px;
     background: var(--page-background);
     color: var(--primary-text);
@@ -11,10 +11,11 @@
     cursor: pointer;
     transition: background 0.2s ease;
     padding-bottom: 10px;
+    margin: 5px;
 
     &__wrapper {
         display: flex;
-        padding: 20px;
+        padding: 10px;
         flex-direction: column;
         flex: 1;
         justify-content: center;
