@@ -3,11 +3,12 @@ package github
 import (
 	"fmt"
 	"net/http"
+	"sort"
 	"time"
-    //"sort"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/go-github/github"
 )
 
 func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
@@ -91,8 +92,8 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-/*
-	client, err := service.getClient(c)
+	
+    client, err := service.getClient(c)
 	if err != nil {
 		fmt.Println("SyncStudentAssignments - Failed to get Client", err)
 		return err
@@ -117,30 +118,26 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
     // Check every accepted assignment for a match in our db 
 	for _, assignment := range accepted_student_assignments {
         var inDB = false
+        ghStudents := ParseStudentsOutOfGHUsers(assignment.Students)
 
 
         // check every student assnment in our db
         for _, studentA := range studentAssmnts {
             var noMatch = false
             students, err := service.store.GetStudentAssignmentGroup(c.Context(), studentA.ID)
-            
+            fmt.Println("Students in group: ", students)
+
+
             if err != nil {
                 fmt.Println("SyncStudentAssignments - Could not find group", err)
             } else {
                 if len(students) == len(assignment.Students) {
-                    var ghStudents []string
-                    // Take the usernames out of the gh user objects
-                    for _, s := range assignment.Students {
-                        if (s.Login != nil) {
-                            ghStudents = append(ghStudents, *s.Login)
-                        }
-                    }
 
                     // sort them for easy comparison
                     sort.Strings(ghStudents)
                     sort.Strings(students)
 
-                    for i, _ := range ghStudents {
+                    for i := range ghStudents {
                         if ghStudents[i] != students[i] {
                             noMatch = true
                             break
@@ -159,17 +156,40 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 
         if !inDB {
             var newStudentAssignment models.StudentAssignment
+            newStudentAssignment.Started = true
+            newStudentAssignment.Completed = assignment.Submitted
+            if (assignment.Repository.Name != nil) {
+                newStudentAssignment.RepoName = *assignment.Repository.Name
+            }
+            newStudentAssignment.AssignmentID = assignment.ID
 
-
-
+            newStudentAssignment.StudentGHUsernames = ghStudents
+            err := service.store.CreateStudentAssignment(c.Context(), newStudentAssignment)
+            if err != nil {
+                fmt.Println("Error creating student assignment: ", err)
+            }
 
         }
 
 
-	}*/
+	}
 
 
 	// store any student assignments that aren't already in the db
 
 	return nil
 }
+
+
+func ParseStudentsOutOfGHUsers(ghUsers []*github.User) ([]string) {
+    var ghStudents []string
+    // Take the usernames out of the gh user objects
+    for _, s := range ghUsers {
+        if (s.Login != nil) {
+            ghStudents = append(ghStudents, *s.Login)
+        }
+    }
+
+    return ghStudents
+}
+

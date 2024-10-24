@@ -20,6 +20,7 @@ type Test interface {
 
 // TODO: Remove duplicate 
 type StudentAssignments interface {
+	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignment) error
 	GetStudentAssignments(ctx context.Context, classroomID int64, assignmentID int64) ([]models.StudentAssignment, error)
 	GetStudentAssignment(ctx context.Context, classroomID int64, assignmentID int64, studentAssignmentID int64) (models.StudentAssignment, error)
     GetStudentAssignmentByAssignment(ctx context.Context, assignment_id int64) ([]models.StudentAssignment, error)
@@ -31,7 +32,6 @@ type Assignments interface {
 	GetAssignment(ctx context.Context, classroomID int64, localAssignmentID int64) (models.Assignment, error)
 	CreateRubric(ctx context.Context, rubricData models.Rubric) error
 	CreateAssignment(x context.Context, assignmentData models.Assignment) error
-	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignment) error
 	CreateDueDate(ctx context.Context, dueDateData models.DueDate) error
 	CreateRegrade(ctx context.Context, regradeData models.Regrade) error
 	CreateSession(ctx context.Context, sessionData models.Session) error

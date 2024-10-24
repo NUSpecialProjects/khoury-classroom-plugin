@@ -8,6 +8,25 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models.StudentAssignment) error {
+	_, err := db.connPool.Exec(ctx,
+		"INSERT INTO student_assignments (assignment_id, repo_name, ta_gh_username, completed, started) VALUES ($1, $2, $3, $4, $5, $6)",
+		assignmentData.AssignmentID,
+		assignmentData.RepoName,
+		assignmentData.TAGHUsername,
+		assignmentData.Completed,
+		assignmentData.Started)
+	if err != nil {
+		fmt.Println("Error in con pool exec")
+		fmt.Println(err.Error())
+		return err
+	}
+
+
+
+	return nil
+}
+
 func (db *DB) GetStudentAssignments(ctx context.Context, classroomID int64, localAssignmentID int64) ([]models.StudentAssignment, error) {
 	rows, err := db.connPool.Query(ctx,
 		"SELECT * FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE classroom_id = $1 ORDER BY name ASC OFFSET $2 LIMIT 1) ORDER BY student_gh_username ASC",
@@ -20,7 +39,7 @@ func (db *DB) GetStudentAssignments(ctx context.Context, classroomID int64, loca
 	}
 
 	defer rows.Close()
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentAssignment])
+    return pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentAssignment])
 }
 
 func (db *DB) GetStudentAssignment(ctx context.Context, classroomID int64, localAssignmentID int64, localStudentAssignmentID int64) (models.StudentAssignment, error) {
@@ -54,7 +73,7 @@ func (db *DB) GetStudentAssignmentByAssignment(ctx context.Context, assignment_i
 }
 
 func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]string, error) {
-    /*rows, err := db.connPool.Query(ctx,
+    rows, err := db.connPool.Query(ctx,
         "SELECT s.github_username FROM student_to_student_assignment s JOIN student_assignments sa ON s.student_assignment_id = sa.id WHERE sa.id = $1",
         saID)
     if err != nil {
@@ -63,7 +82,7 @@ func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]stri
     }
 
     var studentUsernames []string
-    _, err := pgx.ForEachRow(rows, []any{}, func() error {
+    _, error := pgx.ForEachRow(rows, []any{}, func() error {
         var ghUsername string
         var saID int 
 
@@ -74,16 +93,12 @@ func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]stri
         }
         studentUsernames = append(studentUsernames, ghUsername)
         return nil
+    })
+
+    if error != nil {
+        return nil, error
     }
 
-    if err != nil {
-        return nil, err
-    }
-
-*/
-    return nil, nil
-
-
-
+    return studentUsernames, nil
 }
 

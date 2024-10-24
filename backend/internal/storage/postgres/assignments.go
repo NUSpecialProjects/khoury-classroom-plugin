@@ -50,23 +50,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 	return nil
 }
 
-func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models.StudentAssignment) error {
-	_, err := db.connPool.Exec(ctx,
-		"INSERT INTO student_assignments (assignment_id, repo_name, student_gh_username, ta_gh_username, completed, started) VALUES ($1, $2, $3, $4, $5, $6)",
-		assignmentData.AssignmentID,
-		assignmentData.RepoName,
-		assignmentData.StudentGHUsername,
-		assignmentData.TAGHUsername,
-		assignmentData.Completed,
-		assignmentData.Started)
-	if err != nil {
-		fmt.Println("Error in con pool exec")
-		fmt.Println(err.Error())
-		return err
-	}
 
-	return nil
-}
 
 func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classroom_ID, error) {
 
