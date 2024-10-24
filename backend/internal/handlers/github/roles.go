@@ -115,6 +115,9 @@ func (service *GitHubService) UseRoleToken() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
+		//TODO: check org membership, if not part of the org, invite them to join
+		//TODO: pending invitation case as well
+
 		var requestBody struct {
 			Token string `json:"token"`
 		}
@@ -132,6 +135,10 @@ func (service *GitHubService) UseRoleToken() fiber.Handler {
 		if err != nil {
 			log.Default().Println("Error getting role token: ", err)
 			return c.Status(404).JSON(fiber.Map{"error": "role token not found"})
+		}
+
+		if roleToken.ExpiresAt.Before(time.Now()) {
+			return c.Status(404).JSON(fiber.Map{"error": "role token expired"})
 		}
 
 		semester, err := service.store.GetSemesterByClassroomID(c.Context(), roleToken.ClassroomID)
