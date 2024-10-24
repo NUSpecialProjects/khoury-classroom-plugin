@@ -1,5 +1,4 @@
 interface IStudentAssignment {
-  id: number;
   assignment_id: number;
   assignment_name: string;
   repo_name: string;

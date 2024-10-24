@@ -10,7 +10,9 @@ import (
 
 func (db *DB) GetStudentAssignments(ctx context.Context, classroomID int64, localAssignmentID int64) ([]models.StudentAssignment, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT * FROM student_assignments WHERE assignment_id = (SELECT id FROM assignments WHERE classroom_id = $1 ORDER BY name ASC OFFSET $2 LIMIT 1) ORDER BY student_gh_username ASC",
+		"WITH a as (SELECT id, name AS assignment_name FROM assignments WHERE classroom_id = $1 ORDER BY name ASC OFFSET $2 LIMIT 1) "+
+			"SELECT assignment_id, assignment_name, repo_name, student_gh_username, ta_gh_username, completed, started "+
+			"FROM a JOIN student_assignments ON student_assignments.assignment_id = a.id ORDER BY student_gh_username ASC",
 		classroomID, localAssignmentID-1)
 	// -1 for 1-indexing
 
