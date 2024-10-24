@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
@@ -8,7 +8,7 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import useSelectedSemester from "@/contexts/useSelectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import { getUserSemesters } from "@/api/semesters";
 
 const SemesterSelection: React.FC = () => {
@@ -17,7 +17,7 @@ const SemesterSelection: React.FC = () => {
   }>({});
   const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
   const [loading, setLoading] = useState(true);
-  const { setSelectedSemester } = useSelectedSemester();
+  const { setSelectedSemester } = useContext(SelectedSemesterContext);
 
   const navigate = useNavigate();
 
@@ -159,7 +159,7 @@ const SemesterSelection: React.FC = () => {
           <p>You have no classes.</p>
         </div>
       )}
-      <button onClick={() => navigate("/class-creation")}>
+      <button onClick={() => navigate("/app/classroom/create")}>
         Create a Class
       </button>
     </div>

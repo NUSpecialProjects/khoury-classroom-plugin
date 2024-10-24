@@ -13,10 +13,9 @@ CREATE TABLE IF NOT EXISTS rubrics (
 
 CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY,
-  local_id INTEGER NOT NULL,
   rubric_id INTEGER,
   assignment_classroom_id INTEGER NOT NULL,
-  inserted_date TIMESTAMP NOT NULL, 
+  inserted_date TIMESTAMP DEFAULT NOW() NOT NULL, 
   classroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
   main_due_date TIMESTAMP,
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS student_to_student_assignment (
 
 CREATE TABLE IF NOT EXISTS student_assignments (
   id SERIAL PRIMARY KEY,
-  local_id INTEGER NOT NULL,
   assignment_id INTEGER NOT NULL,
   repo_name VARCHAR(255) NOT NULL,
   ta_gh_username VARCHAR(255),

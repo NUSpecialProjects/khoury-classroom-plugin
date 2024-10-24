@@ -2,23 +2,37 @@ import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import { Link } from "react-router-dom";
-import useSelectedSemester from "@/contexts/useSelectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import AlertBanner from "@/components/Banner/AlertBanner";
 import { activateSemester, deactivateSemester } from "@/api/semesters";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import ErrorMessage from "@/components/Error";
-
-
-
+import { getAssignments } from "@/api/assignments";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
+<<<<<<< HEAD
   const { selectedSemester, setSelectedSemester } = useSelectedSemester();
   const [error, setError] = useState<string | null>(null);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
     hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+=======
+  const { selectedSemester, setSelectedSemester } = useContext(
+    SelectedSemesterContext
+  );
+  const [error, setError] = useState<string | null>(null);
+
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+>>>>>>> main
   };
 
   const handleActivate = async (newSemester: ISemester) => {
@@ -57,55 +71,39 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchAssignments = async (semester: ISemester) => {
-      try {
-        if (semester.classroom_id) {
-          const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-          const result = await fetch(`${base_url}/assignments/${semester.classroom_id}`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+      if (semester) {
+        getAssignments(semester.classroom_id)
+          .then((assignments) => {
+            setAssignments(assignments);
+          })
+          .catch((err: unknown) => {
+            console.error("Error fetching assignments:", err);
           });
-
-          if (!result.ok) {
-            throw new Error('Network response was not ok');
-          }
-
-          const data: IAssignment[] = (await result.json() as IAssignment[])
-          const assignmentGoodDate = data.map((assignment: IAssignment) => ({
-            ...assignment,
-            main_due_date: assignment.main_due_date ? new Date(assignment.main_due_date) : null,
-          }))
-          console.log("Setting Assignment data: ", assignmentGoodDate)
-          setAssignments(assignmentGoodDate);
-        }
-
-      } catch (error: unknown) {
-        console.error('Error fetching assignments:', error);
       }
     };
 
     const SyncWithClassroom = async (semester: ISemester) => {
       try {
-        const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+        const base_url: string = import.meta.env
+          .VITE_PUBLIC_API_DOMAIN as string;
         const result = await fetch(`${base_url}/github/sync`, {
-          method: 'POST',
-          credentials: 'include',
+          method: "POST",
+          credentials: "include",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ classroom_id: semester.classroom_id }),
-        })
+        });
 
         if (!result.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
-
       } catch (error: unknown) {
-        console.error('Error making API call:', error);
+        console.error("Error making API call:", error);
       }
     };
+
+    
 
     console.log("We in dashboard: ", selectedSemester)
     if (selectedSemester !== null && selectedSemester !== undefined) {
@@ -170,6 +168,5 @@ const Dashboard: React.FC = () => {
   );
 
 };
-
 
 export default Dashboard;

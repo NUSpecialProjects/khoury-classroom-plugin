@@ -5,8 +5,8 @@ import Button from "@/components/Button";
 
 import "./styles.css";
 import { useLocation, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import useSelectedSemester from "@/contexts/useSelectedSemester";
+import { useContext, useEffect, useState } from "react";
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 
 
 
@@ -15,7 +15,7 @@ const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignment>()
   const [studentAssignment, setStudentAssignment] = useState<IStudentAssignment[]>([]);
-  const { selectedSemester } = useSelectedSemester();
+  const { selectedSemester } = useContext(SelectedSemesterContext);
   const { assignmentId } = useParams();
 
 
@@ -124,11 +124,12 @@ const Assignment: React.FC = () => {
             </div>
           </div>
 
-          <div className="Assignment__externalButtons">
-            <Button href="">View in Github Classroom</Button>
-            <Button href="">View Starter Code</Button>
-            <Button href="">View Rubric</Button>
-          </div>
+
+      <div className="Assignment__externalButtons">
+        <Button href="" variant="secondary">View in Github Classroom</Button>
+        <Button href="" variant="secondary">View Starter Code</Button>
+        <Button href="" variant="secondary">View Rubric</Button>
+      </div>
 
           <h2>Metrics</h2>
           <div>Metrics go here</div>
