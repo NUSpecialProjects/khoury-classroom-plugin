@@ -85,6 +85,8 @@ func (db *DB) GetAssignment(ctx context.Context, classroomID int64, localAssignm
 		"SELECT * FROM assignments WHERE classroom_id = $1 ORDER BY inserted_date ASC OFFSET $2 LIMIT 1",
 		classroomID,
 		localAssignmentID-1)
+	// -1 for 1-indexing
+
 	if err != nil {
 		return models.Assignment{}, err
 	}
