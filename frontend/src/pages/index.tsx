@@ -7,6 +7,7 @@ import Callback from "./Callback";
 import Login from "./Login";
 import SemesterCreation from "./Semesters/Creation";
 import SemesterSelection from "./Semesters/Selection";
+import RoleToken from "./Role";
 
 export {
   Settings,
@@ -18,4 +19,5 @@ export {
   Login,
   SemesterCreation,
   SemesterSelection,
+  RoleToken,
 };
