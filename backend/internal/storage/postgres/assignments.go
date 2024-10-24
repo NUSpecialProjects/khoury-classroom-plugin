@@ -79,3 +79,18 @@ func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classro
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment_Classroom_ID])
 
 }
+
+func (db *DB) GetAssignment(ctx context.Context, classroomID int64, localAssignmentID int64) (models.Assignment, error) {
+	rows, err := db.connPool.Query(ctx,
+		"SELECT * FROM assignments WHERE classroom_id = $1 ORDER BY inserted_date ASC OFFSET $2 LIMIT 1",
+		classroomID,
+		localAssignmentID-1)
+	if err != nil {
+		return models.Assignment{}, err
+	}
+
+	defer rows.Close()
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Assignment])
+
+}
+

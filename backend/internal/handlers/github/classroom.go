@@ -7,6 +7,7 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/mod/sumdb/storage"
 )
 
 
@@ -108,7 +109,12 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
     }
 
 
-    // get list of student assignments currently in the db under this assignment
+    // get list of student assignments currently in the db under this assignment 
+    aIDs, err := storage.Storage.GetStudentAssignmentByAssignment(c.Context(), syncData.ClassroomID, syncData.AssignmentID)
+    if err != nil {
+        fmt.Println("SyncStudentAssignments - Could not get ")
+        return err
+    }
 
     for _, assignment := range accepted_student_assignments {
         fmt.Println(assignment)
