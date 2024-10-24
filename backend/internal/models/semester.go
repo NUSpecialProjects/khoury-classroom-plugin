@@ -7,3 +7,8 @@ type Semester struct {
 	OrgID       int64  `json:"org_id"`
 	Name        string `json:"name"`
 }
+
+
+type SemesterID struct {
+	ID int64 `json:"semester_id"`
+}

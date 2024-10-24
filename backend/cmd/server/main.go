@@ -18,6 +18,7 @@ import (
 
 func main() {
 	ctx := context.Background()
+	log.Default().Println("Checking for output")
 
 	if isLocal() {
 		if err := godotenv.Load("../../../.env"); err != nil {
