@@ -2,5 +2,13 @@
     &__buttonWrapper {
         margin-top: 10px;
         padding: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__message {
+        font-size: var(--font-size-xs);
+        color: var(--brand);
+        padding: 3px;
     }
 }

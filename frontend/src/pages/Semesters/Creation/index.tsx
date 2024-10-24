@@ -6,6 +6,7 @@ import ClassroomDropdown from "@/components/Dropdown/Classroom";
 import Panel from "@/components/Panel";
 import Button from "@/components/Button";
 import {
+  getUserSemesters,
   getClassrooms,
   getOrganizationDetails,
   getOrganizations,
@@ -39,7 +40,7 @@ const SemesterCreation: React.FC = () => {
   const [semesterCreationStatus, setSemesterCreationStatus] = useState(
     SemesterCreationStatus.NONE
   );
-
+ const [hasActiveSemester, setHasActiveSemesters] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,6 +128,21 @@ const SemesterCreation: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      try {
+        const data: IUserSemestersResponse = await getUserSemesters();
+        if(data.active_semesters.length !== 0) {
+          setHasActiveSemesters(true);
+        }
+      } catch (error) {
+        console.error("Error fetching semesters:", error);
+      } 
+    };
+
+    void fetchSemesters();
+  }, []);
+
   return (
     <Panel title="Create a New Classroom">
       {semesterCreationStatus == SemesterCreationStatus.NONE && (
@@ -151,9 +167,9 @@ const SemesterCreation: React.FC = () => {
         </>
       )}
       {semesterCreationStatus == SemesterCreationStatus.CREATED && (
-        <div>Class successfully created!</div>
+        <div className="Creation__message">Class successfully created!</div>
       )}
-      <div>
+      <div className="Creation__buttonWrapper">
         {selectedClassroom &&
           selectedOrg &&
           availableClassrooms.find(
@@ -161,37 +177,39 @@ const SemesterCreation: React.FC = () => {
           ) && (
             <>
               {semesterCreationStatus === SemesterCreationStatus.CREATING && (
-                <Button variant="secondary" onClick={handleCreateSemester} disabled={true}>Creating classroom...</Button>
+
+                <Button variant="primary" onClick={handleCreateSemester} disabled={true}>Creating classroom...</Button>
                 // <button onClick={handleCreateSemester} disabled={true}>
                 //   `Creating ${selectedClassroom.name}...`
                 // </button>
               )}
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
-                  <Button variant="secondary" onClick={handleCreateSemester}>Create Classroom</Button>
+                  <Button variant="primary" onClick={handleCreateSemester}>Create classroom</Button>
                   // <button onClick={handleCreateSemester}>
                   //   {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
                   // </button>
                 )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
-                <div>Error creating class. Please try again.</div>
+                <div>Error creating classroom. Please try again.</div>
               )}
             </>
-          )}
-      </div>
+          )
+        }
 
-      <div className="Creation__buttonWrapper">
-        <Button variant="primary" onClick={() => {
-          navigate("/class-selection");
-        }}>Go to Select Class Page</Button>
+        {hasActiveSemester === true &&
+          <Button variant="secondary" onClick={() => {
+            navigate("/class-selection");
+          }}>View existing classrooms</Button>
+        }
 
         {semesterCreationStatus !== SemesterCreationStatus.NONE && (
           <Button variant="secondary" onClick={() => {
             setSemesterCreationStatus(SemesterCreationStatus.NONE);
-          }}>Create another class</Button>
+          }}>Create another classroom</Button>
         )}
       </div>
-    </Panel>
+    </Panel >
   );
 };
 
