@@ -12,7 +12,18 @@ export default [
   pluginReact.configs.flat.recommended,
   prettier,
   {
-    rules: { "react/react-in-jsx-scope": "off", "react/prop-types": "off" },
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
     settings: {
       react: {
         version: "detect",
