@@ -11,14 +11,6 @@ import { getAssignments } from "@/api/assignments";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
-<<<<<<< HEAD
-  const { selectedSemester, setSelectedSemester } = useSelectedSemester();
-  const [error, setError] = useState<string | null>(null);
-
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
-=======
   const { selectedSemester, setSelectedSemester } = useContext(
     SelectedSemesterContext
   );
@@ -32,7 +24,6 @@ const Dashboard: React.FC = () => {
     hour: "2-digit",
     minute: "2-digit",
     timeZoneName: "short",
->>>>>>> main
   };
 
   const handleActivate = async (newSemester: ISemester) => {
