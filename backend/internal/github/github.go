@@ -10,8 +10,10 @@ import (
 
 type GitHubAppClient interface { // All methods in the app client
 	GitHubBaseClient
-	ListInstallations(ctx context.Context) ([]*github.Installation, error)
 	GetWebhookSecret() string
+	ListInstallations(ctx context.Context) ([]*github.Installation, error)
+	GetGitTree(owner string, repo string) ([]github.TreeEntry, error)
+	GetGitBlob(owner string, repo string, sha string) ([]byte, error)
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client

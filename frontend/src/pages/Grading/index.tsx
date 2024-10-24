@@ -7,7 +7,6 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { IGradingAssignmentRow } from "./types.ts";
 
 import "./styles.css";
 
@@ -37,7 +36,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
               <TableCell>Student</TableCell>
               <TableCell>Score</TableCell>
             </TableRow>
-            {Array.from({ length: 2 }).map((_, i: number) => (
+            {Array.from({ length: 20 }).map((_, i: number) => (
               <TableRow key={i}>
                 <TableCell>Jane Doe</TableCell>
                 <TableCell>-/100</TableCell>

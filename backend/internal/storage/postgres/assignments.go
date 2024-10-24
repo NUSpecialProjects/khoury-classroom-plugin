@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroom_id int64) ([]models.Assignment, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where classroom_id = $1", classroom_id)
+func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroomID int64) ([]models.Assignment, error) {
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where classroom_id = $1", classroomID)
 	if err != nil {
 		fmt.Println("Error in query")
 		return nil, err
@@ -27,7 +27,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 			assignmentData.Assignment_Classroom_ID,
 			assignmentData.ClassroomID,
 			assignmentData.Name,
-      assignmentData.MainDueDate)
+			assignmentData.MainDueDate)
 
 		if err != nil {
 			return err
@@ -40,14 +40,14 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 			assignmentData.Assignment_Classroom_ID,
 			assignmentData.ClassroomID,
 			assignmentData.Name,
-      assignmentData.MainDueDate)
+			assignmentData.MainDueDate)
 		if err != nil {
 			return err
 		}
 
 	}
 
-  return nil
+	return nil
 }
 
 func (db *DB) CreateStudentAssignment(ctx context.Context, assignmentData models.StudentAssignment) error {
@@ -77,5 +77,21 @@ func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classro
 
 	defer rows.Close()
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Assignment_Classroom_ID])
+
+}
+
+func (db *DB) GetAssignment(ctx context.Context, classroomID int64, localAssignmentID int64) (models.Assignment, error) {
+	rows, err := db.connPool.Query(ctx,
+		"SELECT * FROM assignments WHERE classroom_id = $1 ORDER BY inserted_date ASC OFFSET $2 LIMIT 1",
+		classroomID,
+		localAssignmentID-1)
+	// -1 for 1-indexing
+
+	if err != nil {
+		return models.Assignment{}, err
+	}
+
+	defer rows.Close()
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Assignment])
 
 }
