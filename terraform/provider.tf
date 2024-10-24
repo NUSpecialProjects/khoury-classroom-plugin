@@ -1,7 +1,21 @@
 # provider.tf
 
-# Specify the provider and access details
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.70.0"
+    }
+  }
+}
+
 provider "aws" {
-    region      = var.aws_region
-    profile     = var.aws_profile
+  region  = "us-east-2"
+  profile = "default"
+}
+
+provider "aws" {
+  region  = "us-east-1"
+  alias   = "us-east-1"
+  profile = "default"
 }
