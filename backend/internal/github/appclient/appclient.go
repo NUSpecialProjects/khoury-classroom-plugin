@@ -47,8 +47,12 @@ func New(cfg *config.GitHubAppClient) (*AppAPI, error) {
 	}, nil
 }
 
+func (api *AppAPI) GetWebhookSecret() string {
+	return api.webhooksecret
+}
+
 // GetJWT generates a JWT from the appTokenSource
-func (api *AppAPI) GetJWT(ctx context.Context) (string, error) {
+func (api *AppAPI) getJWT() (string, error) {
 	token, err := api.appTokenSource.Token()
 	if err != nil {
 		return "", fmt.Errorf("error getting token: %v", err)
@@ -56,9 +60,9 @@ func (api *AppAPI) GetJWT(ctx context.Context) (string, error) {
 	return token.AccessToken, nil
 }
 
-func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
+func (api *AppAPI) getClientWithJWTAuth(ctx context.Context) (*github.Client, error) {
 	// Create a new OAuth2 client with the JWT
-	token, err := api.GetJWT(ctx)
+	token, err := api.getJWT()
 	if err != nil {
 		return nil, fmt.Errorf("error getting app JWT: %v", err)
 	}
@@ -69,7 +73,14 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	tc := oauth2.NewClient(ctx, ts)
 
 	// Create a new GitHub client with the authenticated HTTP client
-	client := github.NewClient(tc)
+	return github.NewClient(tc), nil
+}
+
+func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
+	client, err := api.getClientWithJWTAuth(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting github client with JWT auth: %v", err)
+	}
 
 	// List installations
 	installations, _, err := client.Apps.ListInstallations(ctx, nil)
@@ -80,15 +91,33 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-// func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
-// 	installations, _, err := api.Client.Apps.ListInstallations(ctx, nil)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("error listing installations: %v", err)
-// 	}
-// 	return installations, nil
-// }
+func (api *AppAPI) GetGitTree(owner string, repo string) ([]github.TreeEntry, error) {
+	// Get the reference to the branch
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
+	if err != nil {
+		return nil, fmt.Errorf("error fetching branch ref: %v", err)
+	}
 
-// Any APP specific implementations can go here
-func (api *AppAPI) GetWebhookSecret() string {
-	return api.webhooksecret
+	// Get the commit from the ref
+	commitSHA := ref.Object.GetSHA()
+	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSHA)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching commit: %v", err)
+	}
+
+	treeSHA := commit.Tree.GetSHA()
+	tree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching tree: %v", err)
+	}
+
+	return tree.Entries, nil
+}
+
+func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, error) {
+	contents, _, err := api.Client.Git.GetBlobRaw(context.Background(), owner, repo, sha)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching contents: %v", err)
+	}
+	return contents, nil
 }

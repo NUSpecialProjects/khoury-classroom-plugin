@@ -1,4 +1,5 @@
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 import {
@@ -7,15 +8,16 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { IGradingAssignmentRow } from "./types.ts";
 
 import "./styles.css";
 
 const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
+  assignmentId,
   children,
   //submissions,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -37,8 +39,13 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
               <TableCell>Student</TableCell>
               <TableCell>Score</TableCell>
             </TableRow>
-            {Array.from({ length: 2 }).map((_, i: number) => (
-              <TableRow key={i}>
+            {Array.from({ length: 20 }).map((_, i: number) => (
+              <TableRow
+                key={i}
+                onClick={() => {
+                  navigate(`assignment/${assignmentId}/student/${i + 1}`);
+                }}
+              >
                 <TableCell>Jane Doe</TableCell>
                 <TableCell>-/100</TableCell>
               </TableRow>
@@ -62,7 +69,7 @@ const Grading: React.FC = () => {
           <TableCell>Due Date</TableCell>
         </TableRow>
         {Array.from({ length: 2 }).map((_, i: number) => (
-          <GradingAssignmentRow key={i} submissions={[]}>
+          <GradingAssignmentRow key={i} assignmentId={i + 1}>
             <TableCell>Test Assignment</TableCell>
             <TableCell>Active</TableCell>
             <TableCell>11 Oct, 11:59pm</TableCell>

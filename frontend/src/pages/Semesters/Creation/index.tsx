@@ -199,7 +199,7 @@ const SemesterCreation: React.FC = () => {
 
         {hasActiveSemester === true &&
           <Button variant="secondary" onClick={() => {
-            navigate("/class-selection");
+            navigate("/app/classroom/select");
           }}>View existing classrooms</Button>
         }
 
