@@ -58,6 +58,9 @@ func (service *GitHubService) Login() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to generate JWT token"})
 		}
 
+		// Log JWT token
+		fmt.Println("JWT Token: ", jwtToken)
+
 		c.Cookie(&fiber.Cookie{
 			Name:     "jwt_cookie",
 			Value:    jwtToken,

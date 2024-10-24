@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - feature/cors
     paths:
       - 'backend/**'
       - 'terraform/**'

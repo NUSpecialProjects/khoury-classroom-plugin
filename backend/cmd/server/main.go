@@ -49,6 +49,8 @@ func main() {
 	if err := runMigrations(ctx, db, "./database/migration"); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
+	// Ensure the connection pool is closed when main exits
+	defer db.Close(context.Background())
 
 	// Initialize GitHub App Client
 	GitHubApp, err := appclient.New(&cfg.GitHubAppClient)
@@ -110,6 +112,7 @@ func runMigrations(ctx context.Context, db *postgres.DB, migrationsDir string) e
 	return nil
 }
 
+// isLocal determines if the application is running in a local environment.
 func isLocal() bool {
 	return os.Getenv("APP_ENVIRONMENT") == "LOCAL"
 }
