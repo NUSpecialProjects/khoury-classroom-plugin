@@ -42,7 +42,7 @@ export default function App(): React.JSX.Element {
               {/******* CLASS SELECTED: INNER APP *******/}
               <Route path="" element={<Layout />}>
                 <Route path="assignments" element={<Pages.Assignments />} />
-                <Route path="assignments/:id" element={<Pages.Assignment />} />
+                <Route path="assignment/:id" element={<Pages.Assignment />} />
                 <Route path="grading" element={<Pages.Grading />} />
                 <Route
                   path="grading/assignment/:assignmentId/student/:studentAssignmentId"

@@ -23,8 +23,6 @@ CREATE TABLE IF NOT EXISTS assignments (
   FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
 );
 
-
-
 CREATE TABLE IF NOT EXISTS student_assignments (
   id SERIAL PRIMARY KEY,
   assignment_id INTEGER NOT NULL,
