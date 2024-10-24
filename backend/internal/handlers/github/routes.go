@@ -15,7 +15,10 @@ func Routes(app *fiber.App, params types.Params) {
 	protected := app.Group("/github")
 	protected.Use(middleware.Protected(params.UserCfg.JWTSecret))
 	protected.Get("/user", service.GetCurrentUser())
-	protected.Get("/classrooms", service.ListClassrooms())
+  
+  protected.Post("/sync", service.SyncAssignments)
+
+  protected.Get("/classrooms", service.ListClassrooms())
 	protected.Post("/startup", service.AppInitialization())
 
 	protected.Get("/orgs/:org", service.GetOrg())
@@ -30,6 +33,8 @@ func Routes(app *fiber.App, params types.Params) {
 	protected.Get("/user/semesters", service.GetUserSemesters())
 
 	protected.Post("/semesters", service.CreateSemester())
+
+	protected.Put("/semesters/:classroom_id", service.ActivateSemester())
 
 	protected.Get("/orgs/:org/semesters", service.ListOrgSemesters())
 

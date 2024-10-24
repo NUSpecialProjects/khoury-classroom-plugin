@@ -20,29 +20,35 @@ const Assignment: React.FC = () => {
       </div>
 
       <div className="Assignment__externalButtons">
-        <Button href="">View in Github Classroom</Button>
-        <Button href="">View Starter Code</Button>
-        <Button href="">View Rubric</Button>
+        <Button href="" variant="secondary">View in Github Classroom</Button>
+        <Button href="" variant="secondary">View Starter Code</Button>
+        <Button href="" variant="secondary">View Rubric</Button>
       </div>
 
-      <h2>Metrics</h2>
-      <div>Metrics go here</div>
+      <div className="Assignment__contentWrapper">
+        <div className="Assignment__metricsWrapper">
+          <h1>Metrics</h1>
+          <div>Metrics go here</div>
+        </div>
 
-      <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
-      <Table cols={3}>
-        <TableRow style={{ borderTop: "none" }}>
-          <TableCell>Student Name</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell>Last Commit</TableCell>
-        </TableRow>
-        {Array.from({ length: 10 }).map((_, i: number) => (
-          <TableRow key={i} className="Assignment__submission">
-            <TableCell>Jane Doe</TableCell>
-            <TableCell>Passing</TableCell>
-            <TableCell>12 Sep, 11:34pm</TableCell>
-          </TableRow>
-        ))}
-      </Table>
+        <div className="Assignment__assignmentsWrapper">
+          <h1>Student Assignments</h1>
+          <Table cols={3}>
+            <TableRow style={{ borderTop: "none" }}>
+              <TableCell>Student Name</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Last Commit</TableCell>
+            </TableRow>
+            {Array.from({ length: 10 }).map((_, i: number) => (
+              <TableRow key={i} className="Assignment__submission">
+                <TableCell>Jane Doe</TableCell>
+                <TableCell>Passing</TableCell>
+                <TableCell>12 Sep, 11:34pm</TableCell>
+              </TableRow>
+            ))}
+          </Table>
+        </div>
+      </div>
     </div>
   );
 };

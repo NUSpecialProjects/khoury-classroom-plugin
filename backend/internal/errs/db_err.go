@@ -21,6 +21,6 @@ func NewDBError(err error) DatabaseError {
   }
 }
 
-func FailedDBClose() DatabaseError {
-  return NewDBError(errors.New("Database close failed, still accepts pings"))
+func DBSemesterLogicError() DatabaseError {
+  return NewDBError(errors.New("Multiple semesters should not share a classroom id"))
 }

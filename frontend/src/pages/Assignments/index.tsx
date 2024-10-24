@@ -3,7 +3,6 @@ import { GradeEntry } from "@/components/Viz/BoxPlot/Boxplot";
 import { GradeDistBoxPlot } from "@/components/Viz/BoxPlot/GradeDistBoxPlot";
 import { useEffect, useState } from "react";
 
-
 const Assignments: React.FC = () => {
     const [userGrade, setUserGrade] = useState<number>(0)
     const [userGradeArray, setUserGradeArray] = useState<GradeEntry[]>([])
@@ -49,5 +48,4 @@ const Assignments: React.FC = () => {
         </>
     )
 } 
-
 export default Assignments;

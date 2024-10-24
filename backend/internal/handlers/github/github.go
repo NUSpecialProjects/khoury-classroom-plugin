@@ -235,48 +235,62 @@ func (service *GitHubService) GetUserSemesters() fiber.Handler {
 	}
 }
 
-// func (service *GitHubService) GetSemesters() fiber.Handler {
-// 	return func(c *fiber.Ctx) error {
-// 		var requestBody struct {
-// 			OrgID int64 `json:"org_id"`
-// 		}
-// 		if err := c.BodyParser(&requestBody); err != nil {
-// 			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
-// 		}
-// 		org_id := requestBody.OrgID
-
-// 		semesters, err := service.store.ListSemesters(c.Context(), org_id)
-// 		if err != nil {
-// 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch semesters"})
-// 		}
-
-// 		return c.Status(200).JSON(semesters)
-// 	}
-// }
-
 func (service *GitHubService) CreateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var requestBody struct {
-			ClassroomID   int64  `json:"classroom_id"`
-			ClassroomName string `json:"name"`
 			OrgID         int64  `json:"org_id"`
+			ClassroomID   int64  `json:"classroom_id"`
+			OrgName       string `json:"org_name"`
+			ClassroomName string `json:"classroom_name"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 		}
 
 		semester := models.Semester{
-			ClassroomID: requestBody.ClassroomID,
-			Name:        requestBody.ClassroomName,
-			OrgID:       requestBody.OrgID,
-			Active:      false,
+			OrgID:         requestBody.OrgID,
+			ClassroomID:   requestBody.ClassroomID,
+			OrgName:       requestBody.OrgName,
+			ClassroomName: requestBody.ClassroomName,
+			Active:        false,
 		}
 
-		err := service.store.CreateSemester(c.Context(), semester)
+		semester, err := service.store.CreateSemester(c.Context(), semester)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create semester"})
 		}
 
-		return c.Status(200).JSON("Successfully created semester")
+		return c.Status(200).JSON(fiber.Map{"semester": semester})
+	}
+}
+
+func (service *GitHubService) ActivateSemester() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid classroom id"})
+		}
+
+		var requestBody struct {
+			Activate bool `json:"activate"`
+		}
+		if err := c.BodyParser(&requestBody); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		}
+
+		semester := models.Semester{}
+		err = nil
+
+		if requestBody.Activate {
+			semester, err = service.store.ActivateSemester(c.Context(), classroomID)
+		} else {
+			semester, err = service.store.DeactivateSemester(c.Context(), classroomID)
+		}
+
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to modify semester"})
+		}
+
+		return c.Status(200).JSON(fiber.Map{"semester": semester})
 	}
 }

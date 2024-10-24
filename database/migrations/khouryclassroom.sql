@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS semesters (
-  id SERIAL PRIMARY KEY,
-  classroom_id INTEGER UNIQUE NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  classroom_id INTEGER UNIQUE PRIMARY KEY,
+  org_name VARCHAR(255) NOT NULL,
+  classroom_name VARCHAR(255) NOT NULL,
   active BOOLEAN NOT NULL,
   org_id INTEGER NOT NULL
 );
@@ -15,10 +15,13 @@ CREATE TABLE IF NOT EXISTS assignments (
   id SERIAL PRIMARY KEY,
   local_id INTEGER NOT NULL,
   rubric_id INTEGER,
-  semester_id INTEGER NOT NULL,
+  assignment_classroom_id INTEGER NOT NULL,
+  inserted_date TIMESTAMP NOT NULL, 
+  classroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
+  main_due_date TIMESTAMP,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
-  FOREIGN KEY (semester_id) REFERENCES semesters(id)
+  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS student_assignments (
@@ -55,3 +58,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   refresh_token VARCHAR(255),
   expires_in INTEGER
 );
+
+
+
+
+

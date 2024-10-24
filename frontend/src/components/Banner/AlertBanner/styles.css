@@ -1,0 +1,31 @@
+.inactive-class-banner {
+  background-color: #ffcccb;
+  padding: 16px;
+  border: 1px solid #ff0000;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.inactive-class-banner p {
+  margin: 0 0 8px 0;
+}
+
+.inactive-class-banner .error {
+  color: #ff0000;
+  margin-bottom: 8px;
+}
+
+.inactive-class-banner button {
+  background-color: #ff0000;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.inactive-class-banner button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
