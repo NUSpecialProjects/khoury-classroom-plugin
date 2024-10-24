@@ -54,7 +54,8 @@ export default function App(): React.JSX.Element {
             </Route>
 
             {/******* 404 CATCH ALL *******/}
-            <Route path="*" element={<Pages.PageNotFound />} />
+            <Route path="404" element={<Pages.PageNotFound />} />
+            <Route path="*" element={<Navigate to="/404" />} />
           </Routes>
         </Router>
       </SelectedSemesterProvider>
