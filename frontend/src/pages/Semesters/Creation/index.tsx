@@ -121,6 +121,9 @@ const SemesterCreation: React.FC = () => {
           ...prevUnavailableClassrooms,
           selectedClassroom,
         ]);
+
+        //Since a new semester has been created, flag this as true to render button
+        setHasActiveSemesters(true);
       } catch (error) {
         setSemesterCreationStatus(SemesterCreationStatus.ERRORED);
         console.error("Error creating class:", error);
