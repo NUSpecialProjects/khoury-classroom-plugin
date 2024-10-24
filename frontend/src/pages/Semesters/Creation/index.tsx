@@ -40,7 +40,7 @@ const SemesterCreation: React.FC = () => {
   const [semesterCreationStatus, setSemesterCreationStatus] = useState(
     SemesterCreationStatus.NONE
   );
-  const [hasActiveSemester, setHasActiveSemesters] = useState(false);
+  const [hasSemester, setHasSemester] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const SemesterCreation: React.FC = () => {
         ]);
 
         //Since a new semester has been created, flag this as true to render button
-        setHasActiveSemesters(true);
+        setHasSemester(true);
       } catch (error) {
         setSemesterCreationStatus(SemesterCreationStatus.ERRORED);
         console.error("Error creating class:", error);
@@ -136,9 +136,11 @@ const SemesterCreation: React.FC = () => {
       try {
         const data: IUserSemestersResponse = await getUserSemesters();
         console.log(data.active_semesters.length);
-        if (data.active_semesters.length !== 0) {
-          setHasActiveSemesters(true);
-          console.log(hasActiveSemester);
+        console.log(data.inactive_semesters.length);
+
+        if (data.active_semesters.length > 0 || data.inactive_semesters.length > 0) {
+          setHasSemester(true);
+          console.log(hasSemester);
         }
       } catch (error) {
         console.error("Error fetching semesters:", error);
@@ -202,7 +204,7 @@ const SemesterCreation: React.FC = () => {
           )
         }
 
-        {(hasActiveSemester || semesterCreationStatus === SemesterCreationStatus.CREATED) && (
+        {(hasSemester || semesterCreationStatus === SemesterCreationStatus.CREATED) && (
           <Button variant="secondary" onClick={() => {
             navigate("/app/classroom/select");
           }}>
