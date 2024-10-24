@@ -32,7 +32,7 @@ output "app_secrets" {
     CLIENT_TOKEN_URL    = "https://github.com/login/oauth/access_token"
     CLIENT_SCOPES       = "repo,read:org,classroom"
     CLIENT_JWT_SECRET   = "H96GlVdJaaz9+rvUxHuTfI4owA8XyiH1eTsaup1LkTg="
-    DB_PORT             = "${var.db_port}"
+    DB_PORT             = var.db_port
     DATABASE_URL        = "postgresql://${var.db_user}:${var.db_password}@${aws_db_instance.main.endpoint}/${var.db_name}"
     DB_HOST             = aws_db_instance.main.endpoint
     DB_NAME             = var.db_name
