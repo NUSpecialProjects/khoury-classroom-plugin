@@ -237,9 +237,9 @@ func (api *UserAPI) AssignPermissionToTeam(ctx context.Context, team_id int64, o
 	return nil
 }
 
-func (api *UserAPI) CreateOrgRole(ctx context.Context, org_id int64, role_name string, desc string, permissions []string, base_role string) (*models.OrganizationRole, error) {
+func (api *UserAPI) CreateOrgRole(ctx context.Context, org_name string, role_name string, desc string, permissions []string, base_role string) (*models.OrganizationRole, error) {
 	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles", org_id)
+	endpoint := fmt.Sprintf("/orgs/%s/organization-roles", org_name)
 
 	body := map[string]interface{}{
 		"name":        role_name,
@@ -266,8 +266,9 @@ func (api *UserAPI) CreateOrgRole(ctx context.Context, org_id int64, role_name s
 	return &role, nil
 }
 
-func (api *UserAPI) CreateOrgRoleFromTemplate(ctx context.Context, org_id int64, template_role models.OrganizationTemplateRole) (*models.OrganizationRole, error) {
-	return api.CreateOrgRole(ctx, org_id, template_role.Name, template_role.Description, template_role.Permissions, template_role.BaseRole)
+// TODO: this should take in a org name?
+func (api *UserAPI) CreateOrgRoleFromTemplate(ctx context.Context, org_name string, template_role models.OrganizationTemplateRole) (*models.OrganizationRole, error) {
+	return api.CreateOrgRole(ctx, org_name, template_role.Name, template_role.Description, template_role.Permissions, template_role.BaseRole)
 }
 
 func (api *UserAPI) AssignOrgRoleToUser(ctx context.Context, org_id int64, user_name string, role_id int64) error {
@@ -477,7 +478,7 @@ func (api *UserAPI) CreateSemesterRoles(ctx context.Context, semester models.Sem
 			}
 		}
 		if !role_exists {
-			role, err := api.CreateOrgRoleFromTemplate(ctx, semester.OrgID, template_role)
+			role, err := api.CreateOrgRoleFromTemplate(ctx, semester.OrgName, template_role)
 			if err != nil {
 				log.Default().Println("Error creating role: ", err)
 				return err
