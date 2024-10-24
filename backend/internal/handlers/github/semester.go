@@ -152,11 +152,6 @@ func (service *GitHubService) GetUserSemesters() fiber.Handler {
 
 func (service *GitHubService) CreateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
 		var requestBody struct {
 			OrgID         int64  `json:"org_id"`
 			ClassroomID   int64  `json:"classroom_id"`
@@ -175,15 +170,9 @@ func (service *GitHubService) CreateSemester() fiber.Handler {
 			Active:        false,
 		}
 
-		semester, err = service.store.CreateSemester(c.Context(), semester)
+		semester, err := service.store.CreateSemester(c.Context(), semester)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create semester"})
-		}
-
-		err = client.CreateSemesterRoles(c.Context(), semester)
-		if err != nil {
-			service.store.DeleteSemester(c.Context(), semester.ClassroomID)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create semester roles"})
 		}
 
 		return c.Status(200).JSON(fiber.Map{"semester": semester})
@@ -192,6 +181,11 @@ func (service *GitHubService) CreateSemester() fiber.Handler {
 
 func (service *GitHubService) ActivateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		client, err := service.getClient(c)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
 		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 		if err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid classroom id"})
@@ -209,12 +203,24 @@ func (service *GitHubService) ActivateSemester() fiber.Handler {
 
 		if requestBody.Activate {
 			semester, err = service.store.ActivateSemester(c.Context(), classroomID)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "failed to activate semester"})
+			}
+			err = client.CreateSemesterRoles(c.Context(), semester)
+			if err != nil {
+				service.store.DeactivateSemester(c.Context(), semester.ClassroomID)
+				return c.Status(500).JSON(fiber.Map{"error": "failed to create semester roles"})
+			}
 		} else {
 			semester, err = service.store.DeactivateSemester(c.Context(), classroomID)
-		}
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "failed to deactivate semester"})
+			}
+			err = client.DeleteSemesterRoles(c.Context(), semester)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "failed to delete semester roles"})
+			}
 
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to modify semester"})
 		}
 
 		return c.Status(200).JSON(fiber.Map{"semester": semester})

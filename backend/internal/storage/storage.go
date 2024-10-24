@@ -11,6 +11,7 @@ type Storage interface {
 	Test
 	Assignments
 	Semesters
+	Roles
 }
 
 type Test interface {
@@ -39,4 +40,10 @@ type Semesters interface {
 	GetSemester(ctx context.Context, ClassroomID int64) (models.Semester, error)
 	DeactivateSemester(ctx context.Context, ClassroomID int64) (models.Semester, error)
 	ActivateSemester(ctx context.Context, ClassroomID int64) (models.Semester, error)
+}
+
+type Roles interface {
+	CreateRoleToken(ctx context.Context, roleToken models.RoleToken) error
+	GetRoleTokenByToken(ctx context.Context, token string) (models.RoleToken, error)
+	GetRoleTokenByName(ctx context.Context, roleName string) (models.RoleToken, error)
 }

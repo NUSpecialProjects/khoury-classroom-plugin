@@ -2,6 +2,14 @@ package models
 
 import "time"
 
+type RoleToken struct {
+	RoleName    string    `json:"role_name"`
+	RoleID      int64     `json:"role_id"`
+	ClassroomID int64     `json:"classroom_id"`
+	Token       string    `json:"token"`
+	ExpiresAt   time.Time `json:"expires_at"`
+}
+
 type RolesResponse struct {
 	TotalCount int                `json:"total_count"`
 	Roles      []OrganizationRole `json:"roles"`

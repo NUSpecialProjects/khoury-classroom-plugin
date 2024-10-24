@@ -271,9 +271,10 @@ func (api *UserAPI) CreateOrgRoleFromTemplate(ctx context.Context, org_name stri
 	return api.CreateOrgRole(ctx, org_name, template_role.Name, template_role.Description, template_role.Permissions, template_role.BaseRole)
 }
 
-func (api *UserAPI) AssignOrgRoleToUser(ctx context.Context, org_id int64, user_name string, role_id int64) error {
+func (api *UserAPI) AssignOrgRoleToUser(ctx context.Context, org_name string, user_name string, role_id int64) error {
 	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/users/%s/%d", org_id, user_name, role_id)
+	endpoint := fmt.Sprintf("/orgs/%s/organization-roles/users/%s/%d", org_name, user_name, role_id)
+	log.Default().Println("Assigning role to user: ", endpoint)
 
 	// Create a new PUT request
 	req, err := api.Client.NewRequest("PUT", endpoint, nil)
@@ -369,6 +370,21 @@ func (api *UserAPI) GetUserRoles(ctx context.Context, semester models.Semester) 
 	return res, nil
 }
 
+func (api *UserAPI) CheckProfRole(ctx context.Context, org_name string) (bool, error) {
+	// get all the org's roles
+	org_roles, err := api.GetOrgRoles(ctx, org_name)
+	if err != nil {
+		return false, fmt.Errorf("error fetching roles: %v", err)
+	}
+
+	for _, role := range org_roles {
+		if role.Name == core.Prof_Role.Name {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, org_id int64, role_id int64) ([]models.GitHubUser, error) {
 	var allUsers []models.GitHubUser
 	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/%d/users", org_id, role_id)
@@ -413,7 +429,6 @@ func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, org_id int64, ro
 
 func (api *UserAPI) GetOrgRoles(ctx context.Context, org_name string) ([]models.OrganizationRole, error) {
 	// Construct the URL for the list assignments endpoint
-	log.Default().Println("Getting roles for org: ", org_name)
 	endpoint := fmt.Sprintf("/orgs/%s/organization-roles", org_name)
 
 	// Create a new GET request
@@ -430,8 +445,6 @@ func (api *UserAPI) GetOrgRoles(ctx context.Context, org_name string) ([]models.
 	if err != nil {
 		return nil, fmt.Errorf("error fetching roles: %v", err)
 	}
-
-	log.Default().Println("Got roles: ", rolesResponse.Roles)
 
 	return rolesResponse.Roles, nil
 }
@@ -487,6 +500,28 @@ func (api *UserAPI) CreateSemesterRoles(ctx context.Context, semester models.Sem
 		}
 	}
 	log.Default().Println("Successfully created roles: ", res)
+	return nil
+}
+
+func (api *UserAPI) DeleteSemesterRoles(ctx context.Context, semester models.Semester) error {
+	log.Default().Println("Deleting semester roles")
+	existing_roles, err := api.GetOrgRoles(ctx, semester.OrgName)
+	if err != nil {
+		log.Default().Println("Error getting roles: ", err)
+		return err
+	}
+	for _, role := range existing_roles {
+		for _, template_role := range core.GetSemesterTemplateRoles(semester) {
+			if role.Name == template_role.Name && role.Name != core.Prof_Role.Name {
+				err := api.DeleteOrgRole(ctx, semester.OrgID, role.ID)
+				if err != nil {
+					log.Default().Println("Error deleting role: ", err)
+					return err
+				}
+			}
+		}
+	}
+	log.Default().Println("Successfully deleted roles")
 	return nil
 }
 

@@ -45,5 +45,9 @@ func Routes(app *fiber.App, params types.Params) {
 	// get the user's roles (in permission level order)
 	protected.Get("/user/roles", service.GetUserRoles())
 
+	protected.Post("/role-token/create", service.CreateRoleToken())
+
+	protected.Post("/role-token/use", service.UseRoleToken())
+
 	app.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
 }

@@ -52,12 +52,22 @@ CREATE TABLE IF NOT EXISTS regrades (
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
-  github_user_id INTEGER UNIQUE PRIMARY KEY,
+  github_user_id INTEGER PRIMARY KEY,
   access_token VARCHAR(255) NOT NULL,
   token_type VARCHAR(255),
   refresh_token VARCHAR(255),
   expires_in INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS role_tokens(
+  id SERIAL PRIMARY KEY,
+  role_name VARCHAR(255) NOT NULL,
+  role_id INTEGER NOT NULL,
+  classroom_id INTEGER NOT NULL,
+  token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
+)
 
 
 

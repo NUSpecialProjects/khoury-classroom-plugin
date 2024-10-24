@@ -23,9 +23,19 @@ var Student_Role = models.OrganizationTemplateRole{
 	BaseRole:    "read",
 }
 
+var Role_Map = map[string]models.OrganizationTemplateRole{
+	Prof_Role.Name:    Prof_Role,
+	TA_Role.Name:      TA_Role,
+	Student_Role.Name: Student_Role,
+}
+
+func GenerateRoleName(semester models.Semester, role models.OrganizationTemplateRole) string {
+	return role.Name + "-" + semester.GetName()
+}
+
 func createSemesterTemplateRole(role models.OrganizationTemplateRole, semester models.Semester) models.OrganizationTemplateRole {
 	return models.OrganizationTemplateRole{
-		Name:        role.Name + "-" + semester.GetName(),
+		Name:        GenerateRoleName(semester, role),
 		Description: role.Description + " for " + semester.GetName(),
 		Permissions: role.Permissions,
 		BaseRole:    role.BaseRole,
