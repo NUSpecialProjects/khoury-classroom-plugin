@@ -7,7 +7,7 @@ import (
 
 func Cors() fiber.Handler {
 	return cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000,https://api.gitmarks.org",
+		AllowOrigins:     "http://localhost:3000,https://gitmarks.org",
 		AllowMethods:     "GET, POST, PUT, PATCH, DELETE, OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Authorization, Accept, Set-Cookie",
 		AllowCredentials: true,
