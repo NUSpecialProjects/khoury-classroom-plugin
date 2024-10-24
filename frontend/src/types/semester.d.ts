@@ -1,4 +1,3 @@
-
 interface ISemester {
   org_id: number;
   classroom_id: number;

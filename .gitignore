@@ -50,11 +50,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Compiled files
+# Terraform
+terraform/aws
+terraform/.terraform/
 *.tfstate
 *.tfstate.backup
-.terraform.tfstate.lock.info
+*/terraform.tfstate*
 */terraform.tfvars
-
-# Module directory
-.terraform/

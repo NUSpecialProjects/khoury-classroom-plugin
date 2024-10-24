@@ -63,9 +63,9 @@ func (service *GitHubService) Login() fiber.Handler {
 			Value:    jwtToken,
 			Expires:  expirationTime,
 			HTTPOnly: true,
-			Secure:   false,
-			SameSite: "Lax",
-			Path:     "",
+			Secure:   true,
+			SameSite: "None",
+			Path:     "/",
 		})
 
 		//TODO: check the database if the user is a TA, if so, set their role accordingly

@@ -4,7 +4,7 @@
     gap: 15px;
   }
 
-    &__assignmentsWrapper {
-        padding: 20px;
-    }
+  &__assignmentsWrapper {
+    padding: 20px;
+  }
 }

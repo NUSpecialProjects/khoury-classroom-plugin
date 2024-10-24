@@ -29,6 +29,11 @@ func New(params types.Params) *fiber.App {
 	semesters.Routes(app, params)
 	file_tree.Routes(app, params)
 
+	// heartbeat route
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
 	return app
 }
 
