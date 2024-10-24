@@ -24,12 +24,17 @@ CREATE TABLE IF NOT EXISTS assignments (
   FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
 );
 
+CREATE TABLE IF NOT EXISTS student_to_student_assignment (
+    github_username VARCHAR(255) NOT NULL,
+    student_assignment_id INTEGER NOT NULL,
+    FOREIGN KEY (student_assignment_id) REFERENCES student_assignments(id)
+);
+
 CREATE TABLE IF NOT EXISTS student_assignments (
   id SERIAL PRIMARY KEY,
   local_id INTEGER NOT NULL,
   assignment_id INTEGER NOT NULL,
   repo_name VARCHAR(255) NOT NULL,
-  student_gh_username VARCHAR(255) NOT NULL,
   ta_gh_username VARCHAR(255),
   completed BOOLEAN NOT NULL,
   started BOOLEAN NOT NULL,

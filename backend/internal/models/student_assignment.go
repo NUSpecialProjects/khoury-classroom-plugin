@@ -1,6 +1,7 @@
 package models
 
 type StudentAssignment struct {
+	ID                int32  `json:"id,omitempty"`
 	LocalID           int32  `json:"local_id"`
 	AssignmentID      int32  `json:"assignment_id" db:"assignment_id"`
 	RepoName          string `json:"repo_name"`

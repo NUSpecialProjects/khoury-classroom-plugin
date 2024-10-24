@@ -27,14 +27,14 @@ type Assignments interface {
 	CreateSession(ctx context.Context, sessionData models.Session) error
 	GetSession(ctx context.Context, gitHubUserID int64) (models.Session, error)
 	DeleteSession(ctx context.Context, gitHubUserID int64) error
-  GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classroom_ID, error)
-  
+    GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classroom_ID, error)
+    GetStudentAssignmentByAssignment(ctx context.Context, assignment_id int64) ([]models.StudentAssignment, error)
 }
 
 type Semesters interface {
 	ListSemestersByOrgList(ctx context.Context, orgIDs []int64) ([]models.Semester, error)
 	ListSemestersByOrg(ctx context.Context, orgID int64) ([]models.Semester, error)
-  GetSemesterByClassroomID(ctx context.Context, classroomID int64) (models.Semester, error)
+    GetSemesterByClassroomID(ctx context.Context, classroomID int64) (models.Semester, error)
 	CreateSemester(ctx context.Context, semesterData models.Semester) (models.Semester, error)
 	GetSemester(ctx context.Context, ClassroomID int64) (models.Semester, error)
 	DeactivateSemester(ctx context.Context, ClassroomID int64) (models.Semester, error)
