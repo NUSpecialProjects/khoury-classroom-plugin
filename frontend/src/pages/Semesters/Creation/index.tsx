@@ -204,6 +204,13 @@ const SemesterCreation: React.FC = () => {
           )
         }
 
+        {selectedOrg &&
+          orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
+            <Button variant="primary" href={selectedOrg.html_url}>
+              Install GitGrader for {selectedOrg.login}
+            </Button>
+          )}
+
         {(hasSemester || semesterCreationStatus === SemesterCreationStatus.CREATED) && (
           <Button variant="secondary" onClick={() => {
             navigate("/app/classroom/select");

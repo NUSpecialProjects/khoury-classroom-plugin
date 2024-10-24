@@ -78,16 +78,6 @@ const OrganizationDropdown: React.FC<Props> = ({
         )}
         <option className="Dropdown__option" value="create_new_org">Create a New Organization ➕</option>
       </select>
-      {selectedOrg &&
-        orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
-          <a
-            href={selectedOrg.html_url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button>Install GitGrader on {selectedOrg.login}</button>
-          </a>
-        )}
     </div>
   );
 };
