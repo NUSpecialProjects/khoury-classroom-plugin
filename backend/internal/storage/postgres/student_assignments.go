@@ -14,11 +14,9 @@ func (db *DB) GetStudentAssignments(ctx context.Context, classroomID int64, loca
 		classroomID, localAssignmentID-1)
 	// -1 for 1-indexing
 
-	var studentAssignment []models.StudentAssignment
-
 	if err != nil {
 		fmt.Println("Error in query")
-		return studentAssignment, err
+		return nil, err
 	}
 
 	defer rows.Close()
@@ -31,11 +29,9 @@ func (db *DB) GetStudentAssignment(ctx context.Context, classroomID int64, local
 		classroomID, localAssignmentID-1, localStudentAssignmentID-1)
 	// -1 for 1-indexing
 
-	var studentAssignment models.StudentAssignment
-
 	if err != nil {
 		fmt.Println("Error in query")
-		return studentAssignment, err
+		return models.StudentAssignment{}, err
 	}
 
 	defer rows.Close()

@@ -7,6 +7,7 @@ import AlertBanner from "@/components/Banner/AlertBanner";
 import { activateSemester, deactivateSemester } from "@/api/semesters";
 import { useEffect, useState, useContext } from "react";
 import ErrorMessage from "@/components/Error";
+import { getAssignments } from "@/api/assignments";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
@@ -61,37 +62,14 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchAssignments = async (semester: ISemester) => {
-      try {
-        if (semester.classroom_id) {
-          const base_url: string = import.meta.env
-            .VITE_PUBLIC_API_DOMAIN as string;
-          const result = await fetch(
-            `${base_url}/assignments/${semester.classroom_id}`,
-            {
-              method: "GET",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          if (!result.ok) {
-            throw new Error("Network response was not ok");
-          }
-
-          const data: IAssignment[] = (await result.json()) as IAssignment[];
-          const assignmentGoodDate = data.map((assignment: IAssignment) => ({
-            ...assignment,
-            main_due_date: assignment.main_due_date
-              ? new Date(assignment.main_due_date)
-              : null,
-          }));
-          console.log("Setting Assignment data: ", assignmentGoodDate);
-          setAssignments(assignmentGoodDate);
-        }
-      } catch (error: unknown) {
-        console.error("Error fetching assignments:", error);
+      if (semester) {
+        getAssignments(semester.classroom_id)
+          .then((assignments) => {
+            setAssignments(assignments);
+          })
+          .catch((err: unknown) => {
+            console.error("Error fetching assignments:", err);
+          });
       }
     };
 

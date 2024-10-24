@@ -52,7 +52,7 @@ func (api *AppAPI) GetWebhookSecret() string {
 }
 
 // GetJWT generates a JWT from the appTokenSource
-func (api *AppAPI) GetJWT(ctx context.Context) (string, error) {
+func (api *AppAPI) getJWT() (string, error) {
 	token, err := api.appTokenSource.Token()
 	if err != nil {
 		return "", fmt.Errorf("error getting token: %v", err)
@@ -60,9 +60,9 @@ func (api *AppAPI) GetJWT(ctx context.Context) (string, error) {
 	return token.AccessToken, nil
 }
 
-func (api *AppAPI) GetClientWithJWTAuth(ctx context.Context) (*github.Client, error) {
+func (api *AppAPI) getClientWithJWTAuth(ctx context.Context) (*github.Client, error) {
 	// Create a new OAuth2 client with the JWT
-	token, err := api.GetJWT(ctx)
+	token, err := api.getJWT()
 	if err != nil {
 		return nil, fmt.Errorf("error getting app JWT: %v", err)
 	}
@@ -77,7 +77,7 @@ func (api *AppAPI) GetClientWithJWTAuth(ctx context.Context) (*github.Client, er
 }
 
 func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installation, error) {
-	client, err := api.GetClientWithJWTAuth(ctx)
+	client, err := api.getClientWithJWTAuth(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error getting github client with JWT auth: %v", err)
 	}
