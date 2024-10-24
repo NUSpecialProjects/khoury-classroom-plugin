@@ -132,8 +132,10 @@ const SemesterCreation: React.FC = () => {
     const fetchSemesters = async () => {
       try {
         const data: IUserSemestersResponse = await getUserSemesters();
+        console.log(data.active_semesters.length);
         if (data.active_semesters.length !== 0) {
           setHasActiveSemesters(true);
+          console.log(hasActiveSemester);
         }
       } catch (error) {
         console.error("Error fetching semesters:", error);
