@@ -138,7 +138,7 @@ const Dashboard: React.FC = () => {
                   <TableCell>
                     {" "}
                     <Link
-                      to={`/app/assignments/?id=${assignment.id}`}
+                      to={`/app/assignments/${assignment.id}`}
                       className="Dashboard__assignmentLink"
                     >
                       {assignment.name}
