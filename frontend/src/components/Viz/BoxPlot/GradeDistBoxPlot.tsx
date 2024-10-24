@@ -12,6 +12,7 @@ export const GradeDistBoxPlot = ({ width = 700, height = 400, assID=1}) => {
         const tempData: GradeEntry[] = await getGrades(assID);
         setGrades(tempData);
       } catch (err) {
+        console.log(err)
       }
     };
 
