@@ -32,7 +32,6 @@ export const Boxplot = ({ width, height, data }: BoxplotProps) => {
   }
 
   const { min, q1, median, q3, max, outliers } = sumStats;
-  console.log(min);
 
   return (
     <div>

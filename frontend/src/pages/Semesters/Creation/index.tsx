@@ -3,7 +3,10 @@ import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import OrganizationDropdown from "@/components/Dropdown/Organization";
 import ClassroomDropdown from "@/components/Dropdown/Classroom";
+import Panel from "@/components/Panel";
+import Button from "@/components/Button";
 import {
+  getUserSemesters,
   getClassrooms,
   getOrganizationDetails,
   getOrganizations,
@@ -37,7 +40,7 @@ const SemesterCreation: React.FC = () => {
   const [semesterCreationStatus, setSemesterCreationStatus] = useState(
     SemesterCreationStatus.NONE
   );
-
+  const [hasSemester, setHasSemester] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -118,6 +121,9 @@ const SemesterCreation: React.FC = () => {
           ...prevUnavailableClassrooms,
           selectedClassroom,
         ]);
+
+        //Since a new semester has been created, flag this as true to render button
+        setHasSemester(true);
       } catch (error) {
         setSemesterCreationStatus(SemesterCreationStatus.ERRORED);
         console.error("Error creating class:", error);
@@ -125,9 +131,25 @@ const SemesterCreation: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      try {
+        const data: IUserSemestersResponse = await getUserSemesters();
+
+        if (data.active_semesters.length > 0 || data.inactive_semesters.length > 0) {
+          setHasSemester(true);
+          console.log(hasSemester);
+        }
+      } catch (error) {
+        console.error("Error fetching semesters:", error);
+      }
+    };
+
+    void fetchSemesters();
+  }, []);
+
   return (
-    <div>
-      <h1>Create a New Class</h1>
+    <Panel title="Create a New Classroom" logo={true}>
       {semesterCreationStatus == SemesterCreationStatus.NONE && (
         <>
           <OrganizationDropdown
@@ -150,9 +172,9 @@ const SemesterCreation: React.FC = () => {
         </>
       )}
       {semesterCreationStatus == SemesterCreationStatus.CREATED && (
-        <div>Class successfully created!</div>
+        <div className="Creation__message">Class successfully created!</div>
       )}
-      <div>
+      <div className="Creation__buttonWrapper">
         {selectedClassroom &&
           selectedOrg &&
           availableClassrooms.find(
@@ -160,41 +182,42 @@ const SemesterCreation: React.FC = () => {
           ) && (
             <>
               {semesterCreationStatus === SemesterCreationStatus.CREATING && (
-                <button onClick={handleCreateSemester} disabled={true}>
-                  `Creating ${selectedClassroom.name}...`
-                </button>
+
+                <Button variant="primary" onClick={handleCreateSemester} disabled={true}>Creating classroom...</Button>
               )}
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
-                <button onClick={handleCreateSemester}>
-                  {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
-                </button>
-              )}
+                  <Button variant="primary" onClick={handleCreateSemester}>Create classroom</Button>
+                )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
-                <div>Error creating class. Please try again.</div>
+                <div>Error creating classroom. Please try again.</div>
               )}
             </>
+          )
+        }
+
+        {selectedOrg &&
+          orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
+            <Button variant="primary" href={selectedOrg.html_url}>
+              Install GitGrader for {selectedOrg.login}
+            </Button>
           )}
-      </div>
-      <button
-        onClick={() => {
-          navigate("/app/classroom/select");
-        }}
-      >
-        {" "}
-        Go to Select Class Page
-      </button>
-      {semesterCreationStatus !== SemesterCreationStatus.NONE && (
-        <button
-          onClick={() => {
+
+        {(hasSemester || semesterCreationStatus === SemesterCreationStatus.CREATED) && (
+          <Button variant="secondary" onClick={() => {
+            navigate("/app/classroom/select");
+          }}>
+            View existing classrooms
+          </Button>
+        )}
+
+        {semesterCreationStatus !== SemesterCreationStatus.NONE && (
+          <Button variant="secondary" onClick={() => {
             setSemesterCreationStatus(SemesterCreationStatus.NONE);
-          }}
-        >
-          {" "}
-          Create another class
-        </button>
-      )}
-    </div>
+          }}>Create another classroom</Button>
+        )}
+      </div>
+    </Panel >
   );
 };
 
