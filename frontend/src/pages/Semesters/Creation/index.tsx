@@ -135,8 +135,6 @@ const SemesterCreation: React.FC = () => {
     const fetchSemesters = async () => {
       try {
         const data: IUserSemestersResponse = await getUserSemesters();
-        console.log(data.active_semesters.length);
-        console.log(data.inactive_semesters.length);
 
         if (data.active_semesters.length > 0 || data.inactive_semesters.length > 0) {
           setHasSemester(true);
@@ -186,16 +184,10 @@ const SemesterCreation: React.FC = () => {
               {semesterCreationStatus === SemesterCreationStatus.CREATING && (
 
                 <Button variant="primary" onClick={handleCreateSemester} disabled={true}>Creating classroom...</Button>
-                // <button onClick={handleCreateSemester} disabled={true}>
-                //   `Creating ${selectedClassroom.name}...`
-                // </button>
               )}
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
                   <Button variant="primary" onClick={handleCreateSemester}>Create classroom</Button>
-                  // <button onClick={handleCreateSemester}>
-                  //   {`Create Class: "${selectedOrg.login}:${selectedClassroom.name}"`}
-                  // </button>
                 )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
                 <div>Error creating classroom. Please try again.</div>
