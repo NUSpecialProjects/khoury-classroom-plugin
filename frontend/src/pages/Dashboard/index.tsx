@@ -85,7 +85,6 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    console.log("We in dashboard: ", selectedSemester);
     if (selectedSemester !== null && selectedSemester !== undefined) {
       SyncWithClassroom(selectedSemester)
         .then(() => {

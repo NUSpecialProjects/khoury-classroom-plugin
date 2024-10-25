@@ -1,4 +1,5 @@
-import "./styles.css";
+import React from "react";
+import '../styles.css'
 
 interface Props {
   availableClassrooms: IClassroom[];
@@ -16,10 +17,11 @@ const ClassroomDropdown: React.FC<Props> = ({
   onSelect,
 }) => {
   return (
-    <div className="form-group">
-      <label htmlFor="classroom">Select Classroom:</label>
+    <div className="Dropdown__wrapper">
+      <label className="Dropdown__label" htmlFor="classroom">Select a Classroom</label>
       <select
         id="classroom"
+        className="Dropdown"
         value={selectedClassroom ? selectedClassroom.id : ""}
         onChange={async (e) => {
           const selectedId = Number(e.target.value);
@@ -40,18 +42,19 @@ const ClassroomDropdown: React.FC<Props> = ({
         }}
       >
         {loading ? (
-          <option value="" disabled>
+          <option className="Dropdown__option" value="" disabled>
             Loading classrooms...
           </option>
         ) : (
           <>
-            <option value="" disabled>
+            <option className="Dropdown__option" value="" disabled>
               Select a classroom
             </option>
             {availableClassrooms.length > 0 && (
               <optgroup label="Available Classrooms">
                 {availableClassrooms.map((classroom) => (
                   <option
+                    className="Dropdown__option"
                     key={classroom.id}
                     value={classroom.id}
                     title="This classroom is available to use"
@@ -65,6 +68,7 @@ const ClassroomDropdown: React.FC<Props> = ({
               <optgroup label="Unavailable Classrooms">
                 {unavailableClassrooms.map((classroom) => (
                   <option
+                    className="Dropdown__option"
                     key={classroom.id}
                     value={classroom.id}
                     title="This classroom has already been used to create a semester"
@@ -76,7 +80,7 @@ const ClassroomDropdown: React.FC<Props> = ({
             )}
           </>
         )}
-        <option value="-1">Create New Classroom ➕</option>
+        <option className="Dropdown__option" value="-1">Create New Classroom ➕</option>
       </select>
     </div>
   );

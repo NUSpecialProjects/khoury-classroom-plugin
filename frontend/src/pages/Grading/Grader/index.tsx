@@ -99,7 +99,6 @@ const Grader: React.FC = () => {
         try {
           const deps: string | string[] = dependencies[lang];
           if (deps) {
-            console.log(deps);
             if (typeof deps === "string") {
               await ext2langLoader[deps]();
             }
