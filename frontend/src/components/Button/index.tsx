@@ -21,7 +21,7 @@ const Button: React.FC<IButtonProps> = ({
   children,
   href,
   onClick,
-  variant,
+  variant = "primary",
 }) => {
   return (
     <ButtonWrapper href={href}>
