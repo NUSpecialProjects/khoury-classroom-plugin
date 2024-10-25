@@ -11,6 +11,9 @@ module "database" {
   db_port        = var.db_port
   rds_sg_id      = module.networking.rds_sg_id
   db_subnet_name = module.networking.db_subnet_name
+  private_subnet_ids = module.networking.private_subnet_ids
+  aws_account_id = var.aws_account_id
+  lambda_sg_id = module.networking.lambda_sg_id
 }
 
 module "frontend" {
@@ -35,4 +38,5 @@ module "backend" {
   app_secrets = module.database.app_secrets
   app_port    = var.app_port
   domain_name = var.domain_name
+  aws_account_id = var.aws_account_id
 }

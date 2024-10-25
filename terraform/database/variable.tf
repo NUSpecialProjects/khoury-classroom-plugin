@@ -32,3 +32,18 @@ variable "rds_sg_id" {
   description = "RDS security group ID"
   type        = string
 }
+
+variable "aws_account_id" {
+  description = "AWS account ID"
+  type        = string
+}
+
+variable "private_subnet_ids" {
+  description = "List of private subnets"
+  type        = list(any)
+}
+
+variable "lambda_sg_id" {
+  description = "Security group ID for Lambda functions"
+  type        = string
+}

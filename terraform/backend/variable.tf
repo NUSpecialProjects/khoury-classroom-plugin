@@ -2,7 +2,7 @@
 
 variable "aws_account_id" {
   description = "The AWS account ID"
-  default     = "058264409130"
+  type = string
 }
 
 variable "ec2_task_execution_role_name" {
