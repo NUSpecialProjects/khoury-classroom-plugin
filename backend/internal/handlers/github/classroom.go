@@ -73,7 +73,7 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 			} else {
 				assignmentData.ClassroomID = sem.ClassroomID
 			}
-
+            fmt.Println("Creating Assignment with id ", assignmentData.Assignment_Classroom_ID)
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
 			if error != nil {
 				fmt.Println("SyncAssignments - Failed to add assignment to db", error)
@@ -108,7 +108,7 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 	}
 
 	// get list of student assignments currently in the db under this assignment
-	studentAssmnts, err := service.store.GetStudentAssignmentByAssignment(c.Context(), syncData.AssignmentID)
+	studentAssmnts, err := service.store.GetStudentAssignmentsByAssignmentID(c.Context(), syncData.AssignmentID)
 	if err != nil {
         fmt.Println("SyncStudentAssignments - Could not get: ", err)
 		return err
@@ -155,13 +155,13 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
         } // end of student assignment loop
 
         if !inDB {
-            var newStudentAssignment models.StudentAssignment
+            var newStudentAssignment models.StudentAssignmentWithStudents
             newStudentAssignment.Started = true
             newStudentAssignment.Completed = assignment.Submitted
             if (assignment.Repository.Name != nil) {
                 newStudentAssignment.RepoName = *assignment.Repository.Name
-            }
-            newStudentAssignment.AssignmentID = assignment.ID
+            }            
+            newStudentAssignment.AssignmentID = syncData.AssignmentID
 
             newStudentAssignment.StudentGHUsernames = ghStudents
             err := service.store.CreateStudentAssignment(c.Context(), newStudentAssignment)

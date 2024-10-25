@@ -12,9 +12,8 @@ CREATE TABLE IF NOT EXISTS rubrics (
 );
 
 CREATE TABLE IF NOT EXISTS assignments (
-  id SERIAL PRIMARY KEY,
+  assignment_classroom_id INTEGER NOT NULL PRIMARY KEY,
   rubric_id INTEGER,
-  assignment_classroom_id INTEGER NOT NULL,
   inserted_date TIMESTAMP DEFAULT NOW() NOT NULL, 
   classroom_id INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
@@ -30,7 +29,7 @@ CREATE TABLE IF NOT EXISTS student_assignments (
   ta_gh_username VARCHAR(255),
   completed BOOLEAN NOT NULL,
   started BOOLEAN NOT NULL,
-  FOREIGN KEY (assignment_id) REFERENCES assignments(id)
+  FOREIGN KEY (assignment_id) REFERENCES assignments(assignment_classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS student_to_student_assignment (

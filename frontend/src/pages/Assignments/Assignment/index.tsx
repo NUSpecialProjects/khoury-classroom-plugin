@@ -14,7 +14,7 @@ import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignment>()
-  const [studentAssignment, setStudentAssignment] = useState<IStudentAssignment[]>([]);
+  const [studentAssignments, setStudentAssignment] = useState<IStudentAssignment[]>([]);
   const { selectedSemester } = useContext(SelectedSemesterContext);
   const { assignmentId } = useParams();
 
@@ -30,17 +30,13 @@ const Assignment: React.FC = () => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify( { classroom_id: sem.classroom_id, assignment_id: assignment.assignment_classroom_id} ) 
+            body: JSON.stringify({ classroom_id: sem.classroom_id, assignment_id: assignment.assignment_classroom_id })
           });
 
           if (!result.ok) {
             throw new Error('Network response was not ok');
           }
 
-          const data: IStudentAssignment[] = (await result.json() as IStudentAssignment[])
-          // Need to actually store info
-          console.log(data)
-          setStudentAssignment(data)
         }
 
       } catch (error: unknown) {
@@ -48,7 +44,7 @@ const Assignment: React.FC = () => {
       }
     };
 
-    const fetchAssignment = async (assignmentID: string, sem: ISemester) => {
+    const fetchAssignmentIndirectNav = async (assignmentID: string, sem: ISemester) => {
       try {
         const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
         const result = await fetch(`${base_url}/semester/${sem.classroom_id}/assignments/${assignmentID}`, {
@@ -71,16 +67,42 @@ const Assignment: React.FC = () => {
       }
     };
 
+    const fetchStudentAssignments = async (semesterID: number, assignmentID: number) => {
+      try {
+        const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+        const result = await fetch(`${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!result.ok) {
+            throw new Error("Network response was not ok");
+          }
+        
+          const data: IStudentAssignment[] = (await result.json()) as IStudentAssignment[];
+          setStudentAssignment(data)
+
+
+      } catch (error: unknown) {
+        console.log("Bad fetch, ", error)
+      }
+    };
 
 
     // check if assignment has been passed through 
     if (location.state) {
       setAssignment(location.state.assignment)
-      const a = location.state.assignment
+      const a: IAssignment = location.state.assignment
       // sync student assignments
       if (selectedSemester !== null && selectedSemester !== undefined) {
         SyncStudentAssignments(selectedSemester, a).then(() => {
-          console.log(studentAssignment)
+          fetchStudentAssignments(selectedSemester.classroom_id, a.assignment_classroom_id)
+          .catch((error: unknown) => { console.log("Error fetching: ", error)})
+
+          console.log(studentAssignments)
         }).catch((error: unknown) => {
           console.error("Error syncing: ", error)
         })
@@ -88,9 +110,10 @@ const Assignment: React.FC = () => {
 
 
     } else {
+      console.log("Fetching assignment from backend")
       // fetch the assignment from backend
       if (assignmentId && selectedSemester !== null && selectedSemester !== undefined) {
-        fetchAssignment(assignmentId, selectedSemester).catch((error: unknown) => {
+        fetchAssignmentIndirectNav(assignmentId, selectedSemester).catch((error: unknown) => {
           console.error("Could not get assignment: ", error)
         })
       }
@@ -125,11 +148,11 @@ const Assignment: React.FC = () => {
           </div>
 
 
-      <div className="Assignment__externalButtons">
-        <Button href="" variant="secondary">View in Github Classroom</Button>
-        <Button href="" variant="secondary">View Starter Code</Button>
-        <Button href="" variant="secondary">View Rubric</Button>
-      </div>
+          <div className="Assignment__externalButtons">
+            <Button href="" variant="secondary">View in Github Classroom</Button>
+            <Button href="" variant="secondary">View Starter Code</Button>
+            <Button href="" variant="secondary">View Rubric</Button>
+          </div>
 
           <h2>Metrics</h2>
           <div>Metrics go here</div>
@@ -141,9 +164,9 @@ const Assignment: React.FC = () => {
               <TableCell>Status</TableCell>
               <TableCell>Last Commit</TableCell>
             </TableRow>
-            {Array.from({ length: 10 }).map((_, i: number) => (
+            {studentAssignments.map((sa, i: number) => (
               <TableRow key={i} className="Assignment__submission">
-                <TableCell>Jane Doe</TableCell>
+                <TableCell>Repo name to ensure data passthrough - {sa.repo_name}</TableCell>
                 <TableCell>Passing</TableCell>
                 <TableCell>12 Sep, 11:34pm</TableCell>
               </TableRow>

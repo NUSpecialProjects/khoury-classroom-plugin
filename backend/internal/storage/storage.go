@@ -18,12 +18,12 @@ type Test interface {
 	GetTests(ctx context.Context) ([]models.Test, error)
 }
 
-// TODO: Remove duplicate 
+// TODO: Figure out if there is actually a duplicate 
 type StudentAssignments interface {
-	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignment) error
-	GetStudentAssignments(ctx context.Context, classroomID int64, assignmentID int64) ([]models.StudentAssignment, error)
-	GetStudentAssignment(ctx context.Context, classroomID int64, assignmentID int64, studentAssignmentID int64) (models.StudentAssignment, error)
-    GetStudentAssignmentByAssignment(ctx context.Context, assignment_id int64) ([]models.StudentAssignment, error)
+	CreateStudentAssignment(ctx context.Context, studentAssignmentData models.StudentAssignmentWithStudents) error
+	GetStudentAssignmentsByLocalID(ctx context.Context, classroomID int64, assignmentID int64) ([]models.StudentAssignment, error)
+	GetStudentAssignmentByLocalID(ctx context.Context, classroomID int64, assignmentID int64, studentAssignmentID int64) (models.StudentAssignmentWithStudents, error)
+    GetStudentAssignmentsByAssignmentID(ctx context.Context, assignment_id int64) ([]models.StudentAssignmentWithStudents, error)
     GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]string, error) 
 }
 

@@ -3,7 +3,6 @@ package models
 import "time"
 
 type Assignment struct {
-	ID                      int32      `json:"id,omitempty"`
 	Rubric_ID               *int32     `json:"rubric_id,omitempty"`
 	InsertedDate            time.Time  `json:"active"`
 	Assignment_Classroom_ID int64      `json:"assignment_classroom_id"`

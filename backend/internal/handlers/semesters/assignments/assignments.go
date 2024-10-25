@@ -76,7 +76,7 @@ func (s *AssignmentsService) CreateAssignment(c *fiber.Ctx) error {
 }
 
 func (s *AssignmentsService) CreateStudentAssignment(c *fiber.Ctx) error {
-	var studentAssignmentData models.StudentAssignment
+	var studentAssignmentData models.StudentAssignmentWithStudents
 	err := c.BodyParser(&studentAssignmentData)
 	if err != nil {
 		return errs.InvalidJSON()
