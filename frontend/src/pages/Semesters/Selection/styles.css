@@ -1,11 +1,41 @@
-.fixed-width-button {
-  width: 60px;
-  text-align: center;
-}
+.Selection {
+  height: 100vh;
+  padding: 80px;
+  background: var(--brand-gradient-dark);
 
-.fixed-width-id-column {
-  width: 175px;
-  text-align: center;
+  &__title {
+    color: var(--primary-text-white)
+  }
+
+  &__tableWrapper {
+    border-radius: 5px;
+    background-color: var(--page-background);
+    box-shadow: 0px 2px 10px 5px rgba(22, 43, 118, 30%);
+  }
+
+  &__linkWrapper {
+    margin-top: 60px;
+    color: var(--primary-text-white);
+    font-size: var(--font-size-s);
+    text-align: center;
+    text-decoration: underline;
+  }
+
+  &__actionButton {
+    text-align: center;
+    background-color: var(--brand);
+    color: var(--primary-text-white);
+    font-size: var(--font-size-s);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+
+    &:hover {
+      background: var(--brand-gradient-bright);
+      transition: background 0.5s ease;
+
+    }
+  }
 }
 
 .SubTable {
@@ -13,10 +43,6 @@
   /* same padding as the chevron */
 }
 
-.HeaderRow {
-  background-color: #f0f0f0;
-}
-
-.ChildRow {
-  background-color: #ffffff;
+.TableRow {
+  align-items: center;
 }
