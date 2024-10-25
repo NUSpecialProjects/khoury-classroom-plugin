@@ -1,4 +1,5 @@
-import { useState, createContext } from "react";
+import { getCurrentUser } from "@/api/auth";
+import { useState, createContext, useLayoutEffect } from "react";
 
 interface IAuthContext {
   isLoggedIn: boolean;
@@ -15,17 +16,32 @@ export const AuthContext: React.Context<IAuthContext> =
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  //Handle loggedin state
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+
+  useLayoutEffect(() => {
+    getCurrentUser()
+      .then((ok) => {
+        setIsLoggedIn(ok);
+      })
+      .catch((err: unknown) => {
+        console.log("Error fetching current user: ", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const login = () => {
     setIsLoggedIn(true);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login }}>
-      {children}
-    </AuthContext.Provider>
+    !loading && (
+      <AuthContext.Provider value={{ isLoggedIn, login }}>
+        {children}
+      </AuthContext.Provider>
+    )
   );
 };
 
