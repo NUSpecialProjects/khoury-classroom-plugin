@@ -26,7 +26,7 @@ func main() {
 
 	// Load environment variables if running locally
 	if isLocal() {
-		if err := godotenv.Load("../../../.env"); err != nil {
+		if err := godotenv.Load(".env"); err != nil {
 			log.Fatalf("Unable to load environment variables necessary for application: %v", err)
 		}
 	}
