@@ -358,7 +358,7 @@ func (api *UserAPI) GetUserRoles(ctx context.Context, semester models.Semester) 
 
 	// for each id in the sorted list, check if the user has that role, if so, add to the result list
 	for _, role := range sorted_org_roles {
-		role_users, err := api.GetUsersAssignedToRole(ctx, semester.OrgID, role.ID)
+		role_users, err := api.GetUsersAssignedToRole(ctx, semester, role.Name)
 		if err == nil {
 			for _, user := range role_users {
 				if user.Login == current_user.Login {
@@ -385,9 +385,48 @@ func (api *UserAPI) CheckProfRole(ctx context.Context, org_name string) (bool, e
 	return false, nil
 }
 
-func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, org_id int64, role_id int64) ([]models.GitHubUser, error) {
+func (api *UserAPI) GetOrgRole(ctx context.Context, org_id int64, role_id int64) (*models.OrganizationRole, error) {
+	// Construct the URL for the list assignments endpoint
+	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/%d", org_id, role_id)
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container
+	var role models.OrganizationRole
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &role)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching role: %v", err)
+	}
+
+	return &role, nil
+}
+
+func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, semester models.Semester, role_name string) ([]models.GitHubUser, error) {
+	// get the role id
+	org_roles, err := api.GetOrgRoles(ctx, semester.OrgName)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching roles: %v", err)
+	}
+
+	role_id := int64(-1)
+	for _, role := range org_roles {
+		if role.Name == role_name {
+			role_id = role.ID
+			break
+		}
+	}
+	if role_id == -1 {
+		return nil, fmt.Errorf("error fetching roles: role not found")
+	}
+
 	var allUsers []models.GitHubUser
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/%d/users", org_id, role_id)
+	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/%d/users", semester.OrgID, role_id)
 
 	for {
 		// Create a new GET request

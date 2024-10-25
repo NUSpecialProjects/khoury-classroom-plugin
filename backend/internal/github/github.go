@@ -35,7 +35,7 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	RemoveOrgRoleFromUser(ctx context.Context, org_id int64, user_name string, role_id int64) error
 	CheckProfRole(ctx context.Context, org_name string) (bool, error)
 	GetOrgRoles(ctx context.Context, org_name string) ([]models.OrganizationRole, error)
-	GetUsersAssignedToRole(ctx context.Context, org_id int64, role_id int64) ([]models.GitHubUser, error)
+	GetUsersAssignedToRole(ctx context.Context, semester models.Semester, role_name string) ([]models.GitHubUser, error)
 	GetUserRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error)
 	CreateSemesterRoles(ctx context.Context, semester models.Semester) error
 	GetProfessorRoleID(ctx context.Context, org_name string) (int64, error)

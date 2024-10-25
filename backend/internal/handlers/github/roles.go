@@ -32,6 +32,38 @@ func (service *GitHubService) GetUserRoles() fiber.Handler {
 	}
 }
 
+func (service *GitHubService) GetUsersAssignedToRole() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := service.getClient(c)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
+		var requestBody struct {
+			RoleType string `json:"role_type"`
+			Semester models.Semester
+		}
+
+		if err := c.BodyParser(&requestBody); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		}
+
+		role_template := core.Role_Map[requestBody.RoleType]
+		if role_template.Name == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid role type"})
+		}
+
+		role_name := core.GenerateRoleName(requestBody.Semester, role_template)
+
+		users, err := client.GetUsersAssignedToRole(c.Context(), requestBody.Semester, role_name)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch users"})
+		}
+
+		return c.Status(200).JSON(users)
+	}
+}
+
 func generateToken(role_name string, role_id int64, classroom_id int64) (models.RoleToken, error) {
 	bytes := make([]byte, 16)
 	if _, err := rand.Read(bytes); err != nil {
