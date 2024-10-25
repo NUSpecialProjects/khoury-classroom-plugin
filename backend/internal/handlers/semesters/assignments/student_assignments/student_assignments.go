@@ -44,6 +44,7 @@ func (s *StudentAssignmentService) GetStudentAssignmentsByAssignmentID(c *fiber.
         return err
     }
 
+    fmt.Println(studentAssignments[0].StudentGHUsernames)
 
     return c.Status(http.StatusOK).JSON(studentAssignments)
 }

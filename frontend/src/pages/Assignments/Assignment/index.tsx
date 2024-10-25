@@ -29,7 +29,7 @@ const Assignment: React.FC = () => {
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
-            },
+            },  
             body: JSON.stringify({ classroom_id: sem.classroom_id, assignment_id: assignment.assignment_classroom_id })
           });
 
@@ -78,13 +78,13 @@ const Assignment: React.FC = () => {
               "Content-Type": "application/json",
             },
           });
-          if (!result.ok) {
-            throw new Error("Network response was not ok");
-          }
-        
-          const data: IStudentAssignment[] = (await result.json()) as IStudentAssignment[];
-          setStudentAssignment(data)
+        if (!result.ok) {
+          throw new Error("Network response was not ok");
+        }
 
+        const data: IStudentAssignment[] = (await result.json())
+        setStudentAssignment(data)
+        console.log(data[0].student_gh_username)
 
       } catch (error: unknown) {
         console.log("Bad fetch, ", error)
@@ -100,8 +100,9 @@ const Assignment: React.FC = () => {
       // sync student assignments
       if (selectedSemester !== null && selectedSemester !== undefined) {
         SyncStudentAssignments(selectedSemester, a).then(() => {
+          console.log("Sync didn't error, fetching")
           fetchStudentAssignments(selectedSemester.classroom_id, a.assignment_classroom_id)
-          .catch((error: unknown) => { console.log("Error fetching: ", error)})
+            .catch((error: unknown) => { console.log("Error fetching: ", error) })
 
           console.log(studentAssignments)
         }).catch((error: unknown) => {
@@ -120,10 +121,6 @@ const Assignment: React.FC = () => {
       }
 
     }
-
-
-
-
 
   }, [selectedSemester]);
 
@@ -150,7 +147,7 @@ const Assignment: React.FC = () => {
 
           <div className="Assignment__externalButtons">
             <Button href="" variant="secondary">View in Github Classroom</Button>
-            <Button href="" variant="secondary">View Starter Code</Button>
+            <Button href="" variant="secondary">View Starte,r Code</Button>
             <Button href="" variant="secondary">View Rubric</Button>
           </div>
 
@@ -164,13 +161,19 @@ const Assignment: React.FC = () => {
               <TableCell>Status</TableCell>
               <TableCell>Last Commit</TableCell>
             </TableRow>
-            {studentAssignments.map((sa, i: number) => (
-              <TableRow key={i} className="Assignment__submission">
-                <TableCell>Repo name to ensure data passthrough - {sa.repo_name}</TableCell>
-                <TableCell>Passing</TableCell>
-                <TableCell>12 Sep, 11:34pm</TableCell>
+            {studentAssignments && studentAssignments.length > 0 ? (
+              studentAssignments.map((sa, i) => (
+                <TableRow key={i} className="Assignment__submission">
+                  <TableCell>{sa.student_gh_username.join(", ")}</TableCell>
+                  <TableCell>Passing</TableCell>
+                  <TableCell>12 Sep, 11:34pm</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3}>No student assignments available</TableCell>
               </TableRow>
-            ))}
+            )}
           </Table>
         </>
       )}

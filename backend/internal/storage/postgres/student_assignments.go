@@ -120,6 +120,9 @@ func (db *DB) GetStudentAssignmentsByAssignmentID(ctx context.Context, assignmen
             fmt.Println("Could not get student(s)")
             return nil, err
         }
+
+        fmt.Println("Students: ", students)
+
         var sa_ws models.StudentAssignmentWithStudents
         sa_ws.ID = sa.ID
         sa_ws.AssignmentID = sa.AssignmentID
@@ -131,6 +134,7 @@ func (db *DB) GetStudentAssignmentsByAssignmentID(ctx context.Context, assignmen
 
         student_assignments = append(student_assignments, sa_ws)
     }
+
 
 
     return student_assignments, nil
@@ -146,18 +150,6 @@ func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]stri
     }
 
     var studentUsernames []string
-    /*_, error := pgx.ForEachRow(rows, []any{}, func() error {
-        var ghUsername string
-        var saID int 
-
-        err := rows.Scan(&ghUsername, &saID)
-        if err != nil {
-            fmt.Println("Error getting data from row")
-            return err
-        }
-        studentUsernames = append(studentUsernames, ghUsername)
-        return nil
-    })*/
 
     for rows.Next() {
         var ghUsername string
