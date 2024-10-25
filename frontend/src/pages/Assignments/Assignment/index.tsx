@@ -147,6 +147,17 @@ const Assignment: React.FC = () => {
             </div>
           </div>
 
+      <div className="Assignment__externalButtons">
+        <Button href="" variant="secondary">
+          View in Github Classroom
+        </Button>
+        <Button href="" variant="secondary">
+          View Starter Code
+        </Button>
+        <Button href="" variant="secondary">
+          View Rubric
+        </Button>
+      </div>
 
           <div className="Assignment__externalButtons">
             <Button href="" variant="secondary">View in Github Classroom</Button>
