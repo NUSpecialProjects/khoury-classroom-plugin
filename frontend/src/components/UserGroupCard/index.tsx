@@ -3,13 +3,13 @@ import "./styles.css";
 
 interface IUserGroupCardProps {
   label: string;
-  number: number;
+  role_type: string;
   onClick?: () => void;
 }
 
 const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   label,
-  number,
+  role_type,
   onClick,
 }) => {
   let userIcons = [];
