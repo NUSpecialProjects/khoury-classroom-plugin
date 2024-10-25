@@ -26,7 +26,6 @@ const SemesterSelection: React.FC = () => {
     const fetchSemesters = async () => {
       try {
         const data: IUserSemestersResponse = await getUserSemesters();
-        console.log(data);
         const groupedSemesters: { [key: number]: ISemester[] } = {};
         const initialCollapsedState: { [key: number]: boolean } = {};
 
@@ -53,7 +52,6 @@ const SemesterSelection: React.FC = () => {
   }, []);
 
   const handleSemesterSelect = (semester: ISemester) => {
-    console.log("Selected class:", semester);
     setSelectedSemester(semester);
     navigate(`/app/dashboard`);
   };
