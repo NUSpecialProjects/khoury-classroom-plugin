@@ -52,6 +52,7 @@ func (service *GitHubService) CreateRoleToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := service.getClient(c)
 		if err != nil {
+			log.Default().Println("Error creating client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
@@ -60,20 +61,24 @@ func (service *GitHubService) CreateRoleToken() fiber.Handler {
 			RoleType string          `json:"role_type"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
+			log.Default().Println("Error parsing request body: ", err)
 			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 		}
 
 		if !requestBody.Semester.Active {
+			log.Default().Println("Semester is not active")
 			return c.Status(400).JSON(fiber.Map{"error": "semester is not active"})
 		}
 
 		has_prof_role, err := client.CheckProfRole(c.Context(), requestBody.Semester.OrgName)
 
 		if err != nil {
+			log.Default().Println("Error checking professor role: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to check professor role"})
 		}
 
 		if !has_prof_role {
+			log.Default().Println("User does not have professor role")
 			return c.Status(403).JSON(fiber.Map{"error": "user does not have professor role"})
 		}
 
@@ -82,6 +87,7 @@ func (service *GitHubService) CreateRoleToken() fiber.Handler {
 		org_roles, err := client.GetOrgRoles(c.Context(), requestBody.Semester.OrgName)
 
 		if err != nil {
+			log.Default().Println("Error getting org roles: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get org roles"})
 		}
 
@@ -93,15 +99,18 @@ func (service *GitHubService) CreateRoleToken() fiber.Handler {
 			}
 		}
 		if role_id == -1 {
+			log.Default().Println("Role not found")
 			return c.Status(404).JSON(fiber.Map{"error": "role not found"})
 		}
 
 		roleToken, err := generateToken(role_name, role_id, requestBody.Semester.ClassroomID)
 		if err != nil {
+			log.Default().Println("Error generating role token: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to generate role token"})
 		}
 		err = service.store.CreateRoleToken(c.Context(), roleToken)
 		if err != nil {
+			log.Default().Println("Error creating role token: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create role token"})
 		}
 		return c.Status(200).JSON(fiber.Map{"token": roleToken.Token})

@@ -162,21 +162,21 @@ func (service *GitHubService) ListOrgSemesters() fiber.Handler {
 		orgIDParam := c.Params("org")
 		if orgIDParam == "" || orgIDParam == "undefined" {
 			log.Default().Println("Error getting org_id: ", orgIDParam)
-			return c.Status(399).JSON(fiber.Map{"error": "invalid or missing org_id"})
+			return c.Status(400).JSON(fiber.Map{"error": "invalid or missing org_id"})
 		}
 
 		org_id, err := strconv.ParseInt(orgIDParam, 9, 64)
 		if err != nil {
 			log.Default().Println("Error parsing org_id: ", err)
-			return c.Status(399).JSON(fiber.Map{"error": "invalid org_id"})
+			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
 		}
 
 		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting semesters: ", err)
-			return c.Status(499).JSON(fiber.Map{"error": "failed to get semesters"})
+			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
 		}
 
-		return c.Status(199).JSON(fiber.Map{"semesters": semesters})
+		return c.Status(200).JSON(fiber.Map{"semesters": semesters})
 	}
 }
