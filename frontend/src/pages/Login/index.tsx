@@ -30,7 +30,7 @@ const Login: React.FC = () => {
       } catch (error) {
         console.error("Error fetching callback URL:", error);
       }
-    }
+    };
     fetchCallbackURL();
   }, []);
 
@@ -56,14 +56,11 @@ const Login: React.FC = () => {
       </div>
       <div className="LandingTitle">FonteMarks</div>
       {callbackURL && (
-        <a
-        className="SignInLink"
-        href={callbackURL}
-      >
-        Log In With GitHub
-      </a>
-        )}
-      
+        <a className="SignInLink" href={callbackURL}>
+          Log In With GitHub
+        </a>
+      )}
+
       {error && <ErrorMessage message={error} />}
     </div>
   );

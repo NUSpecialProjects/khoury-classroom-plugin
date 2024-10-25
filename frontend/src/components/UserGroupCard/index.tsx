@@ -7,7 +7,11 @@ interface IUserGroupCardProps {
   onClick?: () => void;
 }
 
-const UserGroupCard: React.FC<IUserGroupCardProps> = ({ label, number, onClick }) => {
+const UserGroupCard: React.FC<IUserGroupCardProps> = ({
+  label,
+  number,
+  onClick,
+}) => {
   let userIcons = [];
 
   if (number > 3) {

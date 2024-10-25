@@ -11,7 +11,6 @@
 //     const { selectedSemester } = useSelectedSemester();
 //     const navigate = useNavigate();
 
-
 //      useEffect(() => {
 //         const params = new URLSearchParams(location.search);
 //         const token = params.get("token");
@@ -20,7 +19,6 @@
 //             navigate("/app/role-token", { replace: true });
 //         }
 //     }, [location.search]);
-
 
 //     const handleCreateToken = async () => {
 //         try {
@@ -87,7 +85,7 @@
 //                 <button onClick={() => setRoleType("Student")}>Student</button>
 //                 <button onClick={() => setRoleType("TA")}>Teaching Assistant</button>
 //             </div>
-            
+
 //             <button onClick={handleCreateToken}>Create {role_type} Token</button>
 //             {createdToken && (
 //                 <div>

@@ -14,7 +14,6 @@ const Dashboard: React.FC = () => {
   );
   const navigate = useNavigate();
 
-
   const options: Intl.DateTimeFormatOptions = {
     weekday: "short",
     year: "numeric",
@@ -24,7 +23,6 @@ const Dashboard: React.FC = () => {
     minute: "2-digit",
     timeZoneName: "short",
   };
-
 
   useEffect(() => {
     const fetchAssignments = async (semester: ISemester) => {
@@ -84,7 +82,7 @@ const Dashboard: React.FC = () => {
     if (group === "Student") {
       navigate("/app/students");
     }
-};
+  };
 
   return (
     <div className="Dashboard">
@@ -100,15 +98,23 @@ const Dashboard: React.FC = () => {
             onActivate={setSelectedSemester}
           />
           <div className="Dashboard__classroomDetailsWrapper">
-  
-    <UserGroupCard label="Professors" number={1} onClick={() => handleUserGroupClick("Professor")}/>
+            <UserGroupCard
+              label="Professors"
+              number={1}
+              onClick={() => handleUserGroupClick("Professor")}
+            />
 
+            <UserGroupCard
+              label="TAs"
+              number={12}
+              onClick={() => handleUserGroupClick("TA")}
+            />
 
-    <UserGroupCard label="TAs" number={12} onClick={() => handleUserGroupClick("TA")}/>
-
-
-    <UserGroupCard label="Students" number={38} onClick={() => handleUserGroupClick("Student")}/>
-
+            <UserGroupCard
+              label="Students"
+              number={38}
+              onClick={() => handleUserGroupClick("Student")}
+            />
           </div>
           <div className="Dashboard__assignmentsWrapper">
             <h2 style={{ marginBottom: 0 }}>Assignments</h2>
@@ -141,7 +147,6 @@ const Dashboard: React.FC = () => {
               ))}
             </Table>
           </div>
-         
         </>
       )}
     </div>

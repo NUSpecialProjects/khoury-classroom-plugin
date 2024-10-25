@@ -39,19 +39,18 @@ const Settings: React.FC = () => {
     }
   };
 
-
   return (
     <div>
       <h1>Settings</h1>
-       <div>
-            {selectedSemester && !selectedSemester.active && (
-              <button onClick={handleActivateClick}>Activate Class</button>
-            )}
-            {selectedSemester && selectedSemester.active && (
-              <button onClick={handleDeactivateClick}>Deactivate Class</button>
-            )}
-          </div>
-          {error && <ErrorMessage message={error} />}
+      <div>
+        {selectedSemester && !selectedSemester.active && (
+          <button onClick={handleActivateClick}>Activate Class</button>
+        )}
+        {selectedSemester && selectedSemester.active && (
+          <button onClick={handleDeactivateClick}>Deactivate Class</button>
+        )}
+      </div>
+      {error && <ErrorMessage message={error} />}
     </div>
   );
 };

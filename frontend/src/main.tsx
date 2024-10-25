@@ -37,11 +37,9 @@ export default function App(): React.JSX.Element {
             <Route path="/app" element={<PrivateRoute />}>
               {/******* CLASS SELECTION: PRE-APP ACCESS STEP *******/}
 
-              
               <Route path="classroom">
                 <Route path="create" element={<Pages.SemesterCreation />} />
                 <Route path="select" element={<Pages.SemesterSelection />} />
-
               </Route>
 
               {/******* CLASS SELECTED: INNER APP *******/}
@@ -54,7 +52,10 @@ export default function App(): React.JSX.Element {
                 <Route path="token/create" element={<Pages.RoleCreation />} />
                 <Route path="students" element={<Pages.StudentListPage />} />
                 <Route path="tas" element={<Pages.TAListPage />} />
-                <Route path="professors" element={<Pages.ProfessorListPage />} />
+                <Route
+                  path="professors"
+                  element={<Pages.ProfessorListPage />}
+                />
                 <Route
                   path="grading/assignment/:assignmentId/student/:studentAssignmentId"
                   element={<Pages.Grader />}

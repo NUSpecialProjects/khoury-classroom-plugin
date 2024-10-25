@@ -13,13 +13,13 @@ export const sendLoginRequest = async (code: string): Promise<Response> => {
 };
 
 export const getCallbackURL = async (): Promise<string> => {
-    const response = await fetch(`${base_url}/callback`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-        "Content-Type": "application/json",
-        },
-    });
-    const data = await response.json();
-    return data.url;
+  const response = await fetch(`${base_url}/callback`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  return data.url;
 };
