@@ -15,3 +15,9 @@ variable "db_port" {
   type        = number
   default     = 5432
 }
+
+variable "aws_account_id" {
+  description = "AWS account ID"
+  type        = string
+  default     = "058264409130"
+}

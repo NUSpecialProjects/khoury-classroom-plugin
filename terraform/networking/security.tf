@@ -47,13 +47,13 @@ resource "aws_security_group" "rds_sg" {
   description = "Allow inbound access from ECS tasks"
   vpc_id      = aws_vpc.main.id
 
-  # Allow inbound traffic from the ECS tasks on the database port
+  # Allow inbound traffic from the ECS tasks and Lambda functions
   ingress {
     description     = "Allow inbound traffic from ECS tasks to RDS"
     protocol        = "tcp"
     from_port       = var.db_port
     to_port         = var.db_port
-    security_groups = [aws_security_group.ecs_tasks.id]
+    security_groups = [aws_security_group.ecs_tasks.id, aws_security_group.lambda_sg.id]
   }
 
   # Allow all outbound traffic
@@ -61,6 +61,19 @@ resource "aws_security_group" "rds_sg" {
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "lambda_sg" {
+  name        = "drop_db_sg"
+  description = "Security group for Lambda to access RDS"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = var.db_port
+    to_port     = var.db_port
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
