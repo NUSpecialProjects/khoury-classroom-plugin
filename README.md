@@ -33,20 +33,20 @@ frontend to backend code. Make an account for a stable link!
 
 ## Before Running
 
-Create an .env file in the root directory:
+Create an .env file in the backend directory:
 
 ```
 APP_ENVIRONMENT=<LOCAL | PRODUCTION> (use LOCAL if loading env variables through .env file)
-GITHUB_APP_PRIVATE_KEY=<Your GitHub app private key>
-GITHUB_APP_ID=<Your GitHub app ID>
-GITHUB_APP_INSTALLATION_ID=<Your GitHub app installation ID>
-GITHUB_APP_WEBHOOK_SECRET=<Your GitHub app's webhook secret>
-GITHUB_CLIENT_REDIRECT_URL=<The URL that GitHub should redirect back to>
-GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
-GITHUB_CLIENT_SECRET=<The client Secret of your GitHub OAuth app>
-GITHUB_CLIENT_URL=<The Authorization endpoint of your OAuth provider>
-GITHUB_CLIENT_TOKEN_URL=<The access token endpoint of your OAuth provider>
-GITHUB_CLIENT_JWT_SECRET=<The Json Web Token secret>
+APP_PRIVATE_KEY=<Your GitHub app private key>
+APP_ID=<Your GitHub app ID>
+APP_INSTALLATION_ID=<Your GitHub app installation ID>
+APP_WEBHOOK_SECRET=<Your GitHub app's webhook secret>
+CLIENT_REDIRECT_URL=<The URL that GitHub should redirect back to>
+CLIENT_ID=<The client ID of your GitHub OAuth app>
+CLIENT_SECRET=<The client Secret of your GitHub OAuth app>
+CLIENT_URL=<The Authorization endpoint of your OAuth provider>
+CLIENT_TOKEN_URL=<The access token endpoint of your OAuth provider>
+CLIENT_JWT_SECRET=<The Json Web Token secret>
 DATABASE_URL=<Your database URL>
 ```
 
@@ -56,8 +56,6 @@ Create a second .env file in the frontend root directory:
 VITE_PUBLIC_API_DOMAIN=<Your backend url>
 VITE_GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
 ```
-
-
 
 ## Running The Project in A Dev Environment
 
@@ -71,9 +69,8 @@ VITE_GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
 ## Running locally in dev mode without using Make (due to multi-line env variable issues):
 
 1. Launch Docker Desktop
-2. (On first run) In the repo root: run `docker-compose -f docker-compose.dev.yaml build`
-3. In the repo root: run `docker-compose -f docker-compose.dev.yaml up`
-4. In a new terminal: run `ngrok http --domain={<ngrok public url>} 8080`
-5. In a new terminal: run `cd frontend`
-6. (On first run) In the frontend directory: run `npm i`
-7. In the frontend directory: run `npm run dev`
+2. In the repo root: run `docker compose up --build`
+3. In a new terminal: run `ngrok http --domain={<ngrok public url>} 8080`
+4. In a new terminal: run `cd frontend`
+5. (On first run) In the frontend directory: run `npm i`
+6. In the frontend directory: run `npm run dev`

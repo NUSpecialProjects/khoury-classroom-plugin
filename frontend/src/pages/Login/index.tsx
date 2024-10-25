@@ -9,6 +9,8 @@ const Login: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
 
   const clientId: string = import.meta.env.VITE_GITHUB_CLIENT_ID as string;
+  const publicUrl: string = import.meta.env.BASE_URL as string;
+
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = useMemo(
@@ -33,7 +35,10 @@ const Login: React.FC = () => {
       <div className="LogoBar">
         <FiGithub className="Icon" />
         <FiX className="Icon" />
-        <img src="src/assets/icons/Northeastern_LVX.svg.png" className="Logo" />
+        <img
+          src={`${publicUrl}icons/Northeastern_LVX.svg.png`}
+          className="Logo"
+        />
       </div>
       <div className="LandingTitle">FonteMarks</div>
       <a
