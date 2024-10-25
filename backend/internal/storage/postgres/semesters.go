@@ -84,11 +84,11 @@ func (db *DB) DeleteSemester(ctx context.Context, classroomID int64) error {
 	return nil
 }
 
-func (db *DB) GetSemester(ctx context.Context, ClassroomID int64) (models.Semester, error) {
+func (db *DB) GetSemester(ctx context.Context, classroomID int64) (models.Semester, error) {
 	var semester models.Semester
 	err := db.connPool.QueryRow(ctx,
 		"SELECT org_id, classroom_id, org_name, classroom_name, active FROM semesters WHERE classroom_id = $1",
-		ClassroomID,
+		classroomID,
 	).Scan(
 		&semester.OrgID,
 		&semester.ClassroomID,
@@ -103,11 +103,11 @@ func (db *DB) GetSemester(ctx context.Context, ClassroomID int64) (models.Semest
 	return semester, nil
 }
 
-func (db *DB) DeactivateSemester(ctx context.Context, ClassroomID int64) (models.Semester, error) {
+func (db *DB) DeactivateSemester(ctx context.Context, classroomID int64) (models.Semester, error) {
 	var updatedSemester models.Semester
 	err := db.connPool.QueryRow(ctx,
 		"UPDATE semesters SET active = false WHERE classroom_id = $1 AND active = true RETURNING org_id, classroom_id, org_name, classroom_name, active",
-		ClassroomID,
+		classroomID,
 	).Scan(
 		&updatedSemester.OrgID,
 		&updatedSemester.ClassroomID,
@@ -122,13 +122,13 @@ func (db *DB) DeactivateSemester(ctx context.Context, ClassroomID int64) (models
 	return updatedSemester, nil
 }
 
-func (db *DB) ActivateSemester(ctx context.Context, ClassroomID int64) (models.Semester, error) {
+func (db *DB) ActivateSemester(ctx context.Context, classroomID int64) (models.Semester, error) {
 	var updatedSemester models.Semester
 	// check if no other semesters with the same org_id are active
 	var activeSemesterCount int
 	db.connPool.QueryRow(ctx,
 		"SELECT COUNT(*) FROM semesters WHERE org_id = (SELECT org_id FROM semesters WHERE classroom_id = $1) AND active = true",
-		ClassroomID,
+		classroomID,
 	).Scan(&activeSemesterCount)
 	if activeSemesterCount > 0 {
 		log.Default().Println("WARNING: failed to activate semester: another semester is already active")
@@ -137,7 +137,7 @@ func (db *DB) ActivateSemester(ctx context.Context, ClassroomID int64) (models.S
 
 	err := db.connPool.QueryRow(ctx,
 		"UPDATE semesters SET active = true WHERE classroom_id = $1 AND active = false RETURNING org_id, classroom_id, org_name, classroom_name, active",
-		ClassroomID,
+		classroomID,
 	).Scan(
 		&updatedSemester.OrgID,
 		&updatedSemester.ClassroomID,

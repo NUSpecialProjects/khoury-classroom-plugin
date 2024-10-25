@@ -1,12 +1,12 @@
-import useSelectedSemester from "@/contexts/useSelectedSemester";
-import React, { useState } from "react";
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import React, { useContext, useState } from "react";
 
 const TokenCreatePage: React.FC = () => {
     // const [createdToken, setCreatedToken] = useState<string | null>(null);
     const [message, setMessage] = useState<string>("");
     const [role_type, setRoleType] = useState<string>("Student");
 
-    const { selectedSemester } = useSelectedSemester();
+  const { selectedSemester } = useContext(SelectedSemesterContext);
 
     const handleCreateToken = async () => {
         try {
@@ -28,7 +28,7 @@ const TokenCreatePage: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 // setCreatedToken(data.token);
-                const url = "http://localhost:3000/token/apply?token=" + data.token;
+                const url = "http://localhost:3000/app/token/apply?token=" + data.token;
                 setMessage("Link created! " + url);
             } else {
                 setMessage("Failed to create token");

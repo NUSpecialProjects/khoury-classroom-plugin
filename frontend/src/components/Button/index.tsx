@@ -4,6 +4,7 @@ import "./styles.css";
 
 interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string;
+  variant?: "primary" | "secondary";
 }
 
 const ButtonWrapper: React.FC<IButtonProps> = ({ children, href }) => {
@@ -16,10 +17,15 @@ const ButtonWrapper: React.FC<IButtonProps> = ({ children, href }) => {
   );
 };
 
-const Button: React.FC<IButtonProps> = ({ children, href, onClick }) => {
+const Button: React.FC<IButtonProps> = ({
+  children,
+  href,
+  onClick,
+  variant,
+}) => {
   return (
     <ButtonWrapper href={href}>
-      <button className="Button" onClick={onClick}>
+      <button className={`Button ${variant}`} onClick={onClick}>
         {children}
       </button>
     </ButtonWrapper>

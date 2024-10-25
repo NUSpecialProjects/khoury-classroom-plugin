@@ -1,0 +1,95 @@
+diff --git a/lib/GridItem.jsx b/lib/GridItem.jsx
+index dbe41f9..f2e0cbb 100644
+--- a/lib/GridItem.jsx
++++ b/lib/GridItem.jsx
+@@ -60,7 +60,10 @@ type GridItemResizeCallback = (
+ type State = {
+   resizing: ?{ top: number, left: number, width: number, height: number },
+   dragging: ?{ top: number, left: number },
+-  className: string
++  className: string,
++  // We add this field to remember the position at start of dragging
++  widgetRectangleStart: ?Position,
++  handlePositionStart: ?{ x: number, y: number }
+ };
+ 
+ type Props = {
+@@ -442,7 +445,11 @@ export default class GridItem extends React.Component<Props, State> {
+    * @param  {Event}  e             event data
+    * @param  {Object} callbackData  an object with node, delta and position information
+    */
+-  onDragStart: (Event, ReactDraggableCallbackData) => void = (e, { node }) => {
++  // Extracting `lastX` and `lastY` from passed object (see longer comment below)
++  onDragStart: (Event, ReactDraggableCallbackData) => void = (
++    e,
++    { node, lastX, lastY }
++  ) => {
+     const { onDragStart, transformScale } = this.props;
+     if (!onDragStart) return;
+ 
+@@ -459,7 +466,12 @@ export default class GridItem extends React.Component<Props, State> {
+     const pTop = parentRect.top / transformScale;
+     newPosition.left = cLeft - pLeft + offsetParent.scrollLeft;
+     newPosition.top = cTop - pTop + offsetParent.scrollTop;
+-    this.setState({ dragging: newPosition });
++    this.setState({
++      dragging: newPosition,
++      // Remembering state at start of dragging
++      widgetRectangleStart: newPosition,
++      handlePositionStart: { x: lastX, y: lastY }
++    });
+ 
+     // Call callback with this data
+     const { x, y } = calcXY(
+@@ -484,7 +496,8 @@ export default class GridItem extends React.Component<Props, State> {
+    */
+   onDrag: (Event, ReactDraggableCallbackData) => void = (
+     e,
+-    { node, deltaX, deltaY }
++    // Extracting `lastX` and `lastY` from passed object rather than `deltaX` and `deltaY` (see longer comment below)
++    { node, lastX, lastY }
+   ) => {
+     const { onDrag } = this.props;
+     if (!onDrag) return;
+@@ -492,8 +505,18 @@ export default class GridItem extends React.Component<Props, State> {
+     if (!this.state.dragging) {
+       throw new Error("onDrag called before onDragStart.");
+     }
+-    let top = this.state.dragging.top + deltaY;
+-    let left = this.state.dragging.left + deltaX;
++    // In order to fix an issue where dragging does not correctly follow the mouse cursor, we use the `lastX` and
++    // `lastY` properties of the mouse event rather than the `deltaX` and `deltaY` properties.
++    //
++    // This approach is more robust because `lastX` and `lastY` are absolute values and will remain true even if some
++    // events get dropped, whereas calculating the resulting position with `deltaX` and `deltaY` in a cumulative way
++    // will accumulate errors if some events are skipped.
++    let top =
++      this.state.widgetRectangleStart.top +
++      (lastY - this.state.handlePositionStart.y);
++    let left =
++      this.state.widgetRectangleStart.left +
++      (lastX - this.state.handlePositionStart.x);
+ 
+     const { isBounded, i, w, h, containerWidth } = this.props;
+     const positionParams = this.getPositionParams();
+diff --git a/package.json b/package.json
+index 81f2c19..9edca89 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "react-grid-layout",
+-  "version": "1.4.4",
++  "version": "1.4.4-your-own",
+   "description": "A draggable and resizable grid layout with responsive breakpoints, for React.",
+   "main": "index.js",
+   "scripts": {
+@@ -41,7 +41,7 @@
+     "fast-equals": "^4.0.3",
+     "prop-types": "^15.8.1",
+     "react-draggable": "^4.4.5",
+-    "react-resizable": "^3.0.5",
++    "react-resizable": "3.0.5-your-own",
+     "resize-observer-polyfill": "^1.5.1"
+   },
+   "_dependencyNotes": {

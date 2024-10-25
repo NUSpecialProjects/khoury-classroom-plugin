@@ -1,0 +1,99 @@
+.Grader {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+
+    h2 {
+      margin-bottom: 6px;
+    }
+
+    span {
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+  }
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    .Button {
+      padding: 10px 38px;
+      gap: 10px;
+
+      &:first-child {
+        padding-left: 28px;
+      }
+      &:last-child {
+        padding-right: 28px;
+      }
+    }
+
+    > div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  &__body {
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    border-radius: 5px;
+  }
+  &__files {
+    height: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  &__file {
+    padding: 5px;
+    background: #eee;
+    cursor: pointer;
+    &:hover {
+      background: #ddd;
+    }
+  }
+  &__browser {
+    height: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: auto;
+    padding: 5px;
+    background: #1e1e1e;
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      overflow: auto;
+      width: 100%;
+      height: 100%;
+    }
+    code {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  }
+}
