@@ -159,7 +159,7 @@ const Assignment: React.FC = () => {
               <TableCell>Status</TableCell>
               <TableCell>Last Commit</TableCell>
             </TableRow>
-            {studentAssignments && studentAssignments.length > 0 ? (
+            {studentAssignments && studentAssignments.length > 0 &&
               studentAssignments.map((sa, i) => (
                 <TableRow key={i} className="Assignment__submission">
                   <TableCell>{sa.student_gh_username.join(", ")}</TableCell>
@@ -167,11 +167,8 @@ const Assignment: React.FC = () => {
                   <TableCell>12 Sep, 11:34pm</TableCell>
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3}>Fetching student assignments...</TableCell>
-              </TableRow>
-            )}
+            }
+            
           </Table>
         </>
       )}
