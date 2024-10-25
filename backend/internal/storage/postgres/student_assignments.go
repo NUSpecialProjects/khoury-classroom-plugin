@@ -105,7 +105,6 @@ func (db *DB) GetStudentAssignmentsByAssignmentID(ctx context.Context, assignmen
         return nil, err
     }
 
-    fmt.Println(rows.RawValues())
 
     defer rows.Close()
     student_assignments_without_students, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentAssignment])
@@ -120,8 +119,6 @@ func (db *DB) GetStudentAssignmentsByAssignmentID(ctx context.Context, assignmen
             fmt.Println("Could not get student(s)")
             return nil, err
         }
-
-        fmt.Println("Students: ", students)
 
         var sa_ws models.StudentAssignmentWithStudents
         sa_ws.ID = sa.ID

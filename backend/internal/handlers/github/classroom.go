@@ -108,7 +108,6 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 	}
 
 	// get list of student assignments currently in the db under this assignment
-    fmt.Println("AID: ", syncData.AssignmentID)
 	studentAssmnts, err := service.store.GetStudentAssignmentsByAssignmentID(c.Context(), syncData.AssignmentID)
 	if err != nil {
         fmt.Println("SyncStudentAssignments - Could not get: ", err)
@@ -121,13 +120,10 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
         var inDB = false
         ghStudents := ParseStudentsOutOfGHUsers(assignment.Students)
 
-
         // check every student assnment in our db
         for _, studentA := range studentAssmnts {
             var noMatch = false
             students, err := service.store.GetStudentAssignmentGroup(c.Context(), studentA.ID)
-            fmt.Println("Students in group: ", students)
-
 
             if err != nil {
                 fmt.Println("SyncStudentAssignments - Could not find group", err)
@@ -169,14 +165,8 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
             if err != nil {
                 fmt.Println("Error creating student assignment: ", err)
             }
-
         }
-
-
 	}
-
-
-	// store any student assignments that aren't already in the db
 
 	return nil
 }

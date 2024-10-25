@@ -83,8 +83,7 @@ const Assignment: React.FC = () => {
         }
 
         const data: IStudentAssignment[] = (await result.json())
-        setStudentAssignment(data)
-        console.log(data[0].student_gh_username)
+        setStudentAssignment(data) 
 
       } catch (error: unknown) {
         console.log("Bad fetch, ", error)
@@ -96,7 +95,7 @@ const Assignment: React.FC = () => {
     if (location.state) {
       setAssignment(location.state.assignment)
       const a: IAssignment = location.state.assignment
-      console.log(a.assignment_classroom_id)
+
       // sync student assignments
       if (selectedSemester !== null && selectedSemester !== undefined) {
         SyncStudentAssignments(selectedSemester, a).then(() => {
@@ -104,7 +103,6 @@ const Assignment: React.FC = () => {
           fetchStudentAssignments(selectedSemester.classroom_id, a.assignment_classroom_id)
             .catch((error: unknown) => { console.log("Error fetching: ", error) })
 
-          console.log(studentAssignments)
         }).catch((error: unknown) => {
           console.error("Error syncing: ", error)
         })
@@ -171,7 +169,7 @@ const Assignment: React.FC = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3}>No student assignments available</TableCell>
+                <TableCell colSpan={3}>Fetching student assignments...</TableCell>
               </TableRow>
             )}
           </Table>
