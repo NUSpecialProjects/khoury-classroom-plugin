@@ -1,12 +1,10 @@
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import AlertBanner from "@/components/Banner/AlertBanner";
-import { activateSemester, deactivateSemester } from "@/api/semesters";
 import { useEffect, useState, useContext } from "react";
-import ErrorMessage from "@/components/Error";
 import { getAssignments } from "@/api/assignments";
 
 const Dashboard: React.FC = () => {
@@ -14,7 +12,8 @@ const Dashboard: React.FC = () => {
   const { selectedSemester, setSelectedSemester } = useContext(
     SelectedSemesterContext
   );
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "short",
@@ -26,39 +25,6 @@ const Dashboard: React.FC = () => {
     timeZoneName: "short",
   };
 
-  const handleActivate = async (newSemester: ISemester) => {
-    setSelectedSemester(newSemester);
-  };
-
-  const handleActivateClick = async () => {
-    if (selectedSemester) {
-      try {
-        const newSemester = await activateSemester(
-          selectedSemester.classroom_id
-        );
-        handleActivate(newSemester);
-        setError(null);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to activate the class. Please try again.");
-      }
-    }
-  };
-
-  const handleDeactivateClick = async () => {
-    if (selectedSemester) {
-      try {
-        const newSemester = await deactivateSemester(
-          selectedSemester.classroom_id
-        );
-        handleActivate(newSemester);
-        setError(null);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to deactivate the class. Please try again.");
-      }
-    }
-  };
 
   useEffect(() => {
     const fetchAssignments = async (semester: ISemester) => {
@@ -107,6 +73,19 @@ const Dashboard: React.FC = () => {
     }
   }, [selectedSemester]);
 
+  const handleUserGroupClick = (group: string) => {
+    console.log(`Clicked on ${group}`);
+    if (group === "Professor") {
+      navigate("/app/professors");
+    }
+    if (group === "TA") {
+      navigate("/app/tas");
+    }
+    if (group === "Student") {
+      navigate("/app/students");
+    }
+};
+
   return (
     <div className="Dashboard">
       {selectedSemester && (
@@ -118,16 +97,18 @@ const Dashboard: React.FC = () => {
           </h1>
           <AlertBanner
             semester={selectedSemester}
-            onActivate={handleActivate}
+            onActivate={setSelectedSemester}
           />
-          <Link to="/app/token/create"> Create Token</Link>
-
-          {/* <Link to="/app/token/apply"> </Link> */}
-
           <div className="Dashboard__classroomDetailsWrapper">
-            <UserGroupCard label="Professors" number={1} />
-            <UserGroupCard label="TAs" number={12} />
-            <UserGroupCard label="Students" number={38} />
+  
+    <UserGroupCard label="Professors" number={1} onClick={() => handleUserGroupClick("Professor")}/>
+
+
+    <UserGroupCard label="TAs" number={12} onClick={() => handleUserGroupClick("TA")}/>
+
+
+    <UserGroupCard label="Students" number={38} onClick={() => handleUserGroupClick("Student")}/>
+
           </div>
           <div className="Dashboard__assignmentsWrapper">
             <h2 style={{ marginBottom: 0 }}>Assignments</h2>
@@ -160,16 +141,7 @@ const Dashboard: React.FC = () => {
               ))}
             </Table>
           </div>
-          <div>
-            <p>Temporary Classroom Settings</p>
-            {selectedSemester && !selectedSemester.active && (
-              <button onClick={handleActivateClick}>Activate Class</button>
-            )}
-            {selectedSemester && selectedSemester.active && (
-              <button onClick={handleDeactivateClick}>Deactivate Class</button>
-            )}
-          </div>
-          {error && <ErrorMessage message={error} />}
+         
         </>
       )}
     </div>

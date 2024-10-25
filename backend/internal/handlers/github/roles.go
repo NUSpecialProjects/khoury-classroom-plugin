@@ -124,7 +124,7 @@ func (service *GitHubService) UseRoleToken() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
-		//TODO: check org membership, if not part of the org, invite them to join
+		//TODO: check org membership, if not part of the org, tell them so
 		//TODO: pending invitation case as well
 
 		var requestBody struct {

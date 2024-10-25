@@ -4,9 +4,10 @@ import "./styles.css";
 interface IUserGroupCardProps {
   label: string;
   number: number;
+  onClick?: () => void;
 }
 
-const UserGroupCard: React.FC<IUserGroupCardProps> = ({ label, number }) => {
+const UserGroupCard: React.FC<IUserGroupCardProps> = ({ label, number, onClick }) => {
   let userIcons = [];
 
   if (number > 3) {
@@ -28,7 +29,7 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({ label, number }) => {
   }
 
   return (
-    <div className="UserGroupCard">
+    <div className="UserGroupCard" onClick={() => onClick && onClick()}>
       <div className="UserGroupCard__content">
         <h3 className="UserGroupCard__label">{label}</h3>
         <div className="UserGroupCard__detailsWrapper">
