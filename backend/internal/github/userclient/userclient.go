@@ -139,7 +139,7 @@ func (api *UserAPI) ListAssignmentsForClassroom(ctx context.Context, classroom_i
 	// Create a new GET request
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
 	if err != nil {
-    fmt.Println("ListAssignmentForCls - could not create a request", err)
+		fmt.Println("ListAssignmentForCls - could not create a request", err)
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
@@ -149,7 +149,7 @@ func (api *UserAPI) ListAssignmentsForClassroom(ctx context.Context, classroom_i
 	// Make the API call
 	_, err = api.Client.Do(ctx, req, &assignments)
 	if err != nil {
-    fmt.Println("ListAssignmentForCls - could not make api call", err)
+		fmt.Println("ListAssignmentForCls - could not make api call", err)
 		return nil, fmt.Errorf("error fetching assignments: %v", err)
 	}
 
