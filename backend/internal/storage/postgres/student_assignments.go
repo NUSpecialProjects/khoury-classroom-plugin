@@ -98,7 +98,7 @@ func (db *DB) GetStudentAssignmentByLocalID(ctx context.Context, classroomID int
     
 func (db *DB) GetStudentAssignmentsByAssignmentID(ctx context.Context, assignment_id int64) ([]models.StudentAssignmentWithStudents, error) {
     rows, err := db.connPool.Query(ctx, 
-        "SELECT sa.* FROM student_assignments sa JOIN assignments a ON sa.assignment_id = a.assignment_classroom_id WHERE a.assignment_classroom_id = $1",
+        "SELECT * FROM student_assignments WHERE assignment_id = $1",
         assignment_id)
     if err != nil {
         fmt.Println("Error getting student assignments by assignment: ", err)
