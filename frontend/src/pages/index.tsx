@@ -13,6 +13,7 @@ import RoleCreation from "./Role/Create";
 import RoleApply from "./Role/Apply";
 import StudentListPage from "./Users/Student";
 import TAListPage from "./Users/TeachingAssistant";
+import ProfessorListPage from "./Users/Professor";
 
 export {
   PageNotFound,
@@ -30,4 +31,5 @@ export {
   RoleApply,
   StudentListPage,
   TAListPage,
+  ProfessorListPage,
 };

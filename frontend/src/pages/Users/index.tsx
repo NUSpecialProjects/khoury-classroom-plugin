@@ -12,7 +12,8 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({role_type}: GenericRol
         <div>
             <h1>Create Role Token</h1>
             <div>
-                <p>Users with role: {role_type} in org: {selectedSemester?.org_id}</p>
+                <p>Users with role [{role_type}] in org [{selectedSemester?.org_id}]</p>
+                <p>(actually put the list here)</p>
             </div>
         </div>
     );
