@@ -108,6 +108,7 @@ func (service *GitHubService) SyncStudentAssignments(c *fiber.Ctx) error {
 	}
 
 	// get list of student assignments currently in the db under this assignment
+    fmt.Println("AID: ", syncData.AssignmentID)
 	studentAssmnts, err := service.store.GetStudentAssignmentsByAssignmentID(c.Context(), syncData.AssignmentID)
 	if err != nil {
         fmt.Println("SyncStudentAssignments - Could not get: ", err)

@@ -138,7 +138,7 @@ func (db *DB) GetStudentAssignmentsByAssignmentID(ctx context.Context, assignmen
 
 func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]string, error) {
     rows, err := db.connPool.Query(ctx,
-        "SELECT s.github_username FROM student_to_student_assignment s JOIN student_assignments sa ON s.student_assignment_id = sa.id WHERE sa.id = $1",
+        "SELECT github_username FROM student_to_student_assignment WHERE student_assignment_id = $1",
         saID)
     if err != nil {
         fmt.Println("Error getting student assignment group")
@@ -146,7 +146,7 @@ func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]stri
     }
 
     var studentUsernames []string
-    _, error := pgx.ForEachRow(rows, []any{}, func() error {
+    /*_, error := pgx.ForEachRow(rows, []any{}, func() error {
         var ghUsername string
         var saID int 
 
@@ -157,10 +157,16 @@ func (db *DB) GetStudentAssignmentGroup(ctx context.Context, saID int32) ([]stri
         }
         studentUsernames = append(studentUsernames, ghUsername)
         return nil
-    })
+    })*/
 
-    if error != nil {
-        return nil, error
+    for rows.Next() {
+        var ghUsername string
+        // Scan the single column from each row into ghUsername
+        if err := rows.Scan(&ghUsername); err != nil {
+            fmt.Println("Error getting data from row")
+            return nil, err
+        }
+        studentUsernames = append(studentUsernames, ghUsername)
     }
 
     return studentUsernames, nil

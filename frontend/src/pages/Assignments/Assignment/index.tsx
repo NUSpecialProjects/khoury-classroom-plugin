@@ -96,6 +96,7 @@ const Assignment: React.FC = () => {
     if (location.state) {
       setAssignment(location.state.assignment)
       const a: IAssignment = location.state.assignment
+      console.log(a.assignment_classroom_id)
       // sync student assignments
       if (selectedSemester !== null && selectedSemester !== undefined) {
         SyncStudentAssignments(selectedSemester, a).then(() => {

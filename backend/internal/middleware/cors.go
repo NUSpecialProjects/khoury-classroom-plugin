@@ -9,6 +9,7 @@ import (
 
 func Cors() fiber.Handler {
 	allowedOrigins := "https://gitmarks.org"
+
 	if os.Getenv("APP_ENVIRONMENT") == "LOCAL" {
 		allowedOrigins = "http://localhost:3000"
 	}
@@ -19,4 +20,5 @@ func Cors() fiber.Handler {
 		AllowHeaders:     "Origin, Content-Type, Authorization, Accept, Set-Cookie",
 		AllowCredentials: true,
 	})
+
 }
