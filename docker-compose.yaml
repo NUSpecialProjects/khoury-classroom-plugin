@@ -3,17 +3,18 @@ services:
     container_name: backend
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod
-      target: final
+      dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
     env_file:
-      - .env
+      - backend/.env
     environment:
-      - APP_ENVIRONMENT=production
+      - APP_ENVIRONMENT=LOCAL
+    volumes:
+      - ./backend:/app
   db:
     container_name: db
     image: postgres:14.1-alpine
