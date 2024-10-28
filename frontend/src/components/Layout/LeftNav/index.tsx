@@ -1,7 +1,8 @@
 import { FaTachometerAlt } from "react-icons/fa";
 import { MdFactCheck, MdEditDocument } from "react-icons/md";
 import { NavLink } from "react-router-dom";
-
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { useContext } from "react";
 import "./styles.css";
 
 const LeftNav: React.FC = () => {
@@ -11,7 +12,9 @@ const LeftNav: React.FC = () => {
     { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
   ];
 
-  const className = "CS 3200 Database Design";
+  const { selectedSemester } = useContext(
+    SelectedSemesterContext
+  );
 
   return (
     <div className="LeftNav">
@@ -51,7 +54,9 @@ const LeftNav: React.FC = () => {
           />
         </svg>
       </div>
-      <h3 className="LeftNav__classNameHeader">{className}</h3>
+      <h3 className="LeftNav__classNameHeader">
+        {selectedSemester?.org_name + " - " + selectedSemester?.classroom_name || "No semester selected"}
+      </h3>
       <div className="LeftNav__navBar">
         {navItems.map((item, index) => (
           <NavLink
