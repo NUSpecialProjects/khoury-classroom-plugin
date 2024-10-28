@@ -8,13 +8,20 @@ import (
 
 func (s *GradingService) CreatePRComment(c *fiber.Ctx) error {
 	var requestBody struct {
-		OrgID int64 `json:"org_id"`
+		CommitSha string `json:"commit_sha"`
+		FilePath  string `json:"file_path"`
+		Line      int64  `json:"line"`
+		Comment   string `json:"comment"`
 	}
 	if err := c.BodyParser(&requestBody); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
 	}
-	//org_id := requestBody.OrgID
 
-	return c.Status(http.StatusOK).JSON("")
+	cmt, err := s.githubappclient.CreateLinePRComment(c.Context(), c.Params("orgName"), c.Params("repoName"), requestBody.CommitSha, requestBody.FilePath, requestBody.Line, requestBody.Comment)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(cmt)
 
 }

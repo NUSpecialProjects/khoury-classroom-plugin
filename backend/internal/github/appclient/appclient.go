@@ -91,27 +91,27 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-func (api *AppAPI) GetGitTree(owner string, repo string) ([]github.TreeEntry, error) {
+func (api *AppAPI) GetGitTree(owner string, repo string) (*string, []github.TreeEntry, error) {
 	// Get the reference to the branch
 	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
 	if err != nil {
-		return nil, fmt.Errorf("error fetching branch ref: %v", err)
+		return nil, nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
 
 	// Get the commit from the ref
-	commitSHA := ref.Object.GetSHA()
-	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSHA)
+	commitSha := ref.Object.GetSHA()
+	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSha)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching commit: %v", err)
+		return nil, nil, fmt.Errorf("error fetching commit: %v", err)
 	}
 
 	treeSHA := commit.Tree.GetSHA()
 	tree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching tree: %v", err)
+		return nil, nil, fmt.Errorf("error fetching tree: %v", err)
 	}
 
-	return tree.Entries, nil
+	return &commitSha, tree.Entries, nil
 }
 
 func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, error) {

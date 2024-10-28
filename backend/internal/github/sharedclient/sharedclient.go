@@ -92,47 +92,17 @@ func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo 
 	return pr, nil
 }
 
-// func (api *CommonAPI) CreateInlinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, line int, side string, commentBody string) (*github.PullRequestComment, error) {
-// 	newComment := &github.PullRequestComment{
-// 		CommitID: github.String(commitID),
-// 		Path:     github.String(path),
-// 		Body:     github.String(commentBody),
-// 		Side:     github.String(side),
-// 		Line:     github.Int(line),
-// 	}
-
-// 	cmt, _, err := api.Client.PullRequests.CreateComment(ctx, owner, repo, pullNumber, newComment)
-
-// 	return cmt, err
-// }
-
-// func (api *CommonAPI) CreateMultilinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, startLine int, endLine int, side string, commentBody string) (*github.PullRequestComment, error) {
-// 	newComment := &github.PullRequestComment{
-// 		CommitID:  github.String(commitID),
-// 		Path:      github.String(path),
-// 		Body:      github.String(commentBody),
-// 		StartSide: github.String(side),
-// 		Side:      github.String(side),
-// 		StartLine: github.Int(startLine),
-// 		Line:      github.Int(endLine),
-// 	}
-
-// 	cmt, _, err := api.Client.PullRequests.CreateComment(ctx, owner, repo, pullNumber, newComment)
-
-// 	return cmt, err
-// }
-
-func (api *CommonAPI) CreateFilePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, commentBody string) (*github.PullRequestComment, error) {
+/*func (api *CommonAPI) CreateFilePRComment(ctx context.Context, owner string, repo string, commitSha string, filePath string, comment string) (*github.PullRequestComment, error) {
 	// Construct the request payload
 	newComment := map[string]interface{}{
-		"body":         commentBody,
-		"commit_id":    commitID,
-		"path":         path,
+		"body":         comment,
+		"commit_id":    commitSha,
+		"path":         filePath,
 		"subject_type": "file",
 	}
 
 	// Create a new request
-	req, err := api.Client.NewRequest("POST", fmt.Sprintf("/repos/%s/%s/pulls/%d/comments", owner, repo, pullNumber), newComment)
+	req, err := api.Client.NewRequest("POST", fmt.Sprintf("/repos/%s/%s/pulls/1/comments", owner, repo), newComment)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -147,14 +117,35 @@ func (api *CommonAPI) CreateFilePRComment(ctx context.Context, owner string, rep
 	}
 
 	return &cmt, nil
-}
+}*/
 
-func (api *CommonAPI) CreateRegularPRComment(ctx context.Context, owner string, repo string, pullNumber int, commentBody string) (*github.IssueComment, error) {
-	newComment := &github.IssueComment{
-		Body: github.String(commentBody),
+func (api *CommonAPI) CreateLinePRComment(ctx context.Context, owner string, repo string, commitSha string, filePath string, line int64, comment string) (*github.PullRequestComment, error) {
+	// Construct the URL for the PR comment endpoint
+	// potential flaw: hardcoding PR # as 1? in case student closes or merges the feedback branch PR and has to make a new one?
+	// can maybe circumvent by disallowing students from taking any action on the feedback branch PR thru org/repo rules
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/1/comments", owner, repo)
+
+	// Create a new POST request
+	body := map[string]interface{}{
+		"body":      comment,
+		"commit_id": commitSha,
+		"path":      filePath,
+		"line":      line,
 	}
 
-	cmt, _, err := api.Client.Issues.CreateComment(ctx, owner, repo, pullNumber, newComment)
+	req, err := api.Client.NewRequest("POST", endpoint, body)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
 
-	return cmt, err
+	// Response container
+	var cmt github.PullRequestComment
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &cmt)
+	if err != nil {
+		return nil, fmt.Errorf("error creating PR comment: %v", err)
+	}
+
+	return &cmt, nil
 }
