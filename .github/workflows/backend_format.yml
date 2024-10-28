@@ -1,0 +1,33 @@
+name: Go Format Check
+
+on:
+  push:
+    branches:
+      - feature/backend-fmt
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+
+      - name: Run gofmt
+        run: |
+          files=$(gofmt -l .)
+          if [ -n "$files" ]; then
+            echo "The following files require formatting:"
+            echo "$files"
+            exit 1
+          else
+            echo "All files are properly formatted."
+          fi
