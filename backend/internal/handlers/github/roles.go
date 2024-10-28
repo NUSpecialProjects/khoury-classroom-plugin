@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/core"
@@ -39,23 +40,32 @@ func (service *GitHubService) GetUsersAssignedToRole() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
-		var requestBody struct {
-			RoleType string `json:"role_type"`
-			Semester models.Semester
+		roleType := c.Params("role_type")
+
+		if roleType == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "role type not provided"})
 		}
 
-		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+		classroomId, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid classroom id"})
 		}
 
-		role_template := core.Role_Map[requestBody.RoleType]
+		semester, err := service.store.GetSemesterByClassroomID(c.Context(), classroomId)
+
+		if err != nil {
+			return c.Status(404).JSON(fiber.Map{"error": "semester not found"})
+		}
+
+		role_template := core.Role_Map[roleType]
 		if role_template.Name == "" {
 			return c.Status(400).JSON(fiber.Map{"error": "invalid role type"})
 		}
 
-		role_name := core.GenerateRoleName(requestBody.Semester, role_template)
+		role_name := core.GenerateRoleName(semester, role_template)
 
-		users, err := client.GetUsersAssignedToRole(c.Context(), requestBody.Semester, role_name)
+		users, err := client.GetUsersAssignedToRole(c.Context(), semester, role_name)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch users"})
 		}

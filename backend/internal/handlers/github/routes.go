@@ -49,5 +49,7 @@ func Routes(app *fiber.App, params types.Params) {
 
 	protected.Post("/role-token/use", service.UseRoleToken())
 
+	protected.Get("/semesters/:classroom_id/roles/:role_type/users", service.GetUsersAssignedToRole())
+
 	app.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
 }
