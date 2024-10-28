@@ -16,12 +16,8 @@ import {
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
-import {
-  getStudentAssignment,
-  getGitTree,
-  getGitBlob,
-  getTotalStudentAssignments,
-} from "@/api/student_assignments";
+import { getStudentAssignment } from "@/api/student_assignments";
+import { getGitTree, getGitBlob } from "@/api/grading";
 
 import "./styles.css";
 
