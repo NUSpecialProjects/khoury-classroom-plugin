@@ -16,8 +16,8 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
   return response.json()
 };
 
-export const fetchUsersWithRole = async (role_type: string): Promise<IGitHubUser[]> => {
-    const response = await fetch(`${base_url}/github/users/${role_type}`, {
+export const fetchUsersWithRole = async (role_type: string, semester: ISemester): Promise<IGitHubUser[]> => {
+    const response = await fetch(`${base_url}/github/semesters/${semester.classroom_id.toString()}/roles/${role_type}/users`, {
         method: "GET",
         credentials: "include",
         headers: {

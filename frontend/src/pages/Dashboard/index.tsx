@@ -100,19 +100,22 @@ const Dashboard: React.FC = () => {
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
-              number={1}
+              role_type="Professor"
+              semester={selectedSemester}
               onClick={() => handleUserGroupClick("Professor")}
             />
 
             <UserGroupCard
               label="TAs"
-              number={12}
+              role_type="TA"
+              semester={selectedSemester}
               onClick={() => handleUserGroupClick("TA")}
             />
 
             <UserGroupCard
               label="Students"
-              number={38}
+              role_type="Student"
+              semester={selectedSemester}
               onClick={() => handleUserGroupClick("Student")}
             />
           </div>
