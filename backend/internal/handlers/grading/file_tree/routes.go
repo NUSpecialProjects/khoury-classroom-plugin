@@ -8,7 +8,6 @@ import (
 func Routes(router fiber.Router, params types.Params) {
 	service := newFileService(params.Store, params.GitHubApp)
 
-	protected := router.Group("/file-tree")
-	protected.Get("/org/:orgName/repo/:repoName", service.GetGitTree)
-	protected.Get("/org/:orgName/repo/:repoName/blob/:sha", service.GetGitBlob)
+	router.Get("/tree", service.GetGitTree)
+	router.Get("/blob/:sha", service.GetGitBlob)
 }

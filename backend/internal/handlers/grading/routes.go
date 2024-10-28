@@ -7,9 +7,10 @@ import (
 )
 
 func Routes(app *fiber.App, params types.Params) {
-	//service := newGradingService(params.Store, params.GitHubApp)
+	service := newGradingService(params.Store, params.GitHubApp)
 
 	protected := app.Group("/grading")
-
-	file_tree.Routes(protected, params)
+	specific := protected.Group("/org/:orgName/repo/:repoName")
+	specific.Post("/comment", service.CreatePRComment)
+	file_tree.Routes(specific, params)
 }

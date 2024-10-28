@@ -17,7 +17,7 @@ import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import { getStudentAssignment } from "@/api/student_assignments";
-import { getGitTree, getGitBlob } from "@/api/grading";
+import { getGitTree, getGitBlob, createPRComment } from "@/api/grading";
 
 import "./styles.css";
 
@@ -31,7 +31,7 @@ const Grader: React.FC = () => {
   // states
   const [studentAssignment, setStudentAssignment] =
     useState<IStudentAssignment | null>(null);
-  const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
+  const [gitTree, setGitTree] = useState<IGitTree | null>(null);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
@@ -125,6 +125,21 @@ const Grader: React.FC = () => {
       });
   };
 
+  const submitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedSemester || !studentAssignment || !gitTree) return;
+    const data = new FormData(e.target as HTMLFormElement);
+    createPRComment(
+      selectedSemester.org_name,
+      studentAssignment.repo_name,
+      gitTree.commitSha,
+      "README.md",
+      Number(data.get("line")),
+      String(data.get("comment"))
+    );
+  };
+
   return (
     <div className="Grader">
       <div className="Grader__head">
@@ -149,28 +164,39 @@ const Grader: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="Grader__body">
-        <FileTree
-          className="Grader__files"
-          gitTree={gitTree}
-          selectFileCallback={openFile}
-        />
-        <div className="Grader__browser">
-          <pre className={currentFile ? "line-numbers" : "language-undefined"}>
-            <code
-              className={
-                currentFile
-                  ? "line-numbers language-" +
-                    ext2lang[extractExtension(currentFile.name)]
-                  : "language-undefined"
-              }
+      {gitTree && (
+        <div className="Grader__body">
+          <FileTree
+            className="Grader__files"
+            gitTree={gitTree.tree}
+            selectFileCallback={openFile}
+          />
+          <div className="Grader__browser">
+            <pre
+              className={currentFile ? "line-numbers" : "language-undefined"}
             >
-              {currentFile
-                ? currentFile.content
-                : "Select a file to view its contents."}
-            </code>
-          </pre>
+              <code
+                className={
+                  currentFile
+                    ? "line-numbers language-" +
+                      ext2lang[extractExtension(currentFile.name)]
+                    : "language-undefined"
+                }
+              >
+                {currentFile
+                  ? currentFile.content
+                  : "Select a file to view its contents."}
+              </code>
+            </pre>
+          </div>
         </div>
+      )}
+      <div>
+        <form onSubmit={submitComment}>
+          <input type="number" name="line" placeholder="line number" />
+          <input type="text" name="comment" placeholder="comment" />
+          <button type="submit">submit comment</button>
+        </form>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ type GitHubAppClient interface { // All methods in the app client
 	GitHubBaseClient
 	GetWebhookSecret() string
 	ListInstallations(ctx context.Context) ([]*github.Installation, error)
-	GetGitTree(owner string, repo string) ([]github.TreeEntry, error)
+	GetGitTree(owner string, repo string) (*string, []github.TreeEntry, error)
 	GetGitBlob(owner string, repo string, sha string) ([]byte, error)
 }
 
@@ -47,9 +47,7 @@ type GitHubBaseClient interface { //All methods in the shared client
 	GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error)
 	GetPullRequestDiff(ctx context.Context, owner string, repo string, pullNumber int) (string, error)
 	CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error)
-	//TODO: these two methods need to be fixed with API change
-	// CreateInlinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, line int, side string, commentBody string) (*github.PullRequestComment, error)
-	// CreateMultilinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, startLine int, endLine int, side string, commentBody string) (*github.PullRequestComment, error)
-	CreateFilePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, commentBody string) (*github.PullRequestComment, error)
-	CreateRegularPRComment(ctx context.Context, owner string, repo string, pullNumber int, commentBody string) (*github.IssueComment, error)
+	// temp unused
+	// CreateFilePRComment(ctx context.Context, owner string, repo string, commitSha string, filePath string, comment string) (*github.PullRequestComment, error)
+	CreateLinePRComment(ctx context.Context, owner string, repo string, commitSha string, filePath string, line int64, comment string) (*github.PullRequestComment, error)
 }
