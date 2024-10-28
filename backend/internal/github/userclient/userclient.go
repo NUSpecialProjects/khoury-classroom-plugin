@@ -468,3 +468,34 @@ func getNextPageURL(linkHeader string) string {
 	}
 	return ""
 }
+
+func (api *UserAPI) CreatePRComment(ctx context.Context, owner string, repo string, commit_sha string, file_path string, line int64, comment string) error {
+	// Construct the URL for the PR comment endpoint
+	// potential flaw: hardcoding PR # as 1? in case student closes or merges the feedback branch PR and has to make a new one?
+	// can maybe circumvent by disallowing students from taking any action on the feedback branch PR thru org/repo rules
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/1/comments", owner, repo)
+
+	// Create a new POST request
+	body := map[string]interface{}{
+		"body":      comment,
+		"commit_id": commit_sha,
+		"path":      file_path,
+		"line":      line,
+	}
+
+	req, err := api.Client.NewRequest("POST", endpoint, body)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container
+	var orgs []models.Organization
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &orgs)
+	if err != nil {
+		return fmt.Errorf("error creating PR comment: %v", err)
+	}
+
+	return nil
+}
