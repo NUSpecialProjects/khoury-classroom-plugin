@@ -195,6 +195,19 @@ func (api *CommonAPI) AssignPermissionToTeam(ctx context.Context, team_id int64,
 	return nil
 }
 
+func (api *CommonAPI) AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error {
+	opt := &github.RepositoryAddCollaboratorOptions{
+		Permission: permission,
+	}
+
+	_, err := api.Client.Repositories.AddCollaborator(ctx, ownerName, repoName, userName, opt)
+	if err != nil {
+		return fmt.Errorf("error assigning permission to user: %v", err)
+	}
+
+	return nil
+}
+
 func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
 	// Construct the URL for the list assignments endpoint
 	endpoint := "/user/orgs"
