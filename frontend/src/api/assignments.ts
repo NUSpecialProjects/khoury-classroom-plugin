@@ -18,12 +18,5 @@ export const getAssignments = async (
     throw new Error("Network response was not ok");
   }
 
-  const data: IAssignment[] = (await result.json()) as IAssignment[];
-  const formatted = data.map((assignment: IAssignment) => ({
-    ...assignment,
-    main_due_date: assignment.main_due_date
-      ? new Date(assignment.main_due_date)
-      : null,
-  }));
-  return formatted;
+  return (await result.json()) as IAssignment[];
 };

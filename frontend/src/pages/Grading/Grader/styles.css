@@ -13,14 +13,18 @@
   }
   &__title {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 10px;
     font-size: 1.2rem;
 
+    > a {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
     h2 {
       margin-bottom: 6px;
     }
-
     span {
       display: block;
       margin-bottom: 0.75rem;
