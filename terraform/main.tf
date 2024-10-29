@@ -8,17 +8,23 @@ module "networking" {
 
 module "database" {
   source         = "./database"
-  db_port        = var.db_port
-  rds_sg_id      = module.networking.rds_sg_id
-  db_subnet_name = module.networking.db_subnet_name
-  private_subnet_ids = module.networking.private_subnet_ids
   aws_account_id = var.aws_account_id
+  db_port        = var.db_port
+
+  db_subnet_name     = module.networking.db_subnet_name
+  private_subnet_ids = module.networking.private_subnet_ids
+
   lambda_sg_id = module.networking.lambda_sg_id
+  rds_sg_id    = module.networking.rds_sg_id
+
+  ecs_cluster_name = var.ecs_cluster_name
+  ecs_service_name = var.ecs_service_name
 }
 
 module "frontend" {
-  source      = "./frontend"
-  domain_name = var.domain_name
+  source         = "./frontend"
+  domain_name    = var.domain_name
+  aws_account_id = var.aws_account_id
 
   providers = {
     aws      = aws
@@ -35,8 +41,12 @@ module "backend" {
   lb_sg_id        = module.networking.lb_sg_id
   ecs_tasks_sg_id = module.networking.ecs_tasks_sg_id
 
-  app_secrets = module.database.app_secrets
-  app_port    = var.app_port
-  domain_name = var.domain_name
+  db_vars        = module.database.db_vars
+  app_port       = var.app_port
+  domain_name    = var.domain_name
   aws_account_id = var.aws_account_id
+
+  ecs_cluster_name = var.ecs_cluster_name
+  ecs_service_name = var.ecs_service_name
+  ecr_repo_name    = var.ecr_repo_name
 }

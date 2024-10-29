@@ -43,6 +43,14 @@ resource "aws_iam_policy" "lambda_policy" {
           "ec2:DeleteNetworkInterface"
         ],
         Resource = "*"
+      },
+      # Permissions for ECS UpdateService
+      {
+        Effect = "Allow",
+        Action = [
+          "ecs:UpdateService"
+        ],
+        Resource = "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:service/*"
       }
     ]
   })
