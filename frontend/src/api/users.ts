@@ -20,6 +20,12 @@ export const fetchUsersWithRole = async (
   role_type: string,
   semester: ISemester
 ): Promise<IGitHubUser[]> => {
+  console.log(
+    "Using mocked API call for role: ",
+    role_type,
+    "semester: ",
+    semester
+  );
   return Promise.resolve([
     {
       login: "user1",

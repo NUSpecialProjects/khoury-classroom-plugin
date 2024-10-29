@@ -30,6 +30,7 @@ const Dashboard: React.FC = () => {
 
     const SyncWithClassroom = async (semester: ISemester) => {
       try {
+        console.log("Using mocked API call for semester: ", semester);
         // const base_url: string = import.meta.env
         //   .VITE_PUBLIC_API_DOMAIN as string;
         // const result = await fetch(`${base_url}/github/sync`, {

@@ -17,6 +17,7 @@ export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
 export const getClassrooms = async (
   orgId: number
 ): Promise<IClassroomResponse> => {
+  console.log("Using mocked API call for org: ", orgId);
   return Promise.resolve({
     available_classrooms: [
       {
@@ -90,7 +91,7 @@ export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
       },
     ],
     inactive_semesters: [
-       {
+      {
         org_id: 2,
         classroom_id: 2,
         org_name: "CS3500",
@@ -135,9 +136,10 @@ interface IOrgSemestersResponse {
 export const getOrgSemesters = async (
   orgId: number
 ): Promise<IOrgSemestersResponse> => {
+  console.log("Using mocked API call for org: ", orgId);
   return Promise.resolve({
     semesters: [
-   {
+      {
         org_id: 1,
         classroom_id: 1,
         org_name: "CS2200",
@@ -171,11 +173,17 @@ const modifySemester = async (
   classroomId: number,
   activate: boolean
 ): Promise<ISemester> => {
+  console.log(
+    "Using mocked API call for classroom: ",
+    classroomId,
+    "activate: ",
+    activate
+  );
   return Promise.resolve({
-        org_id: 1,
-        classroom_id: 1,
-        org_name: "CS2200",
-        classroom_name: "Spring 2024",
-        active: true,
+    org_id: 1,
+    classroom_id: 1,
+    org_name: "CS2200",
+    classroom_name: "Spring 2024",
+    active: true,
   });
 };
