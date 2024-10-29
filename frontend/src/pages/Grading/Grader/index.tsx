@@ -21,8 +21,6 @@ import {
   getTotalStudentAssignments,
 } from "@/api/student_assignments";
 import { getGitTree, getGitBlob, createPRComment } from "@/api/grading";
-import "@/utils/line-wrap-plugin.js";
-import "@/utils/line-wrap-plugin.css";
 
 import "./styles.css";
 
@@ -41,6 +39,7 @@ const Grader: React.FC = () => {
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
+  const [currentFilePath, setCurrentFilePath] = useState<string>("");
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
 
   // fetch totals for indexing purposes
@@ -126,6 +125,8 @@ const Grader: React.FC = () => {
   }, [currentFile]);
 
   const openFile = (node: IFileTreeNode) => {
+    setCurrentFilePath(node.path);
+
     // Check if the content is already cached
     if (node.sha in cachedFiles) {
       setCurrentFile(cachedFiles[node.sha]);
@@ -156,7 +157,7 @@ const Grader: React.FC = () => {
       selectedSemester.org_name,
       studentAssignment.repo_name,
       gitTree.commitSha,
-      "README.md",
+      currentFilePath,
       Number(data.get("line")),
       String(data.get("comment"))
     );
