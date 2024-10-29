@@ -55,4 +55,9 @@
     flex-direction: column;
     gap: 10px;
   }
+
+  &__buttonWrapper {
+    display: flex;
+    margin-top: auto;
+  }
 }

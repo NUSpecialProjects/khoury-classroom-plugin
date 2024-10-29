@@ -1,7 +1,8 @@
 import { FaTachometerAlt } from "react-icons/fa";
 import { MdFactCheck, MdEditDocument } from "react-icons/md";
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import Button from "../../Button"
 import { useContext } from "react";
 import "./styles.css";
 
@@ -15,6 +16,8 @@ const LeftNav: React.FC = () => {
   const { selectedSemester } = useContext(
     SelectedSemesterContext
   );
+
+  const navigate = useNavigate();
 
   return (
     <div className="LeftNav">
@@ -75,6 +78,11 @@ const LeftNav: React.FC = () => {
             {item.name}
           </NavLink>
         ))}
+      </div>
+      <div className="LeftNav__buttonWrapper">
+        <Button onClick={() => {
+            navigate("/app/classroom/select");
+          }} variant="primary">View all classrooms</Button>
       </div>
     </div>
   );
