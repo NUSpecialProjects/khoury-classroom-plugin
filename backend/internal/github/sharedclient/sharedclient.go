@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
 
@@ -157,4 +158,61 @@ func (api *CommonAPI) CreateRegularPRComment(ctx context.Context, owner string, 
 	cmt, _, err := api.Client.Issues.CreateComment(ctx, owner, repo, pullNumber, newComment)
 
 	return cmt, err
+}
+
+func (api *CommonAPI) CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error) {
+	team := &github.NewTeam{
+		Name: team_name,
+	}
+
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, org_name, *team)
+	if err != nil {
+		return nil, fmt.Errorf("error creating team: %v", err)
+	}
+
+	return createdTeam, nil
+}
+
+func (api *CommonAPI) AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error {
+	_, _, err := api.Client.Teams.AddTeamMembership(ctx, team_id, user_name, opt)
+	if err != nil {
+		return fmt.Errorf("error adding member to team: %v", err)
+	}
+
+	return nil
+}
+
+func (api *CommonAPI) AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error {
+	opt := &github.TeamAddTeamRepoOptions{
+		Permission: permission,
+	}
+
+	_, err := api.Client.Teams.AddTeamRepo(ctx, team_id, owner_name, repo_name, opt)
+	if err != nil {
+		return fmt.Errorf("error assigning permission to team: %v", err)
+	}
+
+	return nil
+}
+
+func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
+	// Construct the URL for the list assignments endpoint
+	endpoint := "/user/orgs"
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container
+	var orgs []models.Organization
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &orgs)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching organizations: %v", err)
+	}
+
+	return orgs, nil
 }
