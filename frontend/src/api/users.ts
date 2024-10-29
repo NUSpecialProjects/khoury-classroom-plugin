@@ -13,21 +13,27 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
     throw new Error("Network response was not ok");
   }
 
-  return response.json()
+  return response.json();
 };
 
-export const fetchUsersWithRole = async (role_type: string, semester: ISemester): Promise<IGitHubUser[]> => {
-    const response = await fetch(`${base_url}/github/semesters/${semester.classroom_id.toString()}/roles/${role_type}/users`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
+export const fetchUsersWithRole = async (
+  role_type: string,
+  semester: ISemester
+): Promise<IGitHubUser[]> => {
+  const response = await fetch(
+    `${base_url}/github/semesters/${semester.classroom_id.toString()}/roles/${role_type}/users`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
         "Content-Type": "application/json",
-        },
-    });
-    
-    if (!response.ok) {
-        throw new Error("Network response was not ok");
+      },
     }
-    
-    return response.json()
-    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  return response.json();
+};

@@ -42,9 +42,8 @@ export const getClassrooms = async (
         url: "https://classroom4.com",
       },
     ],
-  })
+  });
 };
-
 
 export const getOrganizationDetails = async (
   login: string
@@ -116,7 +115,6 @@ export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
   });
 };
 
-
 interface ISemester {
   org_id: number;
   classroom_id: number;
@@ -133,7 +131,6 @@ interface IUserSemestersResponse {
 interface IOrgSemestersResponse {
   semesters: ISemester[];
 }
-
 
 export const getOrgSemesters = async (
   orgId: number

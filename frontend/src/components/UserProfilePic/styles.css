@@ -4,12 +4,12 @@
   border-radius: 10%;
 }
 
- &__icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--panels-darker-background);
-    background-image: url("../UserGroupCard/octocat.png");
-    background-size: cover;
-    background-position: center;
-  }
+&__icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--panels-darker-background);
+  background-image: url("../UserGroupCard/octocat.png");
+  background-size: cover;
+  background-position: center;
+}
