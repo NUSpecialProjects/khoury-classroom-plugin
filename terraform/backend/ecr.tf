@@ -12,34 +12,16 @@ resource "aws_ecr_lifecycle_policy" "gitmarks_repo_lifecycle" {
     rules = [
       {
         rulePriority = 1
-        description   = "Keep only latest image"
-        selection     = {
-          countType        = "imageCountMoreThan"
-          countNumber      = 1
-          tagStatus        = "tagged"
-          tagPrefixList    = ["latest"]
+        description  = "Keep only latest image"
+        selection = {
+          countType   = "imageCountMoreThan"
+          countNumber = 1
+          tagStatus   = "untagged"
         }
-        action = {
-          type = "expire"
-        }
-      },
-      {
-        rulePriority = 2,
-        description  = "Expire images older than 7 days",
-        selection    = {
-          tagStatus = "untagged",
-          countType = "sinceImagePushed",
-          countUnit = "days",
-          countNumber = 7
-        },
         action = {
           type = "expire"
         }
       }
     ]
   })
-}
-
-output "ecr_repo_url" {
-  value = aws_ecr_repository.gitmarks_repo.repository_url
 }

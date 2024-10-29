@@ -1,28 +1,13 @@
 # variables.tf
 
-variable "aws_account_id" {
-  description = "The AWS account ID"
-  type = string
-}
-
-variable "ec2_task_execution_role_name" {
-  description = "ECS task execution role name"
-  default     = "khoury-classroom-backend-task-execution-role"
-}
-
-variable "ecs_auto_scale_role_name" {
-  description = "ECS auto scale role name"
-  default     = "khoury-classroom-backend-autoscale-role"
-}
+# ------------------------------------------------
+#  Local Variables
+# ------------------------------------------------
 
 variable "app_count" {
   description = "Number of docker containers to run in the ECS cluster"
+  type        = number
   default     = 1
-}
-
-variable "health_check_path" {
-  description = "Path to health check endpoint"
-  default     = "/"
 }
 
 variable "fargate_cpu" {
@@ -39,13 +24,23 @@ variable "fargate_memory" {
 
 variable "scaling_policy_interval" {
   description = "Number of consecutive periods required to trigger the scaling policy"
+  type        = number
   default     = "2"
 }
 
-variable "backend_subdomain" {
-  description = "Subdomain prefix for the backend service"
+variable "log_retention" {
+  description = "Number of days to retain log events"
+  type        = number
+  default     = "7"
+}
+
+# ------------------------------------------------
+#  Global Variables
+# ------------------------------------------------
+
+variable "aws_account_id" {
+  description = "The AWS account ID"
   type        = string
-  default     = "api"
 }
 
 variable "private_subnet_ids" {
@@ -73,7 +68,7 @@ variable "ecs_tasks_sg_id" {
   type        = string
 }
 
-variable "app_secrets" {
+variable "db_vars" {
   description = "Map of application secrets"
   type        = map(any)
 }
@@ -86,4 +81,19 @@ variable "domain_name" {
 variable "app_port" {
   description = "Application port"
   type        = number
+}
+
+variable "ecs_cluster_name" {
+  description = "ECS cluster name"
+  type        = string
+}
+
+variable "ecs_service_name" {
+  description = "ECS service name"
+  type        = string
+}
+
+variable "ecr_repo_name" {
+  description = "ECR repository name"
+  type        = string
 }

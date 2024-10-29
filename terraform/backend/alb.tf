@@ -2,22 +2,12 @@
 
 # Load Balancer Resource
 resource "aws_lb" "main" {
-  name                       = "gitmarks-load-balancer"
-  internal                   = false
-  subnets                    = var.public_subnet_ids
-  security_groups            = [var.lb_sg_id]
-  load_balancer_type         = "application"
-  preserve_host_header       = true
-  enable_deletion_protection = false
-
-  # Access logs configuration
-  access_logs {
-    enabled = true
-    bucket  = aws_s3_bucket.logs_prod.bucket
-    prefix  = "alb/alb-prod"
-  }
-
-  depends_on = [aws_s3_bucket.logs_prod]
+  name                 = "gitmarks-load-balancer"
+  internal             = false
+  subnets              = var.public_subnet_ids
+  security_groups      = [var.lb_sg_id]
+  load_balancer_type   = "application"
+  preserve_host_header = true
 }
 
 # Target Group Resource

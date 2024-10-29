@@ -1,0 +1,52 @@
+name: Terraform Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+        - main
+        - feature/cors
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+        TF_BUCKET: gitmarks-terraform-state
+        TF_KEY: terraform.tfstate
+        TF_REGION: us-east-2
+        DYNAMODB_TABLE: gitmarks-terraform-lock
+
+    defaults:
+        run:
+            working-directory: terraform
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+          role-to-assume: arn:aws:iam::058264409130:role/github-actions-deploy-role
+          aws-region: us-east-2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.9.8
+
+    - name: Terraform Init
+      run: terraform init -backend-config="bucket=${{ env.TF_BUCKET }}" \
+                          -backend-config="key=${{ env.TF_KEY }}" \
+                          -backend-config="region=${{ env.TF_REGION }}" \
+                          -backend-config="dynamodb_table=${{ env.DYNAMODB_TABLE }}"
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -out=tfplan
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan

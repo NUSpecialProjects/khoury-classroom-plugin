@@ -1,10 +1,22 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "main" {
-  name = "gitmarks-cluster"
+  name = var.ecs_cluster_name
+}
+
+# Fetch environment variables from AWS Secrets Manager
+data "aws_secretsmanager_secret" "env_variables" {
+  name = "prod/khoury-classroom/app"
+}
+data "aws_secretsmanager_secret_version" "env_variables_version" {
+  secret_id = data.aws_secretsmanager_secret.env_variables.id
+}
+locals {
+  app_secrets = jsondecode(data.aws_secretsmanager_secret_version.env_variables_version.secret_string)
 }
 
 # Create the ECS task definition
+data "aws_region" "current" {}
 resource "aws_ecs_task_definition" "app" {
   family                   = "gitmarks-app-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
@@ -30,25 +42,30 @@ resource "aws_ecs_task_definition" "app" {
       hostPort      = var.app_port
     }]
     environment = [
-      for key, value in var.app_secrets : {
+      for key, value in var.db_vars : {
         name  = key
         value = value
+      }
+    ]
+    secrets = [
+      for key, value in local.app_secrets : {
+        name      = key
+        valueFrom = "${data.aws_secretsmanager_secret.env_variables.arn}:${key}::"
       }
     ]
   }])
 }
 
 resource "aws_ecs_service" "main" {
-  name            = "gitmarks-service"
+  name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = var.app_count
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [var.ecs_tasks_sg_id]
-    subnets          = var.private_subnet_ids
-    assign_public_ip = true
+    security_groups = [var.ecs_tasks_sg_id]
+    subnets         = var.private_subnet_ids
   }
 
   load_balancer {
@@ -60,6 +77,6 @@ resource "aws_ecs_service" "main" {
   depends_on = [
     aws_lb_listener.front_end_http,
     aws_lb_listener.front_end_https,
-    aws_iam_role_policy_attachment.ecs-task-execution-role-policy-attachment
+    aws_iam_role_policy_attachment.ecs_task_execution_role_policy_attachment
   ]
 }

@@ -1,5 +1,9 @@
 # variable.tf
 
+# ------------------------------------------------
+#  Local Variables
+# ------------------------------------------------
+
 variable "db_name" {
   description = "Database name"
   type        = string
@@ -17,6 +21,10 @@ variable "db_password" {
   type        = string
   default     = "db_password"
 }
+
+# ------------------------------------------------
+#  Global Variables
+# ------------------------------------------------
 
 variable "db_port" {
   description = "Database port"
@@ -45,5 +53,15 @@ variable "private_subnet_ids" {
 
 variable "lambda_sg_id" {
   description = "Security group ID for Lambda functions"
+  type        = string
+}
+
+variable "ecs_cluster_name" {
+  description = "ECS cluster name"
+  type        = string
+}
+
+variable "ecs_service_name" {
+  description = "ECS service name"
   type        = string
 }

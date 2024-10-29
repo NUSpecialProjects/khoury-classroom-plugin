@@ -8,7 +8,6 @@ on:
       - feature/cors
     paths:
       - 'backend/**'
-      - 'terraform/**'
       - '.github/workflows/backend_deploy.yml'
 
 jobs:
