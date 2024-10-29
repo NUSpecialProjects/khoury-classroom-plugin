@@ -94,7 +94,7 @@ export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
         classroom_id: 2,
         org_name: "org2",
         classroom_name: "classroom2",
-        active: true,
+        active: false,
       },
     ],
     inactive_semesters: [
