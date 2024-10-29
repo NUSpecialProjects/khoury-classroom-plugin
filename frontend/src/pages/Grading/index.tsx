@@ -1,6 +1,6 @@
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import {
   Table,
@@ -8,16 +8,35 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
+import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { getAssignments } from "@/api/assignments";
+import { getStudentAssignments } from "@/api/student_assignments";
+import { formatDate } from "@/utils/date";
 
 import "./styles.css";
 
 const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   assignmentId,
   children,
-  //submissions,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
+  const [studentAssignments, setStudentAssignments] = useState<
+    IStudentAssignment[]
+  >([]);
+  const { selectedSemester } = useContext(SelectedSemesterContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!selectedSemester) return;
+    getStudentAssignments(selectedSemester.classroom_id, assignmentId)
+      .then((studentAssignments) => {
+        console.log(studentAssignments);
+        setStudentAssignments(studentAssignments);
+      })
+      .catch((err: unknown) => {
+        console.error("Error fetching student assignments:", err);
+      });
+  }, []);
 
   return (
     <>
@@ -39,17 +58,18 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
               <TableCell>Student</TableCell>
               <TableCell>Score</TableCell>
             </TableRow>
-            {Array.from({ length: 20 }).map((_, i: number) => (
-              <TableRow
-                key={i}
-                onClick={() => {
-                  navigate(`assignment/${assignmentId}/student/${i + 1}`);
-                }}
-              >
-                <TableCell>Jane Doe</TableCell>
-                <TableCell>-/100</TableCell>
-              </TableRow>
-            ))}
+            {studentAssignments &&
+              studentAssignments.map((studentAssignment, i: number) => (
+                <TableRow
+                  key={i}
+                  onClick={() => {
+                    navigate(`assignment/${assignmentId}/student/${i + 1}`);
+                  }}
+                >
+                  <TableCell>{studentAssignment.student_gh_username}</TableCell>
+                  <TableCell>-/100</TableCell>
+                </TableRow>
+              ))}
           </Table>
         </TableDiv>
       )}
@@ -58,6 +78,19 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 };
 
 const Grading: React.FC = () => {
+  const [assignments, setAssignments] = useState<IAssignment[]>([]);
+  const { selectedSemester } = useContext(SelectedSemesterContext);
+  useEffect(() => {
+    if (!selectedSemester) return;
+    getAssignments(selectedSemester.classroom_id)
+      .then((assignments) => {
+        setAssignments(assignments);
+      })
+      .catch((err: unknown) => {
+        console.error("Error fetching assignments:", err);
+      });
+  }, []);
+
   return (
     <div className="Grading">
       <h2 style={{ marginBottom: 0 }}>Assignments</h2>
@@ -65,14 +98,14 @@ const Grading: React.FC = () => {
         <TableRow style={{ borderTop: "none" }}>
           <TableCell></TableCell>
           <TableCell>Assignment Name</TableCell>
-          <TableCell>Status</TableCell>
+          <TableCell>Assigned Date</TableCell>
           <TableCell>Due Date</TableCell>
         </TableRow>
-        {Array.from({ length: 2 }).map((_, i: number) => (
+        {assignments.map((assignment, i: number) => (
           <GradingAssignmentRow key={i} assignmentId={i + 1}>
-            <TableCell>Test Assignment</TableCell>
-            <TableCell>Active</TableCell>
-            <TableCell>11 Oct, 11:59pm</TableCell>
+            <TableCell>{assignment.name}</TableCell>
+            <TableCell>{formatDate(assignment.inserted_date)}</TableCell>
+            <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
           </GradingAssignmentRow>
         ))}
       </Table>
