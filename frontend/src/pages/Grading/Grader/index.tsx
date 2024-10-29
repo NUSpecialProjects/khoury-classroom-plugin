@@ -16,7 +16,10 @@ import {
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
-import { getStudentAssignment } from "@/api/student_assignments";
+import {
+  getStudentAssignment,
+  getTotalStudentAssignments,
+} from "@/api/student_assignments";
 import { getGitTree, getGitBlob, createPRComment } from "@/api/grading";
 import "@/utils/line-wrap-plugin.js";
 import "@/utils/line-wrap-plugin.css";
@@ -31,6 +34,7 @@ const Grader: React.FC = () => {
   const { selectedSemester } = useContext(SelectedSemesterContext);
 
   // states
+  const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
   const [studentAssignment, setStudentAssignment] =
     useState<IStudentAssignment | null>(null);
   const [gitTree, setGitTree] = useState<IGitTree | null>(null);
@@ -38,6 +42,22 @@ const Grader: React.FC = () => {
     {}
   );
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
+
+  // fetch totals for indexing purposes
+  useEffect(() => {
+    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
+
+    getTotalStudentAssignments(
+      selectedSemester.classroom_id,
+      Number(assignmentId)
+    )
+      .then((resp) => {
+        setTotalStudentAssignments(resp);
+      })
+      .catch((err: unknown) => {
+        console.log(err);
+      });
+  }, [selectedSemester, assignmentId]);
 
   // fetch requested student assignment
   useEffect(() => {
@@ -143,26 +163,44 @@ const Grader: React.FC = () => {
   };
 
   return (
-    <div className="Grader">
-      <div className="Grader__head">
-        <div className="Grader__title">
-          <FaChevronLeft />
-          <div>
-            <h2>Assignment 3</h2>
-            <span>Jane Doe</span>
-          </div>
-        </div>
-        <div className="Grader__nav">
-          <span>Submission 2/74</span>
-          <div>
-            <Button variant="secondary">
+    studentAssignment && (
+      <div className="Grader">
+        <div className="Grader__head">
+          <div className="Grader__title">
+            <Link to="/app/grading">
               <FaChevronLeft />
-              Previous
-            </Button>
-            <Button>
-              Next
-              <FaChevronRight />
-            </Button>
+            </Link>
+            <div>
+              <h2>{studentAssignment.assignment_name}</h2>
+              <span>{studentAssignment.student_gh_username}</span>
+            </div>
+          </div>
+          <div className="Grader__nav">
+            <span>
+              Student Assignment {studentAssignmentId}/{totalStudentAssignments}
+            </span>
+            <div>
+              {Number(studentAssignmentId) > 1 && (
+                <Link
+                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) - 1}`}
+                >
+                  <Button variant="secondary">
+                    <FaChevronLeft />
+                    Previous
+                  </Button>
+                </Link>
+              )}
+              {Number(studentAssignmentId) < totalStudentAssignments && (
+                <Link
+                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) + 1}`}
+                >
+                  <Button variant="secondary">
+                    Next
+                    <FaChevronRight />
+                  </Button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
         {gitTree && (
@@ -200,7 +238,7 @@ const Grader: React.FC = () => {
           </form>
         </div>
       </div>
-    </div>
+    )
   );
 };
 
