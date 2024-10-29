@@ -18,6 +18,8 @@ import Button from "@/components/Button";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import { getStudentAssignment } from "@/api/student_assignments";
 import { getGitTree, getGitBlob, createPRComment } from "@/api/grading";
+import "@/utils/line-wrap-plugin.js";
+import "@/utils/line-wrap-plugin.css";
 
 import "./styles.css";
 
