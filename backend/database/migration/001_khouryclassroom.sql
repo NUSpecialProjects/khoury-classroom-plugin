@@ -1,11 +1,3 @@
-CREATE TABLE IF NOT EXISTS semesters (
-  classroom_id INTEGER UNIQUE PRIMARY KEY,
-  org_name VARCHAR(255) NOT NULL,
-  classroom_name VARCHAR(255) NOT NULL,
-  active BOOLEAN NOT NULL,
-  org_id INTEGER NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS rubrics (
   id SERIAL PRIMARY KEY,
   content VARCHAR(255) NOT NULL
@@ -56,18 +48,3 @@ CREATE TABLE IF NOT EXISTS sessions (
   refresh_token VARCHAR(255),
   expires_in INTEGER
 );
-
-CREATE TABLE IF NOT EXISTS role_tokens(
-  id SERIAL PRIMARY KEY,
-  role_name VARCHAR(255) NOT NULL,
-  role_id INTEGER NOT NULL,
-  classroom_id INTEGER NOT NULL,
-  token VARCHAR(255) UNIQUE NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
-  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
-)
-
-
-
-
-
