@@ -1,6 +1,6 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import Prism from "prismjs";
 import "prismjs/plugins/line-numbers/prism-line-numbers";
@@ -199,8 +199,15 @@ const Grader: React.FC = () => {
             <button type="submit">submit comment</button>
           </form>
         </div>
+      )}
+      <div>
+        <form onSubmit={submitComment}>
+          <input type="number" name="line" placeholder="line number" />
+          <input type="text" name="comment" placeholder="comment" />
+          <button type="submit">submit comment</button>
+        </form>
       </div>
-    </div>
+    )
   );
 };
 
