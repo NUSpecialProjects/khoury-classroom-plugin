@@ -9,8 +9,13 @@ import (
 func Routes(app *fiber.App, params types.Params) {
 	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
 
+	// Callback endpoint for OAUTH flow
 	app.Get("/callback", service.GetCallbackURL())
+
+	// Login using code
 	app.Post("/login", service.Login())
+
+	// Logout the current authenticated user
 	app.Post("/logout", service.Logout())
 
 	protected := app.Group("/github")
