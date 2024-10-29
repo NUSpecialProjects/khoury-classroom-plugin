@@ -19,6 +19,18 @@ type GitHubAppClient interface { // All methods in the APP client
 	GetGitTree(owner string, repo string) ([]github.TreeEntry, error)
 
 	GetGitBlob(owner string, repo string, sha string) ([]byte, error)
+
+	// Create a new team in an organization
+	CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error)
+
+	// Add a user to a team
+	AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error
+
+	// Add a repository permission to a team
+	AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error
+
+	// Add a repository permission to a user
+	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
@@ -73,15 +85,5 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// Create a new comment on a pull request (not on a specific line or file)
 	CreateRegularPRComment(ctx context.Context, owner string, repo string, pullNumber int, commentBody string) (*github.IssueComment, error)
 
-	// Create a new team in an organization
-	CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error)
-
-	// Add a user to a team
-	AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error
-
-	// Add a repository permission to a team
-	AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error
-
-	// Add a repository permission to a user
-	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
+	ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error)
 }

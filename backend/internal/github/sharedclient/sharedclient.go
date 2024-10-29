@@ -160,54 +160,6 @@ func (api *CommonAPI) CreateRegularPRComment(ctx context.Context, owner string, 
 	return cmt, err
 }
 
-func (api *CommonAPI) CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error) {
-	team := &github.NewTeam{
-		Name: team_name,
-	}
-
-	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, org_name, *team)
-	if err != nil {
-		return nil, fmt.Errorf("error creating team: %v", err)
-	}
-
-	return createdTeam, nil
-}
-
-func (api *CommonAPI) AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error {
-	_, _, err := api.Client.Teams.AddTeamMembership(ctx, team_id, user_name, opt)
-	if err != nil {
-		return fmt.Errorf("error adding member to team: %v", err)
-	}
-
-	return nil
-}
-
-func (api *CommonAPI) AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error {
-	opt := &github.TeamAddTeamRepoOptions{
-		Permission: permission,
-	}
-
-	_, err := api.Client.Teams.AddTeamRepo(ctx, team_id, owner_name, repo_name, opt)
-	if err != nil {
-		return fmt.Errorf("error assigning permission to team: %v", err)
-	}
-
-	return nil
-}
-
-func (api *CommonAPI) AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error {
-	opt := &github.RepositoryAddCollaboratorOptions{
-		Permission: permission,
-	}
-
-	_, err := api.Client.Repositories.AddCollaborator(ctx, ownerName, repoName, userName, opt)
-	if err != nil {
-		return fmt.Errorf("error assigning permission to user: %v", err)
-	}
-
-	return nil
-}
-
 func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
 	// Construct the URL for the list assignments endpoint
 	endpoint := "/user/orgs"
@@ -228,4 +180,13 @@ func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, e
 	}
 
 	return orgs, nil
+}
+
+func (api *CommonAPI) ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error) {
+	forkedRepo, _, err := api.Client.Repositories.CreateFork(ctx, owner, repo, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error forking repository: %v", err)
+	}
+
+	return forkedRepo, nil
 }
