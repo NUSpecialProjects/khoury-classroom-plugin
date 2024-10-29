@@ -3,13 +3,14 @@ package github
 import (
 	"log"
 
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (service *GitHubService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
@@ -26,7 +27,7 @@ func (service *GitHubService) GetUserOrgs() fiber.Handler {
 func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Get the user client
-		userClient, err := service.getClient(c)
+		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
@@ -79,7 +80,7 @@ func (service *GitHubService) GetOrg() fiber.Handler {
 		}
 
 		// Get the user client
-		userClient, err := service.getClient(c)
+		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})

@@ -1,13 +1,11 @@
 package github
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -122,24 +120,4 @@ func (service *GitHubService) Logout() fiber.Handler {
 
 		return c.Status(200).JSON("Successfully logged out")
 	}
-}
-
-func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, error) {
-	userID, ok := c.Locals("userID").(int64)
-	if !ok {
-		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
-	}
-
-	session, err := service.store.GetSession(c.Context(), userID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := userclient.NewFromSession(service.userCfg.OAuthConfig(), &session)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
 }
