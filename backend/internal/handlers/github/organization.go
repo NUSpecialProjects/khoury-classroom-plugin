@@ -2,7 +2,6 @@ package github
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -94,89 +93,5 @@ func (service *GitHubService) GetOrg() fiber.Handler {
 		}
 
 		return c.Status(200).JSON(fiber.Map{"org": org})
-	}
-}
-
-func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Extract org_id from the path
-		orgIDParam := c.Params("org")
-		if orgIDParam == "" || orgIDParam == "undefined" {
-			log.Default().Println("Error getting org_id: ", orgIDParam)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid or missing org_id"})
-		}
-
-		org_id, err := strconv.ParseInt(orgIDParam, 10, 64)
-		if err != nil {
-			log.Default().Println("Error parsing org_id: ", err)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
-		}
-
-		// Get the user client
-		userClient, err := service.getClient(c)
-		if err != nil {
-			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
-		// Get the list of classrooms for the organization
-		classrooms, err := userClient.GetUserClassroomsInOrg(c.Context(), org_id)
-		if err != nil {
-			log.Default().Println("Error getting classrooms: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get classrooms"})
-		}
-
-		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
-		if err != nil {
-			log.Default().Println("Error getting semesters: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
-		}
-
-		availableClassrooms := []models.Classroom{}
-		unavailableClassrooms := []models.Classroom{}
-		for _, classroom := range classrooms {
-			available := true
-			for _, semester := range semesters {
-				if classroom.ID == semester.ClassroomID {
-					available = false
-					break
-				}
-			}
-			if available {
-				availableClassrooms = append(availableClassrooms, classroom)
-			} else {
-				unavailableClassrooms = append(unavailableClassrooms, classroom)
-			}
-		}
-
-		return c.Status(200).JSON(fiber.Map{
-			"available_classrooms":   availableClassrooms,
-			"unavailable_classrooms": unavailableClassrooms,
-		})
-	}
-}
-
-func (service *GitHubService) ListOrgSemesters() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Extract org_id from the path
-		orgIDParam := c.Params("org")
-		if orgIDParam == "" || orgIDParam == "undefined" {
-			log.Default().Println("Error getting org_id: ", orgIDParam)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid or missing org_id"})
-		}
-
-		org_id, err := strconv.ParseInt(orgIDParam, 9, 64)
-		if err != nil {
-			log.Default().Println("Error parsing org_id: ", err)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
-		}
-
-		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
-		if err != nil {
-			log.Default().Println("Error getting semesters: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
-		}
-
-		return c.Status(200).JSON(fiber.Map{"semesters": semesters})
 	}
 }

@@ -127,20 +127,17 @@ func (service *GitHubService) Logout() fiber.Handler {
 func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, error) {
 	userID, ok := c.Locals("userID").(int64)
 	if !ok {
-		fmt.Println("FAILED TO GET USERID")
 		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
 	}
 
 	session, err := service.store.GetSession(c.Context(), userID)
 	if err != nil {
-		fmt.Println("FAILED TO GET SESSION", err)
 		return nil, err
 	}
 
 	client, err := userclient.NewFromSession(service.userCfg.OAuthConfig(), &session)
 
 	if err != nil {
-		fmt.Println("FAILED TO CREATE CLIENT", err)
 		return nil, err
 	}
 

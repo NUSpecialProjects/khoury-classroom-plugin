@@ -1,37 +1,5 @@
 package models
 
-import "time"
-
-type RoleToken struct {
-	RoleName    string    `json:"role_name"`
-	RoleID      int64     `json:"role_id"`
-	ClassroomID int64     `json:"classroom_id"`
-	Token       string    `json:"token"`
-	ExpiresAt   time.Time `json:"expires_at"`
-}
-
-type RolesResponse struct {
-	TotalCount int                `json:"total_count"`
-	Roles      []OrganizationRole `json:"roles"`
-}
-
-type OrganizationTemplateRole struct {
-	Name        string
-	Description string
-	Permissions []string
-	BaseRole    string
-}
-
-type OrganizationRole struct {
-	ID           int64        `json:"id"`
-	Name         string       `json:"name"`
-	Description  *string      `json:"description,omitempty"`
-	Permissions  []string     `json:"permissions"`
-	Organization Organization `json:"organization,omitempty"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
-}
-
 type Organization struct {
 	SimpleOrganization
 	Email             *string `json:"email,omitempty"`
