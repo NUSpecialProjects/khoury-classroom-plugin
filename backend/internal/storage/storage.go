@@ -18,6 +18,7 @@ type Test interface {
 }
 
 type StudentAssignments interface {
+	GetTotalStudentAssignments(ctx context.Context, classroomID int64, assignmentID int64) (int64, error)
 	GetStudentAssignments(ctx context.Context, classroomID int64, assignmentID int64) ([]models.StudentAssignment, error)
 	GetStudentAssignment(ctx context.Context, classroomID int64, assignmentID int64, studentAssignmentID int64) (models.StudentAssignment, error)
 }

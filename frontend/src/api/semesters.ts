@@ -21,24 +21,24 @@ export const getClassrooms = async (
     available_classrooms: [
       {
         id: 1,
-        name: "classroom1",
+        name: "Spring 2024",
         url: "https://classroom1.com",
       },
       {
         id: 2,
-        name: "classroom2",
+        name: "Fall 2023",
         url: "https://classroom2.com",
       },
     ],
     unavailable_classrooms: [
       {
         id: 3,
-        name: "classroom3",
+        name: "Spring 2022",
         url: "https://classroom3.com",
       },
       {
         id: 4,
-        name: "classroom4",
+        name: "Spring 2021",
         url: "https://classroom4.com",
       },
     ],
@@ -84,31 +84,31 @@ export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
       {
         org_id: 1,
         classroom_id: 1,
-        org_name: "org1",
-        classroom_name: "classroom1",
+        org_name: "CS2200",
+        classroom_name: "Spring 2024",
         active: true,
-      },
-      {
-        org_id: 2,
-        classroom_id: 2,
-        org_name: "org2",
-        classroom_name: "classroom2",
-        active: false,
       },
     ],
     inactive_semesters: [
+       {
+        org_id: 2,
+        classroom_id: 2,
+        org_name: "CS3500",
+        classroom_name: "Fall 2023",
+        active: false,
+      },
       {
         org_id: 2,
         classroom_id: 3,
-        org_name: "org3",
-        classroom_name: "classroom3",
+        org_name: "CS3500",
+        classroom_name: "Spring 2022",
         active: false,
       },
       {
         org_id: 1,
         classroom_id: 4,
-        org_name: "org4",
-        classroom_name: "classroom4",
+        org_name: "CS3500",
+        classroom_name: "Spring 2021",
         active: false,
       },
     ],
@@ -137,19 +137,19 @@ export const getOrgSemesters = async (
 ): Promise<IOrgSemestersResponse> => {
   return Promise.resolve({
     semesters: [
-      {
+   {
         org_id: 1,
         classroom_id: 1,
-        org_name: "org1",
-        classroom_name: "classroom1",
+        org_name: "CS2200",
+        classroom_name: "Spring 2024",
         active: true,
       },
       {
-        org_id: 2,
-        classroom_id: 2,
-        org_name: "org2",
-        classroom_name: "classroom2",
-        active: true,
+        org_id: 1,
+        classroom_id: 4,
+        org_name: "CS3500",
+        classroom_name: "Spring 2021",
+        active: false,
       },
     ],
   });
@@ -172,10 +172,10 @@ const modifySemester = async (
   activate: boolean
 ): Promise<ISemester> => {
   return Promise.resolve({
-    org_id: 1,
-    classroom_id: classroomId,
-    org_name: "org1",
-    classroom_name: "classroom1",
-    active: activate,
+        org_id: 1,
+        classroom_id: 1,
+        org_name: "CS2200",
+        classroom_name: "Spring 2024",
+        active: true,
   });
 };

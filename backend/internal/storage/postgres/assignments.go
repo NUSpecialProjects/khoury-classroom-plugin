@@ -9,7 +9,7 @@ import (
 )
 
 func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroomID int64) ([]models.Assignment, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM assignments where classroom_id = $1", classroomID)
+	rows, err := db.connPool.Query(ctx, "SELECT rubric_id, assignment_classroom_id, inserted_date, classroom_id, name, main_due_date FROM assignments where classroom_id = $1", classroomID)
 	if err != nil {
 		fmt.Println("Error in query")
 		return nil, err
@@ -21,10 +21,10 @@ func (db *DB) GetAssignmentsInSemester(ctx context.Context, classroomID int64) (
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assignment) error {
 
-	if assignmentData.Rubric_ID == nil {
+	if assignmentData.RubricID == nil {
 		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (inserted_date, assignment_classroom_id, classroom_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5)",
 			assignmentData.InsertedDate,
-			assignmentData.Assignment_Classroom_ID,
+			assignmentData.AssignmentClassroomID,
 			assignmentData.ClassroomID,
 			assignmentData.Name,
 			assignmentData.MainDueDate)
@@ -35,9 +35,9 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 
 	} else {
 		_, err := db.connPool.Exec(ctx, "INSERT INTO assignments (rubric_id, inserted_date, assignment_classroom_id, classroom_id, name, main_due_date) VALUES ($1, $2, $3, $4, $5, $6)",
-			assignmentData.Rubric_ID,
+			assignmentData.RubricID,
 			assignmentData.InsertedDate,
-			assignmentData.Assignment_Classroom_ID,
+			assignmentData.AssignmentClassroomID,
 			assignmentData.ClassroomID,
 			assignmentData.Name,
 			assignmentData.MainDueDate)
@@ -82,7 +82,7 @@ func (db *DB) GetAssignmentIDs(ctx context.Context) ([]models.Assignment_Classro
 
 func (db *DB) GetAssignment(ctx context.Context, classroomID int64, localAssignmentID int64) (models.Assignment, error) {
 	rows, err := db.connPool.Query(ctx,
-		"SELECT * FROM assignments WHERE classroom_id = $1 ORDER BY inserted_date ASC OFFSET $2 LIMIT 1",
+		"SELECT rubric_id, assignment_classroom_id, inserted_date, classroom_id, name, main_due_date FROM assignments WHERE classroom_id = $1 ORDER BY inserted_date ASC OFFSET $2 LIMIT 1",
 		classroomID,
 		localAssignmentID-1)
 	// -1 for 1-indexing

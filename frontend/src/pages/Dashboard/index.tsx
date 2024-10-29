@@ -6,6 +6,7 @@ import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import AlertBanner from "@/components/Banner/AlertBanner";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
+import { formatDate } from "@/utils/date";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
@@ -13,16 +14,6 @@ const Dashboard: React.FC = () => {
     SelectedSemesterContext
   );
   const navigate = useNavigate();
-
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  };
 
   useEffect(() => {
     const fetchAssignments = async (semester: ISemester) => {
@@ -39,16 +30,17 @@ const Dashboard: React.FC = () => {
 
     const SyncWithClassroom = async (semester: ISemester) => {
       try {
-        const base_url: string = import.meta.env
-          .VITE_PUBLIC_API_DOMAIN as string;
-        const result = await fetch(`${base_url}/github/sync`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ classroom_id: semester.classroom_id }),
-        });
+        // const base_url: string = import.meta.env
+        //   .VITE_PUBLIC_API_DOMAIN as string;
+        // const result = await fetch(`${base_url}/github/sync`, {
+        //   method: "POST",
+        //   credentials: "include",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({ classroom_id: semester.classroom_id }),
+        // });
+        const result = await Promise.resolve({ ok: true });
 
         if (!result.ok) {
           throw new Error("Network response was not ok");
@@ -137,15 +129,7 @@ const Dashboard: React.FC = () => {
                       {assignment.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {" "}
-                    {assignment.main_due_date
-                      ? assignment.main_due_date.toLocaleDateString(
-                          "en-US",
-                          options
-                        )
-                      : "N/A"}
-                  </TableCell>
+                  <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
                 </TableRow>
               ))}
             </Table>

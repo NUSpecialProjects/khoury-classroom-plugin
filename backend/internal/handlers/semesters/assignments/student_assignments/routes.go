@@ -11,5 +11,6 @@ func Routes(router fiber.Router, params types.Params) {
 	protected := router.Group("/student-assignments")
 
 	protected.Get("", service.GetStudentAssignments)
+	protected.Get("/total", service.GetTotalStudentAssignments)
 	protected.Get("/:studentAssignmentID", service.GetStudentAssignment)
 }
