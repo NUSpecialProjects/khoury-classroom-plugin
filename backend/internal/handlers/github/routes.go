@@ -15,11 +15,15 @@ func Routes(app *fiber.App, params types.Params) {
 
 	protected := app.Group("/github")
 	protected.Use(middleware.Protected(params.UserCfg.JWTSecret))
+
+	// Get the current authenticated u
 	protected.Get("/user", service.GetCurrentUser())
 
+	// Get the details of an organization
 	protected.Get("/orgs/:org", service.GetOrg())
 
-	protected.Get("/user/orgs", service.GetInstalledOrgs())
+	// Get the organizations the authenticated user is part of that have the app installed
+	protected.Get("/orgs/installations", service.GetInstalledOrgs())
 
 	app.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
 }
