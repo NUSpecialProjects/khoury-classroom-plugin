@@ -81,15 +81,13 @@ func (service *GitHubService) Login() fiber.Handler {
 			Path:     "/",
 		})
 
-		//TODO: check the database if the user is a TA, if so, set their role accordingly
-
 		return c.Status(200).JSON("Successfully logged in")
 	}
 }
 
 func (service *GitHubService) GetCurrentUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			fmt.Println("FAILED TO GET CLIENT", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
