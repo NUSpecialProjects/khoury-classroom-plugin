@@ -9,7 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-
 func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 	// Get Assignments from GH Classroom
 	var syncData models.ClassroomSync
@@ -50,30 +49,28 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		// Add to db if not in it
 		if !inDB {
 
-      assignmentData := models.Assignment{}
-			
-      dueDate := assignment.Deadline
-      // ensure assignment has a deadline
-      if (dueDate != nil) {
-			  parsedTime, err := time.Parse(time.RFC3339, *dueDate)
-			  if err != nil {
-			  	fmt.Println("SyncAssignments - error parsing time data", err)
-        } else {
-			    assignmentData.MainDueDate = &parsedTime   
-        }
-      }
+			assignmentData := models.Assignment{}
 
+			dueDate := assignment.Deadline
+			// ensure assignment has a deadline
+			if dueDate != nil {
+				parsedTime, err := time.Parse(time.RFC3339, *dueDate)
+				if err != nil {
+					fmt.Println("SyncAssignments - error parsing time data", err)
+				} else {
+					assignmentData.MainDueDate = &parsedTime
+				}
+			}
 
-
-      assignmentData.InsertedDate = time.Now()
-      assignmentData.Assignment_Classroom_ID = assignment.ID
-      assignmentData.Name = assignment.Title
-      sem, err := service.store.GetSemesterByClassroomID(c.Context(), syncData.Classroom_id)
-      if (err != nil) {
-        fmt.Println("SyncAssignments - Failed to get classroom id: ", err)
-      } else {
-        assignmentData.ClassroomID = sem.ClassroomID
-      }
+			assignmentData.InsertedDate = time.Now()
+			assignmentData.AssignmentClassroomID = assignment.ID
+			assignmentData.Name = assignment.Title
+			sem, err := service.store.GetSemesterByClassroomID(c.Context(), syncData.Classroom_id)
+			if err != nil {
+				fmt.Println("SyncAssignments - Failed to get classroom id: ", err)
+			} else {
+				assignmentData.ClassroomID = sem.ClassroomID
+			}
 
 			error := service.store.CreateAssignment(c.Context(), assignmentData)
 			if error != nil {
@@ -88,6 +85,3 @@ func (service *GitHubService) SyncAssignments(c *fiber.Ctx) error {
 		"message": "Synced data",
 	})
 }
-
-
-

@@ -34,3 +34,16 @@ func (s *StudentAssignmentService) GetStudentAssignment(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(studentAssignment)
 }
+
+func (s *StudentAssignmentService) GetTotalStudentAssignments(c *fiber.Ctx) error {
+	classroomID, _ := strconv.ParseInt(c.Params("classroomID"), 10, 64)
+	assignmentID, _ := strconv.ParseInt(c.Params("assignmentID"), 10, 64)
+
+	total, err := s.store.GetTotalStudentAssignments(c.Context(), classroomID, assignmentID)
+	if err != nil {
+		fmt.Println("error in service func")
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(total)
+}
