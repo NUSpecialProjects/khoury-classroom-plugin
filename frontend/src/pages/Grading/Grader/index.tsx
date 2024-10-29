@@ -199,15 +199,8 @@ const Grader: React.FC = () => {
             <button type="submit">submit comment</button>
           </form>
         </div>
-      )}
-      <div>
-        <form onSubmit={submitComment}>
-          <input type="number" name="line" placeholder="line number" />
-          <input type="text" name="comment" placeholder="comment" />
-          <button type="submit">submit comment</button>
-        </form>
       </div>
-    )
+    </div>
   );
 };
 
