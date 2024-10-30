@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS assignments (
   name VARCHAR(255) NOT NULL,
   main_due_date TIMESTAMP,
   FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
-  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS student_assignments (
