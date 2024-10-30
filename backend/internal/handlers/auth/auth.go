@@ -1,4 +1,4 @@
-package github
+package auth
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (service *GitHubService) GetCallbackURL() fiber.Handler {
+func (service *AuthService) GetCallbackURL() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		oAuthCfg := service.userCfg.OAuthConfig()
 		clientID := oAuthCfg.ClientID
@@ -26,7 +26,7 @@ func (service *GitHubService) GetCallbackURL() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) Login() fiber.Handler {
+func (service *AuthService) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract code from the request body
 		var requestBody struct {
@@ -85,26 +85,7 @@ func (service *GitHubService) Login() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) GetCurrentUser() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		client, err := middleware.GetClient(c, service.store, service.userCfg)
-		if err != nil {
-			fmt.Println("FAILED TO GET CLIENT", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
-		user, err := client.GetCurrentUser(c.Context())
-		if err != nil {
-			fmt.Println("FAILED TO GET USER", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
-		}
-
-		//TODO: include the user's role (i.e. professor, TA, student) in the response
-		return c.Status(200).JSON(user)
-	}
-}
-
-func (service *GitHubService) Logout() fiber.Handler {
+func (service *AuthService) Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(int64)
 		if !ok {

@@ -1,24 +1,28 @@
 package classrooms
 
 import (
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms/assignments"
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms/assignments/submissions"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Routes(app *fiber.App, params types.Params) {
-	service := newClassroomService(params.Store)
+	classroomService := newClassroomService(params.Store)
+	assignmentService := assignments.NewAssignmentService(params.Store)
+	submissionService := submissions.NewSubmissionService(params.Store, params.GitHubApp)
 
 	// Create the base router
 	baseRouter := app.Group("")
 
 	// Create the classroom router
-	classroomRouter := classroomRoutes(baseRouter, service)
+	classroomRouter := classroomRoutes(baseRouter, classroomService)
 
 	// Create the assignment router
-	assignmentRouter := assignmentRoutes(classroomRouter, service)
+	assignmentRouter := assignments.AssignmentRoutes(classroomRouter, assignmentService)
 
 	// Create the submission router
-	submissionRoutes(assignmentRouter, service)
+	submissions.SubmissionRoutes(assignmentRouter, submissionService)
 }
 
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
@@ -49,40 +53,4 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 	classroomRouter.Post("/:classroom_id/token", service.GenerateClassroomToken())
 
 	return classroomRouter
-}
-
-func assignmentRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
-	assignmentRouter := router.Group("/:classroom_id/assignments")
-
-	// Get the assignments in a classroom
-	assignmentRouter.Get("/", service.GetAssignments())
-
-	// Get the details of an assignment
-	assignmentRouter.Get("/:assignment_id", service.GetAssignment())
-
-	// Create an assignment
-	assignmentRouter.Post("/", service.CreateAssignment())
-
-	// Update an assignment
-	assignmentRouter.Put("/:assignment_id", service.UpdateAssignment())
-
-	// Generate a token to accept this assignment
-	assignmentRouter.Post("/:assignment_id/token", service.GenerateAssignmentToken())
-
-	// Get the submissions for an assignment
-	assignmentRouter.Get("/:assignment_id/submissions", service.GetAssignmentSubmissions())
-
-	return assignmentRouter
-}
-
-func submissionRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
-	submissionRouter := router.Group("/:assignment_id/submissions")
-
-	// Get the submissions for an assignment
-	submissionRouter.Get("/", service.GetSubmissions())
-
-	// Get the details of a submission
-	submissionRouter.Get("/:submission_id", service.GetSubmission())
-
-	return submissionRouter
 }
