@@ -17,12 +17,6 @@ jobs:
     permissions:
       id-token: write
 
-    env:
-      TF_BUCKET: gitmarks-terraform-state
-      TF_KEY: terraform.tfstate
-      TF_REGION: us-east-2
-      DYNAMODB_TABLE: gitmarks-terraform-lock
-
     defaults:
       run:
         working-directory: terraform

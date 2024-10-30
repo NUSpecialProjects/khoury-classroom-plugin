@@ -32,8 +32,8 @@ resource "aws_iam_role" "github_actions_deploy_role" {
 }
 
 # Policies to allow GitHub Actions to push Docker images to ECR and update ECS service
-resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
-  name = "github-actions-ecr-ecs-policy"
+resource "aws_iam_policy" "github_actions_deply_policy" {
+  name = "github-actions-deploy-policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -43,14 +43,64 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
         "Action" : [
           "iam:GetRole",
           "iam:GetPolicy",
-          "iam:ListRoles",
+          "iam:GetPolicyVersion",
+          "iam:ListAttachedRolePolicies",
           "iam:ListPolicies",
-        ],
-        "Resource" : "*"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : "ecr:GetAuthorizationToken",
+          "iam:ListRoles",
+          "iam:ListRolePolicies",
+
+          "acm:*",
+          "autoscaling:*",
+          "cloudwatch:*",
+          "cloudfront:*",
+          "dynamodb:*",
+          "ec2:*",
+          "ecr:*",
+          "elasticloadbalancing:*",
+          "lambda:*",
+          "logs:*",
+          "rds:*",
+          "route53:*",
+          "s3:*",
+          "secretsmanager:*",
+
+          # "s3:DeleteObject",
+          # "s3:GetBucketAcl",
+          # "s3:GetBucketPolicy",
+          # "s3:GetObject",
+          # "s3:ListBucket",
+          # "s3:PutObject",
+
+          # "dynamodb:PutItem",
+          # "dynamodb:GetItem",
+          # "dynamodb:DeleteItem",
+          # "dynamodb:DescribeContinuousBackups",
+          # "dynamodb:DescribeTable",
+          # "dynamodb:UpdateItem",
+          # "dynamodb:Scan",
+          # "dynamodb:Query",
+          # "dynamodb:ListTables",
+          
+          # "secretsmanager:DescribeSecret",
+          # "secretsmanager:GetResourcePolicy",
+          # "secretsmanager:GetSecretValue",
+          
+          # "logs:DescribeLogGroups",
+          # "logs:DescribeLogStreams",
+          # "logs:GetLogEvents",
+          
+          # "route53:ListHostedZones",
+          # "route53:ListTagsForResource",
+          # "route53:GetHostedZone",
+          
+          # "cloudfront:GetCloudFrontOriginAccessIdentity",
+          # "cloudfront:ListDistributions",
+          
+          # "ec2:DescribeAvailabilityZones",
+          # "ec2:DescribeVpcs",
+          # "ec2:DescribeSubnets",
+          # "ec2:DescribeSecurityGroups",
+        ]
         "Resource" : "*"
       },
       {
@@ -58,6 +108,7 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
         "Action" : [
           "ecr:BatchCheckLayerAvailability",
           "ecr:CompleteLayerUpload",
+          "ecr:DescribeRepositories",
           "ecr:InitiateLayerUpload",
           "ecr:PutImage",
           "ecr:UploadLayerPart"
@@ -80,28 +131,6 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
           "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:service/${var.ecs_cluster_name}/*"
         ]
       },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket",
-          "s3:DeleteObject",
-        ],
-        "Resource" : "*"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "dynamodb:PutItem",
-          "dynamodb:GetItem",
-          "dynamodb:DeleteItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:Scan",
-          "dynamodb:Query",
-        ],
-        "Resource" : "*"
-      }
     ]
   })
 }
@@ -109,5 +138,5 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
 # Attach the GitHub Actions ECR/ECS policy to the role
 resource "aws_iam_role_policy_attachment" "github_actions_deploy_policy_attachment" {
   role       = aws_iam_role.github_actions_deploy_role.name
-  policy_arn = aws_iam_policy.github_actions_ecr_ecs_policy.arn
+  policy_arn = aws_iam_policy.github_actions_deply_policy.arn
 }
