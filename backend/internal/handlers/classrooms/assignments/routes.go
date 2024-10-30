@@ -14,7 +14,7 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Rou
 	assignmentRouter.Get("/:assignment_id", service.GetAssignment())
 
 	// Create an assignment
-	assignmentRouter.Post("/", service.CreateAssignment())
+	assignmentRouter.Post("/", service.CreateAssignment)
 
 	// Update an assignment
 	assignmentRouter.Put("/:assignment_id", service.UpdateAssignment())
@@ -27,20 +27,3 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Rou
 
 	return assignmentRouter
 }
-
-// func Routes(router fiber.Router, params types.Params) {
-// 	service := newAssignmentService(params.Store)
-
-// 	assignmentRouter := router.Group("/assignments")
-
-// 	assignmentRouter.Get("", service.GetAssignment)
-// 	assignmentRouter.Post("", service.CreateAssignment)
-// 	assignmentRouter.Post("/rubrics", service.CreateRubric)
-// 	assignmentRouter.Post("/assignment", service.CreateStudentAssignment)
-// 	assignmentRouter.Post("/due_dates", service.CreateDueDate)
-// 	assignmentRouter.Post("/regrades", service.CreateRegrade)
-
-// 	submissionRouter := assignmentRouter.Group("/:submission_id")
-// 	student_assignments.Routes(submissionRouter, params)
-
-// }

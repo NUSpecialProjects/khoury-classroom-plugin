@@ -16,13 +16,3 @@ func SubmissionRoutes(router fiber.Router, service *SubmissionService) fiber.Rou
 
 	return submissionRouter
 }
-
-// func Routes(router fiber.Router, params types.Params) {
-// 	service := newStudentAssignmentService(params.Store, params.GitHubApp)
-
-// 	protected := router.Group("/student-assignments")
-
-// 	protected.Get("", service.GetStudentAssignments)
-// 	protected.Get("/total", service.GetTotalStudentAssignments)
-// 	protected.Get("/:studentAssignmentID", service.GetStudentAssignment)
-// }
