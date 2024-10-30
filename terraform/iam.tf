@@ -4,7 +4,7 @@ data "aws_region" "current" {}
 #  GitHub Actions Deployment
 # ------------------------------------------------
 
-# GitHub Actions Role for Deployment
+# Verify the GitHub Actions OIDC provider
 resource "aws_iam_role" "github_actions_deploy_role" {
   name = "github-actions-deploy-role"
 
@@ -31,7 +31,7 @@ resource "aws_iam_role" "github_actions_deploy_role" {
   })
 }
 
-# Policies to allow GitHub Actions to push Docker images to ECR and update ECS service
+# Policies to allow GitHub Actions to fully deploy the application
 resource "aws_iam_policy" "github_actions_deply_policy" {
   name = "github-actions-deploy-policy"
 
@@ -73,7 +73,7 @@ resource "aws_iam_policy" "github_actions_deply_policy" {
   })
 }
 
-# Attach the GitHub Actions ECR/ECS policy to the role
+# Attach the GitHub Actions deploy policy to the role
 resource "aws_iam_role_policy_attachment" "github_actions_deploy_policy_attachment" {
   role       = aws_iam_role.github_actions_deploy_role.name
   policy_arn = aws_iam_policy.github_actions_deply_policy.arn

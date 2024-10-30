@@ -1,4 +1,5 @@
-# Fetch the Route 53 Zone
+# route_53.tf
+
 data "aws_route53_zone" "zone" {
   name         = var.domain_name
   private_zone = false
@@ -21,7 +22,7 @@ resource "aws_route53_record" "frontend_cert_validation" {
   records = [each.value.record]
 }
 
-# Alias A Record for Root Domain to CloudFront
+# Route custom domain to CloudFront
 resource "aws_route53_record" "root_alias" {
   zone_id = data.aws_route53_zone.zone.zone_id
   name    = var.domain_name

@@ -1,8 +1,9 @@
+# Link local state to the remote
 terraform {
   backend "s3" {
-    bucket = "gitmarks-terraform-state"
-    key    = "terraform.tfstate"
-    region = "us-east-2"
+    bucket         = "gitmarks-terraform-state"
+    key            = "terraform.tfstate"
+    region         = "us-east-2"
     dynamodb_table = "gitmarks-terraform-lock"
   }
 }

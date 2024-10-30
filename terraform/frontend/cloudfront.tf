@@ -1,4 +1,7 @@
+# cloudfront.tf
+
 resource "aws_cloudfront_distribution" "frontend" {
+  # The S3 bucket with our React App
   origin {
     domain_name = "${aws_s3_bucket.frontend.bucket}.s3.amazonaws.com"
     origin_id   = aws_s3_bucket.frontend.id
@@ -8,6 +11,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
+  # CloudFront Configuration
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = var.index_document
