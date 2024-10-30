@@ -40,6 +40,16 @@ resource "aws_iam_policy" "github_actions_ecr_ecs_policy" {
     Statement = [
       {
         "Effect" : "Allow",
+        "Action" : [
+          "iam:GetRole",
+          "iam:GetPolicy",
+          "iam:ListRoles",
+          "iam:ListPolicies",
+        ],
+        "Resource" : "*"
+      },
+      {
+        "Effect" : "Allow",
         "Action" : "ecr:GetAuthorizationToken",
         "Resource" : "*"
       },
