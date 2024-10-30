@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "app" {
     image  = aws_ecr_repository.gitmarks_repo.repository_url
     cpu    = var.fargate_cpu
     memory = var.fargate_memory
-    
+
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -38,7 +38,7 @@ resource "aws_ecs_task_definition" "app" {
         "awslogs-stream-prefix" = "ecs"
       }
     }
-    
+
     portMappings = [{
       containerPort = var.app_port
       hostPort      = var.app_port

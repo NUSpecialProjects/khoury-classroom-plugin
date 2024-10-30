@@ -53,7 +53,7 @@ resource "aws_iam_role_policy_attachment" "ecs_secrets_attachment" {
 # ------------------------------------------------
 
 resource "aws_iam_role" "ecs_auto_scale_role" {
-  name               = "gitmarks-backend-autoscale-role"
+  name = "gitmarks-backend-autoscale-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [

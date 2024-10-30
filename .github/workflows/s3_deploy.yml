@@ -51,4 +51,4 @@ jobs:
 
     - name: Sync to S3
       run: |
-        aws s3 sync ./dist s3://khoury-classroom-frontend-058264409130 --delete --acl public-read
+        aws s3 sync ./dist s3://gitmarks-frontend-058264409130 --delete --acl public-read
