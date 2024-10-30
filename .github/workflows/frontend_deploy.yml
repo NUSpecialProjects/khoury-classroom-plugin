@@ -5,10 +5,9 @@ on:
   push:
     branches:
       - main
-      - feature/cors
     paths:
       - 'frontend/**'
-      - '.github/workflows/s3_deploy.yml'
+      - '.github/workflows/frontend_deploy.yml'
 
 jobs:
   build-and-deploy:
