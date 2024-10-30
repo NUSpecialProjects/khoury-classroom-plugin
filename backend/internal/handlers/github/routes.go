@@ -10,21 +10,11 @@ func Routes(app *fiber.App, params types.Params) {
 	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
 
 	// Create the base router
-	baseRouter := baseRouter(app, params)
+	baseRouter := app.Group("")
 
 	githubRouter := githubRoutes(baseRouter, params, service)
 	orgRoutes(githubRouter, service)
 
-}
-
-func baseRouter(app *fiber.App, params types.Params) fiber.Router {
-	service := newGitHubService(params.Store, params.GitHubApp, &params.UserCfg)
-
-	baseRouter := app.Group("")
-
-	baseRouter.Post("/webhook", middleware.ProtectedWebhook(params.GitHubApp.GetWebhookSecret()), service.WebhookHandler)
-
-	return baseRouter
 }
 
 func githubRoutes(router fiber.Router, params types.Params, service *GitHubService) fiber.Router {
