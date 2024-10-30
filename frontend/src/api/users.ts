@@ -1,19 +1,30 @@
-const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+// const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
-  const response = await fetch(`${base_url}/github/user`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  // const response = await fetch(`${base_url}/github/user`, {
+  //   method: "GET",
+  //   credentials: "include",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // });
 
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
+  // if (!response.ok) {
+  //   throw new Error("Network response was not ok");
+  // }
 
-  return response.json();
+  // return response.json();
+  console.log("Using mocked API call for current user: ");
+  return Promise.resolve(
+    {
+      login: "user1",
+      id: 1,
+      node_id: "node1",
+      avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
+      url: "https://api.github.com/users/user1",
+      name: "User One",
+      email: null,
+    })
 };
 
 export const fetchUsersWithRole = async (
