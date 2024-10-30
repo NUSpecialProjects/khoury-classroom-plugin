@@ -66,73 +66,8 @@ resource "aws_iam_policy" "github_actions_deply_policy" {
           "route53:*",
           "s3:*",
           "secretsmanager:*",
-
-          # "s3:DeleteObject",
-          # "s3:GetBucketAcl",
-          # "s3:GetBucketPolicy",
-          # "s3:GetObject",
-          # "s3:ListBucket",
-          # "s3:PutObject",
-
-          # "dynamodb:PutItem",
-          # "dynamodb:GetItem",
-          # "dynamodb:DeleteItem",
-          # "dynamodb:DescribeContinuousBackups",
-          # "dynamodb:DescribeTable",
-          # "dynamodb:UpdateItem",
-          # "dynamodb:Scan",
-          # "dynamodb:Query",
-          # "dynamodb:ListTables",
-          
-          # "secretsmanager:DescribeSecret",
-          # "secretsmanager:GetResourcePolicy",
-          # "secretsmanager:GetSecretValue",
-          
-          # "logs:DescribeLogGroups",
-          # "logs:DescribeLogStreams",
-          # "logs:GetLogEvents",
-          
-          # "route53:ListHostedZones",
-          # "route53:ListTagsForResource",
-          # "route53:GetHostedZone",
-          
-          # "cloudfront:GetCloudFrontOriginAccessIdentity",
-          # "cloudfront:ListDistributions",
-          
-          # "ec2:DescribeAvailabilityZones",
-          # "ec2:DescribeVpcs",
-          # "ec2:DescribeSubnets",
-          # "ec2:DescribeSecurityGroups",
         ]
         "Resource" : "*"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:CompleteLayerUpload",
-          "ecr:DescribeRepositories",
-          "ecr:InitiateLayerUpload",
-          "ecr:PutImage",
-          "ecr:UploadLayerPart"
-        ],
-        "Resource" : "arn:aws:ecr:${data.aws_region.current.name}:${var.aws_account_id}:repository/${var.ecr_repo_name}"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "ecs:UpdateService",
-          "ecs:RegisterTaskDefinition",
-          "ecs:DescribeServices",
-          "ecs:DescribeTaskDefinition",
-          "ecs:DescribeTasks",
-          "ecs:ListTasks",
-          "ecs:DescribeClusters"
-        ],
-        "Resource" : [
-          "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:cluster/${var.ecs_cluster_name}",
-          "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:service/${var.ecs_cluster_name}/*"
-        ]
       },
     ]
   })

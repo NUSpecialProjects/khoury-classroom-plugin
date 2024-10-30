@@ -44,9 +44,5 @@ jobs:
             -backend-config="region=us-east-2" \
             -backend-config="dynamodb_table=gitmarks-terraform-lock"
 
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -out=tfplan
-
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve
