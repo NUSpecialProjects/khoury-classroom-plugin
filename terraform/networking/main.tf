@@ -58,7 +58,7 @@ resource "aws_nat_gateway" "gw" {
   allocation_id = aws_eip.gw[count.index].id
 }
 resource "aws_route_table" "private" {
-  count = var.az_count
+  count  = var.az_count
   vpc_id = aws_vpc.main.id
 
   route {

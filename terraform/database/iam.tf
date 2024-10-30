@@ -20,7 +20,7 @@ resource "aws_iam_role" "lambda_execution_role" {
 
 # Allow Lambda interaction with backend components
 resource "aws_iam_policy" "lambda_policy" {
-  name        = "drop_db_policy"
+  name = "drop_db_policy"
 
   policy = jsonencode({
     Version = "2012-10-17",
