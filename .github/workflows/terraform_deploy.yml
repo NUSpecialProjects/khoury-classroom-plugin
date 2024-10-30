@@ -38,7 +38,6 @@ jobs:
 
       - name: Zip Lambda Function
         run: |
-          mkdir database
           zip -r database/func.zip database/func
 
       - name: Terraform Init
