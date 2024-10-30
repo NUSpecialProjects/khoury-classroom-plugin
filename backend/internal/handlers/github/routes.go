@@ -12,13 +12,20 @@ func Routes(app *fiber.App, params types.Params) {
 	// Create the base router
 	baseRouter := app.Group("")
 
+	// Check the health of the back end API
+	baseRouter.Get("/", service.Ping())
+
 	githubRouter := githubRoutes(baseRouter, params, service)
 	orgRoutes(githubRouter, service)
 
 }
 
 func githubRoutes(router fiber.Router, params types.Params, service *GitHubService) fiber.Router {
+	unprotectedGithubRouter := router.Group("/github")
 	githubRouter := router.Group("/github").Use(middleware.Protected(params.UserCfg.JWTSecret))
+
+	// Check the health of the GitHub API
+	unprotectedGithubRouter.Get("/ping", service.GitHubPing())
 
 	// Get the current authenticated user
 	githubRouter.Get("/user", service.GetCurrentUser())
