@@ -1,4 +1,4 @@
-# alb.tf
+# backend/alb.tf
 
 # Load Balancer Resource
 resource "aws_lb" "main" {

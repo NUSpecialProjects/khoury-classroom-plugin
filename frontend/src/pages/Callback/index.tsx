@@ -16,7 +16,7 @@ const Callback: React.FC = () => {
       const sendCode = () => {
         const base_url: string = import.meta.env
           .VITE_PUBLIC_API_DOMAIN as string;
-          
+
         fetch(`${base_url}/login`, {
           method: "POST",
           credentials: "include",

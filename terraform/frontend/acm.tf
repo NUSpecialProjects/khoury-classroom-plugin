@@ -1,4 +1,4 @@
-# acm.tf
+# frontend/acm.tf
 
 # Request SSL Certificate for CloudFront
 resource "aws_acm_certificate" "frontend_cert" {

@@ -1,4 +1,4 @@
-# main.tf
+# database/main.tf
 
 resource "aws_db_instance" "main" {
   allocated_storage      = 20 # Storage in GB

@@ -1,4 +1,4 @@
-# provider.tf
+# frontend/provider.tf
 
 terraform {
   required_providers {

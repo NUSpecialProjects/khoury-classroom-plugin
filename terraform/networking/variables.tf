@@ -1,4 +1,4 @@
-# variables.tf
+# networking/variables.tf
 
 # ------------------------------------------------
 #  Local Variables

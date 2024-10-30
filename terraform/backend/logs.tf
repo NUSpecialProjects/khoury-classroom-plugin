@@ -1,4 +1,4 @@
-# logs.tf
+# backend/logs.tf
 
 # Store logs
 resource "aws_cloudwatch_log_group" "gitmarks_log_group" {
