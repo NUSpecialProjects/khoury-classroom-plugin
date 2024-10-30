@@ -21,4 +21,3 @@ type Session interface {
 	GetSession(ctx context.Context, gitHubUserID int64) (models.Session, error)
 	DeleteSession(ctx context.Context, gitHubUserID int64) error
 }
-

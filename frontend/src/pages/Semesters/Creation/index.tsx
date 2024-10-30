@@ -136,7 +136,10 @@ const SemesterCreation: React.FC = () => {
       try {
         const data: IUserSemestersResponse = await getUserSemesters();
 
-        if (data.active_semesters.length > 0 || data.inactive_semesters.length > 0) {
+        if (
+          data.active_semesters.length > 0 ||
+          data.inactive_semesters.length > 0
+        ) {
           setHasSemester(true);
           console.log(hasSemester);
         }
@@ -182,19 +185,25 @@ const SemesterCreation: React.FC = () => {
           ) && (
             <>
               {semesterCreationStatus === SemesterCreationStatus.CREATING && (
-
-                <Button variant="primary" onClick={handleCreateSemester} disabled={true}>Creating classroom...</Button>
+                <Button
+                  variant="primary"
+                  onClick={handleCreateSemester}
+                  disabled={true}
+                >
+                  Creating classroom...
+                </Button>
               )}
               {(semesterCreationStatus === SemesterCreationStatus.NONE ||
                 semesterCreationStatus === SemesterCreationStatus.ERRORED) && (
-                  <Button variant="primary" onClick={handleCreateSemester}>Create classroom</Button>
-                )}
+                <Button variant="primary" onClick={handleCreateSemester}>
+                  Create classroom
+                </Button>
+              )}
               {semesterCreationStatus === SemesterCreationStatus.ERRORED && (
                 <div>Error creating classroom. Please try again.</div>
               )}
             </>
-          )
-        }
+          )}
 
         {selectedOrg &&
           orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
@@ -203,21 +212,30 @@ const SemesterCreation: React.FC = () => {
             </Button>
           )}
 
-        {(hasSemester || semesterCreationStatus === SemesterCreationStatus.CREATED) && (
-          <Button variant="secondary" onClick={() => {
-            navigate("/app/classroom/select");
-          }}>
+        {(hasSemester ||
+          semesterCreationStatus === SemesterCreationStatus.CREATED) && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              navigate("/app/classroom/select");
+            }}
+          >
             View existing classrooms
           </Button>
         )}
 
         {semesterCreationStatus !== SemesterCreationStatus.NONE && (
-          <Button variant="secondary" onClick={() => {
-            setSemesterCreationStatus(SemesterCreationStatus.NONE);
-          }}>Create another classroom</Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setSemesterCreationStatus(SemesterCreationStatus.NONE);
+            }}
+          >
+            Create another classroom
+          </Button>
         )}
       </div>
-    </Panel >
+    </Panel>
   );
 };
 

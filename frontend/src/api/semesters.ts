@@ -17,20 +17,33 @@ export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
 export const getClassrooms = async (
   orgId: number
 ): Promise<IClassroomResponse> => {
-  const response = await fetch(
-    `${base_url}/github/user/orgs/${orgId.toString()}/classrooms`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+  console.log("Using mocked API call for org: ", orgId);
+  return Promise.resolve({
+    available_classrooms: [
+      {
+        id: 1,
+        name: "Spring 2024",
+        url: "https://classroom1.com",
       },
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json() as Promise<IClassroomResponse>;
+      {
+        id: 2,
+        name: "Fall 2023",
+        url: "https://classroom2.com",
+      },
+    ],
+    unavailable_classrooms: [
+      {
+        id: 3,
+        name: "Spring 2022",
+        url: "https://classroom3.com",
+      },
+      {
+        id: 4,
+        name: "Spring 2021",
+        url: "https://classroom4.com",
+      },
+    ],
+  });
 };
 
 export const getOrganizationDetails = async (
@@ -56,57 +69,92 @@ export const postSemester = async (
   OrgName: string,
   ClassroomName: string
 ): Promise<ISemester> => {
-  const response = await fetch(`${base_url}/github/semesters`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      org_id: orgId,
-      classroom_id: classroomId,
-      org_name: OrgName,
-      classroom_name: ClassroomName,
-    }),
+  return Promise.resolve({
+    id: 1,
+    org_id: orgId,
+    classroom_id: classroomId,
+    org_name: OrgName,
+    classroom_name: ClassroomName,
+    active: true,
   });
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const data = (await response.json()) as { semester: ISemester };
-  return data.semester;
 };
 
 export const getUserSemesters = async (): Promise<IUserSemestersResponse> => {
-  const response = await fetch(`${base_url}/github/user/semesters`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+  return Promise.resolve({
+    active_semesters: [
+      {
+        org_id: 1,
+        classroom_id: 1,
+        org_name: "CS2200",
+        classroom_name: "Spring 2024",
+        active: true,
+      },
+    ],
+    inactive_semesters: [
+      {
+        org_id: 2,
+        classroom_id: 2,
+        org_name: "CS3500",
+        classroom_name: "Fall 2023",
+        active: false,
+      },
+      {
+        org_id: 2,
+        classroom_id: 3,
+        org_name: "CS3500",
+        classroom_name: "Spring 2022",
+        active: false,
+      },
+      {
+        org_id: 1,
+        classroom_id: 4,
+        org_name: "CS3500",
+        classroom_name: "Spring 2021",
+        active: false,
+      },
+    ],
   });
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
 };
+
+interface ISemester {
+  org_id: number;
+  classroom_id: number;
+  org_name: string;
+  classroom_name: string;
+  active: boolean;
+}
+
+interface IUserSemestersResponse {
+  active_semesters: ISemester[];
+  inactive_semesters: ISemester[];
+}
+
+interface IOrgSemestersResponse {
+  semesters: ISemester[];
+}
 
 export const getOrgSemesters = async (
   orgId: number
 ): Promise<IOrgSemestersResponse> => {
-  const response = await fetch(
-    `${base_url}/github/orgs/${orgId.toString()}/semesters`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+  console.log("Using mocked API call for org: ", orgId);
+  return Promise.resolve({
+    semesters: [
+      {
+        org_id: 1,
+        classroom_id: 1,
+        org_name: "CS2200",
+        classroom_name: "Spring 2024",
+        active: true,
       },
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
+      {
+        org_id: 1,
+        classroom_id: 4,
+        org_name: "CS3500",
+        classroom_name: "Spring 2021",
+        active: false,
+      },
+    ],
+  });
 };
 
 export const activateSemester = async (
@@ -125,20 +173,17 @@ const modifySemester = async (
   classroomId: number,
   activate: boolean
 ): Promise<ISemester> => {
-  const response = await fetch(
-    `${base_url}/github/semesters/${classroomId.toString()}`,
-    {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ activate }),
-    }
+  console.log(
+    "Using mocked API call for classroom: ",
+    classroomId,
+    "activate: ",
+    activate
   );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const data = (await response.json()) as { semester: ISemester };
-  return data.semester;
+  return Promise.resolve({
+    org_id: 1,
+    classroom_id: 1,
+    org_name: "CS2200",
+    classroom_name: "Spring 2024",
+    active: true,
+  });
 };

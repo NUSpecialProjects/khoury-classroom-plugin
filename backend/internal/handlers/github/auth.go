@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -12,6 +13,20 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
+
+func (service *GitHubService) GetCallbackURL() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		oAuthCfg := service.userCfg.OAuthConfig()
+		clientID := oAuthCfg.ClientID
+		redirectURI := oAuthCfg.RedirectURL
+		scope := strings.Join(service.userCfg.Scopes, ",")
+		allowSignup := "false"
+		authURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&allow_signup=%s",
+			clientID, redirectURI, scope, allowSignup)
+
+		return c.Status(200).JSON(fiber.Map{"url": authURL})
+	}
+}
 
 func (service *GitHubService) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -112,86 +127,19 @@ func (service *GitHubService) Logout() fiber.Handler {
 func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, error) {
 	userID, ok := c.Locals("userID").(int64)
 	if !ok {
-		fmt.Println("FAILED TO GET USERID")
 		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
 	}
 
 	session, err := service.store.GetSession(c.Context(), userID)
 	if err != nil {
-		fmt.Println("FAILED TO GET SESSION", err)
 		return nil, err
 	}
 
 	client, err := userclient.NewFromSession(service.userCfg.OAuthConfig(), &session)
 
 	if err != nil {
-		fmt.Println("FAILED TO CREATE CLIENT", err)
 		return nil, err
 	}
 
 	return client, nil
-}
-
-func (service *GitHubService) ListClassrooms() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
-		classrooms, err := client.GetUserClassrooms(c.Context())
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch classrooms"})
-		}
-
-		var assignments []models.ClassroomAssignment
-		for _, classroom := range classrooms {
-			assignments, err = client.ListAssignmentsForClassroom(c.Context(), classroom.ID)
-			if err != nil {
-				return c.Status(500).JSON(fiber.Map{"error": "failed to fetch assignments"})
-			}
-		}
-
-		return c.Status(200).JSON(assignments)
-	}
-}
-
-func (service *GitHubService) GetUserOrgs() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
-		orgs, err := client.GetUserOrgs(c.Context())
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
-		}
-
-		return c.Status(200).JSON(orgs)
-	}
-}
-
-func (service *GitHubService) GetUserRoles() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
-		var requestBody struct {
-			OrgID int64 `json:"org_id"`
-		}
-		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
-		}
-		org_id := requestBody.OrgID
-
-		roles, err := client.GetUserRoles(c.Context(), org_id)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
-		}
-
-		return c.Status(200).JSON(roles)
-	}
 }

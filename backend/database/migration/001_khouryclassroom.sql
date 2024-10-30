@@ -87,11 +87,9 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
-    github_user_id INTEGER PRIMARY KEY,
-    access_token VARCHAR(255) NOT NULL,
-    token_type VARCHAR(255) NOT NULL,
-    refresh_token VARCHAR(255) NOT NULL,
-    expires_in INTEGER NOT NULL
-)
-
-
+  github_user_id INTEGER PRIMARY KEY,
+  access_token VARCHAR(255) NOT NULL,
+  token_type VARCHAR(255),
+  refresh_token VARCHAR(255),
+  expires_in INTEGER
+);

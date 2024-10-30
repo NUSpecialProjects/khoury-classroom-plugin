@@ -15,6 +15,7 @@ enum SemesterError {
   ALREADY_ACTIVE = "A class is already active. Please deactivate it first.",
   MULTIPLE_ACTIVE = "Multiple classes are active. Please deactivate all but one.",
   NOT_ACTIVE = "This class is not active. Activate it to use this class.",
+  NETWORK_ERROR = "Network error. Please check your connection and try again",
 }
 
 const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
@@ -24,21 +25,28 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ semester, onActivate }) => {
 
   useEffect(() => {
     const checkErrors = async () => {
-      const orgSemesters: ISemester[] = (await getOrgSemesters(semester.org_id))
-        .semesters;
-      const activeSemesters = orgSemesters.filter((s: ISemester) => s.active);
-      const otherActiveSemester = activeSemesters.find(
-        (s: ISemester) => s.classroom_id !== semester.classroom_id
-      );
-      if (activeSemesters.length > 1) {
-        setError(SemesterError.MULTIPLE_ACTIVE);
-      } else if (otherActiveSemester) {
-        setActiveSemester(otherActiveSemester);
-        setError(SemesterError.ALREADY_ACTIVE);
-      } else if (!semester.active) {
-        setError(SemesterError.NOT_ACTIVE);
-      } else if (semester.active && error !== SemesterError.API_ERROR) {
-        setError(null);
+      try {
+        const orgResponse: IOrgSemestersResponse = (await getOrgSemesters(
+          semester.org_id
+        )) as IOrgSemestersResponse;
+        const orgSemesters: ISemester[] = orgResponse.semesters;
+        const activeSemesters = orgSemesters.filter((s: ISemester) => s.active);
+        const otherActiveSemester = activeSemesters.find(
+          (s: ISemester) => s.classroom_id !== semester.classroom_id
+        );
+        if (activeSemesters.length > 1) {
+          setError(SemesterError.MULTIPLE_ACTIVE);
+        } else if (otherActiveSemester) {
+          setActiveSemester(otherActiveSemester);
+          setError(SemesterError.ALREADY_ACTIVE);
+        } else if (!semester.active) {
+          setError(SemesterError.NOT_ACTIVE);
+        } else if (semester.active && error !== SemesterError.API_ERROR) {
+          setError(null);
+        }
+      } catch (err) {
+        console.error("Error checking for active semesters:", err);
+        setError(SemesterError.NETWORK_ERROR);
       }
     };
     void checkErrors();
