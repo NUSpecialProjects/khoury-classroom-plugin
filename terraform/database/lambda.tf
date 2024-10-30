@@ -4,7 +4,7 @@ resource "aws_lambda_function" "drop_db_function" {
   filename         = "./database/func.zip"
   function_name    = "drop_db"
   role             = aws_iam_role.lambda_execution_role.arn
-  handler          = "drop_db.lambda_handler"
+  handler          = "func/drop_db.lambda_handler"
   runtime          = "python3.9"
   source_code_hash = filebase64sha256("./database/func.zip")
   architectures    = ["arm64"]
