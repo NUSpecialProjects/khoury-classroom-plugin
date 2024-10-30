@@ -6,58 +6,99 @@ CREATE TABLE IF NOT EXISTS semesters (
   org_id INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS rubrics (
-  id SERIAL PRIMARY KEY,
-  content VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS classrooms (
+    id SERIAL PRIMARY KEY,
+    classroom_name VARCHAR(255) NOT NULL,
+    org_id INTEGER NOT NULL,
+    org_name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS assignments (
-  id SERIAL PRIMARY KEY,
-  rubric_id INTEGER,
-  assignment_classroom_id INTEGER NOT NULL,
-  inserted_date TIMESTAMP DEFAULT NOW() NOT NULL, 
-  classroom_id INTEGER NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  main_due_date TIMESTAMP,
-  FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
-  FOREIGN KEY (classroom_id) REFERENCES semesters(classroom_id)
+CREATE TABLE IF NOT EXISTS classroom_tokens (
+    token STRING PRIMARY KEY, 
+    expires_in TIMESTAMP NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
-CREATE TABLE IF NOT EXISTS student_assignments (
-  id SERIAL PRIMARY KEY,
-  assignment_id INTEGER NOT NULL,
-  repo_name VARCHAR(255) NOT NULL,
-  student_gh_username VARCHAR(255) NOT NULL,
-  ta_gh_username VARCHAR(255),
-  completed BOOLEAN NOT NULL,
-  started BOOLEAN NOT NULL,
-  FOREIGN KEY (assignment_id) REFERENCES assignments(id)
+CREATE TABLE IF NOT EXISTS user_to_classroom (
+    github_username STRING PRIMARY KEY, 
+    github_user_id INTEGER NOT NUll,
+    role STRING NOT NULL,
+    classroom_id INTEGER NOT NULL,
 );
 
-CREATE TABLE IF NOT EXISTS due_dates (
-  id SERIAL PRIMARY KEY,
-  due TIMESTAMP DEFAULT NOW() NOT NULL,
-  student_assignment_id INTEGER NOT NULL,
-  FOREIGN KEY (student_assignment_id) REFERENCES student_assignments(id)
+CREATE TABLE IF NOT EXISTS assignment_outlines (
+    id SERIAL PRIMARY KEY,
+    template_repo_owner STRING NOT NULL,
+    template_repo_id STRING NOT NULL,
+    created_date TIMESTAMP DEFAULT NOW(),
+    name STRING NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
-CREATE TABLE IF NOT EXISTS regrades (
-  id SERIAL PRIMARY KEY,
-  student_gh_username VARCHAR(255) NOT NULL,
-  ta_gh_username VARCHAR(255) NOT NULL,
-  due_date_id INTEGER NOT NULL,
-  FOREIGN KEY (due_date_id) REFERENCES due_dates(id)
+CREATE TABLE IF NOT EXISTS assignment_tokens (
+    token STRING PRIMARY KEY,
+    expires_in TIMESTAMP NOT NULL,
+    assignment_outline_id INTEGER NOT NULL,
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+);
+
+CREATE TABLE IF NOT EXISTS rubric_items (
+    id SERIAL PRIMARY KEY,
+    assignment_outline_id INTEGER NOT NULL,
+    point_value INTEGER NOT NULL,
+    explanation STRING NOT NULL,
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS student_works (
+    id SERIAL PRIMARY KEY,
+    assignment_outline_id INTEGER NOT NULL,
+    repo_name STRING,
+    due_date TIMESTAMP NOT NULL,
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+
+);
+
+CREATE TABLE IF NOT EXISTS students_to_student_work (
+    github_user_id STRING NOT NULL,
+    student_work_id INTEGER NOT NULL,
+    FOREIGN KEY (github_user_id) REFERENCES user_to_classroom(github_user_id),
+    FOREIGN KEY (student_work_id) REFERENCES student_works(id)
+);
+
+CREATE TABLE IF NOT EXISTS submissions (
+    id SERIAL PRIMARY KEY, 
+    student_work_id INTEGER NOT NULL,
+    repo_name STRING NOT NULL,
+    grading_completed BOOLEAN DEFAULT FALSE NOT NULL,
+    grades_published BOOLEAN DEFAULT FALSE NOT NULL,
+    manual_feedback_score INTEGER,
+    auto_grader_score INTEGER,
+    submission_timestamp TIMESTAMP NOT NULL,
+    grades_published_timestamp TIMESTAMP,
+    commit_hash STRING NOT NULL,
+    FOREIGN KEY (student_work_id) REFERENCES student_works(id)
+);
+
+CREATE TABLE IF NOT EXISTS feedback_comment (
+    id SERIAL PRIMARY KEY,
+    submission_id INTEGER NOT NULL,
+    rubric_item_id INTEGER NOT NULL,
+    grader_gh_user_id INTEGER NOT NULL,
+    FOREIGN KEY (submission_id) REFERENCES submissions(id)
+    FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id)
+    FOREIGN KEY (grader_gh_user_id) REFERENCES user_to_classroom(github_user_id)
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
-  github_user_id INTEGER UNIQUE PRIMARY KEY,
-  access_token VARCHAR(255) NOT NULL,
-  token_type VARCHAR(255),
-  refresh_token VARCHAR(255),
-  expires_in INTEGER
-);
-
-
-
+    github_user_id INTEGER PRIMARY KEY,
+    access_token STRING NOT NULL,
+    token_type STRING NOT NULL,
+    refresh_token STRING NOT NULL,
+    expires_in INTEGER NOT NULL
+)
 
 
