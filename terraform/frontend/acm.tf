@@ -1,3 +1,5 @@
+# acm.tf
+
 # Request SSL Certificate for CloudFront
 resource "aws_acm_certificate" "frontend_cert" {
   provider          = aws.cert
@@ -9,7 +11,7 @@ resource "aws_acm_certificate" "frontend_cert" {
   }
 }
 
-# Once the validation records are created, wait for validation to complete
+# Validate the CloudFront certificate
 resource "aws_acm_certificate_validation" "frontend_cert_validation" {
   provider                = aws.cert
   certificate_arn         = aws_acm_certificate.frontend_cert.arn

@@ -1,3 +1,5 @@
+# s3.tf
+
 resource "aws_s3_bucket" "frontend" {
   bucket        = "khoury-classroom-frontend-${var.aws_account_id}"
   force_destroy = true

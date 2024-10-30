@@ -39,5 +39,5 @@ variable "ecs_service_name" {
 variable "ecr_repo_name" {
   description = "ECR repository name"
   type        = string
-  default     = "khoury-classroom/backend"
+  default     = "gitmarks/backend"
 }

@@ -9,7 +9,7 @@ resource "aws_appautoscaling_target" "target" {
   max_capacity       = 3
 }
 
-# Automatically scale capacity up by one
+# Automatically scale tasks up/down based on CPU utilization
 resource "aws_appautoscaling_policy" "up" {
   name               = "gitmarks_scale_up"
   service_namespace  = "ecs"
@@ -29,8 +29,6 @@ resource "aws_appautoscaling_policy" "up" {
 
   depends_on = [aws_appautoscaling_target.target]
 }
-
-# Automatically scale capacity down by one
 resource "aws_appautoscaling_policy" "down" {
   name               = "gitmarks_scale_down"
   service_namespace  = "ecs"
@@ -51,7 +49,7 @@ resource "aws_appautoscaling_policy" "down" {
   depends_on = [aws_appautoscaling_target.target]
 }
 
-# CloudWatch alarm that triggers the autoscaling up policy
+# Trigger scaling policies
 resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
   alarm_name          = "gitmarks_cpu_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -69,8 +67,6 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
 
   alarm_actions = [aws_appautoscaling_policy.up.arn]
 }
-
-# CloudWatch alarm that triggers the autoscaling down policy
 resource "aws_cloudwatch_metric_alarm" "service_cpu_low" {
   alarm_name          = "gitmarks_cpu_utilization_low"
   comparison_operator = "LessThanOrEqualToThreshold"

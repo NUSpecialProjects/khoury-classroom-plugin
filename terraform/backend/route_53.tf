@@ -21,7 +21,7 @@ resource "aws_route53_record" "api_cert_validation" {
   records = [each.value.record]
 }
 
-# Alias A Record for ALB (e.g., api.gitmarks.org)
+# Map ALB IP to API DNS
 resource "aws_route53_record" "alb_alias" {
   zone_id = data.aws_route53_zone.zone.zone_id
   name    = "api.${var.domain_name}"
@@ -33,7 +33,6 @@ resource "aws_route53_record" "alb_alias" {
     evaluate_target_health = false
   }
 
-  # Ensure the record is created after the ALB is available
   depends_on = [
     aws_acm_certificate_validation.api_cert_validation
   ]

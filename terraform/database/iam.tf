@@ -2,6 +2,7 @@
 
 data "aws_region" "current" {}
 
+# Allow basic Lambda execution permissions
 resource "aws_iam_role" "lambda_execution_role" {
   name = "drop_db_execution_role"
 
@@ -17,15 +18,14 @@ resource "aws_iam_role" "lambda_execution_role" {
   })
 }
 
+# Allow Lambda interaction with backend components
 resource "aws_iam_policy" "lambda_policy" {
   name        = "drop_db_policy"
-  description = "Policy for Lambda to access RDS and write logs"
 
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
-      # Permissions for CloudWatch Logs
-      {
+      { # Allow logging
         Effect = "Allow",
         Action = [
           "logs:CreateLogGroup",
@@ -34,8 +34,7 @@ resource "aws_iam_policy" "lambda_policy" {
         ],
         Resource = "arn:aws:logs:${data.aws_region.current.name}:${var.aws_account_id}:*"
       },
-      # Permissions for VPC Access (EC2 Actions)
-      {
+      { # Allow VPC Access
         Effect = "Allow",
         Action = [
           "ec2:CreateNetworkInterface",
@@ -44,8 +43,7 @@ resource "aws_iam_policy" "lambda_policy" {
         ],
         Resource = "*"
       },
-      # Permissions for ECS UpdateService
-      {
+      { # Allow restarting ECS service
         Effect = "Allow",
         Action = [
           "ecs:UpdateService"

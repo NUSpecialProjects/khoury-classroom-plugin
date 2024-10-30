@@ -6,7 +6,7 @@ resource "aws_ecs_cluster" "main" {
 
 # Fetch environment variables from AWS Secrets Manager
 data "aws_secretsmanager_secret" "env_variables" {
-  name = "prod/khoury-classroom/app"
+  name = "prod/gitmarks/app_secrets"
 }
 data "aws_secretsmanager_secret_version" "env_variables_version" {
   secret_id = data.aws_secretsmanager_secret.env_variables.id
@@ -29,6 +29,7 @@ resource "aws_ecs_task_definition" "app" {
     image  = aws_ecr_repository.gitmarks_repo.repository_url
     cpu    = var.fargate_cpu
     memory = var.fargate_memory
+    
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -37,10 +38,12 @@ resource "aws_ecs_task_definition" "app" {
         "awslogs-stream-prefix" = "ecs"
       }
     }
+    
     portMappings = [{
       containerPort = var.app_port
       hostPort      = var.app_port
     }]
+
     environment = [
       for key, value in var.db_vars : {
         name  = key
@@ -56,6 +59,7 @@ resource "aws_ecs_task_definition" "app" {
   }])
 }
 
+# Create the ECS service
 resource "aws_ecs_service" "main" {
   name            = var.ecs_service_name
   cluster         = aws_ecs_cluster.main.id

@@ -1,19 +1,19 @@
 # lambda.tf
 
 resource "aws_lambda_function" "drop_db_function" {
-  filename         = "./database/drop_db.zip"
+  filename         = "./database/func.zip"
   function_name    = "drop_db"
   role             = aws_iam_role.lambda_execution_role.arn
   handler          = "drop_db.lambda_handler"
   runtime          = "python3.9"
-  source_code_hash = filebase64sha256("./database/drop_db.zip")
+  source_code_hash = filebase64sha256("./database/func.zip")
   architectures    = ["arm64"]
   layers           = ["arn:aws:lambda:us-east-2:898466741470:layer:psycopg2-py39:1"]
   timeout          = 30
 
   environment {
     variables = {
-      DB_HOST     = "terraform-20241024190811992000000001.che2wqk4qebu.us-east-2.rds.amazonaws.com"
+      DB_HOST     = split(":", aws_db_instance.main.endpoint)[0] # get rid of the port number
       DB_PORT     = var.db_port
       DB_USERNAME = var.db_user
       DB_PASSWORD = var.db_password

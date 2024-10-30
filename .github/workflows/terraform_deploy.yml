@@ -36,6 +36,11 @@ jobs:
         with:
           terraform_version: 1.9.7
 
+      - name: Zip Lambda Function
+        run: |
+          mkdir database
+          zip -r database/func.zip database/func
+
       - name: Terraform Init
         run: |
           terraform init \

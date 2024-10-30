@@ -5,6 +5,7 @@ resource "aws_security_group" "lb" {
   description = "controls access to the ALB"
   vpc_id      = aws_vpc.main.id
 
+  # Only accept HTTPS traffic
   ingress {
     protocol    = "tcp"
     from_port   = 443
@@ -12,6 +13,7 @@ resource "aws_security_group" "lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow all outbound traffic
   egress {
     protocol    = "-1"
     from_port   = 0
@@ -70,20 +72,7 @@ resource "aws_security_group" "lambda_sg" {
   description = "Security group for Lambda to access RDS"
   vpc_id      = aws_vpc.main.id
 
-  egress {
-    from_port   = var.db_port
-    to_port     = var.db_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = var.app_port
-    to_port     = var.app_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Default outbound rule to allow all other traffic
+  # Allow all outbound traffic
   egress {
     protocol    = "-1"
     from_port   = 0

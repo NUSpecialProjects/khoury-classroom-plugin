@@ -1,9 +1,10 @@
 # ecr.tf
 
 resource "aws_ecr_repository" "gitmarks_repo" {
-  name                 = "khoury-classroom/backend"
+  name                 = var.ecr_repo_name
   image_tag_mutability = "MUTABLE"
 }
+
 
 resource "aws_ecr_lifecycle_policy" "gitmarks_repo_lifecycle" {
   repository = aws_ecr_repository.gitmarks_repo.name

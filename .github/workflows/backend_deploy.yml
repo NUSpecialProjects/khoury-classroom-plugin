@@ -41,11 +41,11 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag khoury-classroom-backend:latest 058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:latest
+          docker tag khoury-classroom-backend:latest 058264409130.dkr.ecr.us-east-2.amazonaws.com/gitmarks/backend:latest
 
       - name: Push Docker image to ECR
         run: |
-          docker push 058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:latest
+          docker push 058264409130.dkr.ecr.us-east-2.amazonaws.com/gitmarks/backend:latest
 
       - name: Deploy to Amazon ECS
         run: |
