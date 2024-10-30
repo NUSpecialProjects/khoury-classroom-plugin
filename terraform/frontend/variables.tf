@@ -1,4 +1,4 @@
-# variable.tf
+# frontend/variables.tf
 
 # ------------------------------------------------
 #  Local Variables

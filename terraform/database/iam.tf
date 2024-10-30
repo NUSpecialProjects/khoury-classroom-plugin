@@ -1,10 +1,10 @@
-# iam.tf
+# database/iam.tf
 
 data "aws_region" "current" {}
 
 # Allow basic Lambda execution permissions
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "drop_db_execution_role"
+  name = "gitmarks-drop-db-execution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -20,7 +20,7 @@ resource "aws_iam_role" "lambda_execution_role" {
 
 # Allow Lambda interaction with backend components
 resource "aws_iam_policy" "lambda_policy" {
-  name = "drop_db_policy"
+  name = "gitmarks-drop-db-policy"
 
   policy = jsonencode({
     Version = "2012-10-17",

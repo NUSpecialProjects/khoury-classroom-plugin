@@ -1,4 +1,4 @@
-# variable.tf
+# database/variables.tf
 
 # ------------------------------------------------
 #  Local Variables

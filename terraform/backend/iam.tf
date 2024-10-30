@@ -1,10 +1,12 @@
+# backend/iam.tf
+
 # ------------------------------------------------
 # ECS Task
 # ------------------------------------------------
 
 # Allow ECS to execute tasks
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecs-task-execution"
+  name = "gitmarks-ecs-task-execution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -26,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attach
 
 # Allow ECS to load secrets
 resource "aws_iam_policy" "ecs_secrets_policy" {
-  name        = "ecs-secrets-policy"
+  name        = "gitmarks-ecs-secrets-policy"
   description = "Policy to allow ECS tasks to access specific secrets in Secrets Manager"
 
   policy = jsonencode({

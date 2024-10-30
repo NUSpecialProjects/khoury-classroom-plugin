@@ -1,7 +1,7 @@
-# security.tf
+# networking/security.tf
 
 resource "aws_security_group" "lb" {
-  name        = "cb-load-balancer-security-group"
+  name        = "gitmarks-lb-sg"
   description = "controls access to the ALB"
   vpc_id      = aws_vpc.main.id
 
@@ -23,7 +23,7 @@ resource "aws_security_group" "lb" {
 }
 
 resource "aws_security_group" "ecs_tasks" {
-  name        = "cb-ecs-tasks-security-group"
+  name        = "gitmarks-ecs-tasks-sg"
   description = "allow inbound access directly to ECS tasks"
   vpc_id      = aws_vpc.main.id
 
@@ -45,7 +45,7 @@ resource "aws_security_group" "ecs_tasks" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  name        = "cb-rds-security-group"
+  name        = "gitmarks-rds-sg"
   description = "Allow inbound access from ECS tasks"
   vpc_id      = aws_vpc.main.id
 
@@ -68,7 +68,7 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_security_group" "lambda_sg" {
-  name        = "drop_db_sg"
+  name        = "gitmarks-drop-db-sg"
   description = "Security group for Lambda to access RDS"
   vpc_id      = aws_vpc.main.id
 

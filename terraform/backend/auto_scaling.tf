@@ -1,4 +1,4 @@
-# auto_scaling.tf
+# backend/auto_scaling.tf
 
 resource "aws_appautoscaling_target" "target" {
   service_namespace  = "ecs"
@@ -11,7 +11,7 @@ resource "aws_appautoscaling_target" "target" {
 
 # Automatically scale tasks up/down based on CPU utilization
 resource "aws_appautoscaling_policy" "up" {
-  name               = "gitmarks_scale_up"
+  name               = "gitmarks-scale-up"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -30,7 +30,7 @@ resource "aws_appautoscaling_policy" "up" {
   depends_on = [aws_appautoscaling_target.target]
 }
 resource "aws_appautoscaling_policy" "down" {
-  name               = "gitmarks_scale_down"
+  name               = "gitmarks-scale-down"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -51,7 +51,7 @@ resource "aws_appautoscaling_policy" "down" {
 
 # Trigger scaling policies
 resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
-  alarm_name          = "gitmarks_cpu_utilization_high"
+  alarm_name          = "gitmarks-cpu-utilization-high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = var.scaling_policy_interval
   metric_name         = "CPUUtilization"
@@ -68,7 +68,7 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
   alarm_actions = [aws_appautoscaling_policy.up.arn]
 }
 resource "aws_cloudwatch_metric_alarm" "service_cpu_low" {
-  alarm_name          = "gitmarks_cpu_utilization_low"
+  alarm_name          = "gitmarks-cpu-utilization-low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = var.scaling_policy_interval
   metric_name         = "CPUUtilization"

@@ -1,4 +1,4 @@
-# lambda.tf
+# database/lambda.tf
 
 resource "aws_lambda_function" "drop_db_function" {
   filename         = "./database/func.zip"

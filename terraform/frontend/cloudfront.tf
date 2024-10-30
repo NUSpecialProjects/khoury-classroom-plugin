@@ -1,4 +1,4 @@
-# cloudfront.tf
+# frontend/cloudfront.tf
 
 resource "aws_cloudfront_distribution" "frontend" {
   # The S3 bucket with our React App
