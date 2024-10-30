@@ -49,6 +49,7 @@ resource "aws_iam_policy" "github_actions_deply_policy" {
           "iam:ListPolicyVersions",
           "iam:ListRoles",
           "iam:ListRolePolicies",
+          "iam:PassRole",
 
           "acm:*",
           "application-autoscaling:*",
