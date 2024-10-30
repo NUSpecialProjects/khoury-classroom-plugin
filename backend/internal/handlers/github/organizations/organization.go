@@ -1,4 +1,4 @@
-package github
+package organizations
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (service *GitHubService) GetUserOrgs() fiber.Handler {
+func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
@@ -24,7 +24,7 @@ func (service *GitHubService) GetUserOrgs() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
+func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
@@ -70,7 +70,7 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) GetOrg() fiber.Handler {
+func (service *OrganizationService) GetOrg() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract org_id from the path
 		org_name := c.Params("org")
