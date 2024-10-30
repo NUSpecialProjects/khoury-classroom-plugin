@@ -3,6 +3,7 @@ terraform {
     bucket = "gitmarks-terraform-state"
     key    = "terraform.tfstate"
     region = "us-east-2"
+    dynamodb_table = "gitmarks-terraform-lock"
   }
 }
 
