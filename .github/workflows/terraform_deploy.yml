@@ -8,6 +8,7 @@ on:
       - feature/cors
     paths:
       - 'terraform/**'
+      - '.github/workflows/terraform_deploy.yml'
 
 jobs:
   terraform:
