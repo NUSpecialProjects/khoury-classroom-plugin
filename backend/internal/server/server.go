@@ -2,10 +2,10 @@ package server
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/file_tree"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/github"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
-	"github.com/CamPlume1/khoury-classroom/internal/handlers/semesters"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
@@ -25,8 +25,8 @@ func New(params types.Params) *fiber.App {
 	//Add Route Groupings here: @TODO
 	hello.Routes(app, params)
 	github.Routes(app, params)
+	classrooms.Routes(app, params)
 	test.Routes(app, params)
-	semesters.Routes(app, params)
 	file_tree.Routes(app, params)
 
 	// heartbeat route
