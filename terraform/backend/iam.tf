@@ -4,7 +4,7 @@
 
 # IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
+  name = "ecs-task-execution"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -15,25 +15,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
           Service = "ecs-tasks.amazonaws.com"
         },
         Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-# IAM Role for ECS Task
-resource "aws_iam_role" "ecs_task_role" {
-  name = "role-name-task"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }
+      },
     ]
   })
 }
