@@ -1,5 +1,4 @@
 .Button {
-
   &--primary {
     display: flex;
     flex: 1;
@@ -15,7 +14,6 @@
     &:hover {
       background: var(--brand-gradient-bright);
       transition: background 0.5s ease;
-
     }
   }
 

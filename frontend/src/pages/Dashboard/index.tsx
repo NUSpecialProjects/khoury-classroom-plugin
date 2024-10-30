@@ -1,12 +1,10 @@
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import AlertBanner from "@/components/Banner/AlertBanner";
-import { activateSemester, deactivateSemester } from "@/api/semesters";
 import { useEffect, useState, useContext } from "react";
-import ErrorMessage from "@/components/Error";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
 
@@ -15,41 +13,7 @@ const Dashboard: React.FC = () => {
   const { selectedSemester, setSelectedSemester } = useContext(
     SelectedSemesterContext
   );
-  const [error, setError] = useState<string | null>(null);
-
-  const handleActivate = async (newSemester: ISemester) => {
-    setSelectedSemester(newSemester);
-  };
-
-  const handleActivateClick = async () => {
-    if (selectedSemester) {
-      try {
-        const newSemester = await activateSemester(
-          selectedSemester.classroom_id
-        );
-        handleActivate(newSemester);
-        setError(null);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to activate the class. Please try again.");
-      }
-    }
-  };
-
-  const handleDeactivateClick = async () => {
-    if (selectedSemester) {
-      try {
-        const newSemester = await deactivateSemester(
-          selectedSemester.classroom_id
-        );
-        handleActivate(newSemester);
-        setError(null);
-      } catch (err) {
-        console.log(err);
-        setError("Failed to deactivate the class. Please try again.");
-      }
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAssignments = async (semester: ISemester) => {
@@ -66,16 +30,18 @@ const Dashboard: React.FC = () => {
 
     const SyncWithClassroom = async (semester: ISemester) => {
       try {
-        const base_url: string = import.meta.env
-          .VITE_PUBLIC_API_DOMAIN as string;
-        const result = await fetch(`${base_url}/github/sync`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ classroom_id: semester.classroom_id }),
-        });
+        console.log("Using mocked API call for semester: ", semester);
+        // const base_url: string = import.meta.env
+        //   .VITE_PUBLIC_API_DOMAIN as string;
+        // const result = await fetch(`${base_url}/github/sync`, {
+        //   method: "POST",
+        //   credentials: "include",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({ classroom_id: semester.classroom_id }),
+        // });
+        const result = await Promise.resolve({ ok: true });
 
         if (!result.ok) {
           throw new Error("Network response was not ok");
@@ -98,6 +64,19 @@ const Dashboard: React.FC = () => {
     }
   }, [selectedSemester]);
 
+  const handleUserGroupClick = (group: string) => {
+    console.log(`Clicked on ${group}`);
+    if (group === "Professor") {
+      navigate("/app/professors");
+    }
+    if (group === "TA") {
+      navigate("/app/tas");
+    }
+    if (group === "Student") {
+      navigate("/app/students");
+    }
+  };
+
   return (
     <div className="Dashboard">
       {selectedSemester && (
@@ -109,12 +88,29 @@ const Dashboard: React.FC = () => {
           </h1>
           <AlertBanner
             semester={selectedSemester}
-            onActivate={handleActivate}
+            onActivate={setSelectedSemester}
           />
           <div className="Dashboard__classroomDetailsWrapper">
-            <UserGroupCard label="Professors" number={1} />
-            <UserGroupCard label="TAs" number={12} />
-            <UserGroupCard label="Students" number={38} />
+            <UserGroupCard
+              label="Professors"
+              role_type="Professor"
+              semester={selectedSemester}
+              onClick={() => handleUserGroupClick("Professor")}
+            />
+
+            <UserGroupCard
+              label="TAs"
+              role_type="TA"
+              semester={selectedSemester}
+              onClick={() => handleUserGroupClick("TA")}
+            />
+
+            <UserGroupCard
+              label="Students"
+              role_type="Student"
+              semester={selectedSemester}
+              onClick={() => handleUserGroupClick("Student")}
+            />
           </div>
           <div className="Dashboard__assignmentsWrapper">
             <h2 style={{ marginBottom: 0 }}>Assignments</h2>
@@ -139,16 +135,6 @@ const Dashboard: React.FC = () => {
               ))}
             </Table>
           </div>
-          <div>
-            <p>Temporary Classroom Settings</p>
-            {selectedSemester && !selectedSemester.active && (
-              <button onClick={handleActivateClick}>Activate Class</button>
-            )}
-            {selectedSemester && selectedSemester.active && (
-              <button onClick={handleDeactivateClick}>Deactivate Class</button>
-            )}
-          </div>
-          {error && <ErrorMessage message={error} />}
         </>
       )}
     </div>

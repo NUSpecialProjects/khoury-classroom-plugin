@@ -9,6 +9,7 @@ const LeftNav: React.FC = () => {
     { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
     { name: "Grading", dest: "/app/grading", Icon: MdFactCheck },
     { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
+    { name: "Settings", dest: "/app/settings", Icon: MdEditDocument },
   ];
 
   const className = "CS 3200 Database Design";

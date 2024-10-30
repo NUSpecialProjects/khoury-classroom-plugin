@@ -1,5 +1,5 @@
 import React from "react";
-import '../styles.css'
+import "../styles.css";
 
 interface Props {
   availableClassrooms: IClassroom[];
@@ -18,7 +18,9 @@ const ClassroomDropdown: React.FC<Props> = ({
 }) => {
   return (
     <div className="Dropdown__wrapper">
-      <label className="Dropdown__label" htmlFor="classroom">Select a Classroom</label>
+      <label className="Dropdown__label" htmlFor="classroom">
+        Select a Classroom
+      </label>
       <select
         id="classroom"
         className="Dropdown"
@@ -80,7 +82,9 @@ const ClassroomDropdown: React.FC<Props> = ({
             )}
           </>
         )}
-        <option className="Dropdown__option" value="-1">Create New Classroom ➕</option>
+        <option className="Dropdown__option" value="-1">
+          Create New Classroom ➕
+        </option>
       </select>
     </div>
   );

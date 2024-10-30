@@ -3,7 +3,6 @@ package userclient
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
@@ -67,117 +66,6 @@ func (api *UserAPI) GetCurrentUser(ctx context.Context) (models.GitHubUser, erro
 	return user, nil
 }
 
-func (api *UserAPI) GetClassroom(ctx context.Context, classroom_id int64) (models.Classroom, error) {
-	// Construct the URL for the classroom endpoint
-	endpoint := fmt.Sprintf("https://api.github.com/classrooms/%d", classroom_id)
-
-	// Create a new GET request
-	req, err := api.Client.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return models.Classroom{}, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response container for classroom
-	var classroom models.Classroom
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &classroom)
-	if err != nil {
-		return models.Classroom{}, fmt.Errorf("error fetching classroom: %v", err)
-	}
-
-	return classroom, nil
-}
-
-func (api *UserAPI) GetUserClassrooms(ctx context.Context) ([]models.Classroom, error) {
-	// Construct the URL for the classrooms endpoint
-	endpoint := "https://api.github.com/classrooms"
-
-	// Create a new GET request
-	req, err := api.Client.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response container for classrooms
-	var classrooms []models.Classroom
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &classrooms)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching classrooms: %v", err)
-	}
-
-	return classrooms, nil
-}
-
-func (api *UserAPI) GetUserClassroomsInOrg(ctx context.Context, org_id int64) ([]models.Classroom, error) {
-	all_classrooms, err := api.GetUserClassrooms(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching classrooms: %v", err)
-	}
-
-	res := []models.Classroom{}
-	for _, classroom := range all_classrooms {
-		full_classroom, err := api.GetClassroom(ctx, classroom.ID)
-		if err != nil {
-			return nil, fmt.Errorf("error fetching classroom: %v", err)
-		}
-		// should put a wait here
-		if full_classroom.Organization.ID == org_id {
-			res = append(res, full_classroom)
-		}
-	}
-
-	return res, nil
-}
-
-func (api *UserAPI) ListAssignmentsForClassroom(ctx context.Context, classroom_id int64) ([]models.ClassroomAssignment, error) {
-	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/classrooms/%d/assignments", classroom_id)
-
-	// Create a new GET request
-	req, err := api.Client.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		fmt.Println("ListAssignmentForCls - could not create a request", err)
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response container for assignments
-	var assignments []models.ClassroomAssignment
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &assignments)
-	if err != nil {
-		fmt.Println("ListAssignmentForCls - could not make api call", err)
-		return nil, fmt.Errorf("error fetching assignments: %v", err)
-	}
-
-	return assignments, nil
-}
-
-func (api *UserAPI) GetAcceptedAssignments(ctx context.Context, assignment_id int64) ([]models.ClassroomAcceptedAssignment, error) {
-	// Construct the URL for the assignment endpoint
-	endpoint := fmt.Sprintf("/assignments/%d/accepted_assignments", assignment_id)
-
-	// Create a new GET request
-	req, err := api.Client.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response container for accepted assignments
-	var acceptedAssignments []models.ClassroomAcceptedAssignment
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &acceptedAssignments)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching accepted assignments: %v", err)
-	}
-
-	return acceptedAssignments, nil
-}
-
 func (api *UserAPI) GetOrg(ctx context.Context, org_name string) (*models.Organization, error) {
 	// Construct the URL for the org endpoint
 	endpoint := fmt.Sprintf("/orgs/%s", org_name)
@@ -235,201 +123,6 @@ func (api *UserAPI) AssignPermissionToTeam(ctx context.Context, team_id int64, o
 	return nil
 }
 
-func (api *UserAPI) CreateOrgRole(ctx context.Context, org_id int64, role_name string, desc string, permissions []string, base_role string) (*models.OrganizationRole, error) {
-	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles", org_id)
-
-	body := map[string]interface{}{
-		"name":        role_name,
-		"description": desc,
-		"permissions": permissions,
-		"base_role":   base_role,
-	}
-
-	// Create a new POST request
-	req, err := api.Client.NewRequest("POST", endpoint, body)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response container
-	var role models.OrganizationRole
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &role)
-	if err != nil {
-		return nil, fmt.Errorf("error creating role: %v", err)
-	}
-
-	return &role, nil
-}
-
-func (api *UserAPI) CreateOrgRoleFromTemplate(ctx context.Context, org_id int64, template_role models.OrganizationTemplateRole) (*models.OrganizationRole, error) {
-	return api.CreateOrgRole(ctx, org_id, template_role.Name, template_role.Description, template_role.Permissions, template_role.BaseRole)
-}
-
-func (api *UserAPI) AssignOrgRoleToUser(ctx context.Context, org_id int64, user_name string, role_id int64) error {
-	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/users/%s/%d", org_id, user_name, role_id)
-
-	// Create a new PUT request
-	req, err := api.Client.NewRequest("PUT", endpoint, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, nil)
-	if err != nil {
-		return fmt.Errorf("error assigning role to user: %v", err)
-	}
-
-	return nil
-}
-
-func (api *UserAPI) DeleteOrgRole(ctx context.Context, org_id int64, role_id int64) error {
-	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/%d", org_id, role_id)
-
-	// Create a new DELETE request
-	req, err := api.Client.NewRequest("DELETE", endpoint, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, nil)
-	if err != nil {
-		return fmt.Errorf("error deleting role: %v", err)
-	}
-
-	return nil
-}
-
-func (api *UserAPI) RemoveOrgRoleFromUser(ctx context.Context, org_id int64, user_name string, role_id int64) error {
-	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/users/%s/%d", org_id, user_name, role_id)
-
-	// Create a new DELETE request
-	req, err := api.Client.NewRequest("DELETE", endpoint, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, nil)
-	if err != nil {
-		return fmt.Errorf("error removing role from user: %v", err)
-	}
-
-	return nil
-}
-
-func (api *UserAPI) GetUserRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error) {
-	current_user, err := api.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching user: %v", err)
-	}
-
-	// get all the org's roles
-	org_roles, err := api.GetOrgRoles(ctx, org_id)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching roles: %v", err)
-	}
-
-	// get the ids of all the org's roles (sorted in permission order) (this is necessary bc we don't know the id of the roles, just their names)
-	var sorted_org_roles = []models.OrganizationRole{}
-	for _, role := range models.AllRoles {
-		for _, org_role := range org_roles {
-			if role.Name == org_role.Name {
-				sorted_org_roles = append(sorted_org_roles, org_role)
-			}
-		}
-	}
-	if len(sorted_org_roles) < len(models.AllRoles) {
-		return nil, fmt.Errorf("error fetching roles: not all roles are present in the organization")
-	}
-
-	var res []models.OrganizationRole
-
-	// for each id in the sorted list, check if the user has that role, if so, add to the result list
-	for _, role := range sorted_org_roles {
-		role_users, err := api.GetUsersAssignedToRole(ctx, org_id, role.ID)
-		if err == nil {
-			for _, user := range role_users {
-				if user.Login == current_user.Login {
-					res = append(res, role)
-				}
-			}
-		}
-	}
-	return res, nil
-}
-
-func (api *UserAPI) GetUsersAssignedToRole(ctx context.Context, org_id int64, role_id int64) ([]models.GitHubUser, error) {
-	var allUsers []models.GitHubUser
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles/%d/users", org_id, role_id)
-
-	for {
-		// Create a new GET request
-		req, err := api.Client.NewRequest("GET", endpoint, nil)
-		if err != nil {
-			return nil, fmt.Errorf("error creating request: %v", err)
-		}
-
-		// Response container
-		var users []models.GitHubUser
-
-		// Make the API call
-		resp, err := api.Client.Do(ctx, req, &users)
-		if err != nil {
-			return nil, fmt.Errorf("error fetching users: %v", err)
-		}
-
-		// Append the fetched users to the allUsers slice
-		allUsers = append(allUsers, users...)
-
-		// Check for the presence of the Link header
-		linkHeader := resp.Header.Get("Link")
-		if linkHeader == "" {
-			break
-		}
-
-		// Parse the Link header to find the URL for the next page
-		nextPageURL := getNextPageURL(linkHeader)
-		if nextPageURL == "" {
-			break
-		}
-
-		// Update the endpoint for the next iteration
-		endpoint = nextPageURL
-	}
-
-	return allUsers, nil
-}
-
-func (api *UserAPI) GetOrgRoles(ctx context.Context, org_id int64) ([]models.OrganizationRole, error) {
-	// Construct the URL for the list assignments endpoint
-	endpoint := fmt.Sprintf("/orgs/%d/organization-roles", org_id)
-
-	// Create a new GET request
-	req, err := api.Client.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response container
-	var roles []models.OrganizationRole
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &roles)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching roles: %v", err)
-	}
-
-	return roles, nil
-}
-
 func (api *UserAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
 	// Construct the URL for the list assignments endpoint
 	endpoint := "/user/orgs"
@@ -452,19 +145,19 @@ func (api *UserAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, err
 	return orgs, nil
 }
 
-// Helper function to parse the Link header and extract the URL for the next page
-func getNextPageURL(linkHeader string) string {
-	links := strings.Split(linkHeader, ",")
-	for _, link := range links {
-		parts := strings.Split(strings.TrimSpace(link), ";")
-		if len(parts) < 2 {
-			continue
-		}
-		urlPart := strings.Trim(parts[0], "<>")
-		relPart := strings.Trim(parts[1], " ")
-		if relPart == `rel="next"` {
-			return urlPart
-		}
-	}
-	return ""
-}
+// // Helper function to parse the Link header and extract the URL for the next page
+// func getNextPageURL(linkHeader string) string {
+// 	links := strings.Split(linkHeader, ",")
+// 	for _, link := range links {
+// 		parts := strings.Split(strings.TrimSpace(link), ";")
+// 		if len(parts) < 2 {
+// 			continue
+// 		}
+// 		urlPart := strings.Trim(parts[0], "<>")
+// 		relPart := strings.Trim(parts[1], " ")
+// 		if relPart == `rel="next"` {
+// 			return urlPart
+// 		}
+// 	}
+// 	return ""
+// }

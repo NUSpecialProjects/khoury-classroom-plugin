@@ -134,7 +134,10 @@ const SemesterSelection: React.FC = () => {
         )}
       </div>
       <div className="Selection__linkWrapper">
-        <Link to="/app/classroom/create"> Create a new classroom instead →</Link>
+        <Link to="/app/classroom/create">
+          {" "}
+          Create a new classroom instead →
+        </Link>
       </div>
     </div>
   );
