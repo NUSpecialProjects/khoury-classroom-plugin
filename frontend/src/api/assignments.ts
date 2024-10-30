@@ -21,13 +21,15 @@ export const getAssignments = async (
   // return (await result.json()) as IAssignment[];
   console.log("Using mocked API call for assignments in: ", classroomId);
 
-  return Promise.resolve([{
-    id: 1,
-    rubric_id: 1,
-    assignment_classroom_id: 1,
-    semester_id: 1,
-    name: "Assignment",
-    inserted_date: null,
-    main_due_date: null,
-  }])
+  return Promise.resolve([
+    {
+      id: 1,
+      rubric_id: 1,
+      assignment_classroom_id: 1,
+      semester_id: 1,
+      name: "Assignment",
+      inserted_date: null,
+      main_due_date: null,
+    },
+  ]);
 };

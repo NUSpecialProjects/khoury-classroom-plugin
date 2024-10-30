@@ -15,16 +15,15 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
 
   // return response.json();
   console.log("Using mocked API call for current user: ");
-  return Promise.resolve(
-    {
-      login: "user1",
-      id: 1,
-      node_id: "node1",
-      avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
-      url: "https://api.github.com/users/user1",
-      name: "User One",
-      email: null,
-    })
+  return Promise.resolve({
+    login: "user1",
+    id: 1,
+    node_id: "node1",
+    avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
+    url: "https://api.github.com/users/user1",
+    name: "User One",
+    email: null,
+  });
 };
 
 export const fetchUsersWithRole = async (

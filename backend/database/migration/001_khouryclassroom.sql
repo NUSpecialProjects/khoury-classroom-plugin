@@ -12,10 +12,13 @@ CREATE TABLE IF NOT EXISTS classroom_tokens (
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
+CREATE TYPE USER_ROLE AS
+ENUM('professor', 'ta', 'student');
+
 CREATE TABLE IF NOT EXISTS user_to_classroom (
     github_username VARCHAR(255) PRIMARY KEY, 
     github_user_id INTEGER UNIQUE NOT NULL,
-    role VARCHAR(255) NOT NULL,
+    role USER_ROLE NOT NULL,
     classroom_id INTEGER NOT NULL,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
@@ -25,8 +28,10 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     template_repo_owner VARCHAR(255) NOT NULL,
     template_repo_id VARCHAR(255) NOT NULL,
     created_date TIMESTAMP DEFAULT NOW(),
+    released_date TIMESTAMP,
     name VARCHAR(255) NOT NULL,
     classroom_id INTEGER NOT NULL,
+    group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
@@ -45,14 +50,12 @@ CREATE TABLE IF NOT EXISTS rubric_items (
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
-
 CREATE TABLE IF NOT EXISTS student_works (
     id SERIAL PRIMARY KEY,
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255),
     due_date TIMESTAMP NOT NULL,
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
-
 );
 
 CREATE TABLE IF NOT EXISTS students_to_student_work (
@@ -62,12 +65,14 @@ CREATE TABLE IF NOT EXISTS students_to_student_work (
     FOREIGN KEY (student_work_id) REFERENCES student_works(id)
 );
 
+CREATE TYPE GRADING_STATE AS 
+ENUM('grading_assigned', 'grading_completed', 'grades_published', 'regrade_requested', 'regrade_finalized');
+
 CREATE TABLE IF NOT EXISTS submissions (
     id SERIAL PRIMARY KEY, 
     student_work_id INTEGER NOT NULL,
     repo_name VARCHAR(255) NOT NULL,
-    grading_completed BOOLEAN DEFAULT FALSE NOT NULL,
-    grades_published BOOLEAN DEFAULT FALSE NOT NULL,
+    grading_state GRADING_STATE NOT NULL,
     manual_feedback_score INTEGER,
     auto_grader_score INTEGER,
     submission_timestamp TIMESTAMP NOT NULL,
