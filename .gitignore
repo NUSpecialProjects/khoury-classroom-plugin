@@ -54,7 +54,6 @@ dist-ssr
 # Terraform
 terraform/aws
 terraform/.terraform/
-terraform/database/drop_db
 *.tfstate
 *.tfstate.backup
 */terraform.tfstate*
