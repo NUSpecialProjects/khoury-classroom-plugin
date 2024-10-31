@@ -50,11 +50,20 @@ CREATE TABLE IF NOT EXISTS rubric_items (
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
+CREATE TYPE WORK_STATE AS 
+ENUM('IN_PROGRESS','SUBMITTED_AWAITING_TA_ASSIGNMENT', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADES_PUBLISHED');
+
 CREATE TABLE IF NOT EXISTS student_works (
     id SERIAL PRIMARY KEY,
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255),
     due_date TIMESTAMP NOT NULL,
+    submitted_pr_number INTEGER,
+    manual_feedback_score INTEGER,
+    auto_grader_score INTEGER,
+    submission_timestamp TIMESTAMP NOT NULL,
+    grades_published_timestamp TIMESTAMP,
+    work_state WORK_STATE NOT NULL,
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
@@ -65,21 +74,6 @@ CREATE TABLE IF NOT EXISTS students_to_student_work (
     FOREIGN KEY (student_work_id) REFERENCES student_works(id)
 );
 
-CREATE TYPE GRADING_STATE AS 
-ENUM('GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADES_PUBLISHED');
-
-CREATE TABLE IF NOT EXISTS submissions (
-    id SERIAL PRIMARY KEY, 
-    student_work_id INTEGER NOT NULL,
-    repo_name VARCHAR(255) NOT NULL,
-    grading_state GRADING_STATE NOT NULL,
-    manual_feedback_score INTEGER,
-    auto_grader_score INTEGER,
-    submission_timestamp TIMESTAMP NOT NULL,
-    grades_published_timestamp TIMESTAMP,
-    pull_request_number INTEGER NOT NULL,
-    FOREIGN KEY (student_work_id) REFERENCES student_works(id)
-);
 
 CREATE TABLE IF NOT EXISTS feedback_comment (
     id SERIAL PRIMARY KEY,
