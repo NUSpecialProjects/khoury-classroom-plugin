@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS submissions (
     auto_grader_score INTEGER,
     submission_timestamp TIMESTAMP NOT NULL,
     grades_published_timestamp TIMESTAMP,
-    commit_hash VARCHAR(255) NOT NULL,
+    pull_request_number INTEGER NOT NULL,
     FOREIGN KEY (student_work_id) REFERENCES student_works(id)
 );
 
