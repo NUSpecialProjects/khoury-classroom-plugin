@@ -8,22 +8,19 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Rou
 	assignmentRouter := router.Group("/:classroom_id/assignments")
 
 	// Get the assignments in a classroom
-	assignmentRouter.Get("/", service.GetAssignments())
+	assignmentRouter.Get("/", service.getAssignments())
 
 	// Get the details of an assignment
-	assignmentRouter.Get("/:assignment_id", service.GetAssignment())
+	assignmentRouter.Get("/:assignment_id", service.getAssignment())
 
 	// Create an assignment
-	assignmentRouter.Post("/", service.CreateAssignment())
+	assignmentRouter.Post("/", service.createAssignment())
 
 	// Update an assignment
-	assignmentRouter.Put("/:assignment_id", service.UpdateAssignment())
+	assignmentRouter.Put("/:assignment_id", service.updateAssignment())
 
 	// Generate a token to accept this assignment
-	assignmentRouter.Post("/:assignment_id/token", service.GenerateAssignmentToken())
-
-	// Get the submissions for an assignment
-	assignmentRouter.Get("/:assignment_id/submissions", service.GetAssignmentSubmissions())
+	assignmentRouter.Post("/:assignment_id/token", service.generateAssignmentToken())
 
 	return assignmentRouter
 }
