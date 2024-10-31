@@ -19,11 +19,12 @@ CREATE TYPE USER_ROLE AS
 ENUM('PROFESSOR', 'TA', 'STUDENT');
 
 CREATE TABLE IF NOT EXISTS classroom_membership (
-    github_username VARCHAR(255) PRIMARY KEY, 
+    github_username VARCHAR(255) NOT NULL, 
     github_user_id INTEGER UNIQUE NOT NULL,
     role USER_ROLE NOT NULL,
-    classroom_id INTEGER PRIMARY KEY,
+    classroom_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY(github_username, classroom_id),
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS assignment_ownership (
     github_user_id INTEGER NOT NULL,
     student_work_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (github_user_id) REFERENCES user_to_classroom(github_user_id),
+    FOREIGN KEY (github_user_id) REFERENCES classroom_membership(github_user_id),
     FOREIGN KEY (student_work_id) REFERENCES student_works(id)
 );
 
@@ -99,7 +100,7 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (student_work_id) REFERENCES student_works(id),
     FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id),
-    FOREIGN KEY (grader_gh_user_id) REFERENCES user_to_classroom(github_user_id)
+    FOREIGN KEY (grader_gh_user_id) REFERENCES classroom_membership(github_user_id)
 );
 
 CREATE TYPE REGRADE_STATE AS 
