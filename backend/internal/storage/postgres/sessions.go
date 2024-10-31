@@ -31,7 +31,7 @@ func (db *DB) CreateSession(ctx context.Context, sessionData models.Session) err
 }
 
 func (db *DB) GetSession(ctx context.Context, githubuserid int64) (models.Session, error) {
-	row := db.connPool.QueryRow(ctx, "SELECT * FROM sessions WHERE github_user_id = $1", githubuserid)
+	row := db.connPool.QueryRow(ctx, "SELECT github_user_id, access_token, token_type, refresh_token, expires_in FROM sessions WHERE github_user_id = $1", githubuserid)
 
 	var session models.Session
 	err := row.Scan(&session.GitHubUserID, &session.AccessToken, &session.TokenType, &session.RefreshToken, &session.ExpiresIn)
