@@ -7,7 +7,6 @@ on:
       - main
     paths:
       - 'backend/**'
-      - 'terraform/**'
       - '.github/workflows/backend_deploy.yml'
 
 jobs:
@@ -37,15 +36,15 @@ jobs:
 
       - name: Build Docker image with cache
         run: |
-          docker buildx build --platform linux/amd64 -t khoury-classroom-backend ./backend --load -f ./backend/Dockerfile.prod
+          docker buildx build --platform linux/amd64 -t gitmarks-backend ./backend --load -f ./backend/Dockerfile.prod
 
       - name: Tag Docker image
         run: |
-          docker tag khoury-classroom-backend:latest 058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:latest
+          docker tag gitmarks-backend:latest 058264409130.dkr.ecr.us-east-2.amazonaws.com/gitmarks/backend:latest
 
       - name: Push Docker image to ECR
         run: |
-          docker push 058264409130.dkr.ecr.us-east-2.amazonaws.com/khoury-classroom/backend:latest
+          docker push 058264409130.dkr.ecr.us-east-2.amazonaws.com/gitmarks/backend:latest
 
       - name: Deploy to Amazon ECS
         run: |

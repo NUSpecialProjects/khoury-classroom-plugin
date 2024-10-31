@@ -5,7 +5,6 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/github"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/grading"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
-	"github.com/CamPlume1/khoury-classroom/internal/handlers/semesters"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
@@ -26,7 +25,6 @@ func New(params types.Params) *fiber.App {
 	hello.Routes(app, params)
 	github.Routes(app, params)
 	test.Routes(app, params)
-	semesters.Routes(app, params)
 	grading.Routes(app, params)
 
 	// heartbeat route

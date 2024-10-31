@@ -4,7 +4,7 @@
   background: var(--brand-gradient-dark);
 
   &__title {
-    color: var(--primary-text-white)
+    color: var(--primary-text-white);
   }
 
   &__tableWrapper {
@@ -33,7 +33,6 @@
     &:hover {
       background: var(--brand-gradient-bright);
       transition: background 0.5s ease;
-
     }
   }
 }

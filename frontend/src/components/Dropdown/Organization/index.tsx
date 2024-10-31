@@ -1,5 +1,5 @@
 import React from "react";
-import '../styles.css'
+import "../styles.css";
 
 interface Props {
   orgsWithApp: IOrganization[];
@@ -18,7 +18,9 @@ const OrganizationDropdown: React.FC<Props> = ({
 }) => {
   return (
     <div className="Dropdown__wrapper">
-      <label className="Dropdown__label" htmlFor="organization">Select an Organization</label>
+      <label className="Dropdown__label" htmlFor="organization">
+        Select an Organization
+      </label>
       <select
         id="organization"
         className="Dropdown"
@@ -76,7 +78,9 @@ const OrganizationDropdown: React.FC<Props> = ({
             )}
           </>
         )}
-        <option className="Dropdown__option" value="create_new_org">Create a New Organization ➕</option>
+        <option className="Dropdown__option" value="create_new_org">
+          Create a New Organization ➕
+        </option>
       </select>
     </div>
   );
