@@ -8,6 +8,7 @@ import { activateSemester, deactivateSemester } from "@/api/semesters";
 import { useEffect, useState, useContext } from "react";
 import ErrorMessage from "@/components/Error";
 import { getAssignments } from "@/api/assignments";
+import { formatDate } from "@/utils/date";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
@@ -15,16 +16,6 @@ const Dashboard: React.FC = () => {
     SelectedSemesterContext
   );
   const [error, setError] = useState<string | null>(null);
-
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  };
 
   const handleActivate = async (newSemester: ISemester) => {
     setSelectedSemester(newSemester);
@@ -138,15 +129,7 @@ const Dashboard: React.FC = () => {
                       {assignment.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {" "}
-                    {assignment.main_due_date
-                      ? assignment.main_due_date.toLocaleDateString(
-                          "en-US",
-                          options
-                        )
-                      : "N/A"}
-                  </TableCell>
+                  <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
                 </TableRow>
               ))}
             </Table>
