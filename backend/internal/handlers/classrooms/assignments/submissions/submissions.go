@@ -1,10 +1,6 @@
 package submissions
 
 import (
-	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -22,45 +18,4 @@ func (s *SubmissionService) GetSubmission() fiber.Handler {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
-}
-
-// TODO: below are routes that need to be refactored to use "submissions"
-func (s *SubmissionService) GetStudentAssignments(c *fiber.Ctx) error {
-	classroomID, _ := strconv.ParseInt(c.Params("classroomID"), 10, 64)
-	assignmentID, _ := strconv.ParseInt(c.Params("assignmentID"), 10, 64)
-
-	studentAssignment, err := s.store.GetStudentAssignments(c.Context(), classroomID, assignmentID)
-	if err != nil {
-		fmt.Println("error in service func")
-		return err
-	}
-
-	return c.Status(http.StatusOK).JSON(studentAssignment)
-}
-
-func (s *SubmissionService) GetStudentAssignment(c *fiber.Ctx) error {
-	classroomID, _ := strconv.ParseInt(c.Params("classroomID"), 10, 64)
-	assignmentID, _ := strconv.ParseInt(c.Params("assignmentID"), 10, 64)
-	studentAssignmentID, _ := strconv.ParseInt(c.Params("studentAssignmentID"), 10, 64)
-
-	studentAssignment, err := s.store.GetStudentAssignment(c.Context(), classroomID, assignmentID, studentAssignmentID)
-	if err != nil {
-		fmt.Println("error in service func")
-		return err
-	}
-
-	return c.Status(http.StatusOK).JSON(studentAssignment)
-}
-
-func (s *SubmissionService) GetTotalStudentAssignments(c *fiber.Ctx) error {
-	classroomID, _ := strconv.ParseInt(c.Params("classroomID"), 10, 64)
-	assignmentID, _ := strconv.ParseInt(c.Params("assignmentID"), 10, 64)
-
-	total, err := s.store.GetTotalStudentAssignments(c.Context(), classroomID, assignmentID)
-	if err != nil {
-		fmt.Println("error in service func")
-		return err
-	}
-
-	return c.Status(http.StatusOK).JSON(total)
 }

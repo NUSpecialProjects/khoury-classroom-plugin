@@ -89,25 +89,6 @@ func (service *GitHubService) Login() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) GetCurrentUser() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
-		if err != nil {
-			fmt.Println("FAILED TO GET CLIENT", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
-		}
-
-		user, err := client.GetCurrentUser(c.Context())
-		if err != nil {
-			fmt.Println("FAILED TO GET USER", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
-		}
-
-		//TODO: include the user's role (i.e. professor, TA, student) in the response
-		return c.Status(200).JSON(user)
-	}
-}
-
 func (service *GitHubService) Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(int64)
