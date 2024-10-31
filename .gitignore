@@ -49,6 +49,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.zip
 
 # Terraform
 terraform/aws

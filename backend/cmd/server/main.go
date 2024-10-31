@@ -49,6 +49,7 @@ func main() {
 	if err := runMigrations(ctx, db, "./database/migration"); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
+	defer db.Close(context.Background())
 
 	// Initialize GitHub App Client
 	GitHubApp, err := appclient.New(&cfg.GitHubAppClient)

@@ -3,6 +3,8 @@ import "./styles.css";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useMemo, useState } from "react";
 import ErrorMessage from "@/components/Error";
+import { getCallbackURL } from "@/api/login";
+
 import { AuthContext } from "@/contexts/auth";
 import { FaGithub } from "react-icons/fa6";
 
@@ -22,6 +24,19 @@ const Login: React.FC = () => {
   );
   const errorFromQuery = queryParams.get("error");
   const [error, setError] = useState<string | null>(errorFromQuery);
+  const [callbackURL, setCallbackURL] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCallbackURL = async () => {
+      try {
+        const url = await getCallbackURL();
+        setCallbackURL(url);
+      } catch (error) {
+        console.error("Error fetching callback URL:", error);
+      }
+    };
+    fetchCallbackURL();
+  }, []);
 
   useEffect(() => {
     if (errorFromQuery) {

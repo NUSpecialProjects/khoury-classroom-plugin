@@ -1,10 +1,10 @@
 import React from "react";
-import './styles.css'
+import "./styles.css";
 
 interface IPanel {
-    title: string;
-    children: React.ReactNode;
-    logo?: boolean;
+  title: string;
+  children: React.ReactNode;
+  logo?: boolean;
 }
 
 const Panel: React.FC<IPanel> = ({ title, children, logo }) => {

@@ -18,6 +18,8 @@ import "./global.css";
 // If not logged in, route to login
 const PrivateRoute = () => {
   const { isLoggedIn } = useContext(AuthContext);
+  // return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
+
   return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
 };
 
@@ -34,6 +36,7 @@ export default function App(): React.JSX.Element {
             {/******* APP ROUTES: AUTHENTICATED USER *******/}
             <Route path="/app" element={<PrivateRoute />}>
               {/******* CLASS SELECTION: PRE-APP ACCESS STEP *******/}
+
               <Route path="classroom">
                 <Route path="create" element={<Pages.SemesterCreation />} />
                 <Route path="select" element={<Pages.SemesterSelection />} />
@@ -44,6 +47,15 @@ export default function App(): React.JSX.Element {
                 <Route path="assignments" element={<Pages.Assignments />} />
                 <Route path="assignments/:id" element={<Pages.Assignment />} />
                 <Route path="grading" element={<Pages.Grading />} />
+                <Route path="settings" element={<Pages.Settings />} />
+                <Route path="token/apply" element={<Pages.RoleApply />} />
+                <Route path="token/create" element={<Pages.RoleCreation />} />
+                <Route path="students" element={<Pages.StudentListPage />} />
+                <Route path="tas" element={<Pages.TAListPage />} />
+                <Route
+                  path="professors"
+                  element={<Pages.ProfessorListPage />}
+                />
                 <Route
                   path="grading/assignment/:assignmentId/student/:studentAssignmentId"
                   element={<Pages.Grader />}
