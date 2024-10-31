@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     name VARCHAR(255) NOT NULL,
     classroom_id INTEGER NOT NULL,
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
     FOREIGN KEY (template_id) REFERENCES assignment_template(id)
 );
 
