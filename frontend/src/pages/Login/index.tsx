@@ -14,8 +14,6 @@ import Button from "@/components/Button";
 const Login: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
 
-  const clientId: string = import.meta.env.VITE_GITHUB_CLIENT_ID as string;
-
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = useMemo(
@@ -66,14 +64,13 @@ const Login: React.FC = () => {
       </div>
 
       <div>
-        <a
-          href={`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=repo,read:org,classroom&allow_signup=false`}
-          target="_self"
-        >
-          <Button variant="secondary">
-            <FaGithub className="LandingPage__icon" /> Log in with GitHub
-          </Button>
-        </a>
+        {callbackURL && (
+          <a href={callbackURL} target="_self">
+            <Button variant="secondary">
+              <FaGithub className="LandingPage__icon" /> Log in with GitHub
+            </Button>
+          </a>
+        )}
 
         {error && <ErrorMessage message={error} />}
       </div>
