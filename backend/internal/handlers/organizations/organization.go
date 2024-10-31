@@ -1,15 +1,23 @@
-package github
+package organizations
 
 import (
 	"log"
 
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
-func (service *GitHubService) GetUserOrgs() fiber.Handler {
+func (service *OrganizationService) GetOrgsAndClassrooms() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
+		// Implement logic here
+		return c.SendStatus(fiber.StatusNotImplemented)
+	}
+}
+
+func (service *OrganizationService) GetUserOrgs() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
@@ -23,10 +31,10 @@ func (service *GitHubService) GetUserOrgs() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
+func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Get the user client
-		userClient, err := service.getClient(c)
+		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
@@ -69,7 +77,7 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) GetOrg() fiber.Handler {
+func (service *OrganizationService) GetOrg() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract org_id from the path
 		org_name := c.Params("org")
@@ -79,7 +87,7 @@ func (service *GitHubService) GetOrg() fiber.Handler {
 		}
 
 		// Get the user client
-		userClient, err := service.getClient(c)
+		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
