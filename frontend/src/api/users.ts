@@ -18,13 +18,13 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
 
 export const fetchUsersWithRole = async (
   role_type: string,
-  semester: ISemester
+  classroom: IClassroom
 ): Promise<IGitHubUser[]> => {
   console.log(
     "Using mocked API call for role: ",
     role_type,
     "semester: ",
-    semester
+    classroom
   );
   return Promise.resolve([
     {

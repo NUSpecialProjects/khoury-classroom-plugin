@@ -5,14 +5,14 @@ import { fetchUsersWithRole } from "@/api/users";
 interface IUserGroupCardProps {
   label: string;
   role_type: string;
-  semester: ISemester;
+  classroom: IClassroom;
   onClick?: () => void;
 }
 
 const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   label,
   role_type,
-  semester,
+  classroom,
   onClick,
 }) => {
   const [numUsers, setNumUsers] = useState<number>(0);
@@ -20,7 +20,7 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const users = await fetchUsersWithRole(role_type, semester);
+        const users = await fetchUsersWithRole(role_type, classroom);
         setNumUsers(users.length);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -28,7 +28,7 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
     };
 
     void getUsers();
-  }, [role_type, semester]);
+  }, [role_type, classroom]);
 
   let userIcons = [];
 

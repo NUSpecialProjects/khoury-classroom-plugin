@@ -73,7 +73,7 @@ const Login: React.FC = () => {
         />
       </div>
       <div className="LandingTitle">FonteMarks</div>
-      
+
       {callbackURL && status !== LoginStatus.LOADING && (
         <a className="SignInLink" href={callbackURL}>
           Log In With GitHub

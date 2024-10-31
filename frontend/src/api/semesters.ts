@@ -1,4 +1,4 @@
-const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+// const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
   // const response = await fetch(`${base_url}/orgs/installations`, {
@@ -49,38 +49,37 @@ export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
   });
 };
 
-
-export const getClassrooms = async (
-  orgId: number
-): Promise<IClassroomResponse> => {
-  console.log("Using mocked API call for org: ", orgId);
-  return Promise.resolve({
-    available_classrooms: [
-      {
-        id: 1,
-        name: "Spring 2024",
-        url: "https://classroom1.com",
-      },
-      {
-        id: 2,
-        name: "Fall 2023",
-        url: "https://classroom2.com",
-      },
-    ],
-    unavailable_classrooms: [
-      {
-        id: 3,
-        name: "Spring 2022",
-        url: "https://classroom3.com",
-      },
-      {
-        id: 4,
-        name: "Spring 2021",
-        url: "https://classroom4.com",
-      },
-    ],
-  });
-};
+// export const getClassrooms = async (
+//   orgId: number
+// ): Promise<IClassroomResponse> => {
+//   console.log("Using mocked API call for org: ", orgId);
+//   return Promise.resolve({
+//     available_classrooms: [
+//       {
+//         id: 1,
+//         name: "Spring 2024",
+//         url: "https://classroom1.com",
+//       },
+//       {
+//         id: 2,
+//         name: "Fall 2023",
+//         url: "https://classroom2.com",
+//       },
+//     ],
+//     unavailable_classrooms: [
+//       {
+//         id: 3,
+//         name: "Spring 2022",
+//         url: "https://classroom3.com",
+//       },
+//       {
+//         id: 4,
+//         name: "Spring 2021",
+//         url: "https://classroom4.com",
+//       },
+//     ],
+//   });
+// };
 
 export const getOrganizationDetails = async (
   login: string
@@ -105,17 +104,16 @@ export const getOrganizationDetails = async (
       html_url: "nicktietje.com",
       name: "Organization Two",
       avatar_url: "https://avatars.githubusercontent.com/u/2?v=4",
-    })
+    });
   } else {
-     return Promise.resolve({
-    login: "CS2200",
-    id: 1,
-    html_url: "nicktietje.com",
-    name: "Organization One",
-    avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
-  });
+    return Promise.resolve({
+      login: "CS2200",
+      id: 1,
+      html_url: "nicktietje.com",
+      name: "Organization One",
+      avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
+    });
   }
- 
 };
 
 export const postSemester = async (

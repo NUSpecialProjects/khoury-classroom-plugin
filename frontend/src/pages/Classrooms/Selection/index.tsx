@@ -11,9 +11,12 @@ import {
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Link } from "react-router-dom";
 import { getUserOrgsAndClassrooms } from "@/api/classrooms";
+import { IOrganization, IClassroom } from "@/types";
 
 const ClassroomSelection: React.FC = () => {
-  const [classroomsByOrg, setClassroomsByOrg] = useState<Map<number, IClassroom[]>>(new Map());
+  const [classroomsByOrg, setClassroomsByOrg] = useState<
+    Map<number, IClassroom[]>
+  >(new Map());
   const [collapsed, setCollapsed] = useState<Map<number, boolean>>(new Map());
   const [loading, setLoading] = useState(true);
   const { setSelectedClassroom } = useContext(SelectedClassroomContext);
@@ -23,7 +26,9 @@ const ClassroomSelection: React.FC = () => {
   useEffect(() => {
     const fetchSemesters = async () => {
       try {
-        const data: Map<IOrganization, IClassroom[]> = (await getUserOrgsAndClassrooms()).orgs_and_classrooms;
+        const data: Map<IOrganization, IClassroom[]> = (
+          await getUserOrgsAndClassrooms()
+        ).orgs_and_classrooms;
         const initialCollapsedState: Map<number, boolean> = new Map();
 
         const transformedData: Map<number, IClassroom[]> = new Map();
@@ -59,7 +64,6 @@ const ClassroomSelection: React.FC = () => {
 
   const hasSemesters = classroomsByOrg.size > 0;
 
-  //TODO: add link to classroom create page
   return (
     <div className="Selection">
       <h1 className="Selection__title">Your Classrooms</h1>
@@ -67,63 +71,79 @@ const ClassroomSelection: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : hasSemesters ? (
-          <Table cols={2} primaryCol={1}>
-            {Array.from(classroomsByOrg.entries()).map(([orgId, classrooms]) => (
-              <React.Fragment key={orgId}>
-                <TableRow className="HeaderRow" style={{ borderTop: "none" }}>
-                  <TableCell></TableCell>
-                  <TableCell>Organization Name</TableCell>
-                </TableRow>
-                <TableRow
-                  className={`ChildRow ${!collapsed.get(orgId) ? "TableRow--expanded" : ""}`}
+          <Table cols={3} primaryCol={1}>
+            <TableRow className="HeaderRow" style={{ borderTop: "none" }}>
+              <TableCell></TableCell>
+              <TableCell>Organization Name</TableCell>
+              <TableCell>
+                <a
+                  href="https://github.com/organizations/plan"
+                  className="Selection__actionButton"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <TableCell onClick={() => toggleCollapse(orgId)}>
-                    {collapsed.get(orgId) ? (
-                      <FaChevronRight />
-                    ) : (
-                      <FaChevronDown />
-                    )}
-                  </TableCell>
-                  <TableCell>{`${classrooms[0].org_name}`}</TableCell>
-                </TableRow>
-                {!collapsed.get(orgId) && (
-                  <TableDiv>
-                    <Table
-                      cols={3}
-                      primaryCol={0}
-                      className="DetailsTable SubTable"
-                    >
-                      <TableRow
-                        className="HeaderRow"
-                        style={{ borderTop: "none" }}
+                  +
+                </a>
+              </TableCell>
+            </TableRow>
+            {Array.from(classroomsByOrg.entries()).map(
+              ([orgId, classrooms]) => (
+                <React.Fragment key={orgId}>
+                  <TableRow
+                    className={`ChildRow ${!collapsed.get(orgId) ? "TableRow--expanded" : ""}`}
+                  >
+                    <TableCell onClick={() => toggleCollapse(orgId)}>
+                      {collapsed.get(orgId) ? (
+                        <FaChevronRight />
+                      ) : (
+                        <FaChevronDown />
+                      )}
+                    </TableCell>
+                    <TableCell>{`${classrooms[0].org_name}`}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                  {!collapsed.get(orgId) && (
+                    <TableDiv>
+                      <Table
+                        cols={2}
+                        primaryCol={0}
+                        className="DetailsTable SubTable"
                       >
-                        <TableCell>Classroom Name</TableCell>
-                        <TableCell className="status">Status</TableCell>
-                        <TableCell></TableCell>
-                      </TableRow>
-                      {classrooms.map((classroom) => (
                         <TableRow
-                          key={classroom.id}
+                          className="HeaderRow"
+                          style={{ borderTop: "none" }}
                         >
-                          <TableCell>{classroom.name}</TableCell>
-                          <TableCell className="status">
-                            {"remove this"}
-                          </TableCell>
+                          <TableCell>Classroom Name</TableCell>
                           <TableCell>
-                            <button
+                            <a
+                              href="https://classroom.github.com/classrooms/new" //TODO: this should link to OUR classroom page
                               className="Selection__actionButton"
-                              onClick={() => handleClassroomSelect(classroom)}
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              View
-                            </button>
+                              +
+                            </a>
                           </TableCell>
                         </TableRow>
-                      ))}
-                    </Table>
-                  </TableDiv>
-                )}
-              </React.Fragment>
-            ))}
+                        {classrooms.map((classroom) => (
+                          <TableRow key={classroom.id}>
+                            <TableCell>{classroom.name}</TableCell>
+                            <TableCell>
+                              <button
+                                className="Selection__actionButton"
+                                onClick={() => handleClassroomSelect(classroom)}
+                              >
+                                View
+                              </button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </Table>
+                    </TableDiv>
+                  )}
+                </React.Fragment>
+              )
+            )}
           </Table>
         ) : (
           <div>

@@ -2,10 +2,13 @@ import React, { useState } from "react";
 
 interface CreateTokenProps {
   role_type: string;
-  semester: ISemester | null;
+  classroom: IClassroom | null;
 }
 
-const LinkGenerator: React.FC<CreateTokenProps> = ({ role_type, semester }) => {
+const LinkGenerator: React.FC<CreateTokenProps> = ({
+  role_type,
+  classroom,
+}) => {
   const [message, setMessage] = useState<string>("");
 
   const handleCreateToken = async () => {
@@ -18,7 +21,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({ role_type, semester }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          semester: semester,
+          classroom: classroom,
           role_type: role_type,
         }),
       });
@@ -39,10 +42,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({ role_type, semester }) => {
 
   return (
     <div>
-      <button
-        onClick={handleCreateToken}
-        disabled={!semester || !semester.active}
-      >
+      <button onClick={handleCreateToken} disabled={!classroom}>
         Create {role_type} Link
       </button>
       {message && <p>{message}</p>}
