@@ -1,0 +1,51 @@
+name: Terraform Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform_deploy.yml'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+    
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::058264409130:role/github-actions-deploy-role
+          aws-region: us-east-2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.9.7
+
+      - name: Zip Lambda Function
+        run: |
+          zip -r database/func.zip database/func
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=gitmarks-terraform-state" \
+            -backend-config="key=terraform.tfstate" \
+            -backend-config="region=us-east-2" \
+            -backend-config="dynamodb_table=gitmarks-terraform-lock"
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
