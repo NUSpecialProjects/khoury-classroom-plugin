@@ -7,6 +7,13 @@ import { getCallbackURL } from "@/api/login";
 
 import { AuthContext } from "@/contexts/auth";
 
+enum LoginStatus {
+  LOADING = "LOADING",
+  CALLBACK_ERRORED = "CALLBACK ERRORED",
+  LOGIN_ERRORED = "LOGIN ERRORED",
+  READY = "READY",
+}
+
 const Login: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
 
@@ -19,16 +26,26 @@ const Login: React.FC = () => {
     [location.search]
   );
   const errorFromQuery = queryParams.get("error");
+  const [status, setStatus] = useState(LoginStatus.LOADING);
   const [error, setError] = useState<string | null>(errorFromQuery);
   const [callbackURL, setCallbackURL] = useState<string | null>(null);
 
   useEffect(() => {
+    setStatus(LoginStatus.LOADING);
+    setError(null);
     const fetchCallbackURL = async () => {
       try {
         const url = await getCallbackURL();
+        if (!url) {
+          throw new Error("Callback URL is empty");
+        }
         setCallbackURL(url);
-      } catch (error) {
-        console.error("Error fetching callback URL:", error);
+        setStatus(LoginStatus.READY);
+        setError(null);
+      } catch (_) {
+        setStatus(LoginStatus.LOGIN_ERRORED);
+        setError("Error occurred while communicating with the server");
+        console.log("Error occurred while fetching callback URL");
       }
     };
     fetchCallbackURL();
@@ -39,6 +56,7 @@ const Login: React.FC = () => {
       queryParams.delete("error");
       setError(errorFromQuery);
       navigate({ search: queryParams.toString() }, { replace: true });
+      setStatus(LoginStatus.CALLBACK_ERRORED);
     }
   }, [errorFromQuery, navigate, queryParams]);
 
@@ -55,10 +73,15 @@ const Login: React.FC = () => {
         />
       </div>
       <div className="LandingTitle">FonteMarks</div>
-      {callbackURL && (
+      
+      {callbackURL && status !== LoginStatus.LOADING && (
         <a className="SignInLink" href={callbackURL}>
           Log In With GitHub
         </a>
+      )}
+
+      {status === LoginStatus.LOADING && (
+        <div className="LoadingMessage">Loading...</div>
       )}
 
       {error && <ErrorMessage message={error} />}
