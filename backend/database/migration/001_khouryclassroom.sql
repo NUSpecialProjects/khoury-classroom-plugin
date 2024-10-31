@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS classroom_tokens (
 );
 
 CREATE TYPE USER_ROLE AS
-ENUM('professor', 'ta', 'student');
+ENUM('PROFESSOR', 'TA', 'STUDENT');
 
 CREATE TABLE IF NOT EXISTS user_to_classroom (
     github_username VARCHAR(255) PRIMARY KEY, 
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS students_to_student_work (
 );
 
 CREATE TYPE GRADING_STATE AS 
-ENUM('grading_assigned', 'grading_completed', 'grades_published', 'regrade_requested', 'regrade_finalized');
+ENUM('GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADES_PUBLISHED');
 
 CREATE TABLE IF NOT EXISTS submissions (
     id SERIAL PRIMARY KEY, 
@@ -91,6 +91,19 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     FOREIGN KEY (grader_gh_user_id) REFERENCES user_to_classroom(github_user_id)
 );
 
+
+CREATE TYPE REGRADE_STATE AS 
+ENUM('NO_REGRADE_REQUESTED', 'REGRADE_REQUESTED', 'REGRADE_FINALIZED');
+
+CREATE TABLE IF NOT EXISTS regrade_requests (
+    id SERIAL PRIMARY KEY, 
+    feedback_comment_id INTEGER NOT NULL,
+    regrade_state REGRADE_STATE NOT NULL,
+    student_comment VARCHAR(255) NOT NULL,
+    FOREIGN KEY (feedback_comment_id) REFERENCES feedback_comment(id)
+
+);
+
 CREATE TABLE IF NOT EXISTS sessions (
   github_user_id INTEGER PRIMARY KEY,
   access_token VARCHAR(255) NOT NULL,
@@ -98,3 +111,6 @@ CREATE TABLE IF NOT EXISTS sessions (
   refresh_token VARCHAR(255),
   expires_in INTEGER
 );
+
+
+
