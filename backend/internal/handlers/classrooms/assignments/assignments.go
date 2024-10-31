@@ -4,47 +4,39 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// GetAssignments returns the assignments in a classroom.
-func (s *AssignmentService) GetAssignments() fiber.Handler {
+// Returns the assignments in a classroom.
+func (s *AssignmentService) getAssignments() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
 
-// GetAssignment returns the details of an assignment.
-func (s *AssignmentService) GetAssignment() fiber.Handler {
+// Returns the details of an assignment.
+func (s *AssignmentService) getAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
 
-func (s *AssignmentService) CreateAssignment() fiber.Handler {
+func (s *AssignmentService) createAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
 
-// UpdateAssignment updates an existing assignment.
-func (s *AssignmentService) UpdateAssignment() fiber.Handler {
+// Updates an existing assignment.
+func (s *AssignmentService) updateAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
 
-// GenerateAssignmentToken generates a token to accept an assignment.
-func (s *AssignmentService) GenerateAssignmentToken() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
-}
-
-// GetAssignmentSubmissions returns the submissions for an assignment.
-func (s *AssignmentService) GetAssignmentSubmissions() fiber.Handler {
+// Generates a token to accept an assignment.
+func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)

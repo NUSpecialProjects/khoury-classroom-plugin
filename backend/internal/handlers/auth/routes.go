@@ -15,11 +15,17 @@ func baseRouter(app *fiber.App, params types.Params) fiber.Router {
 
 	baseRouter := app.Group("")
 
+	// Check the health of the back end API
+	baseRouter.Get("/", service.Ping())
+
 	// Callback endpoint for OAUTH flow
 	baseRouter.Get("/callback", service.GetCallbackURL())
 
 	// Login using code
 	baseRouter.Post("/login", service.Login())
+
+	// Get the current authenticated user
+	baseRouter.Get("/user", middleware.Protected(params.UserCfg.JWTSecret), service.GetCurrentUser())
 
 	// Logout the current authenticated user
 	baseRouter.Post("/logout", middleware.Protected(params.UserCfg.JWTSecret), service.Logout())
