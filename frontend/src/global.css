@@ -10,6 +10,7 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --panels-background: #f5f5f5;
   --panels-darker-background: #e5e5e5;
   --panels-lighter-background: #ffffff;
+  --secondary-button-hover-background: #fafafa;
 
   /* Text */
   --primary-text: #0a0a0a;
@@ -25,7 +26,9 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand-darker: #3953b4;
   --brand-darkest: #233ea0;
   --brand-highlight: rgba(132, 135, 139, 20%);
-  --brand-gradient: linear-gradient(180deg, #f3f5fc 0%, #ced6e6 100%);
+
+  /* Gradients */
+  --brand-gradient: linear-gradient(180deg, #F3F5FC 0%, #CED6E6 100%);
   --brand-gradient-bright: linear-gradient(160deg, #255ac5 0%, #5f8be3 100%);
   --brand-gradient-dark: linear-gradient(160deg, #0f3072 0%, #7996cf 100%);
 
@@ -48,10 +51,10 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --font-size-xs: 0.8em;
 
   /* BORDERS */
-  --border-color: #e5e5e5;
-  --border-style: solid;
-  --border-width: 1px;
-  --button-border-color: #a3a3a3;
+   --border-color: #e5e5e5;
+   --border-style: solid;
+   --border-width: 1px;
+   --button-border-color: #d4d4d4;
 }
 
 html,

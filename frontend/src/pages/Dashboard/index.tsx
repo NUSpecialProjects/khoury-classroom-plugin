@@ -81,11 +81,6 @@ const Dashboard: React.FC = () => {
     <div className="Dashboard">
       {selectedSemester && (
         <>
-          <h1>
-            {selectedSemester.org_name +
-              " - " +
-              selectedSemester.classroom_name}
-          </h1>
           <AlertBanner
             semester={selectedSemester}
             onActivate={setSelectedSemester}
