@@ -1,49 +1,124 @@
-CREATE TABLE IF NOT EXISTS rubrics (
-  id SERIAL PRIMARY KEY,
-  content VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS classrooms (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    org_id INTEGER NOT NULL,
+    org_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS assignments (
-  id SERIAL PRIMARY KEY,
-  rubric_id INTEGER,
-  assignment_classroom_id INTEGER NOT NULL,
-  inserted_date TIMESTAMP DEFAULT NOW() NOT NULL, 
-  classroom_id INTEGER NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  main_due_date TIMESTAMP,
-  FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
+-- TODO: Impose length on tokens
+CREATE TABLE IF NOT EXISTS classroom_tokens (
+    token VARCHAR(255) PRIMARY KEY, 
+    expires_at TIMESTAMP NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
-CREATE TABLE IF NOT EXISTS student_assignments (
-  id SERIAL PRIMARY KEY,
-  assignment_id INTEGER NOT NULL,
-  repo_name VARCHAR(255) NOT NULL,
-  student_gh_username VARCHAR(255) NOT NULL,
-  ta_gh_username VARCHAR(255),
-  completed BOOLEAN NOT NULL,
-  started BOOLEAN NOT NULL,
-  FOREIGN KEY (assignment_id) REFERENCES assignments(id)
+CREATE TYPE USER_ROLE AS
+ENUM('PROFESSOR', 'TA', 'STUDENT');
+
+CREATE TABLE IF NOT EXISTS classroom_membership (
+    github_username VARCHAR(255) PRIMARY KEY, 
+    github_user_id INTEGER UNIQUE NOT NULL,
+    role USER_ROLE NOT NULL,
+    classroom_id INTEGER PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
-CREATE TABLE IF NOT EXISTS due_dates (
-  id SERIAL PRIMARY KEY,
-  due TIMESTAMP DEFAULT NOW() NOT NULL,
-  student_assignment_id INTEGER NOT NULL,
-  FOREIGN KEY (student_assignment_id) REFERENCES student_assignments(id)
+
+CREATE TABLE IF NOT EXISTS assignment_template (
+    id SERIAL PRIMARY KEY,
+    template_repo_owner VARCHAR(255) NOT NULL,
+    template_repo_id VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS regrades (
-  id SERIAL PRIMARY KEY,
-  student_gh_username VARCHAR(255) NOT NULL,
-  ta_gh_username VARCHAR(255) NOT NULL,
-  due_date_id INTEGER NOT NULL,
-  FOREIGN KEY (due_date_id) REFERENCES due_dates(id)
+CREATE TABLE IF NOT EXISTS assignment_outlines (
+    id SERIAL PRIMARY KEY,
+    template_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    released_at TIMESTAMP,
+    name VARCHAR(255) NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    FOREIGN KEY (template_id) REFERENCES assignment_template(id)
+);
+
+-- TODO: Impose length on tokens
+CREATE TABLE IF NOT EXISTS assignment_tokens (
+    token VARCHAR(255) PRIMARY KEY,
+    expires_at TIMESTAMP NOT NULL,
+    assignment_outline_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+);
+
+CREATE TABLE IF NOT EXISTS rubric_items (
+    id SERIAL PRIMARY KEY,
+    assignment_outline_id INTEGER NOT NULL,
+    point_value INTEGER NOT NULL,
+    explanation VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+);
+
+CREATE TYPE WORK_STATE AS 
+ENUM('IN_PROGRESS','SUBMITTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
+
+CREATE TABLE IF NOT EXISTS student_works (
+    id SERIAL PRIMARY KEY,
+    assignment_outline_id INTEGER NOT NULL,
+    repo_name VARCHAR(255),
+    due_date TIMESTAMP NOT NULL,
+    submitted_pr_number INTEGER,
+    manual_feedback_score INTEGER,
+    auto_grader_score INTEGER,
+    submission_timestamp TIMESTAMP NOT NULL,
+    grades_published_timestamp TIMESTAMP,
+    work_state WORK_STATE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+);
+
+CREATE TABLE IF NOT EXISTS assignment_ownership (
+    github_user_id INTEGER NOT NULL,
+    student_work_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (github_user_id) REFERENCES user_to_classroom(github_user_id),
+    FOREIGN KEY (student_work_id) REFERENCES student_works(id)
+);
+
+CREATE TABLE IF NOT EXISTS feedback_comment (
+    id SERIAL PRIMARY KEY,
+    student_work_id INTEGER NOT NULL,
+    rubric_item_id INTEGER NOT NULL,
+    grader_gh_user_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (student_work_id) REFERENCES student_works(id),
+    FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id),
+    FOREIGN KEY (grader_gh_user_id) REFERENCES user_to_classroom(github_user_id)
+);
+
+CREATE TYPE REGRADE_STATE AS 
+ENUM('NO_REGRADE_REQUESTED', 'REGRADE_REQUESTED', 'REGRADE_FINALIZED');
+
+CREATE TABLE IF NOT EXISTS regrade_requests (
+    id SERIAL PRIMARY KEY, 
+    feedback_comment_id INTEGER NOT NULL,
+    regrade_state REGRADE_STATE NOT NULL,
+    student_comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (feedback_comment_id) REFERENCES feedback_comment(id)
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
-  github_user_id INTEGER PRIMARY KEY,
-  access_token VARCHAR(255) NOT NULL,
-  token_type VARCHAR(255),
-  refresh_token VARCHAR(255),
-  expires_in INTEGER
+    github_user_id INTEGER PRIMARY KEY,
+    access_token VARCHAR(255) NOT NULL,
+    token_type VARCHAR(255),
+    refresh_token VARCHAR(255),
+    expires_in INTEGER,
+    created_at TIMESTAMP DEFAULT NOW()
 );
