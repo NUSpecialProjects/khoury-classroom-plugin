@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS student_works (
     submitted_pr_number INTEGER,
     manual_feedback_score INTEGER,
     auto_grader_score INTEGER,
-    submission_timestamp TIMESTAMP NOT NULL,
+    submission_timestamp TIMESTAMP,
     grades_published_timestamp TIMESTAMP,
     work_state WORK_STATE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
