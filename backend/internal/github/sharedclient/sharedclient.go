@@ -93,33 +93,6 @@ func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo 
 	return pr, nil
 }
 
-/*func (api *CommonAPI) CreateFilePRComment(ctx context.Context, owner string, repo string, commitSha string, filePath string, comment string) (*github.PullRequestComment, error) {
-	// Construct the request payload
-	newComment := map[string]interface{}{
-		"body":         comment,
-		"commit_id":    commitSha,
-		"path":         filePath,
-		"subject_type": "file",
-	}
-
-	// Create a new request
-	req, err := api.Client.NewRequest("POST", fmt.Sprintf("/repos/%s/%s/pulls/1/comments", owner, repo), newComment)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Response object to store the created comment
-	var cmt github.PullRequestComment
-
-	// Make the API call
-	_, err = api.Client.Do(ctx, req, &cmt)
-	if err != nil {
-		return nil, fmt.Errorf("error creating PR comment with subject_type 'file': %v", err)
-	}
-
-	return &cmt, nil
-}*/
-
 func (api *CommonAPI) CreateLinePRComment(ctx context.Context, owner string, repo string, commitSha string, filePath string, line int64, comment string) (*github.PullRequestComment, error) {
 	// Construct the URL for the PR comment endpoint
 	// potential flaw: hardcoding PR # as 1? in case student closes or merges the feedback branch PR and has to make a new one?
