@@ -1,20 +1,30 @@
-package github
+package auth
 
 import (
-	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
 
-func (service *GitHubService) GetCallbackURL() fiber.Handler {
+func (service *AuthService) Ping() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.Status(200).JSON(fiber.Map{
+			"message": `Back in the good old days -- the "Golden Era" of computers, it was easy to separate the men from the boys (sometimes called "Real Men" and "Quiche Eaters" in the literature). During this period, the Real Men were the ones that understood computer programming, and the Quiche Eaters were the ones that didn't. A real computer programmer said things like "DO 10 I=1,10" and "ABEND" (they actually talked in capital letters, you understand), and the rest of the world said things like "computers are too complicated for me" and "I can't relate to computers -- they're so impersonal". (A previous work [1] points out that Real Men don't "relate" to anything, and aren't afraid of being impersonal.)
+
+			But, as usual, times change. We are faced today with a world in which little old ladies can get computers in their microwave ovens, 12-year-old kids can blow Real Men out of the water playing Asteroids and Pac-Man, and anyone can buy and even understand their very own Personal Computer. The Real Programmer is in danger of becoming extinct, of being replaced by high-school students with TRASH-80's.
+
+			There is a clear need to point out the differences between the typical high-school junior Pac-Man player and a Real Programmer. If this difference is made clear, it will give these kids something to aspire to -- a role model, a Father Figure. It will also help explain to the employers of Real Programmers why it would be a mistake to replace the Real Programmers on their staff with 12-year-old Pac-Man players (at a considerable salary savings).`})
+	}
+}
+
+func (service *AuthService) GetCallbackURL() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		oAuthCfg := service.userCfg.OAuthConfig()
 		clientID := oAuthCfg.ClientID
@@ -28,7 +38,7 @@ func (service *GitHubService) GetCallbackURL() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) Login() fiber.Handler {
+func (service *AuthService) Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract code from the request body
 		var requestBody struct {
@@ -83,23 +93,21 @@ func (service *GitHubService) Login() fiber.Handler {
 			Path:     "/",
 		})
 
-		//TODO: check the database if the user is a TA, if so, set their role accordingly
-
 		return c.Status(200).JSON("Successfully logged in")
 	}
 }
 
-func (service *GitHubService) GetCurrentUser() fiber.Handler {
+func (service *AuthService) GetCurrentUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := service.getClient(c)
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			fmt.Println("FAILED TO GET CLIENT", err)
+			log.Default().Println("FAILED TO GET CLIENT", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			fmt.Println("FAILED TO GET USER", err)
+			log.Default().Println("FAILED TO GET USER", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
 		}
 
@@ -108,7 +116,7 @@ func (service *GitHubService) GetCurrentUser() fiber.Handler {
 	}
 }
 
-func (service *GitHubService) Logout() fiber.Handler {
+func (service *AuthService) Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(int64)
 		if !ok {
@@ -122,24 +130,4 @@ func (service *GitHubService) Logout() fiber.Handler {
 
 		return c.Status(200).JSON("Successfully logged out")
 	}
-}
-
-func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, error) {
-	userID, ok := c.Locals("userID").(int64)
-	if !ok {
-		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
-	}
-
-	session, err := service.store.GetSession(c.Context(), userID)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := userclient.NewFromSession(service.userCfg.OAuthConfig(), &session)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
 }

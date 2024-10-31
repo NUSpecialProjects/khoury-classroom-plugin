@@ -1,18 +1,54 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
-  const response = await fetch(`${base_url}/github/user/orgs`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+  // const response = await fetch(`${base_url}/orgs/installations`, {
+  //   method: "GET",
+  //   credentials: "include",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // });
+  // if (!response.ok) {
+  //   throw new Error("Network response was not ok");
+  // }
+  // return response.json() as Promise<IOrganizationsResponse>;
+  console.log("Using mocked API call for organizations");
+  return Promise.resolve({
+    orgs_with_app: [
+      {
+        login: "CS2200",
+        id: 1,
+        html_url: "nicktietje.com",
+        name: "Organization One",
+        avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
+      },
+      {
+        login: "CS3500",
+        id: 2,
+        html_url: "nicktietje.com",
+        name: "Organization Two",
+        avatar_url: "https://avatars.githubusercontent.com/u/2?v=4",
+      },
+    ],
+    orgs_without_app: [
+      {
+        login: "CHME4500",
+        id: 3,
+        html_url: "nicktietje.com",
+        name: "Organization Three",
+        avatar_url: "https://avatars.githubusercontent.com/u/3?v=4",
+      },
+      {
+        login: "CS5600",
+        id: 4,
+        html_url: "nicktietje.com",
+        name: "Organization Four",
+        avatar_url: "https://avatars.githubusercontent.com/u/4?v=4",
+      },
+    ],
   });
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json() as Promise<IOrganizationsResponse>;
 };
+
 
 export const getClassrooms = async (
   orgId: number
@@ -49,18 +85,37 @@ export const getClassrooms = async (
 export const getOrganizationDetails = async (
   login: string
 ): Promise<IOrganization> => {
-  const response = await fetch(`${base_url}/github/orgs/${login}`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+  // const response = await fetch(`${base_url}/github/orgs/${login}`, {
+  //   method: "GET",
+  //   credentials: "include",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // });
+  // if (!response.ok) {
+  //   throw new Error("Network response was not ok");
+  // }
+  // const resp = (await response.json()) as { org: IOrganization };
+  // return resp.org;
+  console.log("Using mocked API call for organization: ", login);
+  if (login === "CS3500") {
+    return Promise.resolve({
+      login: "CS3500",
+      id: 2,
+      html_url: "nicktietje.com",
+      name: "Organization Two",
+      avatar_url: "https://avatars.githubusercontent.com/u/2?v=4",
+    })
+  } else {
+     return Promise.resolve({
+    login: "CS2200",
+    id: 1,
+    html_url: "nicktietje.com",
+    name: "Organization One",
+    avatar_url: "https://avatars.githubusercontent.com/u/1?v=4",
   });
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as { org: IOrganization };
-  return resp.org;
+ 
 };
 
 export const postSemester = async (

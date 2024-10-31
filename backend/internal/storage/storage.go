@@ -9,7 +9,7 @@ import (
 type Storage interface {
 	Close(context.Context)
 	Test
-    Session
+	Session
 }
 
 type Test interface {

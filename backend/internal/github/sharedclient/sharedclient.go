@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
 
@@ -157,4 +158,35 @@ func (api *CommonAPI) CreateRegularPRComment(ctx context.Context, owner string, 
 	cmt, _, err := api.Client.Issues.CreateComment(ctx, owner, repo, pullNumber, newComment)
 
 	return cmt, err
+}
+
+func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
+	// Construct the URL for the list assignments endpoint
+	endpoint := "/user/orgs"
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container
+	var orgs []models.Organization
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &orgs)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching organizations: %v", err)
+	}
+
+	return orgs, nil
+}
+
+func (api *CommonAPI) ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error) {
+	forkedRepo, _, err := api.Client.Repositories.CreateFork(ctx, owner, repo, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error forking repository: %v", err)
+	}
+
+	return forkedRepo, nil
 }
