@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS classroom_tokens (
 CREATE TYPE USER_ROLE AS
 ENUM('PROFESSOR', 'TA', 'STUDENT');
 
-CREATE TABLE IF NOT EXISTS user_to_classroom (
+CREATE TABLE IF NOT EXISTS classroom_membership (
     github_username VARCHAR(255) PRIMARY KEY, 
     github_user_id INTEGER UNIQUE NOT NULL,
     role USER_ROLE NOT NULL,
