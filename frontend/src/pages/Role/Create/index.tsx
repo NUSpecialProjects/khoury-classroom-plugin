@@ -1,10 +1,10 @@
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 import React, { useContext, useState } from "react";
 import LinkGenerator from "@/components/LinkGenerator";
 
 const TokenCreatePage: React.FC = () => {
   const [role_type, setRoleType] = useState<string>("Student");
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
 
   return (
     <div>

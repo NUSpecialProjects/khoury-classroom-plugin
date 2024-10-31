@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
@@ -8,41 +8,34 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Link } from "react-router-dom";
-import { getUserSemesters } from "@/api/semesters";
+import { getUserOrgsAndClassrooms } from "@/api/classrooms";
 
-const SemesterSelection: React.FC = () => {
-  const [semestersByOrg, setSemestersByOrg] = useState<{
-    [key: number]: ISemester[];
-  }>({});
-  const [collapsed, setCollapsed] = useState<{ [key: number]: boolean }>({});
+const ClassroomSelection: React.FC = () => {
+  const [classroomsByOrg, setClassroomsByOrg] = useState<Map<number, IClassroom[]>>(new Map());
+  const [collapsed, setCollapsed] = useState<Map<number, boolean>>(new Map());
   const [loading, setLoading] = useState(true);
-  const { setSelectedSemester } = useContext(SelectedSemesterContext);
+  const { setSelectedClassroom } = useContext(SelectedClassroomContext);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSemesters = async () => {
       try {
-        const data: IUserSemestersResponse = await getUserSemesters();
-        const groupedSemesters: { [key: number]: ISemester[] } = {};
-        const initialCollapsedState: { [key: number]: boolean } = {};
+        const data: Map<IOrganization, IClassroom[]> = (await getUserOrgsAndClassrooms()).orgs_and_classrooms;
+        const initialCollapsedState: Map<number, boolean> = new Map();
 
-        data.active_semesters
-          .concat(data.inactive_semesters)
-          .forEach((semester) => {
-            if (!groupedSemesters[semester.org_id]) {
-              groupedSemesters[semester.org_id] = [];
-              initialCollapsedState[semester.org_id] = false; // Set default to uncollapsed
-            }
-            groupedSemesters[semester.org_id].push(semester);
-          });
+        const transformedData: Map<number, IClassroom[]> = new Map();
+        data.forEach((classrooms, org) => {
+          transformedData.set(org.id, classrooms);
+          initialCollapsedState.set(org.id, true);
+        });
 
-        setSemestersByOrg(groupedSemesters);
+        setClassroomsByOrg(transformedData);
         setCollapsed(initialCollapsedState);
       } catch (error) {
-        console.error("Error fetching semesters:", error);
+        console.error("Error fetching organizations and classrooms:", error);
       } finally {
         setLoading(false);
       }
@@ -51,17 +44,22 @@ const SemesterSelection: React.FC = () => {
     void fetchSemesters();
   }, []);
 
-  const handleSemesterSelect = (semester: ISemester) => {
-    setSelectedSemester(semester);
+  const handleClassroomSelect = (classroom: IClassroom) => {
+    setSelectedClassroom(classroom);
     navigate(`/app/dashboard`);
   };
 
   const toggleCollapse = (orgId: number) => {
-    setCollapsed((prev) => ({ ...prev, [orgId]: !prev[orgId] }));
+    setCollapsed((prev) => {
+      const newCollapsed = new Map(prev);
+      newCollapsed.set(orgId, !prev.get(orgId));
+      return newCollapsed;
+    });
   };
 
-  const hasSemesters = Object.keys(semestersByOrg).length > 0;
+  const hasSemesters = classroomsByOrg.size > 0;
 
+  //TODO: add link to classroom create page
   return (
     <div className="Selection">
       <h1 className="Selection__title">Your Classrooms</h1>
@@ -70,25 +68,25 @@ const SemesterSelection: React.FC = () => {
           <p>Loading...</p>
         ) : hasSemesters ? (
           <Table cols={2} primaryCol={1}>
-            {Object.keys(semestersByOrg).map((orgId) => (
+            {Array.from(classroomsByOrg.entries()).map(([orgId, classrooms]) => (
               <React.Fragment key={orgId}>
                 <TableRow className="HeaderRow" style={{ borderTop: "none" }}>
                   <TableCell></TableCell>
                   <TableCell>Organization Name</TableCell>
                 </TableRow>
                 <TableRow
-                  className={`ChildRow ${!collapsed[Number(orgId)] ? "TableRow--expanded" : ""}`}
+                  className={`ChildRow ${!collapsed.get(orgId) ? "TableRow--expanded" : ""}`}
                 >
-                  <TableCell onClick={() => toggleCollapse(Number(orgId))}>
-                    {collapsed[Number(orgId)] ? (
+                  <TableCell onClick={() => toggleCollapse(orgId)}>
+                    {collapsed.get(orgId) ? (
                       <FaChevronRight />
                     ) : (
                       <FaChevronDown />
                     )}
                   </TableCell>
-                  <TableCell>{`${semestersByOrg[Number(orgId)][0].org_name}`}</TableCell>
+                  <TableCell>{`${classrooms[0].org_name}`}</TableCell>
                 </TableRow>
-                {!collapsed[Number(orgId)] && (
+                {!collapsed.get(orgId) && (
                   <TableDiv>
                     <Table
                       cols={3}
@@ -103,18 +101,18 @@ const SemesterSelection: React.FC = () => {
                         <TableCell className="status">Status</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
-                      {semestersByOrg[Number(orgId)].map((semester) => (
+                      {classrooms.map((classroom) => (
                         <TableRow
-                          key={`${semester.org_id}-${semester.classroom_id}`}
+                          key={classroom.id}
                         >
-                          <TableCell>{semester.classroom_name}</TableCell>
+                          <TableCell>{classroom.name}</TableCell>
                           <TableCell className="status">
-                            {semester.active ? "Active" : "Inactive"}
+                            {"remove this"}
                           </TableCell>
                           <TableCell>
                             <button
                               className="Selection__actionButton"
-                              onClick={() => handleSemesterSelect(semester)}
+                              onClick={() => handleClassroomSelect(classroom)}
                             >
                               View
                             </button>
@@ -143,4 +141,4 @@ const SemesterSelection: React.FC = () => {
   );
 };
 
-export default SemesterSelection;
+export default ClassroomSelection;

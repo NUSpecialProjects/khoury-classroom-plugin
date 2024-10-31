@@ -1,4 +1,4 @@
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 import React, { useContext } from "react";
 
 interface GenericRolePageProps {
@@ -8,7 +8,7 @@ interface GenericRolePageProps {
 const GenericRolePage: React.FC<GenericRolePageProps> = ({
   role_type,
 }: GenericRolePageProps) => {
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
 
   return (
     <div>

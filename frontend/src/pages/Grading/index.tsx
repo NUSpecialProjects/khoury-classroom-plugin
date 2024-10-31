@@ -8,7 +8,7 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
 import { getStudentAssignments } from "@/api/student_assignments";
 import { formatDate } from "@/utils/date";
@@ -23,7 +23,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   const [studentAssignments, setStudentAssignments] = useState<
     IStudentAssignment[]
   >([]);
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 
 const Grading: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
   useEffect(() => {
     if (!selectedSemester) return;
     getAssignments(selectedSemester.classroom_id)

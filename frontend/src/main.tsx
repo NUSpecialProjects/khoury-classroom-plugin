@@ -11,7 +11,7 @@ import {
 import * as Pages from "./pages";
 import Layout from "./components/Layout";
 import AuthProvider, { AuthContext } from "./contexts/auth";
-import SelectedSemesterProvider from "./contexts/selectedSemester";
+import SelectedSemesterProvider from "./contexts/selectedClassroom";
 
 import "./global.css";
 

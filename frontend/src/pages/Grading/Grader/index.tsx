@@ -15,7 +15,7 @@ import {
 } from "./funcs";
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 import {
   getStudentAssignment,
   getGitTree,
@@ -30,7 +30,7 @@ const Grader: React.FC = () => {
 
   // params
   const { assignmentId, studentAssignmentId } = useParams();
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
 
   // states
   const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);

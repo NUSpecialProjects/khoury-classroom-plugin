@@ -1,11 +1,11 @@
 import { activateSemester, deactivateSemester } from "@/api/semesters";
 import ErrorMessage from "@/components/Error";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 import { useContext, useState } from "react";
 
 const Settings: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
-  const { selectedSemester, setSelectedSemester } = useContext(
+  const { selectedClassroom: selectedSemester, setSelectedSemester } = useContext(
     SelectedSemesterContext
   );
 

@@ -2,7 +2,7 @@ import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import { Link, useNavigate } from "react-router-dom";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 import AlertBanner from "@/components/Banner/AlertBanner";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
@@ -10,7 +10,7 @@ import { formatDate } from "@/utils/date";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
-  const { selectedSemester, setSelectedSemester } = useContext(
+  const { selectedClassroom: selectedSemester, setSelectedSemester } = useContext(
     SelectedSemesterContext
   );
   const navigate = useNavigate();

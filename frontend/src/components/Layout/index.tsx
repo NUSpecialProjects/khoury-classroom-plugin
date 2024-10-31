@@ -3,12 +3,12 @@ import { useContext } from "react";
 
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 
 import "./styles.css";
 
 const Layout: React.FC = () => {
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
   return selectedSemester ? (
     <div className="Layout">
       <div className="Layout__left">

@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import GenericRolePage from "..";
 import LinkGenerator from "@/components/LinkGenerator";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedSemesterContext } from "@/contexts/selectedClassroom";
 
 const StudentListPage: React.FC = () => {
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedSemester } = useContext(SelectedSemesterContext);
   const role_type = "Student";
   return (
     <>
