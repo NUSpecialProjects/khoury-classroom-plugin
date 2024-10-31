@@ -52,6 +52,7 @@ export const FileTree: React.FC<IFileTree> = ({
 export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
   name,
   depth,
+  status,
   treeDepth,
   children,
   className,
@@ -64,7 +65,7 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
       {...props}
     >
       <div
-        className="FileTree__nodeName"
+        className={"FileTree__nodeName FileTree__nodeName--" + status}
         style={{
           paddingLeft: (depth * 15 + 10).toString() + "px",
           top: (depth * 24).toString() + "px",
@@ -101,6 +102,7 @@ export const FileTreeDirectory: React.FC<IFileTreeDirectory> = ({
 export const FileTreeFile: React.FC<IFileTreeFile> = ({
   name,
   path,
+  status,
   depth,
   className,
   ...props
@@ -111,7 +113,10 @@ export const FileTreeFile: React.FC<IFileTreeFile> = ({
       style={{ paddingLeft: (depth * 15 + 10).toString() + "px" }}
       {...props}
     >
-      <span className="FileTree__nodeName" data-path={path}>
+      <span
+        className={"FileTree__nodeName FileTree__nodeName--" + status}
+        data-path={path}
+      >
         {name}
       </span>
     </div>

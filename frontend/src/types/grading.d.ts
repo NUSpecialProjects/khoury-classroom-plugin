@@ -14,14 +14,14 @@ interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
 /******************************
  * GitHub response object types
  ******************************/
-interface IGitTree {
-  commitSha: string;
-  tree: IGitTreeNode[];
-}
 interface IGitTreeNode {
-  type: string;
-  path: string;
-  sha: string;
+  Status: string;
+  Entry: {
+    type: string;
+    path: string;
+    sha: string;
+    status: string;
+  };
 }
 
 interface IGraderFile {

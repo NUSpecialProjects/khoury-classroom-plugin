@@ -23,5 +23,4 @@ func (s *GradingService) CreatePRComment(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(cmt)
-
 }

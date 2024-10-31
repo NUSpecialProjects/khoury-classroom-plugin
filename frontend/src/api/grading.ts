@@ -3,7 +3,6 @@ const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 export const createPRComment = async (
   orgName: string,
   repoName: string,
-  commitSha: string,
   filePath: string,
   line: number,
   comment: string
@@ -17,7 +16,6 @@ export const createPRComment = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        commit_sha: commitSha,
         file_path: filePath,
         line,
         comment,
@@ -32,7 +30,7 @@ export const createPRComment = async (
 export const getGitTree = async (
   orgName: string,
   repoName: string
-): Promise<IGitTree> => {
+): Promise<IGitTreeNode[]> => {
   const response = await fetch(
     `${base_url}/grading/org/${orgName}/repo/${repoName}/tree`,
     {
@@ -46,7 +44,7 @@ export const getGitTree = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as IGitTree;
+  const resp = (await response.json()) as IGitTreeNode[];
   return resp;
 };
 

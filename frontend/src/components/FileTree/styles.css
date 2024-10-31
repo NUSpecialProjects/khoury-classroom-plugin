@@ -52,14 +52,14 @@
 
 .FileTreeDirectory {
   position: relative;
+  color: #d4d4d4;
+  font-weight: 400;
 
   > .FileTree__nodeName {
     position: sticky;
     display: flex;
     align-items: center;
     gap: 5px;
-    color: #d4d4d4;
-    font-weight: 400;
   }
 
   &__bars {
@@ -78,6 +78,7 @@
     min-width: 10px;
     width: 10px;
     height: 10px;
+    color: #d4d4d4;
   }
 }
 
@@ -110,4 +111,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &--modified {
+    color: #d5bf5d;
+  }
+  &--added {
+    color: #73c991;
+  }
 }

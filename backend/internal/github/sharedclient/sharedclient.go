@@ -123,7 +123,35 @@ func (api *CommonAPI) CreateLinePRComment(ctx context.Context, owner string, rep
 	// Construct the URL for the PR comment endpoint
 	// potential flaw: hardcoding PR # as 1? in case student closes or merges the feedback branch PR and has to make a new one?
 	// can maybe circumvent by disallowing students from taking any action on the feedback branch PR thru org/repo rules
-	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/1/comments", owner, repo)
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/96/comments", owner, repo)
+
+	// Create a new POST request
+	body := map[string]interface{}{
+		"body":      comment,
+		"commit_id": commitSha,
+		"path":      filePath,
+		"line":      line,
+	}
+
+	req, err := api.Client.NewRequest("POST", endpoint, body)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container
+	var cmt github.PullRequestComment
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &cmt)
+	if err != nil {
+		return nil, fmt.Errorf("error creating PR comment: %v", err)
+	}
+
+	return &cmt, nil
+}
+
+func (api *CommonAPI) CreatePRReview(ctx context.Context, owner string, repo string, commitSha string, filePath string, line int64, comment string) (*github.PullRequestComment, error) {
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/96/comments", owner, repo)
 
 	// Create a new POST request
 	body := map[string]interface{}{

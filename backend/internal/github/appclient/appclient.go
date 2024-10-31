@@ -6,6 +6,7 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 	"github.com/jferrl/go-githubauth"
 	"golang.org/x/oauth2"
@@ -91,30 +92,61 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-func (api *AppAPI) GetGitTree(owner string, repo string) (*string, []github.TreeEntry, error) {
+// Helper function to create a map of file paths to modified status
+func createStatusMap(modifiedFiles []*github.CommitFile) map[string]string {
+	statusMap := make(map[string]string)
+	for _, file := range modifiedFiles {
+		statusMap[file.GetFilename()] = file.GetStatus()
+	}
+	return statusMap
+}
+
+func (api *AppAPI) GetFileTree(owner string, repo string, pullNumber int) ([]models.FileTreeNode, error) {
 	// Get the reference to the branch
 	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
 	if err != nil {
-		return nil, nil, fmt.Errorf("error fetching branch ref: %v", err)
+		return nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
 
-	// Get the commit from the ref
+	// Get the latest commit from the ref
 	commitSha := ref.Object.GetSHA()
 	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSha)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error fetching commit: %v", err)
+		return nil, fmt.Errorf("error fetching commit: %v", err)
 	}
 
+	// Get the git tree from latest commit
 	treeSHA := commit.Tree.GetSHA()
-	tree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
+	gitTree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
 	if err != nil {
-		return nil, nil, fmt.Errorf("error fetching tree: %v", err)
+		return nil, fmt.Errorf("error fetching tree: %v", err)
 	}
 
-	return &commitSha, tree.Entries, nil
+	// Get the touched files from the PR
+	touched, _, err := api.Client.PullRequests.ListFiles(context.Background(), owner, repo, pullNumber, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching touched files: %v", err)
+	}
+
+	// Merge the touched files list with the git tree to yield final desired tree
+	statuses := createStatusMap(touched)
+	var tree []models.FileTreeNode
+	for _, entry := range gitTree.Entries {
+		status := statuses[entry.GetPath()]
+		if status == "" {
+			status = "unmodified"
+		}
+
+		tree = append(tree, models.FileTreeNode{
+			Status: status,
+			Entry:  entry,
+		})
+	}
+
+	return tree, nil
 }
 
-func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, error) {
+func (api *AppAPI) GetFileBlob(owner string, repo string, sha string) ([]byte, error) {
 	contents, _, err := api.Client.Git.GetBlobRaw(context.Background(), owner, repo, sha)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching contents: %v", err)

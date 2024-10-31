@@ -4,33 +4,22 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/go-github/github"
 )
 
 func (s *FileTreeService) GetGitTree(c *fiber.Ctx) error {
-	commitSha, tree, err := s.githubappclient.GetGitTree(c.Params("orgName"), c.Params("repoName"))
+	tree, err := s.githubappclient.GetFileTree(c.Params("orgName"), c.Params("repoName"), 96)
 	if err != nil {
 		return err
 	}
 
-	responseBody := struct {
-		CommitSha *string            `json:"commitSha"`
-		Tree      []github.TreeEntry `json:"tree"`
-	}{
-		CommitSha: commitSha,
-		Tree:      tree,
-	}
-
-	return c.Status(http.StatusOK).JSON(responseBody)
-
+	return c.Status(http.StatusOK).JSON(tree)
 }
 
 func (s *FileTreeService) GetGitBlob(c *fiber.Ctx) error {
-	content, err := s.githubappclient.GetGitBlob(c.Params("orgName"), c.Params("repoName"), c.Params("sha"))
+	content, err := s.githubappclient.GetFileBlob(c.Params("orgName"), c.Params("repoName"), c.Params("sha"))
 	if err != nil {
 		return err
 	}
 
 	return c.Status(http.StatusOK).Send(content)
-
 }

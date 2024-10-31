@@ -35,7 +35,7 @@ const Grader: React.FC = () => {
   const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
   const [studentAssignment, setStudentAssignment] =
     useState<IStudentAssignment | null>(null);
-  const [gitTree, setGitTree] = useState<IGitTree | null>(null);
+  const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
@@ -156,7 +156,6 @@ const Grader: React.FC = () => {
     createPRComment(
       selectedSemester.org_name,
       studentAssignment.repo_name,
-      gitTree.commitSha,
       currentFilePath,
       Number(data.get("line")),
       String(data.get("comment"))
@@ -208,7 +207,7 @@ const Grader: React.FC = () => {
           <div className="Grader__body">
             <FileTree
               className="Grader__files"
-              gitTree={gitTree.tree}
+              gitTree={gitTree}
               selectFileCallback={openFile}
             />
             <div className="Grader__browser">
