@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS classrooms (
     id SERIAL PRIMARY KEY,
-    classroom_name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     org_id INTEGER NOT NULL,
     org_name VARCHAR(255) NOT NULL
 );
