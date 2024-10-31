@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,7 +16,7 @@ func Routes(app *fiber.App, params types.Params) {
 }
 
 func OrgRoutes(router fiber.Router, service *OrganizationService) fiber.Router {
-	orgRouter := router.Group("/orgs")
+	orgRouter := router.Group("/orgs").Use(middleware.Protected(service.userCfg.JWTSecret))
 
 	// Get the details of an organization
 	orgRouter.Get("/:org", service.GetOrg())
