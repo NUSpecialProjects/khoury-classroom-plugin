@@ -39,6 +39,8 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 
 	// Update a classroom
 	classroomRouter.Put("/:classroom_id", service.updateClassroom())
+	// Update a classroom's name
+    classroomRouter.Put("/:classroom_id/name", service.updateClassroomName())
 
 	// Get the users of this classroom
 	classroomRouter.Get("/:classroom_id/students", service.getClassroomUsers())

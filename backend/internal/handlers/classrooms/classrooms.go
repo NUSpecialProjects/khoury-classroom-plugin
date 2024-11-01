@@ -1,6 +1,12 @@
 package classrooms
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/gofiber/fiber/v2"
+)
 
 // Returns the classrooms the authenticated user is part of.
 func (s *ClassroomService) getUserClassrooms() fiber.Handler {
@@ -13,26 +19,100 @@ func (s *ClassroomService) getUserClassrooms() fiber.Handler {
 // Returns the details of a classroom.
 func (s *ClassroomService) getClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
+       	classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        
+        classroomData, err := s.store.GetClassroomByID(c.Context(), classroomID)
+        if err != nil {
+            return err
+        }
+
+        return c.Status(http.StatusOK).JSON(classroomData)
 	}
 }
 
 // Creates a new classroom.
 func (s *ClassroomService) createClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
+        var classroomData models.Classroom
+        err := c.BodyParser(&classroomData)
+        if err != nil {
+            return err
+        }
+
+        
+        createdClassroom, err := s.store.CreateClassroom(c.Context(), classroomData)
+        if err != nil {
+            return err
+        }
+
+        return c.Status(http.StatusOK).JSON(fiber.Map{
+            "message": "created classroom",
+            "classroom data" : createdClassroom,
+        })
+    }
 }
 
 // Updates an existing classroom.
 func (s *ClassroomService) updateClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
+       	
+        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        if err != nil {
+            return err
+        }
+
+        var classroomData models.Classroom
+        error := c.BodyParser(&classroomData)
+        if error != nil {
+            return error
+        }
+        classroomData.ID = classroomID
+        
+        updatedClassroom, err := s.store.UpdateClassroom(c.Context(), classroomData)
+        if err != nil {
+            return err
+        }
+
+        return c.Status(http.StatusOK).JSON(fiber.Map{
+            "message": "created classroom",
+            "updated classroom data" : updatedClassroom,
+        })
+    }
 }
+
+func (s *ClassroomService) updateClassroomName() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+       	
+        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        if err != nil {
+            return err
+        }
+
+        var classroomData models.Classroom
+        error := c.BodyParser(&classroomData)
+        if error != nil {
+            return error
+        }
+        classroomData.ID = classroomID
+
+        existingClassroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
+        if err != nil {
+            return err
+        }
+        existingClassroom.Name = classroomData.Name
+        
+        updatedClassroom, err := s.store.UpdateClassroom(c.Context(), existingClassroom)
+        if err != nil {
+            return err
+        }
+
+        return c.Status(http.StatusOK).JSON(fiber.Map{
+            "message": "created classroom",
+            "updated classroom data" : updatedClassroom,
+        })
+    }
+}
+
 
 // Returns the users of a classroom.
 func (s *ClassroomService) getClassroomUsers() fiber.Handler {
