@@ -46,7 +46,7 @@ func (s *ClassroomService) createClassroom() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created_classroom",
+            "message": "created classroom",
             "classroom_data" : createdClassroom,
         })
     }
@@ -74,7 +74,7 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created_classroom",
+            "message": "created classroom",
             "updated_classroom_data" : updatedClassroom,
         })
     }
@@ -107,7 +107,7 @@ func (s *ClassroomService) updateClassroomName() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created_classroom",
+            "message": "created classroom",
             "updated_classroom_name" : updatedClassroom,
         })
     }
@@ -125,9 +125,27 @@ func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 // Adds a user (or list of users) to a classroom with a given role.
 func (s *ClassroomService) addUserToClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
+        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        if err != nil {
+            return err
+        }
+
+        var usersToAdd []int64
+        error := c.BodyParser(&usersToAdd)
+        if error != nil {
+            return error
+        }
+
+        for _, user := range usersToAdd {
+            err := s.store.AddUserToClassroom(c.Context(), classroomID, user)
+            if err != nil {
+               return err 
+            }
+        }
+		
+        return c.Status(http.StatusOK).JSON(fiber.Map{
+            "message": "added users to classroom"})
+    }
 }
 
 // Removes a user from a classroom.
