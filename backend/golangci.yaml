@@ -1,0 +1,8 @@
+linters:
+  enable:
+    - golint
+    - stylecheck
+
+linters-settings:
+  stylecheck:
+    checks: ["ST1003"]
