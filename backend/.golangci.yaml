@@ -1,8 +1,9 @@
 linters:
   enable:
-    - golint
+    - revive
     - stylecheck
-
+    
 linters-settings:
   stylecheck:
-    checks: ["all"]
+    checks: ["all", "ST1003"]
+  
