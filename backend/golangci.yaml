@@ -5,4 +5,4 @@ linters:
 
 linters-settings:
   stylecheck:
-    checks: ["ST1003"]
+    checks: ["all"]
