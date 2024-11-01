@@ -10,7 +10,7 @@ type Storage interface {
 	Close(context.Context)
 	Test
 	Session
-    Classroom
+	Classroom
 }
 
 type Test interface {
@@ -24,7 +24,7 @@ type Session interface {
 }
 
 type Classroom interface {
-    CreateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
-    UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
-    GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error)
+	CreateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
+	UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
+	GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error)
 }
