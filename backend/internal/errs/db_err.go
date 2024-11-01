@@ -1,14 +1,12 @@
 package errs
 
-
 import (
-  "fmt"
-  "errors"
+	"errors"
+	"fmt"
 )
 
-
 type DatabaseError struct {
-  Message   any   `json:"msg"`
+	Message any `json:"msg"`
 }
 
 func (e DatabaseError) Error() string {
@@ -16,11 +14,11 @@ func (e DatabaseError) Error() string {
 }
 
 func NewDBError(err error) DatabaseError {
-  return DatabaseError {
-    Message:    err.Error(),
-  }
+	return DatabaseError{
+		Message: err.Error(),
+	}
 }
 
 func DBSemesterLogicError() DatabaseError {
-  return NewDBError(errors.New("Multiple semesters should not share a classroom id"))
+	return NewDBError(errors.New("Multiple semesters should not share a classroom id"))
 }

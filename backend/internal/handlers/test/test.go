@@ -1,8 +1,8 @@
 package test
 
 import (
-	"net/http"
 	"github.com/gofiber/fiber/v2"
+	"net/http"
 )
 
 func (s *TestService) GetTests(c *fiber.Ctx) error {
