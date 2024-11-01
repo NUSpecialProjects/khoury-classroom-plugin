@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,10 +15,12 @@ type APIError struct {
 	Message    any `json:"msg"`
 }
 
+//Implement Error Interface
 func (e APIError) Error() string {
 	return fmt.Sprintf("api error: %d %v", e.StatusCode, e.Message)
 }
 
+//Constructor
 func NewAPIError(statusCode int, err error) APIError {
 	return APIError{
 		StatusCode: statusCode,
@@ -27,6 +28,7 @@ func NewAPIError(statusCode int, err error) APIError {
 	}
 }
 
+//400 w caught error
 func BadRequest(err error) APIError {
 	return NewAPIError(http.StatusBadRequest, err)
 }
@@ -56,7 +58,7 @@ func AuthenticationError() APIError {
 }
 
 /* Post Requests Only */
-func InvalidRequestData(expected interface{}) APIError {
+func InvalidRequestBody(expected interface{}) APIError {
 	fieldAcc := make([]string, 0, 10)
 
 	// Use reflection to inspect the struct type
@@ -81,6 +83,7 @@ func SessionError() APIError {
 func InternalServerError() APIError {
 	return NewAPIError(http.StatusInternalServerError, errors.New("internal server error"))
 }
+
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	var apiErr APIError

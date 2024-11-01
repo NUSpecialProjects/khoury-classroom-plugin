@@ -25,6 +25,7 @@ func (s *FileTreeService) GetGitTree(c *fiber.Ctx) error {
 	}
 	tree, err := s.githubappclient.GetGitTree(params["orgName"], params["repoName"])
 	if err != nil {
+		//return err
 		return errs.GithubIntegrationError(err)
 	}
 	return c.Status(http.StatusOK).JSON(tree)

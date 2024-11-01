@@ -30,8 +30,8 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 }
 
 func NewFromSession(oAuthCfg *oauth2.Config, session *models.Session) (*UserAPI, error) {
-	token := session.CreateToken()
-	return newFromToken(oAuthCfg, &token)
+	sessionToken := session.CreateToken()
+	return newFromToken(oAuthCfg, &sessionToken)
 }
 
 func newFromToken(oAuthCfg *oauth2.Config, token *oauth2.Token) (*UserAPI, error) {
