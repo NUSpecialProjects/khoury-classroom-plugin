@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"reflect"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -41,11 +43,39 @@ func Conflict(title string, withKey string, withValue any) APIError {
 	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict: %s with %s='%s' already exists", title, withKey, withValue))
 }
 
-func InvalidRequestData(errors map[string]string) APIError {
-	return APIError{
-		StatusCode: http.StatusUnprocessableEntity,
-		Message:    errors,
+func GithubIntegrationError(err error) APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("error with github integration: %s", err.Error()))
+}
+
+func MissingApiParamError(field string) APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("missing request field: %s", field))
+}
+
+func AuthenticationError() APIError {
+	return NewAPIError(http.StatusForbidden, fmt.Errorf("please authenticate properly"))
+}
+
+/* Post Requests Only */
+func InvalidRequestData(expected interface{}) APIError {
+	fieldAcc := make([]string, 0, 10)
+
+	// Use reflection to inspect the struct type
+	t := reflect.TypeOf(expected)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		jsonTag := field.Tag.Get("json")
+		if jsonTag != "" {
+			fieldAcc = append(fieldAcc, jsonTag)
+		}
 	}
+
+	msg := fmt.Sprintf("Expected Fields: %s", strings.Join(fieldAcc, ", "))
+	return NewAPIError(http.StatusBadRequest, errors.New(msg))
+}
+
+
+func SessionError() APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("error creating or maintaining session"))
 }
 
 func InternalServerError() APIError {

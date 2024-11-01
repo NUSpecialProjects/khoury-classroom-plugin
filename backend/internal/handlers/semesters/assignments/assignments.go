@@ -13,13 +13,13 @@ import (
 func (s *AssignmentsService) GetAssignmentsInSemester(c *fiber.Ctx) error {
 	classroomID, err := strconv.ParseInt(c.Params("classroomID"), 10, 64)
 	if err != nil {
-		return err
+		return errs.MissingApiParamError("classroomID")
 	}
 
 	assignments, err := s.store.GetAssignmentsInSemester(c.Context(), classroomID)
 	if err != nil {
 		fmt.Println("error in service func", err)
-		return err
+		return errs.GithubIntegrationError(err)
 	}
 
 	return c.Status(http.StatusOK).JSON(assignments)
@@ -32,7 +32,7 @@ func (s *AssignmentsService) GetAssignment(c *fiber.Ctx) error {
 	assignment, err := s.store.GetAssignment(c.Context(), classroomID, assignmentID)
 	if err != nil {
 		fmt.Println("error in service func", err)
-		return err
+		return errs.GithubIntegrationError(err)
 	}
 
 	return c.Status(http.StatusOK).JSON(assignment)

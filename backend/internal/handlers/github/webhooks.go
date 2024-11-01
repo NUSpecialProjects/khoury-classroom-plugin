@@ -1,6 +1,7 @@
 package github
 
 import (
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -29,7 +30,7 @@ func (s *GitHubService) PR(c *fiber.Ctx) error {
 func (s *GitHubService) PRComment(c *fiber.Ctx) error {
 	payload := models.PRComment{}
 	if err := c.BodyParser(&payload); err != nil {
-		return err
+		return errs.BadRequest(err)
 	}
 	if payload.Comment.AuthorAssociation == "COLLABORATOR" {
 		println("regrade request")

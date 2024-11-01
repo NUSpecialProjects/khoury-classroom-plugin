@@ -5,6 +5,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,8 +22,8 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 		// Get the user client
 		userClient, err := service.getClient(c)
 		if err != nil {
-			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			//log.Default().Println("Error getting client: ", err)
+			return errs.SessionError()
 		}
 		// Get the app client
 		appClient := service.githubappclient
@@ -31,14 +32,14 @@ func (service *GitHubService) GetInstalledOrgs() fiber.Handler {
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
 		if err != nil {
 			log.Default().Println("Error getting user orgs: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
+			errs.GithubIntegrationError(err)
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
 			log.Default().Println("Error getting app installations: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get app installations"})
+			errs.GithubIntegrationError(err)
 		}
 
 		// Filter the organizations to include only those with the app installed
@@ -68,21 +69,21 @@ func (service *GitHubService) GetOrg() fiber.Handler {
 		org_name := c.Params("org")
 		if org_name == "" || org_name == "undefined" {
 			log.Default().Println("Error getting org_name: ", org_name)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
+			return errs.MissingApiParamError("org")
 		}
 
 		// Get the user client
 		userClient, err := service.getClient(c)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		// Get the organization
 		org, err := userClient.GetOrg(c.Context(), org_name)
 		if err != nil {
 			log.Default().Println("Error getting org: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		return c.Status(200).JSON(fiber.Map{"org": org})
@@ -95,33 +96,33 @@ func (service *GitHubService) ListOrgClassrooms() fiber.Handler {
 		orgIDParam := c.Params("org")
 		if orgIDParam == "" || orgIDParam == "undefined" {
 			log.Default().Println("Error getting org_id: ", orgIDParam)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid or missing org_id"})
+			return errs.MissingApiParamError("org")
 		}
 
 		org_id, err := strconv.ParseInt(orgIDParam, 10, 64)
 		if err != nil {
 			log.Default().Println("Error parsing org_id: ", err)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
+			return errs.MissingApiParamError("org")
 		}
 
 		// Get the user client
 		userClient, err := service.getClient(c)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		// Get the list of classrooms for the organization
 		classrooms, err := userClient.GetUserClassroomsInOrg(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting classrooms: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get classrooms"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting semesters: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		availableClassrooms := []models.Classroom{}
@@ -154,19 +155,19 @@ func (service *GitHubService) ListOrgSemesters() fiber.Handler {
 		orgIDParam := c.Params("org")
 		if orgIDParam == "" || orgIDParam == "undefined" {
 			log.Default().Println("Error getting org_id: ", orgIDParam)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid or missing org_id"})
+			return errs.MissingApiParamError("org")
 		}
 
 		org_id, err := strconv.ParseInt(orgIDParam, 10, 64)
 		if err != nil {
 			log.Default().Println("Error parsing org_id: ", err)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_id"})
+			return errs.MissingApiParamError("org")
 		}
 
 		semesters, err := service.store.ListSemestersByOrg(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting semesters: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get semesters"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		return c.Status(200).JSON(fiber.Map{"semesters": semesters})
@@ -180,20 +181,20 @@ func (service *GitHubService) AppInitialization() fiber.Handler {
 			OrgID int64 `json:"org_id"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestData(requestBody)
 		}
 		org_id := requestBody.OrgID
 
 		client, err := service.getClient(c)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		// Create roles if they don't exist (also checks if they are an admin, since this requires admin permissions)
 		existing_roles, err := client.GetOrgRoles(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting roles: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get roles"})
+			return errs.GithubIntegrationError(err)
 		}
 		for _, role := range models.AllRoles {
 			role_exists := false
@@ -208,14 +209,14 @@ func (service *GitHubService) AppInitialization() fiber.Handler {
 				_, err := client.CreateOrgRoleFromTemplate(c.Context(), org_id, role)
 				if err != nil {
 					log.Default().Println("Error creating role: ", err)
-					return c.Status(500).JSON(fiber.Map{"error": "failed to create role"})
+					return errs.GithubIntegrationError(err)
 				}
 			}
 		}
 		// Get current user
 		current_user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get current user"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		// Get the professor role id
@@ -230,12 +231,12 @@ func (service *GitHubService) AppInitialization() fiber.Handler {
 		// Assign the professor role if it's not already assigned
 		professors, err := client.GetUsersAssignedToRole(c.Context(), org_id, prof_role_id)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get users assigned to role"})
+			return errs.GithubIntegrationError(err)
 		}
 		if len(professors) == 0 {
 			err := client.AssignOrgRoleToUser(c.Context(), org_id, current_user.Login, prof_role_id)
 			if err != nil {
-				return c.Status(500).JSON(fiber.Map{"error": "failed to assign role to user"})
+				return errs.GithubIntegrationError(err)
 			}
 		} else {
 			log.Default().Println("WARNING: Professor role already assigned to another user, skipping role assignment")
@@ -252,7 +253,7 @@ func (service *GitHubService) AppCleanup() fiber.Handler {
 			OrgID int64 `json:"org_id"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestData(requestBody)
 		}
 
 		org_id := requestBody.OrgID
@@ -260,12 +261,12 @@ func (service *GitHubService) AppCleanup() fiber.Handler {
 		client, err := service.getClient(c)
 		if err != nil {
 			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubIntegrationError(err)
 		}
 		existing_roles, err := client.GetOrgRoles(c.Context(), org_id)
 		if err != nil {
 			log.Default().Println("Error getting roles: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get roles"})
+			return errs.GithubIntegrationError(err)
 		}
 		for _, role := range models.AllRoles {
 			for _, existing_role := range existing_roles {
@@ -273,7 +274,7 @@ func (service *GitHubService) AppCleanup() fiber.Handler {
 					err := client.DeleteOrgRole(c.Context(), org_id, existing_role.ID)
 					if err != nil {
 						log.Default().Println("Error deleting role: ", err)
-						return c.Status(500).JSON(fiber.Map{"error": "failed to delete role"})
+						return errs.GithubIntegrationError(err)
 					}
 				}
 			}

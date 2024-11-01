@@ -1,7 +1,6 @@
 package github
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -20,18 +19,19 @@ func (service *GitHubService) Login() fiber.Handler {
 			Code string `json:"code"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.BadRequest(err)
 		}
 		code := requestBody.Code
 		// create client
 		client, err := userclient.NewFromCode(service.userCfg, code)
+		
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+			return errs.GithubIntegrationError(err)
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+			return errs.GithubIntegrationError(err)
 		}
 
 		// Convert user.ID to string
@@ -49,13 +49,13 @@ func (service *GitHubService) Login() fiber.Handler {
 		})
 
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create session"})
+			return errs.DBQueryError(err)
 		}
 
 		// Generate JWT token
 		jwtToken, err := middleware.GenerateJWT(userID, expirationTime, service.userCfg.JWTSecret)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to generate JWT token"})
+			return errs.AuthenticationError()
 		}
 
 		c.Cookie(&fiber.Cookie{
@@ -79,13 +79,13 @@ func (service *GitHubService) GetCurrentUser() fiber.Handler {
 		client, err := service.getClient(c)
 		if err != nil {
 			fmt.Println("FAILED TO GET CLIENT", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
 			fmt.Println("FAILED TO GET USER", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		//TODO: include the user's role (i.e. professor, TA, student) in the response
@@ -97,12 +97,12 @@ func (service *GitHubService) Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(int64)
 		if !ok {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve userID from context"})
+			return errs.AuthenticationError()
 		}
 
 		err := service.store.DeleteSession(c.Context(), userID)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to delete session"})
+			return errs.SessionError()
 		}
 
 		return c.Status(200).JSON("Successfully logged out")
@@ -113,20 +113,20 @@ func (service *GitHubService) getClient(c *fiber.Ctx) (*userclient.UserAPI, erro
 	userID, ok := c.Locals("userID").(int64)
 	if !ok {
 		fmt.Println("FAILED TO GET USERID")
-		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
+		return nil, errs.AuthenticationError()
 	}
 
 	session, err := service.store.GetSession(c.Context(), userID)
 	if err != nil {
 		fmt.Println("FAILED TO GET SESSION", err)
-		return nil, err
+		return nil, errs.SessionError()
 	}
 
 	client, err := userclient.NewFromSession(service.userCfg.OAuthConfig(), &session)
 
 	if err != nil {
 		fmt.Println("FAILED TO CREATE CLIENT", err)
-		return nil, err
+		return nil, errs.GithubIntegrationError(err)
 	}
 
 	return client, nil
@@ -136,19 +136,19 @@ func (service *GitHubService) ListClassrooms() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := service.getClient(c)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		classrooms, err := client.GetUserClassrooms(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch classrooms"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		var assignments []models.ClassroomAssignment
 		for _, classroom := range classrooms {
 			assignments, err = client.ListAssignmentsForClassroom(c.Context(), classroom.ID)
 			if err != nil {
-				return c.Status(500).JSON(fiber.Map{"error": "failed to fetch assignments"})
+				return errs.GithubIntegrationError(err)
 			}
 		}
 
@@ -160,12 +160,12 @@ func (service *GitHubService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := service.getClient(c)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.SessionError()
 		}
 
 		orgs, err := client.GetUserOrgs(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		return c.Status(200).JSON(orgs)
@@ -176,20 +176,20 @@ func (service *GitHubService) GetUserRoles() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := service.getClient(c)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.SessionError()
 		}
 
 		var requestBody struct {
-			OrgID int64 `json:"org_id"`
+			OrgID int64 `json:"org_id"` //How can I get a map of field names to json tags?
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestData(requestBody) //Todo- Testing
 		}
 		org_id := requestBody.OrgID
 
 		roles, err := client.GetUserRoles(c.Context(), org_id)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		return c.Status(200).JSON(roles)
@@ -200,12 +200,12 @@ func (service *GitHubService) GetUserSemesters() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := service.getClient(c)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.SessionError()
 		}
 
 		orgs, err := client.GetUserOrgs(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		org_ids := []int64{}
@@ -215,7 +215,7 @@ func (service *GitHubService) GetUserSemesters() fiber.Handler {
 
 		semesters, err := service.store.ListSemestersByOrgList(c.Context(), org_ids)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch semesters"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		active_semesters := []models.Semester{}
@@ -244,7 +244,7 @@ func (service *GitHubService) CreateSemester() fiber.Handler {
 			ClassroomName string `json:"classroom_name"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestData(requestBody)
 		}
 
 		semester := models.Semester{
@@ -257,7 +257,7 @@ func (service *GitHubService) CreateSemester() fiber.Handler {
 
 		semester, err := service.store.CreateSemester(c.Context(), semester)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create semester"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		return c.Status(200).JSON(fiber.Map{"semester": semester})
@@ -268,18 +268,17 @@ func (service *GitHubService) ActivateSemester() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 		if err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid classroom id"})
+			return errs.MissingApiParamError("classroom_id")
 		}
 
 		var requestBody struct {
 			Activate bool `json:"activate"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestData(requestBody)
 		}
 
-		semester := models.Semester{}
-		err = nil
+		var semester models.Semester
 
 		if requestBody.Activate {
 			semester, err = service.store.ActivateSemester(c.Context(), classroomID)
@@ -288,7 +287,7 @@ func (service *GitHubService) ActivateSemester() fiber.Handler {
 		}
 
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to modify semester"})
+			return errs.GithubIntegrationError(err)
 		}
 
 		return c.Status(200).JSON(fiber.Map{"semester": semester})
