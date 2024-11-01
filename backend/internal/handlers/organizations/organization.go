@@ -15,6 +15,20 @@ func (service *OrganizationService) GetOrgsAndClassrooms() fiber.Handler {
 	}
 }
 
+func (service *OrganizationService) Bad_Naming_convention() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Implement logic here
+		return c.SendStatus(fiber.StatusNotImplemented)
+	}
+}
+
+func (service *OrganizationService) BadNameTwo(org_id string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Implement logic here
+		return c.SendStatus(fiber.StatusNotImplemented)
+	}
+}
+
 func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
