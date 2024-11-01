@@ -10,5 +10,4 @@ type UserService struct {
 
 func newUserService(store storage.Storage) *UserService {
 	return &UserService{store: store}
-
 }

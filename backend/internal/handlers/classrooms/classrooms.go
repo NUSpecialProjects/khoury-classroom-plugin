@@ -45,10 +45,7 @@ func (s *ClassroomService) createClassroom() fiber.Handler {
             return err
         }
 
-        return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created classroom",
-            "classroom_data" : createdClassroom,
-        })
+        return c.Status(http.StatusOK).JSON(createdClassroom)
     }
 }
 
@@ -73,10 +70,7 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
             return err
         }
 
-        return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created classroom",
-            "updated_classroom_data" : updatedClassroom,
-        })
+        return c.Status(http.StatusOK).JSON(updatedClassroom)
     }
 }
 
@@ -106,10 +100,7 @@ func (s *ClassroomService) updateClassroomName() fiber.Handler {
             return err
         }
 
-        return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created classroom",
-            "updated_classroom_name" : updatedClassroom,
-        })
+        return c.Status(http.StatusOK).JSON(updatedClassroom)
     }
 }
 
@@ -143,8 +134,8 @@ func (s *ClassroomService) addUserToClassroom() fiber.Handler {
             }
         }
 		
-        return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "added users to classroom"})
+        c.Status(http.StatusOK)
+        return nil
     }
 }
 

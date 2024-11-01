@@ -22,11 +22,6 @@ func (s *UserService) CreateUser() fiber.Handler {
         }
 
         // Implement logic here
-        return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "Created User",
-            "created_user" : createdUser,
-        })
+        return c.Status(http.StatusOK).JSON(createdUser)
 	}
 }
-
-
