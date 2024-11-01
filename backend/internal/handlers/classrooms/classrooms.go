@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -20,6 +21,9 @@ func (s *ClassroomService) getUserClassrooms() fiber.Handler {
 func (s *ClassroomService) getClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
        	classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        if err != nil {
+            return errs.BadRequest(err)
+        }
         
         classroomData, err := s.store.GetClassroomByID(c.Context(), classroomID)
         if err != nil {
@@ -36,7 +40,7 @@ func (s *ClassroomService) createClassroom() fiber.Handler {
         var classroomData models.Classroom
         err := c.BodyParser(&classroomData)
         if err != nil {
-            return err
+            return errs.InvalidRequestBody(models.Classroom{})
         }
 
         
@@ -46,7 +50,7 @@ func (s *ClassroomService) createClassroom() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created_classroom",
+            "message": "Created Classroom",
             "classroom_data" : createdClassroom,
         })
     }
@@ -58,13 +62,13 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
        	
         classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
         if err != nil {
-            return err
+            return errs.BadRequest(err)
         }
 
         var classroomData models.Classroom
         error := c.BodyParser(&classroomData)
         if error != nil {
-            return error
+            return errs.InvalidRequestBody(models.Classroom{})
         }
         classroomData.ID = classroomID
         
@@ -74,7 +78,7 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created_classroom",
+            "message": "Created Classroom",
             "updated_classroom_data" : updatedClassroom,
         })
     }
@@ -85,13 +89,13 @@ func (s *ClassroomService) updateClassroomName() fiber.Handler {
        	
         classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
         if err != nil {
-            return err
+            return errs.BadRequest(err)
         }
 
         var classroomData models.Classroom
         error := c.BodyParser(&classroomData)
         if error != nil {
-            return error
+            return errs.InvalidRequestBody(models.Classroom{})
         }
         classroomData.ID = classroomID
 
@@ -107,7 +111,7 @@ func (s *ClassroomService) updateClassroomName() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "message": "created_classroom",
+            "message": "Created Classroom",
             "updated_classroom_name" : updatedClassroom,
         })
     }
