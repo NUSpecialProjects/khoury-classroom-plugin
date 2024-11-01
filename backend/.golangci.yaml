@@ -6,4 +6,8 @@ linters:
 linters-settings:
   stylecheck:
     checks: ["all", "ST1003"]
+  revive:
+    rules:
+      - name: exported
+        disabled: true
   
