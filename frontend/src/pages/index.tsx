@@ -14,7 +14,9 @@ import RoleApply from "./Role/Apply";
 import StudentListPage from "./Users/Student";
 import TAListPage from "./Users/TeachingAssistant";
 import ProfessorListPage from "./Users/Professor";
-import ClassroomSelectionPage from "./Classrooms/Selection";
+import ClassroomSelectPage from "./Classrooms/Select";
+import ClassroomCreatePage from "./Classrooms/Create";
+import OrganizationSelectPage from "./Organizations/Select";
 
 export {
   PageNotFound,
@@ -33,5 +35,7 @@ export {
   StudentListPage,
   TAListPage,
   ProfessorListPage,
-  ClassroomSelectionPage,
+  ClassroomSelectPage,
+  ClassroomCreatePage,
+  OrganizationSelectPage,
 };

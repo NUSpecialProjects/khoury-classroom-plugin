@@ -3,7 +3,6 @@ import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import { Link, useNavigate } from "react-router-dom";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-// import AlertBanner from "@/components/Banner/AlertBanner";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
@@ -80,10 +79,6 @@ const Dashboard: React.FC = () => {
       {selectedClassroom && (
         <>
           <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
-          {/* <AlertBanner
-            classroom={selectedClassroom}
-            onActivate={setSelectedClassroom}
-          /> */}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
@@ -131,6 +126,9 @@ const Dashboard: React.FC = () => {
           </div>
         </>
       )}
+      <div className="Dashboard__linkWrapper">
+        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.id}`}>View other classrooms</Link>
+        </div>
     </div>
   );
 };

@@ -27,7 +27,7 @@ const Layout: React.FC = () => {
       </div>
     </div>
   ) : (
-    <Navigate to="/app/classroom/select" />
+    <Navigate to="/app/organization/select" />
   );
 };
 

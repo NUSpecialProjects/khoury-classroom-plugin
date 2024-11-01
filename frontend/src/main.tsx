@@ -40,10 +40,18 @@ export default function App(): React.JSX.Element {
               <Route path="classroom">
                 <Route
                   path="select"
-                  element={<Pages.ClassroomSelectionPage />}
+                  element={<Pages.ClassroomSelectPage />}
                 />
-                {/* <Route path="create" element={<Pages.SemesterCreation />} />
-                <Route path="select" element={<Pages.SemesterSelection />} /> */}
+                <Route
+                  path="create"
+                  element={<Pages.ClassroomCreatePage />}
+                />
+              </Route>
+              <Route path="organization">
+                <Route
+                  path="select"
+                  element={<Pages.OrganizationSelectPage />}
+                />
               </Route>
 
               {/******* CLASS SELECTED: INNER APP *******/}
