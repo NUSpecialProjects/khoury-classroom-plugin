@@ -22,16 +22,22 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
-CREATE TABLE IF NOT EXISTS classroom_membership ( 
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     github_username VARCHAR(255) NOT NULL, 
     github_user_id INTEGER NOT NULL,
-    role USER_ROLE NOT NULL,
-    classroom_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (github_user_id, classroom_id),
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    role USER_ROLE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS classroom_membership ( 
+    user_id INTEGER NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+);
 
 CREATE TABLE IF NOT EXISTS assignment_template (
     id SERIAL PRIMARY KEY,
@@ -93,9 +99,10 @@ CREATE TABLE IF NOT EXISTS student_works (
 );
 
 CREATE TABLE IF NOT EXISTS work_contributors (
-    github_user_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     student_work_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (student_work_id) REFERENCES student_works(id)
 );
 
