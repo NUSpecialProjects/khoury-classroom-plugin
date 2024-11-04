@@ -4,7 +4,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/auth"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms"
-	"github.com/CamPlume1/khoury-classroom/internal/handlers/file_tree"
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/filetree"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/organizations"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
@@ -31,7 +31,7 @@ func New(params types.Params) *fiber.App {
 	organizations.Routes(app, params)
 	classrooms.Routes(app, params)
 	test.Routes(app, params)
-	file_tree.Routes(app, params)
+	filetree.Routes(app, params)
 	webhooks.Routes(app, params)
 	users.Routes(app, params)
 

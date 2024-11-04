@@ -66,9 +66,9 @@ func (api *UserAPI) GetCurrentUser(ctx context.Context) (models.GitHubUser, erro
 	return user, nil
 }
 
-func (api *UserAPI) GetOrg(ctx context.Context, org_name string) (*models.Organization, error) {
+func (api *UserAPI) GetOrg(ctx context.Context, orgName string) (*models.Organization, error) {
 	// Construct the URL for the org endpoint
-	endpoint := fmt.Sprintf("/orgs/%s", org_name)
+	endpoint := fmt.Sprintf("/orgs/%s", orgName)
 
 	// Create a new GET request
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
