@@ -1,3 +1,4 @@
+import { createToken } from "@/api/users";
 import React, { useState } from "react";
 
 interface CreateTokenProps {
@@ -12,32 +13,20 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
   const [message, setMessage] = useState<string>("");
 
   const handleCreateToken = async () => {
-    try {
-      const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-      const response = await fetch(`${base_url}/github/role-token/create`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          classroom: classroom,
-          role_type: role_type,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+    if (!classroom) {
+      setMessage("No classroom selected");
+      return;
+    }
+    await createToken(role_type, classroom)
+    .then((data: ITokenResponse) => {
         const url = "http://localhost:3000/app/token/apply?token=" + data.token;
         setMessage("Link created! " + url);
         navigator.clipboard.writeText(url);
-      } else {
-        setMessage("Failed to create token");
       }
-    } catch (error) {
-      console.error("Error creating token:", error);
-      setMessage("Error creating token");
-    }
+    )
+    .catch((error) => {
+      setMessage("Error creating token: " + error);
+    });
   };
 
   return (

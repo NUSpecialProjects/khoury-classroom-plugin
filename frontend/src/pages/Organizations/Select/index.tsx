@@ -20,16 +20,12 @@ const OrganizationSelection: React.FC = () => {
     const fetchOrganizations = async () => {
       try {
         const data: IOrganizationsResponse = await getAppInstallations();
-        console.log("data", data);
-
         //checking if data exists before populating and setting lists
         if (data.orgs_with_app) {
           setOrgsWithApp(data.orgs_with_app);
-          console.log("orgsWithApp", orgsWithApp);
         }
         if (data.orgs_without_app) {
           setOrgsWithoutApp(data.orgs_without_app);
-          console.log("orgsWithoutApp", orgsWithoutApp);
         }
       } catch (error) {
         console.error("Error fetching organizations:", error);

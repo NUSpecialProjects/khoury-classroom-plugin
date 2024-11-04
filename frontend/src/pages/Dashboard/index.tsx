@@ -27,6 +27,7 @@ const Dashboard: React.FC = () => {
 
     const SyncWithClassroom = async (classroom: IClassroom) => {
       try {
+        //TODO: this call isn't necessary any more b/c of the refactor?
         console.log("Using mocked API call for classroom: ", classroom);
         // const base_url: string = import.meta.env
         //   .VITE_PUBLIC_API_DOMAIN as string;

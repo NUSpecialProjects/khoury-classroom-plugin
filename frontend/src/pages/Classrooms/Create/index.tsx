@@ -5,7 +5,6 @@ import "./styles.css";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import useUrlParameter from "@/hooks/useUrlParameter";
 import { getOrganizationDetails } from "@/api/organizations";
-import { IOrganization } from "@/types";
 
 const ClassroomCreation: React.FC = () => {
   const [name, setName] = useState("");
@@ -18,7 +17,6 @@ const ClassroomCreation: React.FC = () => {
 
   useEffect(() => {
     const fetchOrganizationDetails = async () => {
-      console.log("GOT ORGID: ", orgID);
       if (orgID) {
         setLoading(true);
         await getOrganizationDetails(orgID)
