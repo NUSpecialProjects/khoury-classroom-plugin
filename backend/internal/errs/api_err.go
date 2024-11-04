@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"reflect"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -51,6 +53,38 @@ func InvalidRequestData(errors map[string]string) APIError {
 func InternalServerError() APIError {
 	return NewAPIError(http.StatusInternalServerError, errors.New("internal server error"))
 }
+
+
+func GithubIntegrationError(err error) APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("error with github integration: %s", err.Error()))
+}
+
+func MissingApiParamError(field string) APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("missing request field: %s", field))
+}
+
+func AuthenticationError() APIError {
+	return NewAPIError(http.StatusForbidden, fmt.Errorf("please authenticate properly"))
+}
+
+/* Post Requests Only */
+func InvalidRequestBody(expected interface{}) APIError {
+	fieldAcc := make([]string, 0, 10)
+
+	// Use reflection to inspect the struct type
+	t := reflect.TypeOf(expected)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		jsonTag := field.Tag.Get("json")
+		if jsonTag != "" {
+			fieldAcc = append(fieldAcc, jsonTag)
+		}
+	}
+
+	msg := fmt.Sprintf("Expected Fields: %s", strings.Join(fieldAcc, ", "))
+	return NewAPIError(http.StatusBadRequest, errors.New(msg))
+}
+
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	var apiErr APIError
