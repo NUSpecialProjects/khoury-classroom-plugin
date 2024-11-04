@@ -6,6 +6,7 @@ import Panel from "@/components/Panel";
 import Button from "@/components/Button";
 import {
   getAppInstallations,
+  getOrganizationDetails,
 } from "@/api/organizations";
 
 
@@ -39,13 +40,17 @@ const OrganizationSelection: React.FC = () => {
 
 
   const handleOrganizationSelect = async (org: IOrganization) => {
-    try {
-      setSelectedOrg(org);
-    } catch (error) {
+    setSelectedOrg(org);
+    await getOrganizationDetails(org.login)
+    .then((orgDetails) => {
+      setSelectedOrg(orgDetails);
+    })
+    .catch((error) => {
       console.error("Error fetching organization details:", error);
-    }
+    })
   };
 
+  //TODO: visually disable the button while it's loading the org details
   return (
     <Panel title="Your Organizations" logo={true}>
         <>
