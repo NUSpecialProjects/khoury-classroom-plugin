@@ -83,8 +83,8 @@ func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]mod
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 }
 
-func (db *DB) GetClassroomsInOrg(ctx context.Context, org_id int64) ([]models.Classroom, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * from classrooms where org_id = $1", org_id)
+func (db *DB) GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error) {
+	rows, err := db.connPool.Query(ctx, "SELECT * from classrooms where org_id = $1", orgID)
 	if err != nil {
 		return nil, err
 	}
