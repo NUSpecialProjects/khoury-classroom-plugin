@@ -1,8 +1,0 @@
-linters:
-  enable:
-    - golint
-    - stylecheck
-
-linters-settings:
-  stylecheck:
-    checks: ["all"]

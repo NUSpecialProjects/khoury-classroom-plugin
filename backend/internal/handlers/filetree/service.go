@@ -1,4 +1,4 @@
-package file_tree
+package filetree
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/github"
