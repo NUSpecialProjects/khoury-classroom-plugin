@@ -1,3 +1,5 @@
+const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+
 export function getClassroomsInOrg(
   orgId: number
 ): Promise<IClassroomListResponse> {
@@ -20,14 +22,20 @@ export function getClassroomsInOrg(
   });
 }
 
-export function postClassroom(
+export async function postClassroom(
   classroom: Omit<IClassroom, "id">
 ): Promise<IClassroom> {
-  console.log("Using mocked API call for creating classroom: ", classroom);
-  return Promise.resolve({
-    id: 5,
-    name: classroom.name,
-    org_id: classroom.org_id,
-    org_name: classroom.org_name,
+  const response = await fetch(`${base_url}/classrooms`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(classroom),
   });
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = (await response.json()) as IClassroom;
+  return resp;
 }
