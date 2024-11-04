@@ -88,17 +88,17 @@ const ClassroomCreation: React.FC = () => {
               readOnly
               required
             />
-            {!organization && (
+            
+          </div>
+          {error && <p className="error">{error}</p>}
+          {!organization && (
               <p className="error">
-                Organization not provided.{" "}
                 <Link to="/app/organization/select">
                   Click here to select an organization
                 </Link>
                 .
               </p>
             )}
-          </div>
-          {error && <p className="error">{error}</p>}
           <button type="submit" className="btn btn-primary">
             Create Classroom
           </button>
