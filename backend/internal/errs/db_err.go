@@ -3,7 +3,7 @@ package errs
 
 import (
   "fmt"
-  "errors"
+
 )
 
 
@@ -12,7 +12,7 @@ type DatabaseError struct {
 }
 
 func (e DatabaseError) Error() string {
-	return fmt.Sprintf("db error: %d", e.Message)
+	return fmt.Sprintf("DB error: %d", e.Message)
 }
 
 func NewDBError(err error) DatabaseError {
@@ -21,6 +21,3 @@ func NewDBError(err error) DatabaseError {
   }
 }
 
-func DBSemesterLogicError() DatabaseError {
-  return NewDBError(errors.New("Multiple semesters should not share a classroom id"))
-}
