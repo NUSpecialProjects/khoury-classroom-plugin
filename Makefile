@@ -2,15 +2,21 @@
 SERVICES=db backend
 IMAGE=khoury-classroom-plugin-backend:latest
 
-# Build and run backend
+# Build and run the backend
 .PHONY: backend
 backend:
+	@echo "Starting backend containers..."
+	docker compose up $(DETACHED)
+
+# Build a fresh instance of the backend
+.PHONY: restart-backend
+restart-backend:
 	@echo "Stopping and removing containers..."
 	docker rm -f $(SERVICES)
 	@echo "Removing backend image..."
 	docker rmi $(IMAGE)
 	@echo "Starting fresh instance of backend containers..."
-	docker compose up --build -d
+	docker compose up --build $(DETACHED)
 
 # Build and run frontend
 .PHONY: frontend
@@ -24,4 +30,6 @@ frontend:
 
 # Build and run whole app
 .PHONY: all
-all: backend frontend
+all:
+	$(MAKE) DETACHED=-d backend
+	$(MAKE) frontend
