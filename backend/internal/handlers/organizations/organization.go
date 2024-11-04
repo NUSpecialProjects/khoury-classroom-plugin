@@ -109,7 +109,7 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 
 func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
     return func (c *fiber.Ctx) error {
-        org_id, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        org_id, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
         if err != nil {
             return errs.BadRequest(err)
         }
