@@ -1,3 +1,4 @@
+
 //const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const getOrganizations = async (): Promise<IOrganizationsResponse> => {
