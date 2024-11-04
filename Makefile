@@ -1,21 +1,35 @@
-include .env
+# Define your services
+SERVICES=db backend
+IMAGE=khoury-classroom-plugin-backend:latest
 
-# Installing frontend dependencies
-.PHONY: frontend-dep
-frontend-dep:
+# Build and run the backend
+.PHONY: backend
+backend:
+	@echo "Starting backend containers..."
+	docker compose up $(DETACHED)
+
+# Build a fresh instance of the backend
+.PHONY: restart-backend
+restart-backend:
+	@echo "Stopping and removing containers..."
+	docker rm -f $(SERVICES)
+	@echo "Removing backend image..."
+	docker rmi $(IMAGE)
+	@echo "Starting fresh instance of backend containers..."
+	docker compose up --build $(DETACHED)
+
+# Build and run frontend
+.PHONY: frontend
+frontend:
+	@echo "Installing frontend dependencies..."
 	cd frontend && npm install
-
-# running the frontend
-.PHONY: frontend-run
-frontend-run:
+	@echo "Linting frontend source code..."
+	cd frontend && npx eslint . || { echo "Linting failed. Exiting."; exit 1; }
+	@echo "Linting passed. Starting frontend..."
 	cd frontend && npm run dev
 
-# Lint the frontend source code
-.PHONY: frontend-lint
-frontend-lint:
-	cd frontend && npx eslint
-
-# Run backend
-.PHONY: db-run
-db-run:
-	docker-compose up
+# Build and run whole app
+.PHONY: all
+all:
+	$(MAKE) DETACHED=-d backend
+	$(MAKE) frontend
