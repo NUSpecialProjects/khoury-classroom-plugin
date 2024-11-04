@@ -1,8 +1,7 @@
 package errs
 
 import (
-	"errors"
-	"fmt"
+  "fmt"
 )
 
 type DatabaseError struct {
@@ -19,6 +18,3 @@ func NewDBError(err error) DatabaseError {
 	}
 }
 
-func DBSemesterLogicError() DatabaseError {
-	return NewDBError(errors.New("multiple semesters should not share a classroom id"))
-}
