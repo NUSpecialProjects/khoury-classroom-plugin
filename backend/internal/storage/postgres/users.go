@@ -28,5 +28,4 @@ func (db *DB) CreateUser(ctx context.Context, userToCreate models.User) (models.
     }
 
     return createdUser, nil
-
 }

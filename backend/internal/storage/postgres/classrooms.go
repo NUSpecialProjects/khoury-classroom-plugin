@@ -65,14 +65,13 @@ func (db *DB) GetClassroomByID(ctx context.Context, classroomID int64) (models.C
     return classroomData, nil
 }
 
-func (db *DB) AddUserToClassroom(ctx context.Context, userid int64, classroomID int64) (error) {
-    _, err := db.connPool.Exec(ctx, "INSERT INTO classroom_membership (user_id, classroom_id) VALUES ($1, $2)",
-        userid, classroomID)
+func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, userID int64) (int64, error) {
+    _, err := db.connPool.Exec(ctx, "INSERT INTO classroom_membership (user_id, classroom_id) VALUES ($1, $2)", 
+        userID, classroomID)
 
     if err != nil {
-        return err
+        return -1, err
     }
     
-    return nil
+    return userID, nil
 }
-
