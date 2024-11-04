@@ -19,6 +19,11 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: 1.23.1  # Set Go version to 1.23.1
+      - name: Cache Go modules (fresh cache each run)
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}-${{ github.run_id }}
       - name: Download dependencies
         run: go mod download
         working-directory: backend
