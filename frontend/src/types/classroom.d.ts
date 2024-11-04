@@ -12,8 +12,3 @@ interface IUserOrgsAndClassroomsResponse {
 interface IClassroomListResponse {
   classrooms: IClassroom[];
 }
-
-interface IClassroomResponse {
-  available_classrooms: IClassroom[];
-  unavailable_classrooms: IClassroom[];
-}

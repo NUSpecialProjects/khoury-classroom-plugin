@@ -22,8 +22,7 @@ const ClassroomSelection: React.FC = () => {
       setLoading(true);
       try {
         const org_id = parseInt(orgID);
-        const data: IClassroom[] = (await getClassroomsInOrg(org_id))
-          .classrooms;
+        const data: IClassroom[] = (await getClassroomsInOrg(org_id)).classrooms;
         setClassrooms(data);
       } catch (error) {
         console.error("Error fetching organizations and classrooms:", error);
