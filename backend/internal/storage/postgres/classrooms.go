@@ -5,6 +5,7 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/jackc/pgx/v5"
 )
 
 
@@ -74,4 +75,23 @@ func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, userID 
     }
     
     return userID, nil
+}
+
+func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.User, error) {
+    rows, err := db.connPool.Query(ctx, "SELECT users.* FROM users JOIN classroom_membership ON users.id = classroom_membership.user_id WHERE classroom_membership.classroom_id = $1", classroomID)
+    if err != nil {
+        return nil, err
+    }
+
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+}
+
+
+func (db *DB) GetClassroomsInOrg(ctx context.Context, org_id int64) ([]models.Classroom, error) {
+    rows, err := db.connPool.Query(ctx, "SELECT * from classrooms where org_id = $1", org_id)
+    if err != nil {
+        return nil, err  
+    }
+    
+    return pgx.CollectRows(rows, pgx.RowToStructByName[models.Classroom])
 }

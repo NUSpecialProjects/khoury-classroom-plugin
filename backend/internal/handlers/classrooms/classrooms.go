@@ -80,7 +80,6 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
 
 func (s *ClassroomService) updateClassroomName() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-       	
         classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
         if err != nil {
             return errs.BadRequest(err)
@@ -112,9 +111,17 @@ func (s *ClassroomService) updateClassroomName() fiber.Handler {
 // Returns the users of a classroom.
 func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
+        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+        if err != nil {
+            return errs.BadRequest(err)
+        }
+
+        usersInClassroom, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
+        if err != nil {
+            return err
+        }
+        return c.Status(http.StatusOK).JSON(usersInClassroom)
+    }
 }
 
 // Removes a user from a classroom.
