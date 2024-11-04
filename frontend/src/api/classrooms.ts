@@ -3,7 +3,7 @@ const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 export async function getClassroomsInOrg(
   orgId: number
 ): Promise<IClassroomListResponse> {
-  const response = await fetch(`${base_url}/orgs/org/${orgId}`, {
+  const response = await fetch(`${base_url}/orgs/org/${orgId}/classrooms`, {
     method: "GET",
     credentials: "include",
     headers: {
