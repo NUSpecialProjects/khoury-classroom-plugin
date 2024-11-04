@@ -30,7 +30,7 @@ type Classroom interface {
 	GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error)
 	AddUserToClassroom(ctx context.Context, classroomID int64, userID int64) (int64, error)
 	GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.User, error)
-	GetClassroomsInOrg(ctx context.Context, org_id int64) ([]models.Classroom, error)
+	GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error)
 }
 
 type User interface {

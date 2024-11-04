@@ -9,7 +9,7 @@ import (
 )
 
 func Routes(app *fiber.App, params types.Params) {
-	classroomService := newClassroomService(params.Store)
+	classroomService := newClassroomService(params.Store, &params.UserCfg)
 	assignmentService := assignments.NewAssignmentService(params.Store)
 	workService := works.NewWorkService(params.Store, params.GitHubApp)
 

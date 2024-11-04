@@ -10,7 +10,7 @@ type ClassroomService struct {
 	userCfg *config.GitHubUserClient
 }
 
-func newClassroomService(store storage.Storage) *ClassroomService {
-	return &ClassroomService{store: store}
+func newClassroomService(store storage.Storage, userCfg *config.GitHubUserClient) *ClassroomService {
+    return &ClassroomService{store: store, userCfg: userCfg}
 
 }
