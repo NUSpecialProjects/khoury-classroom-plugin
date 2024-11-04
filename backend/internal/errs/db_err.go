@@ -20,5 +20,5 @@ func NewDBError(err error) DatabaseError {
 }
 
 func DBSemesterLogicError() DatabaseError {
-	return NewDBError(errors.New("Multiple semesters should not share a classroom id"))
+	return NewDBError(errors.New("multiple semesters should not share a classroom id"))
 }
