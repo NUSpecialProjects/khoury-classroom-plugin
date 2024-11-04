@@ -1,4 +1,4 @@
-package users 
+package users
 
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/types"

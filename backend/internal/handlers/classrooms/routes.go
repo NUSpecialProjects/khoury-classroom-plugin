@@ -29,7 +29,6 @@ func Routes(app *fiber.App, params types.Params) {
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
 	classroomRouter := router.Group("/classrooms").Use(middleware.Protected(service.userCfg.JWTSecret))
 
-
 	// Get the classrooms the authenticated user is part of
 	classroomRouter.Get("/", service.getUserClassrooms())
 

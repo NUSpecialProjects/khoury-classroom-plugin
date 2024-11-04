@@ -108,17 +108,17 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 }
 
 func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
-    return func (c *fiber.Ctx) error {
-        orgID, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
-        if err != nil {
-            return errs.BadRequest(err)
-        }
+	return func(c *fiber.Ctx) error {
+		orgID, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
 
-        classrooms, err := service.store.GetClassroomsInOrg(c.Context(), orgID)
-        if err != nil {
-            return err
-        }
+		classrooms, err := service.store.GetClassroomsInOrg(c.Context(), orgID)
+		if err != nil {
+			return err
+		}
 
-        return c.Status(http.StatusOK).JSON(classrooms)
-    }
+		return c.Status(http.StatusOK).JSON(classrooms)
+	}
 }

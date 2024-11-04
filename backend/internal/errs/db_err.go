@@ -1,12 +1,11 @@
 package errs
 
-
 import (
-  "fmt"
+	"fmt"
 )
 
 type DatabaseError struct {
-  Message   any   `json:"msg"`
+	Message any `json:"msg"`
 }
 
 func (e DatabaseError) Error() string {
@@ -14,7 +13,7 @@ func (e DatabaseError) Error() string {
 }
 
 func NewDBError(err error) DatabaseError {
-  return DatabaseError {
-    Message:    err.Error(),
-  }
+	return DatabaseError{
+		Message: err.Error(),
+	}
 }

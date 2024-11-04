@@ -6,7 +6,6 @@ type TestService struct {
 	store storage.Storage
 }
 
-
 func newTestService(store storage.Storage) *TestService {
 	return &TestService{store: store}
 }

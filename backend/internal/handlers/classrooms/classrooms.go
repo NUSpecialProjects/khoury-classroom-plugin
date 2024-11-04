@@ -20,108 +20,106 @@ func (s *ClassroomService) getUserClassrooms() fiber.Handler {
 // Returns the details of a classroom.
 func (s *ClassroomService) getClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-       	classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
-        if err != nil {
-            return errs.BadRequest(err)
-        }
-        
-        classroomData, err := s.store.GetClassroomByID(c.Context(), classroomID)
-        if err != nil {
-            return err
-        }
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
 
-        return c.Status(http.StatusOK).JSON(classroomData)
+		classroomData, err := s.store.GetClassroomByID(c.Context(), classroomID)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(classroomData)
 	}
 }
 
 // Creates a new classroom.
 func (s *ClassroomService) createClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-        var classroomData models.Classroom
-        err := c.BodyParser(&classroomData)
-        if err != nil {
-            return errs.InvalidRequestBody(models.Classroom{})
-        }
+		var classroomData models.Classroom
+		err := c.BodyParser(&classroomData)
+		if err != nil {
+			return errs.InvalidRequestBody(models.Classroom{})
+		}
 
-        
-        createdClassroom, err := s.store.CreateClassroom(c.Context(), classroomData)
-        if err != nil {
-            return err
-        }
+		createdClassroom, err := s.store.CreateClassroom(c.Context(), classroomData)
+		if err != nil {
+			return err
+		}
 
-        return c.Status(http.StatusOK).JSON(createdClassroom)
-    }
+		return c.Status(http.StatusOK).JSON(createdClassroom)
+	}
 }
 
 // Updates an existing classroom.
 func (s *ClassroomService) updateClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-       	
-        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
-        if err != nil {
-            return errs.BadRequest(err)
-        }
 
-        var classroomData models.Classroom
-        error := c.BodyParser(&classroomData)
-        if error != nil {
-            return errs.InvalidRequestBody(models.Classroom{})
-        }
-        classroomData.ID = classroomID
-        
-        updatedClassroom, err := s.store.UpdateClassroom(c.Context(), classroomData)
-        if err != nil {
-            return err
-        }
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
 
-        return c.Status(http.StatusOK).JSON(updatedClassroom)
-    }
+		var classroomData models.Classroom
+		error := c.BodyParser(&classroomData)
+		if error != nil {
+			return errs.InvalidRequestBody(models.Classroom{})
+		}
+		classroomData.ID = classroomID
+
+		updatedClassroom, err := s.store.UpdateClassroom(c.Context(), classroomData)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(updatedClassroom)
+	}
 }
 
 func (s *ClassroomService) updateClassroomName() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
-        if err != nil {
-            return errs.BadRequest(err)
-        }
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
 
-        var classroomData models.Classroom
-        error := c.BodyParser(&classroomData)
-        if error != nil {
-            return errs.InvalidRequestBody(models.Classroom{})
-        }
-        classroomData.ID = classroomID
+		var classroomData models.Classroom
+		error := c.BodyParser(&classroomData)
+		if error != nil {
+			return errs.InvalidRequestBody(models.Classroom{})
+		}
+		classroomData.ID = classroomID
 
-        existingClassroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
-        if err != nil {
-            return err
-        }
-        existingClassroom.Name = classroomData.Name
-        
-        updatedClassroom, err := s.store.UpdateClassroom(c.Context(), existingClassroom)
-        if err != nil {
-            return err
-        }
+		existingClassroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
+		if err != nil {
+			return err
+		}
+		existingClassroom.Name = classroomData.Name
 
-        return c.Status(http.StatusOK).JSON(updatedClassroom)
-    }
+		updatedClassroom, err := s.store.UpdateClassroom(c.Context(), existingClassroom)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(updatedClassroom)
+	}
 }
-
 
 // Returns the users of a classroom.
 func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-        classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
-        if err != nil {
-            return errs.BadRequest(err)
-        }
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
 
-        usersInClassroom, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
-        if err != nil {
-            return err
-        }
-        return c.Status(http.StatusOK).JSON(usersInClassroom)
-    }
+		usersInClassroom, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
+		if err != nil {
+			return err
+		}
+		return c.Status(http.StatusOK).JSON(usersInClassroom)
+	}
 }
 
 // Removes a user from a classroom.
