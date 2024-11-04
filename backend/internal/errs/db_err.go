@@ -3,9 +3,7 @@ package errs
 
 import (
   "fmt"
-
 )
-
 
 type DatabaseError struct {
   Message   any   `json:"msg"`
@@ -20,4 +18,3 @@ func NewDBError(err error) DatabaseError {
     Message:    err.Error(),
   }
 }
-
