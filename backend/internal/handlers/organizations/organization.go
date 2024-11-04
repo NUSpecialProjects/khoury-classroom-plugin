@@ -72,8 +72,6 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 				}
 			}
 		}
-		log.Default().Println("Orgs with app installed: ", orgsWithAppInstalled)
-		log.Default().Println("Orgs without app installed: ", orgsWithoutAppInstalled)
 		return c.Status(200).JSON(fiber.Map{
 			"orgs_with_app":    orgsWithAppInstalled,
 			"orgs_without_app": orgsWithoutAppInstalled,
@@ -103,6 +101,9 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 			log.Default().Println("Error getting org: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
 		}
+		log.Default().Println("ORG NAME: ", org_name)
+		log.Default().Println("ORG: ", org)
+		log.Default().Println("ORG HTML URL: ", org.HTMLURL)
 
 		return c.Status(200).JSON(fiber.Map{"org": org})
 	}
