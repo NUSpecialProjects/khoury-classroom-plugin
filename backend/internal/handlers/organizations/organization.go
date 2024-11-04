@@ -120,6 +120,5 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
         }
 
         return c.Status(http.StatusOK).JSON(classrooms)
-
     }
 }
