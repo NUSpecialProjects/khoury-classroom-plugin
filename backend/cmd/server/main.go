@@ -108,7 +108,10 @@ func runMigrations(ctx context.Context, db *postgres.DB, migrationsDir string) e
 	for _, fileName := range migrationFiles {
 		filePath := filepath.Join(migrationsDir, fileName)
 		log.Printf("Applying migration: %s", fileName)
-		db.ExecFile(ctx, filePath)
+		err := db.ExecFile(ctx, filePath)
+		if err != nil {
+			log.Fatalf("Migration error: DB could not be initialized")
+		}
 	}
 
 	return nil

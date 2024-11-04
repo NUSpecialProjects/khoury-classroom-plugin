@@ -117,14 +117,6 @@ func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 	}
 }
 
-// Adds a user (or list of users) to a classroom with a given role.
-func (s *ClassroomService) addUserToClassroom() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
-}
-
 // Removes a user from a classroom.
 func (s *ClassroomService) removeUserFromClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
