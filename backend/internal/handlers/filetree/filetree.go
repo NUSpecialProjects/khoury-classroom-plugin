@@ -1,4 +1,4 @@
-package file_tree
+package filetree
 
 import (
 	"net/http"

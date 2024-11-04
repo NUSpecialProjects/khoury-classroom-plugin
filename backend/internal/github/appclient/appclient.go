@@ -122,12 +122,12 @@ func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, er
 	return contents, nil
 }
 
-func (api *AppAPI) CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error) {
+func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
 	team := &github.NewTeam{
-		Name: team_name,
+		Name: teamName,
 	}
 
-	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, org_name, *team)
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
 	if err != nil {
 		return nil, fmt.Errorf("error creating team: %v", err)
 	}
@@ -135,8 +135,8 @@ func (api *AppAPI) CreateTeam(ctx context.Context, org_name, team_name string) (
 	return createdTeam, nil
 }
 
-func (api *AppAPI) AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error {
-	_, _, err := api.Client.Teams.AddTeamMembership(ctx, team_id, user_name, opt)
+func (api *AppAPI) AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error {
+	_, _, err := api.Client.Teams.AddTeamMembership(ctx, teamID, userName, opt)
 	if err != nil {
 		return fmt.Errorf("error adding member to team: %v", err)
 	}
@@ -144,12 +144,12 @@ func (api *AppAPI) AddTeamMember(ctx context.Context, team_id int64, user_name s
 	return nil
 }
 
-func (api *AppAPI) AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error {
+func (api *AppAPI) AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error {
 	opt := &github.TeamAddTeamRepoOptions{
 		Permission: permission,
 	}
 
-	_, err := api.Client.Teams.AddTeamRepo(ctx, team_id, owner_name, repo_name, opt)
+	_, err := api.Client.Teams.AddTeamRepo(ctx, teamID, ownerName, repoName, opt)
 	if err != nil {
 		return fmt.Errorf("error assigning permission to team: %v", err)
 	}
