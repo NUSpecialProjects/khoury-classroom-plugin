@@ -15,19 +15,29 @@ CREATE TABLE IF NOT EXISTS classroom_tokens (
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
-CREATE TYPE USER_ROLE AS
-ENUM('PROFESSOR', 'TA', 'STUDENT');
+DO $$ BEGIN
+    CREATE TYPE USER_ROLE AS 
+    ENUM('PROFESSOR', 'TA', 'STUDENT');
+EXCEPTION 
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TABLE IF NOT EXISTS classroom_membership ( 
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     github_username VARCHAR(255) NOT NULL, 
     github_user_id INTEGER NOT NULL,
-    role USER_ROLE NOT NULL,
-    classroom_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (github_user_id, classroom_id),
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    role USER_ROLE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS classroom_membership ( 
+    user_id INTEGER NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+);
 
 CREATE TABLE IF NOT EXISTS assignment_template (
     id SERIAL PRIMARY KEY,
@@ -66,8 +76,12 @@ CREATE TABLE IF NOT EXISTS rubric_items (
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
-CREATE TYPE WORK_STATE AS 
-ENUM('IN_PROGRESS','SUBMITTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
+DO $$ BEGIN
+    CREATE TYPE WORK_STATE AS 
+    ENUM('IN_PROGRESS','SUBMITTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
+EXCEPTION 
+    WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS student_works (
     id SERIAL PRIMARY KEY,
@@ -84,10 +98,11 @@ CREATE TABLE IF NOT EXISTS student_works (
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
-CREATE TABLE IF NOT EXISTS assignment_ownership (
-    github_user_id INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS work_contributors (
+    user_id INTEGER NOT NULL,
     student_work_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (student_work_id) REFERENCES student_works(id)
 );
 
@@ -101,8 +116,14 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id)
 );
 
-CREATE TYPE REGRADE_STATE AS 
-ENUM('NO_REGRADE_REQUESTED', 'REGRADE_REQUESTED', 'REGRADE_FINALIZED');
+
+DO $$ BEGIN
+    CREATE TYPE REGRADE_STATE AS 
+    ENUM('NO_REGRADE_REQUESTED', 'REGRADE_REQUESTED', 'REGRADE_FINALIZED');
+EXCEPTION 
+    WHEN duplicate_object THEN null;
+END $$;
+
 
 CREATE TABLE IF NOT EXISTS regrade_requests (
     id SERIAL PRIMARY KEY, 

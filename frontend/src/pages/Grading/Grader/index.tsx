@@ -63,7 +63,8 @@ const Grader: React.FC = () => {
     if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
 
     getStudentAssignment(
-      selectedSemester.classroom_id,
+      //selectedSemester.classroom_id,
+      1,
       Number(assignmentId),
       Number(studentAssignmentId)
     )
