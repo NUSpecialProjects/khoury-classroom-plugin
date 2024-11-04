@@ -58,8 +58,8 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
 	return func(c *fiber.Ctx) error {
        	
         classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
-        if err != nil { 
-            return err
+        if err != nil {
+            return errs.BadRequest(err)
         }
 
         var classroomData models.Classroom
