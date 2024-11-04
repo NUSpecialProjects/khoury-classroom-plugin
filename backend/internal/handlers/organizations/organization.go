@@ -2,7 +2,10 @@ package organizations
 
 import (
 	"log"
+	"net/http"
+	"strconv"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -101,4 +104,20 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		}
 		return c.Status(200).JSON(fiber.Map{"org": org})
 	}
+}
+
+func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
+    return func (c *fiber.Ctx) error {
+        org_id, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
+        if err != nil {
+            return errs.BadRequest(err)
+        }
+
+        classrooms, err := service.store.GetClassroomsInOrg(c.Context(), org_id)
+        if err != nil {
+            return err
+        }
+
+        return c.Status(http.StatusOK).JSON(classrooms)
+    }
 }

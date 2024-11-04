@@ -3,6 +3,7 @@ package classrooms
 import (
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms/assignments"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms/assignments/works"
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +27,8 @@ func Routes(app *fiber.App, params types.Params) {
 }
 
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
-	classroomRouter := router.Group("/classrooms")
+	classroomRouter := router.Group("/classrooms").Use(middleware.Protected(service.userCfg.JWTSecret))
+
 
 	// Get the classrooms the authenticated user is part of
 	classroomRouter.Get("/", service.getUserClassrooms())
