@@ -59,7 +59,7 @@ func GithubIntegrationError(err error) APIError {
 	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("error with github integration: %s", err.Error()))
 }
 
-func MissingApiParamError(field string) APIError {
+func MissingAPIParamError(field string) APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("missing request field: %s", field))
 }
 
