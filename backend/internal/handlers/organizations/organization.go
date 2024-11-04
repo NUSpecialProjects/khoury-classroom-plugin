@@ -33,7 +33,6 @@ func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 
 func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		log.Default().Println("Getting installed orgs")
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
@@ -49,7 +48,6 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 			log.Default().Println("Error getting user orgs: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
 		}
-		log.Default().Println("User orgs: ", userOrgs)
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
@@ -101,10 +99,6 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 			log.Default().Println("Error getting org: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
 		}
-		log.Default().Println("ORG NAME: ", org_name)
-		log.Default().Println("ORG: ", org)
-		log.Default().Println("ORG HTML URL: ", org.HTMLURL)
-
 		return c.Status(200).JSON(fiber.Map{"org": org})
 	}
 }

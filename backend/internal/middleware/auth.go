@@ -3,7 +3,6 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -66,14 +65,12 @@ func Protected(secret string) fiber.Handler {
 		}
 		c.Locals("userID", userID)
 
-		log.Default().Println("USER AUTHENTICATED!!")
 		return c.Next()
 	}
 }
 
 /* Warning: Usage of Protected Middleware is a prerequisite to the use of this function */
 func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserClient) (*userclient.UserAPI, error) {
-	log.Default().Println("Getting client")
 	userID, ok := c.Locals("userID").(int64)
 	if !ok {
 		fmt.Println("FAILED TO GET USERID")
