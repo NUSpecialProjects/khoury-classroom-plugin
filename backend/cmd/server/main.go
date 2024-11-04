@@ -46,8 +46,11 @@ func main() {
 	defer db.Close(context.Background())
 
 	// Run database migrations
-	if err := runMigrations(ctx, db, "./database/migration"); err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
+	if !isLocal() {
+		err := runMigrations(ctx, db, "./database/migrations")
+		if err != nil {
+			log.Fatalf("Failed to run migrations: %v", err)
+		}
 	}
 	defer db.Close(context.Background())
 
