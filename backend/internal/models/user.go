@@ -1,12 +1,12 @@
 package models
 
 type User struct {
-    ID                 int64       `json:"id,omitempty"`
-    FirstName          string      `json:"first_name"`
-    LastName           string      `json:"last_name"`
-    GithubUsername     string      `json:"github_username"`
-    GithubUserID       int64       `json:"github_user_id"`
-    Role               string      `json:"role"`
+	ID             int64  `json:"id,omitempty"`
+	FirstName      string `json:"first_name"`
+	LastName       string `json:"last_name"`
+	GithubUsername string `json:"github_username"`
+	GithubUserID   int64  `json:"github_user_id"`
+	Role           string `json:"role"`
 }
 
 type GitHubUser struct {

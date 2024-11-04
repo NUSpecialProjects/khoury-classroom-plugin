@@ -11,7 +11,7 @@ type Storage interface {
 	Test
 	Session
 	Classroom
-    User
+	User
 }
 
 type Test interface {
@@ -28,9 +28,9 @@ type Classroom interface {
 	CreateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
 	UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
 	GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error)
-    AddUserToClassroom(ctx context.Context, classroomID int64, userID int64) (int64, error)
+	AddUserToClassroom(ctx context.Context, classroomID int64, userID int64) (int64, error)
 }
 
 type User interface {
-    CreateUser(ctx context.Context, userToCreate models.User) (models.User, error)
+	CreateUser(ctx context.Context, userToCreate models.User) (models.User, error)
 }
