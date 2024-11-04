@@ -1,4 +1,6 @@
-export function getClassroomsInOrg(orgId: number): Promise<IClassroomListResponse> {
+export function getClassroomsInOrg(
+  orgId: number
+): Promise<IClassroomListResponse> {
   console.log("Using mocked API call for org: ", orgId);
   return Promise.resolve({
     classrooms: [
@@ -18,13 +20,14 @@ export function getClassroomsInOrg(orgId: number): Promise<IClassroomListRespons
   });
 }
 
-
-  export function postClassroom(classroom: Omit<IClassroom, "id">): Promise<IClassroom> {
-    console.log("Using mocked API call for creating classroom: ", classroom);
-    return Promise.resolve({
-      id: 5,
-      name: classroom.name,
-      org_id: classroom.org_id,
-      org_name: classroom.org_name,
-    });
-  }
+export function postClassroom(
+  classroom: Omit<IClassroom, "id">
+): Promise<IClassroom> {
+  console.log("Using mocked API call for creating classroom: ", classroom);
+  return Promise.resolve({
+    id: 5,
+    name: classroom.name,
+    org_id: classroom.org_id,
+    org_name: classroom.org_name,
+  });
+}

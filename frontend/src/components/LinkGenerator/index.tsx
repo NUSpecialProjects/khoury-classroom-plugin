@@ -18,15 +18,14 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
       return;
     }
     await createToken(role_type, classroom)
-    .then((data: ITokenResponse) => {
+      .then((data: ITokenResponse) => {
         const url = "http://localhost:3000/app/token/apply?token=" + data.token;
         setMessage("Link created! " + url);
         navigator.clipboard.writeText(url);
-      }
-    )
-    .catch((error) => {
-      setMessage("Error creating token: " + error);
-    });
+      })
+      .catch((error) => {
+        setMessage("Error creating token: " + error);
+      });
   };
 
   return (

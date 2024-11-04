@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
@@ -18,12 +17,12 @@ const TokenApplyPage: React.FC = () => {
   }, [inputToken]);
 
   const handleUseToken = async () => {
-      setMessage("Applying role...");
-      await useRoleToken(inputToken)
+    setMessage("Applying role...");
+    await useRoleToken(inputToken)
       .then((data: IMessageResponse) => {
-          setMessage(data.message + " Redirecting...");
-          navigate("/app/dashboard", { replace: true }); //TODO: this will redirect to whatever their last selected classroom is, but maybe should redirect ALWAYS to this role's semester
-        })
+        setMessage(data.message + " Redirecting...");
+        navigate("/app/dashboard", { replace: true }); //TODO: this will redirect to whatever their last selected classroom is, but maybe should redirect ALWAYS to this role's semester
+      })
       .catch((error) => {
         setMessage("Error using token: " + error);
       })

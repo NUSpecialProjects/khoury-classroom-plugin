@@ -22,9 +22,8 @@ const ClassroomSelection: React.FC = () => {
       setLoading(true);
       try {
         const org_id = parseInt(orgID);
-        const data: IClassroom[] = (
-          await getClassroomsInOrg(org_id)
-        ).classrooms;
+        const data: IClassroom[] = (await getClassroomsInOrg(org_id))
+          .classrooms;
         setClassrooms(data);
       } catch (error) {
         console.error("Error fetching organizations and classrooms:", error);
@@ -41,7 +40,6 @@ const ClassroomSelection: React.FC = () => {
     navigate(`/app/dashboard`);
   };
 
-
   const hasClassrooms = classrooms.length > 0;
 
   return (
@@ -51,18 +49,17 @@ const ClassroomSelection: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : hasClassrooms ? (
-         <div>
-          {classrooms.map((classroom) => (
-            <div
-              key={classroom.id}
-              className="Selection__tableRow"
-              onClick={() => handleClassroomSelect(classroom)}
-            >
-              <p>{classroom.name}</p>
-            </div>
-          ))
-        }
-         </div> 
+          <div>
+            {classrooms.map((classroom) => (
+              <div
+                key={classroom.id}
+                className="Selection__tableRow"
+                onClick={() => handleClassroomSelect(classroom)}
+              >
+                <p>{classroom.name}</p>
+              </div>
+            ))}
+          </div>
         ) : (
           <div>
             <p>You have no classes.</p>

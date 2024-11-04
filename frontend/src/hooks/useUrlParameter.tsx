@@ -10,11 +10,10 @@ const useUrlParameter = (paramName: string, onParamPath?: string) => {
     const params = new URLSearchParams(location.search);
     const param = params.get(paramName);
     if (param) {
-        setParamValue(param);
-        if (onParamPath) {
-            navigate(onParamPath, { replace: true });
-        }
-        
+      setParamValue(param);
+      if (onParamPath) {
+        navigate(onParamPath, { replace: true });
+      }
     }
   }, [location.search]);
 

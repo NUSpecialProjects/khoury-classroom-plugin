@@ -38,14 +38,8 @@ export default function App(): React.JSX.Element {
               {/******* CLASS SELECTION: PRE-APP ACCESS STEP *******/}
 
               <Route path="classroom">
-                <Route
-                  path="select"
-                  element={<Pages.ClassroomSelectPage />}
-                />
-                <Route
-                  path="create"
-                  element={<Pages.ClassroomCreatePage />}
-                />
+                <Route path="select" element={<Pages.ClassroomSelectPage />} />
+                <Route path="create" element={<Pages.ClassroomCreatePage />} />
               </Route>
               <Route path="organization">
                 <Route

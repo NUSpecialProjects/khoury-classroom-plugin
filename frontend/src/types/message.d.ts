@@ -1,3 +1,3 @@
 interface IMessageResponse {
-    message: string;
+  message: string;
 }

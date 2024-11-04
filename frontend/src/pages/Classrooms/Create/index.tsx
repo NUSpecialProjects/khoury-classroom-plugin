@@ -90,7 +90,11 @@ const ClassroomCreation: React.FC = () => {
             />
             {!organization && (
               <p className="error">
-                Organization not provided. <Link to="/app/organization/select">Click here to select an organization</Link>.
+                Organization not provided.{" "}
+                <Link to="/app/organization/select">
+                  Click here to select an organization
+                </Link>
+                .
               </p>
             )}
           </div>

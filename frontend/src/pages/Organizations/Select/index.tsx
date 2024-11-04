@@ -9,7 +9,6 @@ import {
   getOrganizationDetails,
 } from "@/api/organizations";
 
-
 const OrganizationSelection: React.FC = () => {
   const [orgsWithApp, setOrgsWithApp] = useState<IOrganization[]>([]);
   const [orgsWithoutApp, setOrgsWithoutApp] = useState<IOrganization[]>([]);
@@ -38,35 +37,40 @@ const OrganizationSelection: React.FC = () => {
     void fetchOrganizations();
   }, []);
 
-
   const handleOrganizationSelect = async (org: IOrganization) => {
     setSelectedOrg(org);
     await getOrganizationDetails(org.login)
-    .then((orgDetails) => {
-      setSelectedOrg(orgDetails);
-    })
-    .catch((error) => {
-      console.error("Error fetching organization details:", error);
-    })
+      .then((orgDetails) => {
+        setSelectedOrg(orgDetails);
+      })
+      .catch((error) => {
+        console.error("Error fetching organization details:", error);
+      });
   };
 
   //TODO: visually disable the button while it's loading the org details
   return (
     <Panel title="Your Organizations" logo={true}>
-        <>
-          <OrganizationDropdown
-            orgsWithApp={orgsWithApp}
-            orgsWithoutApp={orgsWithoutApp}
-            selectedOrg={selectedOrg}
-            loading={loadingOrganizations}
-            onSelect={handleOrganizationSelect}
-          />
-            {selectedOrg && orgsWithApp.some((org) => org.login === selectedOrg.login) && (
-                 <Button variant="primary" onClick={() => navigate(`/app/classroom/select?org_id=${selectedOrg.id}`)}>
+      <>
+        <OrganizationDropdown
+          orgsWithApp={orgsWithApp}
+          orgsWithoutApp={orgsWithoutApp}
+          selectedOrg={selectedOrg}
+          loading={loadingOrganizations}
+          onSelect={handleOrganizationSelect}
+        />
+        {selectedOrg &&
+          orgsWithApp.some((org) => org.login === selectedOrg.login) && (
+            <Button
+              variant="primary"
+              onClick={() =>
+                navigate(`/app/classroom/select?org_id=${selectedOrg.id}`)
+              }
+            >
               View Classrooms for {selectedOrg.login}
             </Button>
-              )}
-        </>
+          )}
+      </>
       <div className="Creation__buttonWrapper">
         {selectedOrg &&
           orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
