@@ -15,7 +15,7 @@ import {
 } from "./funcs";
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
   getStudentAssignment,
   getGitTree,
@@ -30,7 +30,7 @@ const Grader: React.FC = () => {
 
   // params
   const { assignmentId, studentAssignmentId } = useParams();
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   // states
   const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
@@ -44,26 +44,23 @@ const Grader: React.FC = () => {
 
   // fetch totals for indexing purposes
   useEffect(() => {
-    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
+    if (!selectedClassroom || !assignmentId || !studentAssignmentId) return;
 
-    getTotalStudentAssignments(
-      selectedSemester.classroom_id,
-      Number(assignmentId)
-    )
+    getTotalStudentAssignments(selectedClassroom.id, Number(assignmentId))
       .then((resp) => {
         setTotalStudentAssignments(resp);
       })
       .catch((err: unknown) => {
         console.log(err);
       });
-  }, [selectedSemester, assignmentId]);
+  }, [selectedClassroom, assignmentId]);
 
   // fetch requested student assignment
   useEffect(() => {
-    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
+    if (!selectedClassroom || !assignmentId || !studentAssignmentId) return;
 
     getStudentAssignment(
-      selectedSemester.classroom_id,
+      selectedClassroom.id,
       Number(assignmentId),
       Number(studentAssignmentId)
     )
@@ -74,13 +71,13 @@ const Grader: React.FC = () => {
         console.log(err);
         navigate("/404", { replace: true });
       });
-  }, [selectedSemester, assignmentId, studentAssignmentId]);
+  }, [selectedClassroom, assignmentId, studentAssignmentId]);
 
   // fetch git tree from student assignment repo
   useEffect(() => {
-    if (!selectedSemester || !studentAssignment) return;
+    if (!selectedClassroom || !studentAssignment) return;
 
-    getGitTree(selectedSemester.org_name, studentAssignment.repo_name)
+    getGitTree(selectedClassroom.org_name, studentAssignment.repo_name)
       .then((resp) => {
         setGitTree(resp);
       })
@@ -131,8 +128,8 @@ const Grader: React.FC = () => {
       return;
     }
 
-    if (!selectedSemester || !studentAssignment) return;
-    getGitBlob(selectedSemester.org_name, studentAssignment.repo_name, node)
+    if (!selectedClassroom || !studentAssignment) return;
+    getGitBlob(selectedClassroom.org_name, studentAssignment.repo_name, node)
       .then((resp) => {
         setCurrentFile(resp);
         setCachedFiles((prev) => ({
