@@ -13,7 +13,7 @@ export async function getClassroomsInOrg(
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as IClassroomListResponse;
+  const resp: IClassroomListResponse = await response.json();
   return resp;
 }
 
@@ -31,6 +31,6 @@ export async function postClassroom(
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as IClassroom;
+  const resp: IClassroom = (await response.json());
   return resp;
 }
