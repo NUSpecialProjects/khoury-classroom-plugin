@@ -35,6 +35,8 @@ type Classroom interface {
 	UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
 	GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error)
 	AddUserToClassroom(ctx context.Context, classroomID int64, userID int64) (int64, error)
+	GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.User, error)
+	GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error)
 }
 
 type User interface {

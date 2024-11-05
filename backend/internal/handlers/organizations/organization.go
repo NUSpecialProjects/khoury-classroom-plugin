@@ -2,7 +2,10 @@ package organizations
 
 import (
 	"log"
+	"net/http"
+	"strconv"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -80,9 +83,9 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 func (service *OrganizationService) GetOrg() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract org_id from the path
-		org_name := c.Params("org")
-		if org_name == "" || org_name == "undefined" {
-			log.Default().Println("Error getting org_name: ", org_name)
+		orgName := c.Params("org")
+		if orgName == "" || orgName == "undefined" {
+			log.Default().Println("Error getting org_name: ", orgName)
 			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
 		}
 
@@ -94,12 +97,28 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		}
 
 		// Get the organization
-		org, err := userClient.GetOrg(c.Context(), org_name)
+		org, err := userClient.GetOrg(c.Context(), orgName)
 		if err != nil {
 			log.Default().Println("Error getting org: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
 		}
 
 		return c.Status(200).JSON(fiber.Map{"org": org})
+	}
+}
+
+func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		orgID, err := strconv.ParseInt(c.Params("org_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		classrooms, err := service.store.GetClassroomsInOrg(c.Context(), orgID)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(classrooms)
 	}
 }

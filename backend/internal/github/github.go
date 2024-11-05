@@ -20,13 +20,13 @@ type GitHubAppClient interface { // All methods in the APP client
 	GetFileBlob(owner string, repo string, sha string) ([]byte, error)
 
 	// Create a new team in an organization
-	CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error)
+	CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error)
 
 	// Add a user to a team
-	AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error
+	AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error
 
 	// Add a repository permission to a team
-	AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error
+	AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error
 
 	// Add a repository permission to a user
 	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
@@ -36,7 +36,7 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	GitHubBaseClient
 
 	// Get the details of an organization
-	GetOrg(ctx context.Context, org_name string) (*github.Organization, error)
+	GetOrg(ctx context.Context, orgName string) (*github.Organization, error)
 
 	// Get the current authenticated user
 	GetCurrentUser(ctx context.Context) (models.GitHubUser, error)
@@ -60,7 +60,7 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	ListCommits(ctx context.Context, owner string, repo string, opts *github.CommitsListOptions) ([]*github.RepositoryCommit, error)
 
 	// Get the details of a branch
-	GetBranch(ctx context.Context, owner_name string, repo_name string, branch_name string) (*github.Branch, error)
+	GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error)
 
 	// Create a new branch in a repository
 	CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error

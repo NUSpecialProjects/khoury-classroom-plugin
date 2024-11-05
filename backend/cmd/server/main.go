@@ -46,8 +46,11 @@ func main() {
 	defer db.Close(context.Background())
 
 	// Run database migrations
-	if err := runMigrations(ctx, db, "./database/migration"); err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
+	if !isLocal() {
+		err := runMigrations(ctx, db, "./database/migrations")
+		if err != nil {
+			log.Fatalf("Failed to run migrations: %v", err)
+		}
 	}
 	defer db.Close(context.Background())
 
@@ -105,7 +108,10 @@ func runMigrations(ctx context.Context, db *postgres.DB, migrationsDir string) e
 	for _, fileName := range migrationFiles {
 		filePath := filepath.Join(migrationsDir, fileName)
 		log.Printf("Applying migration: %s", fileName)
-		db.ExecFile(ctx, filePath)
+		err := db.ExecFile(ctx, filePath)
+		if err != nil {
+			log.Fatalf("Migration error: DB could not be initialized")
+		}
 	}
 
 	return nil

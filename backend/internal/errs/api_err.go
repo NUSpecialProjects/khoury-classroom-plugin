@@ -54,12 +54,11 @@ func InternalServerError() APIError {
 	return NewAPIError(http.StatusInternalServerError, errors.New("internal server error"))
 }
 
-
 func GithubIntegrationError(err error) APIError {
 	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("error with github integration: %s", err.Error()))
 }
 
-func MissingApiParamError(field string) APIError {
+func MissingAPIParamError(field string) APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("missing request field: %s", field))
 }
 
@@ -84,7 +83,6 @@ func InvalidRequestBody(expected interface{}) APIError {
 	msg := fmt.Sprintf("Expected Fields: %s", strings.Join(fieldAcc, ", "))
 	return NewAPIError(http.StatusBadRequest, errors.New(msg))
 }
-
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	var apiErr APIError

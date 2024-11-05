@@ -12,17 +12,17 @@ import (
 func (s *UserService) CreateUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var userToCreate models.User
-        err := c.BodyParser(&userToCreate)
-        if err != nil {
-            return errs.InvalidRequestBody(models.User{})
-        }
+		err := c.BodyParser(&userToCreate)
+		if err != nil {
+			return errs.InvalidRequestBody(models.User{})
+		}
 
-        createdUser, err := s.store.CreateUser(c.Context(), userToCreate)
-        if err != nil {
-            return err
-        }
+		createdUser, err := s.store.CreateUser(c.Context(), userToCreate)
+		if err != nil {
+			return err
+		}
 
-        // Implement logic here
-        return c.Status(http.StatusOK).JSON(createdUser)
+		// Implement logic here
+		return c.Status(http.StatusOK).JSON(createdUser)
 	}
 }

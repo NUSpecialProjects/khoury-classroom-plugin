@@ -17,3 +17,4 @@ func NewDBError(err error) DatabaseError {
 		Message: err.Error(),
 	}
 }
+

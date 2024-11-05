@@ -91,12 +91,47 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
+<<<<<<< HEAD
 func (api *AppAPI) CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error) {
-	team := &github.NewTeam{
-		Name: team_name,
+=======
+func (api *AppAPI) GetGitTree(owner string, repo string) ([]github.TreeEntry, error) {
+	// Get the reference to the branch
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
+	if err != nil {
+		return nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
 
-	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, org_name, *team)
+	// Get the commit from the ref
+	commitSHA := ref.Object.GetSHA()
+	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSHA)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching commit: %v", err)
+	}
+
+	treeSHA := commit.Tree.GetSHA()
+	tree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching tree: %v", err)
+	}
+
+	return tree.Entries, nil
+}
+
+func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, error) {
+	contents, _, err := api.Client.Git.GetBlobRaw(context.Background(), owner, repo, sha)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching contents: %v", err)
+	}
+	return contents, nil
+}
+
+func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
+>>>>>>> staging
+	team := &github.NewTeam{
+		Name: teamName,
+	}
+
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
 	if err != nil {
 		return nil, fmt.Errorf("error creating team: %v", err)
 	}
@@ -104,8 +139,8 @@ func (api *AppAPI) CreateTeam(ctx context.Context, org_name, team_name string) (
 	return createdTeam, nil
 }
 
-func (api *AppAPI) AddTeamMember(ctx context.Context, team_id int64, user_name string, opt *github.TeamAddTeamMembershipOptions) error {
-	_, _, err := api.Client.Teams.AddTeamMembership(ctx, team_id, user_name, opt)
+func (api *AppAPI) AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error {
+	_, _, err := api.Client.Teams.AddTeamMembership(ctx, teamID, userName, opt)
 	if err != nil {
 		return fmt.Errorf("error adding member to team: %v", err)
 	}
@@ -113,12 +148,12 @@ func (api *AppAPI) AddTeamMember(ctx context.Context, team_id int64, user_name s
 	return nil
 }
 
-func (api *AppAPI) AssignPermissionToTeam(ctx context.Context, team_id int64, owner_name string, repo_name string, permission string) error {
+func (api *AppAPI) AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error {
 	opt := &github.TeamAddTeamRepoOptions{
 		Permission: permission,
 	}
 
-	_, err := api.Client.Teams.AddTeamRepo(ctx, team_id, owner_name, repo_name, opt)
+	_, err := api.Client.Teams.AddTeamRepo(ctx, teamID, ownerName, repoName, opt)
 	if err != nil {
 		return fmt.Errorf("error assigning permission to team: %v", err)
 	}

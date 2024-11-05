@@ -37,8 +37,8 @@ func (api *CommonAPI) ListCommits(ctx context.Context, owner string, repo string
 	return commits, err
 }
 
-func (api *CommonAPI) GetBranch(ctx context.Context, owner_name string, repo_name string, branch_name string) (*github.Branch, error) {
-	branch, _, err := api.Client.Repositories.GetBranch(ctx, owner_name, repo_name, branch_name)
+func (api *CommonAPI) GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error) {
+	branch, _, err := api.Client.Repositories.GetBranch(ctx, ownerName, repoName, branchName)
 
 	return branch, err
 }
