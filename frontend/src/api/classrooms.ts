@@ -31,6 +31,6 @@ export async function postClassroom(
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp: IClassroom = (await response.json());
+  const resp: IClassroom = await response.json();
   return resp;
 }

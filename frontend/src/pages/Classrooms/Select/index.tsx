@@ -23,8 +23,8 @@ const ClassroomSelection: React.FC = () => {
       try {
         const org_id = parseInt(orgID);
         const data: IClassroomListResponse = await getClassroomsInOrg(org_id);
-        console.log("data", data);
-        if (data.classrooms) { //TODO: this is broken
+        if (data.classrooms) {
+          //TODO: this is broken
           setClassrooms(data.classrooms);
         }
       } catch (error) {

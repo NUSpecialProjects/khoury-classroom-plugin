@@ -86,13 +86,12 @@ const Login: React.FC = () => {
 
       {error && (
         <>
-        <a className="SignInLink" href={"/"}>
-          Refresh
-        </a>
-        <ErrorMessage message={error} />
+          <a className="SignInLink" href={"/"}>
+            Refresh
+          </a>
+          <ErrorMessage message={error} />
         </>
-        
-        )}
+      )}
     </div>
   );
 };
