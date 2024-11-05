@@ -13,37 +13,37 @@ VALUES
 ('Software Engineering Principles', 98774, 'SoftEngOrg', NOW());
 
 -- Create users (Kenny and others)
-INSERT INTO users (first_name, last_name, github_username, github_user_id, role)
+INSERT INTO users (first_name, last_name, github_username, github_user_id)
 VALUES
-('Kenny', 'Smith', 'kennysmith', 123456, 'STUDENT'),
-('Grace', 'Hopper', 'gracehopper', 789012, 'PROFESSOR'),
-('Alan', 'Turing', 'alanturing', 345678, 'STUDENT'),
-('Ada', 'Lovelace', 'adalovelace', 901234, 'STUDENT'),
-('Linus', 'Torvalds', 'linustorvalds', 567890, 'TA'),
-('Margaret', 'Hamilton', 'mhamilton', 234567, 'STUDENT'),
-('Tim', 'Berners-Lee', 'timbl', 890123, 'PROFESSOR'),
-('Barbara', 'Liskov', 'bliskov', 678901, 'STUDENT'),
-('Dennis', 'Ritchie', 'dritchie', 112233, 'PROFESSOR'),
-('Ken', 'Thompson', 'kthompson', 445566, 'TA');
+('Kenny', 'Smith', 'kennysmith', 123456),
+('Grace', 'Hopper', 'gracehopper', 789012),
+('Alan', 'Turing', 'alanturing', 345678),
+('Ada', 'Lovelace', 'adalovelace', 901234),
+('Linus', 'Torvalds', 'linustorvalds', 567890),
+('Margaret', 'Hamilton', 'mhamilton', 234567),
+('Tim', 'Berners-Lee', 'timbl', 890123),
+('Barbara', 'Liskov', 'bliskov', 678901),
+('Dennis', 'Ritchie', 'dritchie', 112233),
+('Ken', 'Thompson', 'kthompson', 445566);
 
 -- Insert into classroom_membership
-INSERT INTO classroom_membership (user_id, classroom_id, created_at)
+INSERT INTO classroom_membership (user_id, classroom_id, role, created_at)
 VALUES
-(1, 1, NOW()),
-(2, 1, NOW()),
-(3, 1, NOW()),
-(4, 2, NOW()),
-(5, 2, NOW()),
-(6, 3, NOW()),
-(7, 3, NOW()),
-(8, 4, NOW()),
-(9, 4, NOW()),
-(10, 5, NOW()),
-(1, 6, NOW()),
-(3, 7, NOW()),
-(6, 8, NOW()),
-(8, 9, NOW()),
-(5, 10, NOW());
+(1, 1, 'STUDENT', NOW()),
+(2, 1, 'PROFESSOR', NOW()),
+(3, 1, 'STUDENT', NOW()),
+(4, 2, 'STUDENT', NOW()),
+(5, 2, 'TA', NOW()),
+(6, 3, 'STUDENT', NOW()),
+(7, 3, 'PROFESSOR', NOW()),
+(8, 4, 'STUDENT', NOW()),
+(9, 4, 'PROFESSOR', NOW()),
+(10, 5, 'TA', NOW()),
+(1, 6, 'STUDENT', NOW()),
+(3, 7, 'STUDENT', NOW()),
+(6, 8, 'STUDENT', NOW()),
+(8, 9, 'STUDENT', NOW()),
+(5, 10, 'TA', NOW());
 
 -- Insert into assignment_template
 INSERT INTO assignment_template (template_repo_owner, template_repo_id, created_at)

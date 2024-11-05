@@ -14,3 +14,8 @@ type Assignment struct {
 type AssignmentClassroomID struct {
 	AssignmentClassroomID int64 `json:"assignment_classroom_id"`
 }
+
+type AssignmentToken struct {
+	AssignmentID int64 `json:"assignment_outline_id"`
+	BaseToken
+}

@@ -12,3 +12,11 @@ interface IUserOrgsAndClassroomsResponse {
 interface IClassroomListResponse {
   classrooms: IClassroom[];
 }
+
+interface IClassroomToken {
+  classroom_id: number;
+  classroom_role: string;
+  token: string;
+  expires_at: string | null;
+  created_at: string;
+}

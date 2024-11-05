@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import useUrlParameter from "@/hooks/useUrlParameter";
-import { useRoleToken } from "@/api/users";
+import { useClassroomToken } from "@/api/classrooms";
 
 const TokenApplyPage: React.FC = () => {
   const inputToken = useUrlParameter("token", "/app/role/apply");
@@ -18,7 +18,7 @@ const TokenApplyPage: React.FC = () => {
 
   const handleUseToken = async () => {
     setMessage("Applying role...");
-    await useRoleToken(inputToken)
+    await useClassroomToken(inputToken)
       .then((data: IMessageResponse) => {
         setMessage(data.message + " Redirecting...");
         navigate("/app/dashboard", { replace: true }); //TODO: this will redirect to whatever their last selected classroom is, but maybe should redirect ALWAYS to this role's semester

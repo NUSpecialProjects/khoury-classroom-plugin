@@ -11,3 +11,33 @@ type Classroom struct {
 	OrgName   string    `json:"org_name"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type ClassroomRole string
+
+const (
+	Professor ClassroomRole = "PROFESSOR"
+	TA        ClassroomRole = "TA"
+	Student   ClassroomRole = "STUDENT"
+)
+
+func (cr ClassroomRole) Compare(other ClassroomRole) int16 {
+	roleRank := map[ClassroomRole]int16{
+		Professor: 3,
+		TA:        2,
+		Student:   1,
+	}
+
+	if roleRank[cr] > roleRank[other] {
+		return 1
+	} else if roleRank[cr] < roleRank[other] {
+		return -1
+	} else {
+		return 0
+	}
+}
+
+type ClassroomToken struct {
+	ClassroomID   int64         `json:"classroom_id"`
+	ClassroomRole ClassroomRole `json:"classroom_role"`
+	BaseToken
+}

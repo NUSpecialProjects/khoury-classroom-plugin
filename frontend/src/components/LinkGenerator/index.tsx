@@ -1,4 +1,4 @@
-import { createToken } from "@/api/users";
+import { postClassroomToken } from "@/api/classrooms";
 import React, { useState } from "react";
 
 interface CreateTokenProps {
@@ -17,7 +17,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
       setMessage("No classroom selected");
       return;
     }
-    await createToken(role_type, classroom)
+    await postClassroomToken(classroom.id, role_type)
       .then((data: ITokenResponse) => {
         const url = "http://localhost:3000/app/token/apply?token=" + data.token;
         setMessage("Link created! " + url);

@@ -59,6 +59,8 @@ func (service *AuthService) Login() fiber.Handler {
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 
+		//TODO: move creating the user in our DB here rather than on joining a classroom?
+
 		// Convert user.ID to string
 		userID := strconv.FormatInt(user.ID, 10)
 

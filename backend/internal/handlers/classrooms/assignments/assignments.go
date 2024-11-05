@@ -42,3 +42,11 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
+
+// Uses a token to accept an assignment.
+func (s *AssignmentService) useAssignmentToken() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Implement logic here
+		return c.SendStatus(fiber.StatusNotImplemented)
+	}
+}

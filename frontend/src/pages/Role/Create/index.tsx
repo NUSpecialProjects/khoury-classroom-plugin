@@ -3,7 +3,7 @@ import React, { useContext, useState } from "react";
 import LinkGenerator from "@/components/LinkGenerator";
 
 const TokenCreatePage: React.FC = () => {
-  const [role_type, setRoleType] = useState<string>("Student");
+  const [role_type, setRoleType] = useState<string>("STUDENT");
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
@@ -13,7 +13,7 @@ const TokenCreatePage: React.FC = () => {
       <h1>Create Role Token</h1>
       <div>
         <p>Select Role Type:</p>
-        <button onClick={() => setRoleType("Student")}>Student</button>
+        <button onClick={() => setRoleType("STUDENT")}>Student</button>
         <button onClick={() => setRoleType("TA")}>Teaching Assistant</button>
       </div>
 
