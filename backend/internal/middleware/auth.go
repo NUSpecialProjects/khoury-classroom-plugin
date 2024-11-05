@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -47,23 +48,25 @@ func ParseJWT(tokenString string, secret string) (*jwt.StandardClaims, error) {
 
 func Protected(secret string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Extract and validate JWT token
-		token := c.Cookies("jwt_cookie", "")
-		if token == "" {
-			return c.Status(401).JSON(fiber.Map{"error": "missing or invalid JWT token"})
-		}
+		if os.Getenv("APP_ENVIRONMENT") != "LOCAL" {
+			// Extract and validate JWT token
+			token := c.Cookies("jwt_cookie", "")
+			if token == "" {
+				return c.Status(401).JSON(fiber.Map{"error": "missing or invalid JWT token"})
+			}
 
-		claims, err := ParseJWT(token, secret)
-		if err != nil {
-			return c.Status(401).JSON(fiber.Map{"error": "invalid JWT token"})
-		}
+			claims, err := ParseJWT(token, secret)
+			if err != nil {
+				return c.Status(401).JSON(fiber.Map{"error": "invalid JWT token"})
+			}
 
-		// Set userID in context
-		userID, err := strconv.ParseInt(claims.Subject, 10, 64)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to parse userID from token"})
+			// Set userID in context
+			userID, err := strconv.ParseInt(claims.Subject, 10, 64)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "failed to parse userID from token"})
+			}
+			c.Locals("userID", userID)
 		}
-		c.Locals("userID", userID)
 
 		return c.Next()
 	}
