@@ -128,7 +128,7 @@ const Dashboard: React.FC = () => {
         </>
       )}
       <div className="Dashboard__linkWrapper">
-        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.id}`}>
+        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}>
           View other classrooms
         </Link>
       </div>
