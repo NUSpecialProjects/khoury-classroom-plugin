@@ -134,13 +134,17 @@ VALUES
 (7, 7, 'bliskov/website-dev', '2023-08-01 23:59:59', 16, 28, 25, '2023-07-31 23:00:00', '2023-08-05 22:00:00', 'GRADE_PUBLISHED', NOW()),
 (8, 8, 'linustorvalds/cloud-deployment', '2023-09-01 23:59:59', 17, 40, 35, '2023-08-30 20:00:00', '2023-09-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
 (9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 18, 48, 45, '2023-09-29 21:00:00', '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
-(10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 19, 38, 35, '2023-10-31 20:00:00', '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW());
+(10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 19, 38, 35, '2023-10-31 20:00:00', '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
+(11, 1, 'alanturing/running-chocolate-tracker', '2023-04-01 23:59:59', 12, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
 
 -- Insert into work_contributors
 INSERT INTO work_contributors (user_id, student_work_id, created_at)
 VALUES
 (1, 1, NOW()),
+(2, 1, NOW()),
+(3, 1, NOW()),
 (1, 2, NOW()),
+(2, 2, NOW()),
 (3, 3, NOW()),
 (4, 4, NOW()),
 (6, 5, NOW()),
@@ -148,7 +152,8 @@ VALUES
 (8, 7, NOW()),
 (5, 8, NOW()),
 (6, 9, NOW()),
-(1, 10, NOW());
+(1, 10, NOW()),
+(3, 11, NOW());
 
 -- Insert into feedback_comment
 INSERT INTO feedback_comment (id, student_work_id, rubric_item_id, grader_gh_user_id, created_at)
