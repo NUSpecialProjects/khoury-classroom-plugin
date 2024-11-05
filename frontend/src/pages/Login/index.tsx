@@ -84,7 +84,15 @@ const Login: React.FC = () => {
         <div className="LoadingMessage">Loading...</div>
       )}
 
-      {error && <ErrorMessage message={error} />}
+      {error && (
+        <>
+        <a className="SignInLink" href={"/"}>
+          Refresh
+        </a>
+        <ErrorMessage message={error} />
+        </>
+        
+        )}
     </div>
   );
 };
