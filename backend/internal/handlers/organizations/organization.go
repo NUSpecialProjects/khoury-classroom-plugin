@@ -119,6 +119,8 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return err
 		}
 
-		return c.Status(http.StatusOK).JSON(classrooms)
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+            "classrooms" : classrooms,
+        })
 	}
 }

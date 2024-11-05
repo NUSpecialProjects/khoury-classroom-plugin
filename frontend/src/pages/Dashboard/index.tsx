@@ -20,6 +20,7 @@ const Dashboard: React.FC = () => {
       if (semester) {
         getAssignments(semester.classroom_id)
           .then((assignments) => {
+            console.log("Assignments:", assignments);
             setAssignments(assignments);
           })
           .catch((err: unknown) => {
@@ -28,39 +29,11 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    const SyncWithClassroom = async (semester: ISemester) => {
-      try {
-        console.log("Using mocked API call for semester: ", semester);
-        // const base_url: string = import.meta.env
-        //   .VITE_PUBLIC_API_DOMAIN as string;
-        // const result = await fetch(`${base_url}/github/sync`, {
-        //   method: "POST",
-        //   credentials: "include",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({ classroom_id: semester.classroom_id }),
-        // });
-        const result = await Promise.resolve({ ok: true });
-
-        if (!result.ok) {
-          throw new Error("Network response was not ok");
-        }
-      } catch (error: unknown) {
-        console.error("Error making API call:", error);
-      }
-    };
 
     if (selectedSemester !== null && selectedSemester !== undefined) {
-      SyncWithClassroom(selectedSemester)
-        .then(() => {
-          fetchAssignments(selectedSemester).catch((error: unknown) => {
-            console.log("Error fetching:", error);
-          });
-        })
-        .catch((error: unknown) => {
-          console.error("Error syncing:", error);
-        });
+      fetchAssignments(selectedSemester).catch((error: unknown) => {
+        console.log("Error fetching:", error);
+      });
     }
   }, [selectedSemester]);
 
@@ -121,15 +94,7 @@ const Dashboard: React.FC = () => {
               </TableRow>
               {assignments.map((assignment, i: number) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell>
-                    {" "}
-                    <Link
-                      to={`/app/assignments/${i + 1}`}
-                      className="Dashboard__assignmentLink"
-                    >
-                      {assignment.name}
-                    </Link>
-                  </TableCell>
+                  <TableCell> <Link to={`/app/assignments/${i}`} state={{assignment}} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
                   <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
                 </TableRow>
               ))}
