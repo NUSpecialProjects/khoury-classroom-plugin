@@ -1,7 +1,7 @@
 package errs
 
 import (
-  "fmt"
+	"fmt"
 )
 
 type DatabaseError struct {

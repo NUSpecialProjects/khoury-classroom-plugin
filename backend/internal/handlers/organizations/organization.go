@@ -118,8 +118,6 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return err
 		}
 
-		log.Default().Println("Classrooms in org: ", classrooms)
-
-		return c.Status(http.StatusOK).JSON(fiber.Map{"classrooms": classrooms})
+		return c.Status(http.StatusOK).JSON(classrooms)
 	}
 }

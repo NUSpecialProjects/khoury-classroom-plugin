@@ -11,6 +11,5 @@ type ClassroomService struct {
 }
 
 func newClassroomService(store storage.Storage, userCfg *config.GitHubUserClient) *ClassroomService {
-    return &ClassroomService{store: store, userCfg: userCfg}
-
+	return &ClassroomService{store: store, userCfg: userCfg}
 }
