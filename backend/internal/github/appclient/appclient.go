@@ -91,9 +91,6 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-<<<<<<< HEAD
-func (api *AppAPI) CreateTeam(ctx context.Context, org_name, team_name string) (*github.Team, error) {
-=======
 func (api *AppAPI) GetGitTree(owner string, repo string) ([]github.TreeEntry, error) {
 	// Get the reference to the branch
 	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
@@ -126,7 +123,6 @@ func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, er
 }
 
 func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
->>>>>>> staging
 	team := &github.NewTeam{
 		Name: teamName,
 	}
