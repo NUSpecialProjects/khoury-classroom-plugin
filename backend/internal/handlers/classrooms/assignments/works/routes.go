@@ -5,6 +5,7 @@ import (
 )
 
 func WorkRoutes(router fiber.Router, service *WorkService) fiber.Router {
+	// router is prefixed with "/classrooms/:classroom_id/assignments"
 	submissionRouter := router.Group("/:assignment_id/works")
 
 	// Get the submissions for an assignment
