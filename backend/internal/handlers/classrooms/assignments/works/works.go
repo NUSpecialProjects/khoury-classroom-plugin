@@ -25,7 +25,9 @@ func (s *WorkService) getWorks() fiber.Handler {
 			fmt.Print(err)
 			return errs.InternalServerError()
 		}
-		return c.Status(200).JSON(works)
+		return c.Status(200).JSON(fiber.Map{
+			"student_works": works,
+		})
 	}
 }
 
@@ -50,6 +52,8 @@ func (s *WorkService) getWork() fiber.Handler {
 			fmt.Print(err)
 			return errs.InternalServerError()
 		}
-		return c.Status(200).JSON(work)
+		return c.Status(200).JSON(fiber.Map{
+			"student_work": work,
+		})
 	}
 }
