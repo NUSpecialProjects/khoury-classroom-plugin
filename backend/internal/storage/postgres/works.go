@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/jackc/pgx/v5"
 )
@@ -73,14 +74,14 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 }
 
 // Get all student works from an assignment
-func (db *DB) GetWorks(ctx context.Context, assignmentID int) ([]*models.StudentWorkWithContributors, error) {
+func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
 SELECT %s FROM %s
-WHERE assignment_outline_id = $1
+WHERE classroom_id = $1 AND assignment_outline_id = $2
 ORDER BY u.last_name, u.first_name;
 `, DesiredFields, JoinedTable)
 
-	rows, err := db.connPool.Query(ctx, query, assignmentID)
+	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID)
 
 	if err != nil {
 		fmt.Println("Error in query ", err)
@@ -101,7 +102,7 @@ ORDER BY u.last_name, u.first_name;
 }
 
 // Get a single student work from an assignment
-func (db *DB) GetWork(ctx context.Context, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
+func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
 WITH paginated AS
 	(SELECT
@@ -113,17 +114,17 @@ WITH paginated AS
 		LEAD(sw.id)
 			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS next_student_work_id
 	FROM %s
-	WHERE assignment_outline_id = $1
+	WHERE classroom_id = $1 AND assignment_outline_id = $2
 	ORDER BY u.last_name, u.first_name)
 SELECT *
 FROM paginated
-WHERE student_work_id = $2
+WHERE student_work_id = $3
 `, DesiredFields, assignmentID, studentWorkID, JoinedTable)
 
 	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
 	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
 
-	rows, err := db.connPool.Query(ctx, query, assignmentID, studentWorkID)
+	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
 
 	if err != nil {
 		fmt.Println("Error in query ", err)
@@ -137,7 +138,13 @@ WHERE student_work_id = $2
 		return nil, err
 	}
 
-	return formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
+	formatted := formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
 		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []string{}}
-	})[0], nil
+	})
+
+	if len(formatted) == 0 {
+		return nil, errs.EmptyResult()
+	}
+
+	return formatted[0], nil
 }

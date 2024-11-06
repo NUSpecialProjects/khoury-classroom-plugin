@@ -11,7 +11,7 @@ func WorkRoutes(router fiber.Router, service *WorkService) fiber.Router {
 	submissionRouter.Get("/", service.getWorks())
 
 	// Get the details of a submission
-	submissionRouter.Get("/:work_id", service.getWork())
+	submissionRouter.Get("/work/:work_id", service.getWork())
 
 	return submissionRouter
 }
