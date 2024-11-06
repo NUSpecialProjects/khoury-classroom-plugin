@@ -123,3 +123,41 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 		})
 	}
 }
+
+func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Extract org_id from the path
+		org_name := c.Params("org_name")
+		if org_name == "" || org_name == "undefined" {
+			log.Default().Println("Error getting org_name: ", org_name)
+			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
+		}
+
+		// Parse pagination parameters
+		itemsPerPage := c.QueryInt("itemsPerPage", 30)
+		pageNum := c.QueryInt("pageNum", 1)
+
+		// Get the user client
+		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
+		if err != nil {
+			log.Default().Println("Error getting client: ", err)
+			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+		}
+
+		// Get the organizations repos and filter for template repos
+		repos, err := userClient.ListRepositoriesByOrg(c.Context(), org_name, itemsPerPage, pageNum)
+		if err != nil {
+			log.Default().Println("Error getting repos: ", err)
+			return c.Status(500).JSON(fiber.Map{"error": "failed to get repos"})
+		}
+
+		var templateRepos []models.Repository
+		for _, repo := range repos {
+			if repo.IsTemplate && !repo.Archived {
+				templateRepos = append(templateRepos, *repo)
+			}
+		}
+
+		return c.Status(200).JSON(fiber.Map{"repos": templateRepos})
+	}
+}
