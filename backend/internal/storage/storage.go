@@ -16,7 +16,7 @@ type Storage interface {
 }
 
 type Works interface {
-	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]models.FormattedStudentWork, error)
+	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.FormattedStudentWork, error)
 	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.FormattedPaginatedStudentWork, error)
 }
 

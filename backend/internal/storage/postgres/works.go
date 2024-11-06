@@ -9,63 +9,43 @@ import (
 )
 
 // squashes a list of student work contributors to a list of student works with an array of contributors
-func formatWorks(rawWorks []models.StudentWork) []models.FormattedStudentWork {
-	// map to group works by AssignmentOutlineID
-	workMap := make(map[int]*models.FormattedStudentWork)
+func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks []T, newFormattedWork func(T) F) []F {
+	workMap := make(map[int]F)
 
-	for _, work := range rawWorks {
-		if _, exists := workMap[work.ID]; !exists {
-			// insert new formatted work if doesn't exist already
-			workMap[work.ID] = &models.FormattedStudentWork{
-				StudentWork:  work,
-				Contributors: []string{},
-			}
+	for i, work := range rawWorks {
+		if _, exists := workMap[work.GetID()]; !exists {
+			// insert new formatted work if it doesn't exist already
+			workMap[work.GetID()] = newFormattedWork(work)
 		}
 
 		// combine first and last names into a full name and add to list of contributors
-		fullName := fmt.Sprintf("%s %s", work.FirstName, work.LastName)
-		workMap[work.ID].Contributors = append(workMap[work.ID].Contributors, fullName)
-	}
+		fullName := fmt.Sprintf("%s %s", work.GetFirstName(), work.GetLastName())
+		workMap[work.GetID()].AddContributor(fullName)
 
-	// convert map values to a slice
-	var formattedWorks []models.FormattedStudentWork
-	for _, formattedWork := range workMap {
-		formattedWorks = append(formattedWorks, *formattedWork)
-	}
-
-	return formattedWorks
-}
-
-// squashes a list of student work contributors to a list of student works with an array of contributors
-func formatPaginatedWorks(rawWorks []models.PaginatedStudentWork) []models.FormattedPaginatedStudentWork {
-	// map to group works by AssignmentOutlineID
-	workMap := make(map[int]*models.FormattedPaginatedStudentWork)
-
-	for _, work := range rawWorks {
-		if _, exists := workMap[work.ID]; !exists {
-			// insert new formatted work if doesn't exist already
-			workMap[work.ID] = &models.FormattedPaginatedStudentWork{
-				PaginatedStudentWork: work,
-				Contributors:         []string{},
+		if i == 0 {
+			if prev := work.GetPrev(); prev != nil {
+				workMap[work.GetID()].SetPrev(*prev)
 			}
 		}
 
-		// combine first and last names into a full name and add to list of contributors
-		fullName := fmt.Sprintf("%s %s", work.FirstName, work.LastName)
-		workMap[work.ID].Contributors = append(workMap[work.ID].Contributors, fullName)
+		if i == len(rawWorks)-1 {
+			if next := work.GetNext(); next != nil {
+				workMap[work.GetID()].SetNext(*next)
+			}
+		}
 	}
 
 	// convert map values to a slice
-	var formattedWorks []models.FormattedPaginatedStudentWork
+	var formattedWorks []F
 	for _, formattedWork := range workMap {
-		formattedWorks = append(formattedWorks, *formattedWork)
+		formattedWorks = append(formattedWorks, formattedWork)
 	}
 
 	return formattedWorks
 }
 
 // Get all student works from an assignment
-func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]models.FormattedStudentWork, error) {
+func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.FormattedStudentWork, error) {
 	query := `
 SELECT
     student_work_id,
@@ -115,51 +95,47 @@ ORDER BY
 		return nil, err
 	}
 
-	return formatWorks(rawWorks), nil
+	return formatWorks(rawWorks, func(work models.StudentWork) *models.FormattedStudentWork {
+		return &models.FormattedStudentWork{StudentWork: work, Contributors: []string{}}
+	}), nil
 }
 
 // Get a single student work from an assignment
 func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.FormattedPaginatedStudentWork, error) {
 	query := `
-SELECT
-    student_work_id,
-    classroom_id,
-    name AS assignment_name,
-    assignment_outline_id,
-    repo_name,
-    due_date,
-    submitted_pr_number,
-    manual_feedback_score,
-    auto_grader_score,
-    submission_timestamp,
-    grades_published_timestamp,
-    work_state,
-    sw.created_at,
-    first_name,
-    last_name,
-    github_username,
-    previous_student_work_id,
-    next_student_work_id
-FROM
-    (SELECT
-         *,
-         LAG(id) OVER (PARTITION BY assignment_outline_id ORDER BY id) AS previous_student_work_id,
-         LEAD(id) OVER (PARTITION BY assignment_outline_id ORDER BY id) AS next_student_work_id
-     FROM student_works) AS sw
-        JOIN
-        work_contributors AS wc ON sw.id = wc.student_work_id
-        JOIN
-        users AS u ON wc.user_id = u.id
-        JOIN
-        assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
-WHERE
-    classroom_id = $1
-    AND
-    assignment_outline_id = $2
-    AND
-    student_work_id = $3
-ORDER BY
-    u.last_name, u.first_name;
+WITH paginated AS (SELECT student_work_id,
+                          classroom_id,
+                          name                                                                                     AS assignment_name,
+                          assignment_outline_id,
+                          repo_name,
+                          due_date,
+                          submitted_pr_number,
+                          manual_feedback_score,
+                          auto_grader_score,
+                          submission_timestamp,
+                          grades_published_timestamp,
+                          work_state,
+                          sw.created_at,
+                          first_name,
+                          last_name,
+                          github_username,
+                          LAG(sw.id)
+                          OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name)             AS previous_student_work_id,
+                          LEAD(sw.id)
+                          OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name)             AS next_student_work_id
+                   FROM student_works AS sw
+                            JOIN
+                        work_contributors AS wc ON sw.id = wc.student_work_id
+                            JOIN
+                        users AS u ON wc.user_id = u.id
+                            JOIN
+                        assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
+                   WHERE classroom_id = $1
+                     AND assignment_outline_id = $2
+                   ORDER BY u.last_name, u.first_name)
+SELECT *
+FROM paginated
+WHERE student_work_id = $3
 `
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
@@ -176,5 +152,7 @@ ORDER BY
 		return nil, err
 	}
 
-	return &formatPaginatedWorks(rawWorks)[0], nil
+	return formatWorks(rawWorks, func(work models.PaginatedStudentWork) *models.FormattedPaginatedStudentWork {
+		return &models.FormattedPaginatedStudentWork{PaginatedStudentWork: work, Contributors: []string{}}
+	})[0], nil
 }
