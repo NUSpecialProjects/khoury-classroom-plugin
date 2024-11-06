@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -39,7 +38,6 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 		// Get the app client
@@ -48,14 +46,12 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
 		if err != nil {
-			log.Default().Println("Error getting user orgs: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
-			log.Default().Println("Error getting app installations: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get app installations"})
 		}
 
@@ -85,21 +81,18 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			log.Default().Println("Error getting org_name: ", orgName)
 			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
 		}
 
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
 		}
 
 		// Get the organization
 		org, err := userClient.GetOrg(c.Context(), orgName)
 		if err != nil {
-			log.Default().Println("Error getting org: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
 		}
 		return c.Status(200).JSON(fiber.Map{"org": org})

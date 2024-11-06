@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"log"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -71,7 +70,7 @@ func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, classro
 	if err != nil {
 		return -1, err
 	}
-	log.Default().Printf("User %d added to classroom %d with role %s", userID, classroomID, classroomRole)
+
 	return userID, nil
 }
 
@@ -82,7 +81,6 @@ func (db *DB) ModifyUserRole(ctx context.Context, classroomID int64, classroomRo
 	if err != nil {
 		return errs.NewDBError(err)
 	}
-	log.Default().Printf("User %d role modified to %s in classroom %d", userID, classroomRole, classroomID)
 
 	return nil
 }
@@ -116,10 +114,8 @@ func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID 
 	)
 
 	if err != nil {
-		log.Default().Printf("Error getting user %d in classroom %d: %s", userID, classroomID, err.Error())
 		return models.UserWithRole{}, errs.NewDBError(err)
 	}
-	log.Default().Printf("GOT USER IN CLASSROOM (DB): %+v", userData)
 
 	return userData, nil
 }
