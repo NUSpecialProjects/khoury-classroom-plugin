@@ -39,5 +39,5 @@ type Classroom interface {
 
 type User interface {
 	CreateUser(ctx context.Context, userToCreate models.User) (models.User, error)
-	GetUserByGitHubId(ctx context.Context, githubUserID int64) (models.User, error)
+	GetUserByGitHubID(ctx context.Context, githubUserID int64) (models.User, error)
 }

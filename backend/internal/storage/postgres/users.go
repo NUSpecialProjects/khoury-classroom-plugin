@@ -31,7 +31,7 @@ func (db *DB) CreateUser(ctx context.Context, userToCreate models.User) (models.
 	return createdUser, nil
 }
 
-func (db *DB) GetUserByGitHubId(ctx context.Context, githubUserID int64) (models.User, error) {
+func (db *DB) GetUserByGitHubID(ctx context.Context, githubUserID int64) (models.User, error) {
 	var user models.User
 	err := db.connPool.QueryRow(ctx, `
 	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id

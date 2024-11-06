@@ -210,7 +210,7 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 
 		// Add the user to the database if they don't exist already
 		// Otherwise, get the user from the database
-		user, err := s.store.GetUserByGitHubId(c.Context(), currentGitHubUser.ToUser().GithubUserID)
+		user, err := s.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ToUser().GithubUserID)
 		if err != nil {
 			user, err = s.store.CreateUser(c.Context(), currentGitHubUser.ToUser())
 			if err != nil {
