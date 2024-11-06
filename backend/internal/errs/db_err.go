@@ -18,3 +18,8 @@ func NewDBError(err error) DatabaseError {
 	}
 }
 
+func EmptyResult() DatabaseError {
+	return DatabaseError{
+		Message: "unexpected: no rows in result",
+	}
+}

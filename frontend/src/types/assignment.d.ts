@@ -1,9 +1,14 @@
-interface IAssignment {
+interface IAssignmentOutline {
   id: number;
-  rubric_id: number | null;
-  assignment_classroom_id: number;
-  semester_id: number;
+  template_id: number;
+  created_at: Date;
+  released_at: Date | null;
   name: string;
-  inserted_date: Date | null;
-  main_due_date: Date | null;
+  classroom_id: number;
+  group_assignment: boolean;
+  main_due_data: Date | null;
+}
+
+interface IAssignmentOutlineResponse {
+  assignment_outline: IAssignmentOutline
 }

@@ -8,10 +8,17 @@ import (
 
 type Storage interface {
 	Close(context.Context)
+	Works
 	Test
 	Session
 	Classroom
 	User
+	AssignmentOutline
+}
+
+type Works interface {
+	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
+	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
 }
 
 type Test interface {
@@ -35,4 +42,10 @@ type Classroom interface {
 
 type User interface {
 	CreateUser(ctx context.Context, userToCreate models.User) (models.User, error)
+}
+
+type AssignmentOutline interface {
+	GetAssignmentsInClassroom(ctx context.Context, classroomID int64) ([]models.AssignmentOutline, error)
+	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
+	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
 }
