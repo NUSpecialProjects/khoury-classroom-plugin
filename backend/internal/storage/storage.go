@@ -8,10 +8,16 @@ import (
 
 type Storage interface {
 	Close(context.Context)
+	Works
 	Test
 	Session
 	Classroom
 	User
+}
+
+type Works interface {
+	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
+	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
 }
 
 type Test interface {
