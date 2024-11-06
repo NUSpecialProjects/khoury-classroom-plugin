@@ -4,6 +4,7 @@ import "time"
 
 type StudentWork struct {
 	ID                       int        `json:"student_work_id" db:"student_work_id"`
+	OrgName                  string     `json:"org_name" db:"org_name"`
 	ClassroomID              int        `json:"classroom_id" db:"classroom_id"`
 	AssignmentName           *string    `json:"assignment_name" db:"assignment_name"`
 	AssignmentOutlineID      int        `json:"assignment_outline_id" db:"assignment_outline_id"`

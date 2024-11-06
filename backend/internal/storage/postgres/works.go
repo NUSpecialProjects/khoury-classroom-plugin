@@ -10,6 +10,7 @@ import (
 )
 
 const DesiredFields = `
+	c.org_name,
 	wc.student_work_id,
 	ao.classroom_id,
 	ao.name AS assignment_name,
@@ -35,6 +36,8 @@ const JoinedTable = `
 	users AS u ON wc.user_id = u.id
 	JOIN
 	assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
+	JOIN
+	classrooms AS c ON ao.classroom_id = c.id
 `
 
 // squashes a list of student work contributors to a list of student works with an array of contributors

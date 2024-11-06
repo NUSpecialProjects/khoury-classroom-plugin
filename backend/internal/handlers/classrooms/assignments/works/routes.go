@@ -5,13 +5,16 @@ import (
 )
 
 func WorkRoutes(router fiber.Router, service *WorkService) fiber.Router {
-	submissionRouter := router.Group("/classrooms/classroom/:classroom_id/assignments/assignment/:assignment_id/works")
+	workRouter := router.Group("/classrooms/classroom/:classroom_id/assignments/assignment/:assignment_id/works")
 
 	// Get the submissions for an assignment
-	submissionRouter.Get("/", service.getWorks())
+	workRouter.Get("/", service.getWorks())
 
 	// Get the details of a submission
-	submissionRouter.Get("/work/:work_id", service.getWork())
+	workRouter.Get("/work/:work_id", service.getWork())
 
-	return submissionRouter
+	// Grade a student's work (latest submitted PR)
+	workRouter.Post("/work/:work_id/grade", service.gradeWork())
+
+	return workRouter
 }
