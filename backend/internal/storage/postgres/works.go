@@ -107,6 +107,7 @@ WITH paginated AS
 	(SELECT
 		%s,
 		(SELECT COUNT(*) FROM student_works WHERE assignment_outline_id = %d) as total_student_works,
+		(SELECT row_num FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS row_num FROM student_works WHERE assignment_outline_id = $1) AS rn WHERE id = %d),
 		LAG(sw.id)
 			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS previous_student_work_id,
 		LEAD(sw.id)
@@ -117,7 +118,10 @@ WITH paginated AS
 SELECT *
 FROM paginated
 WHERE student_work_id = $2
-`, DesiredFields, assignmentID, JoinedTable)
+`, DesiredFields, assignmentID, studentWorkID, JoinedTable)
+
+	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
+	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
 
 	rows, err := db.connPool.Query(ctx, query, assignmentID, studentWorkID)
 

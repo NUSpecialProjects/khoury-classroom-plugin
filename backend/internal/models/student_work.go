@@ -24,6 +24,7 @@ type StudentWorkPagination struct {
 
 type PaginatedStudentWork struct {
 	StudentWork
+	RowNum                *int `json:"row_num" db:"row_num"`
 	TotalStudentWorks     *int `json:"total_student_works" db:"total_student_works"`
 	PreviousStudentWorkID *int `json:"previous_student_work_id" db:"previous_student_work_id"`
 	NextStudentWorkID     *int `json:"next_student_work_id" db:"next_student_work_id"`
