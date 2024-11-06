@@ -62,7 +62,7 @@ export async function postClassroomToken(
 
 export async function useClassroomToken(
   token: string
-): Promise<IMessageResponse> {
+): Promise<IClassroomJoinResponse> {
   const response = await fetch(`${base_url}/classrooms/classroom/token/${token}`, {
     method: "POST",
     credentials: "include",
@@ -75,6 +75,6 @@ export async function useClassroomToken(
     throw new Error(response.statusText);
   }
 
-  const resp: IMessageResponse = await response.json();
+  const resp: IClassroomJoinResponse = await response.json();
   return resp;
 }

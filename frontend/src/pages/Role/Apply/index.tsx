@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import useUrlParameter from "@/hooks/useUrlParameter";
 import { useClassroomToken } from "@/api/classrooms";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 
 const TokenApplyPage: React.FC = () => {
   const inputToken = useUrlParameter("token", "/app/token/apply");
   const [message, setMessage] = useState<string>("Loading...");
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const {setSelectedClassroom} = useContext(SelectedClassroomContext);
 
   useEffect(() => {
     if (inputToken) {
@@ -19,9 +21,10 @@ const TokenApplyPage: React.FC = () => {
   const handleUseToken = async () => {
     setMessage("Applying role...");
     await useClassroomToken(inputToken)
-      .then((data: IMessageResponse) => {
+      .then((data: IClassroomJoinResponse) => {
         setMessage(data.message + " Redirecting...");
-        navigate("/app/dashboard", { replace: true }); //TODO: this will redirect to whatever their last selected classroom is, but maybe should redirect ALWAYS to this role's semester
+        setSelectedClassroom(data.classroom);
+        navigate("/app/dashboard", { replace: true });
       })
       .catch((error) => {
         setMessage("Error using token: " + error);

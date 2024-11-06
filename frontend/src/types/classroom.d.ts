@@ -24,3 +24,8 @@ interface IClassroomToken {
   expires_at: string | null;
   created_at: string;
 }
+
+interface IClassroomJoinResponse {
+  message: string;
+  classroom: IClassroom;
+}

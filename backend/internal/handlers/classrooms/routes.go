@@ -57,7 +57,7 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 	classroomRouter.Post("/classroom/:classroom_id/token", service.generateClassroomToken())
 
 	// Use a token to join a classroom
-	classroomRouter.Post("/classroom/token/:token", service.useClassroomToken()) // TODO: return the classroom joined?
+	classroomRouter.Post("/classroom/token/:token", service.useClassroomToken())
 
 	return classroomRouter
 }

@@ -259,6 +259,14 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 			log.Default().Printf("User %s added to classroom %d with role %s", user.GithubUsername, classroomToken.ClassroomID, classroomToken.ClassroomRole)
 		}
 
-		return c.Status(http.StatusOK).JSON(fiber.Map{"message": "Token applied successfully"})
+		classroom, err := s.store.GetClassroomByID(c.Context(), classroomToken.ClassroomID)
+		if err != nil {
+			return errs.NewDBError(err)
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"message":   "Token applied successfully",
+			"classroom": classroom,
+		})
 	}
 }
