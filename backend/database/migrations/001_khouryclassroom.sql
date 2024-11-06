@@ -46,6 +46,25 @@ CREATE TABLE IF NOT EXISTS assignment_template (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS rubrics (
+    id SERIAL PRIMARY KEY,
+    org_id INTEGER NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    reusable BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT NOT(),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+);
+
+CREATE TABLE IF NOT EXISTS rubric_items (
+    id SERIAL PRIMARY KEY,
+    rubric_id INTEGER,
+    point_value INTEGER NOT NULL,
+    explanation VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (rubric_id) REFERENCES ruubrics(id),
+    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+);
+
 CREATE TABLE IF NOT EXISTS assignment_outlines (
     id SERIAL PRIMARY KEY,
     template_id INTEGER NOT NULL,
@@ -53,6 +72,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     released_at TIMESTAMP,
     name VARCHAR(255) NOT NULL,
     classroom_id INTEGER NOT NULL,
+    rubric_id INTEGER,
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
     FOREIGN KEY (template_id) REFERENCES assignment_template(id)
@@ -63,15 +83,6 @@ CREATE TABLE IF NOT EXISTS assignment_tokens (
     token VARCHAR(255) PRIMARY KEY,
     expires_at TIMESTAMP NOT NULL,
     assignment_outline_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
-);
-
-CREATE TABLE IF NOT EXISTS rubric_items (
-    id SERIAL PRIMARY KEY,
-    assignment_outline_id INTEGER NOT NULL,
-    point_value INTEGER NOT NULL,
-    explanation VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
