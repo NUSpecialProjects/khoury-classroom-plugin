@@ -23,11 +23,11 @@ export const getStudentAssignment = async (
 };
 
 export const getStudentAssignments = async (
-  semesterID: number,
+  classroomID: number,
   assignmentID: number
 ): Promise<IStudentAssignment[]> => {
   const response = await fetch(
-    `${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments`,
+`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works`,
     {
       method: "GET",
       credentials: "include",

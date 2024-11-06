@@ -8,7 +8,7 @@ import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
 
 const Dashboard: React.FC = () => {
-  const [assignments, setAssignments] = useState<IAssignment[]>([]);
+  const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const navigate = useNavigate();
 
@@ -79,12 +79,12 @@ const Dashboard: React.FC = () => {
             <Table cols={2}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Assignment Name</TableCell>
-                <TableCell>Due Date</TableCell>
+                <TableCell>Created Date</TableCell>
               </TableRow>
               {assignments.map((assignment, i: number) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell> <Link to={`/app/assignments/${i}`} state={{assignment}} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
-                  <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
+                  <TableCell> <Link to={`/app/assignments/${assignment.id}`} state={{assignment}} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
+                  <TableCell>{formatDate(assignment.created_at)}</TableCell>
                 </TableRow>
               ))}
             </Table>

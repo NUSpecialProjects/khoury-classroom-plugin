@@ -6,94 +6,52 @@ import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { FaChevronLeft } from "react-icons/fa6";
-import StudentListPage from "@/pages/Users/Student";
+import { getAssignmentIndirectNav } from "@/api/assignments";
+import { getStudentAssignments } from "@/api/student_assignments";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
-  const [assignment, setAssignment] = useState<IAssignment>()
+  const [assignment, setAssignment] = useState<IAssignmentOutline>()
   const [studentAssignments, setStudentAssignment] = useState<IStudentAssignment[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { assignmentId } = useParams();
+  const { id } = useParams();
 
 
   useEffect(() => {
-  
-
-    const fetchAssignmentIndirectNav = async (assignmentID: string, classroom: IClassroom) => {
-      try {
-        const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-        const result = await fetch(`${base_url}/classrooms/classroom/${classroom}/assignments/assignment/${assignmentID}`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!result.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data: IAssignment = (await result.json() as IAssignment)
-        setAssignment(data)
-
-      } catch (error: unknown) {
-        console.error(`Error fetching assignment ${assignmentID}`, error)
-      }
-    };
-
-    const fetchStudentAssignments = async (classroomID: number, assignmentID: number) => {
-      try {
-        const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-        const result = await fetch(`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-        if (!result.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data: IStudentAssignment[] = (await result.json())
-        setStudentAssignment(data) 
-
-      } catch (error: unknown) {
-        console.log("Bad fetch, ", error)
-      }
-    };
-
-
     // check if assignment has been passed through 
     if (location.state) {
       setAssignment(location.state.assignment)
-      const a: IAssignment = location.state.assignment
+      const a: IAssignmentOutline = location.state.assignment
 
       // sync student assignments
       if (selectedClassroom !== null && selectedClassroom !== undefined) {
-        fetchStudentAssignments(selectedClassroom.id, a.assignment_classroom_id)
-        .catch((error: unknown) => { console.log("Error fetching: ", error) })
+        getStudentAssignments(selectedClassroom.id, a.id)
+          .catch((error: unknown) => { console.log("Error fetching: ", error) })
       }
-
 
     } else {
       console.log("Fetching assignment from backend")
       // fetch the assignment from backend
-      if (assignmentId && selectedClassroom !== null && selectedClassroom !== undefined) {
-        fetchAssignmentIndirectNav(assignmentId, selectedClassroom).catch((error: unknown) => {
-          console.error("Could not get assignment: ", error)
-        })
+      if (id && selectedClassroom !== null && selectedClassroom !== undefined) {
+        (async () => {
+          try {
+            const fetchedAssignment = await getAssignmentIndirectNav(selectedClassroom.id, +id);
+            if (fetchedAssignment !== null && fetchedAssignment !== undefined) {
+              setAssignment(fetchedAssignment);
+            }
+          } catch (error) {
+            console.error("Could not get assignment: ", error);
+          }
+        })();
       }
 
     }
 
   }, [selectedClassroom]);
-  
+
   return (
     <div className="Assignment">
-            {assignment && (
+      {assignment && (
         <>
           <div className="Assignment__head">
             <div className="Assignment__title">
@@ -103,8 +61,8 @@ const Assignment: React.FC = () => {
             <div className="Assignment__dates">
               <span>
                 Due Date:{" "}
-                {assignment.main_due_date
-                  ? assignment.main_due_date.toString()
+                {assignment.main_due_data
+                  ? assignment.main_due_data.toString()
                   : "N/A"}
               </span>
             </div>
@@ -136,7 +94,7 @@ const Assignment: React.FC = () => {
             } */}
 
           </Table>
-          </>
+        </>
       )}
     </div>
 

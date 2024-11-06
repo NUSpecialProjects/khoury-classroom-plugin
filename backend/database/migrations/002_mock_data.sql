@@ -1,8 +1,8 @@
 -- Insert into classrooms
 INSERT INTO classrooms (name, org_id, org_name, created_at)
 VALUES
-('Kennys Coding Classroom', 98765, 'KennyCodeOrg', NOW()),
-('Advanced Running Analytics', 98766, 'RunTechOrg', NOW()),
+('Kennys Coding Classroom', 182810684, 'KennyCodeOrg', NOW()),
+('Advanced Running Analytics', 182810684, 'RunTechOrg', NOW()),
 ('Chocolate Lovers Unite', 98767, 'ChocoOrg', NOW()),
 ('Data Structures and Algorithms', 98768, 'CodeMasters', NOW()),
 ('Mobile App Development', 98769, 'AppDevs', NOW()),
@@ -96,7 +96,7 @@ VALUES
 (10, 20, 'Implemented design patterns correctly', NOW());
 
 -- Insert into student_works
-INSERT INTO student_works (assignment_outline_id, repo_name, due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
+INSERT INTO student_works (assignment_outline_id, repo_name, unique_due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
 VALUES
 (1, 'kennysmith/running-chocolate-tracker', '2023-02-01 23:59:59', 10, 28, 20, '2023-01-31 20:00:00', '2023-02-05 10:00:00', 'GRADE_PUBLISHED', NOW()),
 (2, 'kennysmith/compiler-design', '2023-03-01 23:59:59', 11, 25, 22, '2023-02-28 18:00:00', '2023-03-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
