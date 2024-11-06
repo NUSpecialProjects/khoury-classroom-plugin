@@ -1,16 +1,16 @@
 -- Insert into classrooms
 INSERT INTO classrooms (id, name, org_id, org_name, created_at)
 VALUES
-('Kennys Coding Classroom', 82810684, 'KennyCodeOrg', NOW()),
-('Advanced Running Analytics', 82810684, 'RunTechOrg', NOW()),
-('Chocolate Lovers Unite', 98767, 'ChocoOrg', NOW()),
-('Data Structures and Algorithms', 98768, 'CodeMasters', NOW()),
-('Mobile App Development', 98769, 'AppDevs', NOW()),
-('AI and Machine Learning', 98770, 'AIMLGroup', NOW()),
-('Web Development Bootcamp', 98771, 'WebCoders', NOW()),
-('Cloud Computing', 98772, 'CloudExperts', NOW()),
-('Cybersecurity Fundamentals', 98773, 'SecureNet', NOW()),
-('Software Engineering Principles', 98774, 'SoftEngOrg', NOW());
+(1, 'Kennys Coding Classroom', 182810684, 'KennyCodeOrg', NOW()),
+(2, 'Advanced Running Analytics', 182810684, 'RunTechOrg', NOW()),
+(3, 'Chocolate Lovers Unite', 98767, 'ChocoOrg', NOW()),
+(4, 'Data Structures and Algorithms', 98768, 'CodeMasters', NOW()),
+(5, 'Mobile App Development', 98769, 'AppDevs', NOW()),
+(6, 'AI and Machine Learning', 98770, 'AIMLGroup', NOW()),
+(7, 'Web Development Bootcamp', 98771, 'WebCoders', NOW()),
+(8, 'Cloud Computing', 98772, 'CloudExperts', NOW()),
+(9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW()),
+(10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW());
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Insert into classroom_tokens
@@ -128,7 +128,7 @@ VALUES
 SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
 
 -- Insert into student_works
-INSERT INTO student_works (assignment_outline_id, repo_name, unique_due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
+INSERT INTO student_works (id, assignment_outline_id, repo_name, unique_due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
 VALUES
 (1, 1, 'kennysmith/running-chocolate-tracker', '2023-02-01 23:59:59', 10, 28, 20, '2023-01-31 20:00:00', '2023-02-05 10:00:00', 'GRADE_PUBLISHED', NOW()),
 (2, 2, 'kennysmith/compiler-design', '2023-03-01 23:59:59', 11, 25, 22, '2023-02-28 18:00:00', '2023-03-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
@@ -143,7 +143,7 @@ VALUES
 (11, 1, 'alanturing/running-chocolate-tracker', '2023-04-01 23:59:59', 12, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
 SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
 
--- Insert into work_contributors
+-- Insert into work_contributors+
 INSERT INTO work_contributors (user_id, student_work_id, created_at)
 VALUES
 (1, 1, NOW()),
