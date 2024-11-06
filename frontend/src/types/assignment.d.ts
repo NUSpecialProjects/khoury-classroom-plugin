@@ -8,3 +8,7 @@ interface IAssignmentOutline {
   group_assignment: boolean;
   main_due_data: Date | null;
 }
+
+interface IAssignmentOutlineResponse {
+  assignment_outline: IAssignmentOutline
+}

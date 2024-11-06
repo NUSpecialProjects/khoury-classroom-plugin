@@ -1,10 +1,10 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-export const getStudentAssignment = async (
+export const getStudentWork = async (
   semesterID: number,
   assignmentID: number,
   studentAssignmentID: number
-): Promise<IStudentAssignment> => {
+): Promise<IStudentWork> => {
   const response = await fetch(
     `${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments/${studentAssignmentID}`,
     {
@@ -18,14 +18,14 @@ export const getStudentAssignment = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as IStudentAssignment;
+  const resp = (await response.json() as IStudentWorkResponse).student_work;
   return resp;
 };
 
-export const getStudentAssignments = async (
+export const getStudentWorks = async (
   classroomID: number,
   assignmentID: number
-): Promise<IStudentAssignment[]> => {
+): Promise<IStudentWork[]> => {
   const response = await fetch(
 `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works`,
     {
@@ -39,7 +39,7 @@ export const getStudentAssignments = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as IStudentAssignment[];
+  const resp = (await response.json() as IStudentWorkResponses).student_works;
   return resp;
 };
 

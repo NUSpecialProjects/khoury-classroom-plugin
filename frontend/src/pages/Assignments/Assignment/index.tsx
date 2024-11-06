@@ -7,12 +7,12 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { FaChevronLeft } from "react-icons/fa6";
 import { getAssignmentIndirectNav } from "@/api/assignments";
-import { getStudentAssignments } from "@/api/student_assignments";
+import { getStudentWorks } from "@/api/student_assignments";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignmentOutline>()
-  const [studentAssignments, setStudentAssignment] = useState<IStudentAssignment[]>([]);
+  const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
 
@@ -25,8 +25,16 @@ const Assignment: React.FC = () => {
 
       // sync student assignments
       if (selectedClassroom !== null && selectedClassroom !== undefined) {
-        getStudentAssignments(selectedClassroom.id, a.id)
-          .catch((error: unknown) => { console.log("Error fetching: ", error) })
+        (async () => {
+          try {
+            const studentWorks = await getStudentWorks(selectedClassroom.id, a.id)
+            if (studentWorks !== null && studentWorks !== undefined) {
+              setStudentAssignment(studentWorks);
+            }
+          } catch (error) {
+            console.error("Could not get assignment: ", error);
+          }
+        })();
       }
 
     } else {
@@ -83,15 +91,15 @@ const Assignment: React.FC = () => {
               <TableCell>Status</TableCell>
               <TableCell>Last Commit</TableCell>
             </TableRow>
-            {/* {studentAssignments && studentAssignments.length > 0 &&
-              studentAssignments.map((sa, i) => (
+            {studentWorks && studentWorks.length > 0 &&
+              studentWorks.map((sa, i) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell>{StudentListPage}</TableCell>
+                  <TableCell>{sa.contributors}</TableCell>
                   <TableCell>Passing</TableCell>
                   <TableCell>12 Sep, 11:34pm</TableCell>
                 </TableRow>
               ))
-            } */}
+            }
 
           </Table>
         </>

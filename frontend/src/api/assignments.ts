@@ -39,7 +39,7 @@ export const getAssignmentIndirectNav = async (
     throw new Error('Network response was not ok');
   }
 
-  const data: IAssignmentOutline = (await result.json() as { assignment_outline: IAssignmentOutline }).assignment_outline
+  const data: IAssignmentOutline = (await result.json() as IAssignmentOutlineResponse).assignment_outline
   return data
 
 
