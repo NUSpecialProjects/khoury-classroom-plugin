@@ -16,14 +16,14 @@ func Routes(app *fiber.App, params types.Params) {
 	// Create the base router
 	baseRouter := app.Group("")
 
-	// Create the classroom router
-	classroomRouter := classroomRoutes(baseRouter, classroomService)
+	// Create the classroom routes
+	classroomRoutes(baseRouter, classroomService)
 
-	// Create the assignment router
-	assignmentRouter := assignments.AssignmentRoutes(classroomRouter, assignmentService)
+	// Create the assignment routes
+	assignments.AssignmentRoutes(baseRouter, assignmentService)
 
-	// Create the submission router
-	works.WorkRoutes(assignmentRouter, workService)
+	// Create the submission routes
+	works.WorkRoutes(baseRouter, workService)
 }
 
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
@@ -33,28 +33,28 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 	classroomRouter.Get("/", service.getUserClassrooms())
 
 	// Get the details of a classroom
-	classroomRouter.Get("/:classroom_id", service.getClassroom())
+	classroomRouter.Get("/classroom/:classroom_id", service.getClassroom())
 
 	// Create a classroom
 	classroomRouter.Post("/", service.createClassroom())
 
 	// Update a classroom
-	classroomRouter.Put("/:classroom_id", service.updateClassroom())
+	classroomRouter.Put("/classroom/:classroom_id", service.updateClassroom())
 
 	// Update a classroom's name
-	classroomRouter.Put("/:classroom_id/name", service.updateClassroomName())
+	classroomRouter.Put("/classroom/:classroom_id/name", service.updateClassroomName())
 
 	// Update a classroom's name
-	classroomRouter.Put("/:classroom_id/name", service.updateClassroomName())
+	classroomRouter.Put("/classroom/:classroom_id/name", service.updateClassroomName())
 
 	// Get the users of this classroom
-	classroomRouter.Get("/:classroom_id/students", service.getClassroomUsers())
+	classroomRouter.Get("/classroom/:classroom_id/students", service.getClassroomUsers())
 
 	// Remove a user from a classroom
-	classroomRouter.Delete("/:classroom_id/students/:user_id", service.removeUserFromClassroom())
+	classroomRouter.Delete("/classroom/:classroom_id/students/:user_id", service.removeUserFromClassroom())
 
 	// Generate a token to join this classroom
-	classroomRouter.Post("/:classroom_id/token", service.generateClassroomToken())
+	classroomRouter.Post("/classroom/:classroom_id/token", service.generateClassroomToken())
 
 	return classroomRouter
 }

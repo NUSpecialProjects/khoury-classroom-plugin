@@ -11,6 +11,7 @@ VALUES
 (8, 'Cloud Computing', 98772, 'CloudExperts', NOW()),
 (9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW()),
 (10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW());
+SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Insert into classroom_tokens
 INSERT INTO classroom_tokens (token, expires_at, classroom_id, created_at)
@@ -39,6 +40,7 @@ VALUES
 (8, 'Barbara', 'Liskov', 'bliskov', 678901, 'STUDENT'),
 (9, 'Dennis', 'Ritchie', 'dritchie', 112233, 'PROFESSOR'),
 (10, 'Ken', 'Thompson', 'kthompson', 445566, 'TA');
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
 INSERT INTO classroom_membership (user_id, classroom_id, created_at)
@@ -72,6 +74,7 @@ VALUES
 (8, 'bliskov', '1007', NOW()),
 (9, 'dritchie', '1008', NOW()),
 (10, 'kthompson', '1009', NOW());
+SELECT setval('assignment_template_id_seq', (SELECT MAX(id) FROM assignment_template));
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
@@ -86,6 +89,7 @@ VALUES
 (8, 8, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, TRUE),
 (9, 9, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
 (10, 10, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
+SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
 
 -- Insert into assignment_tokens
 INSERT INTO assignment_tokens (token, expires_at, assignment_outline_id, created_at)
@@ -121,6 +125,7 @@ VALUES
 (15, 8, 20, 'Cloud deployment is successful', NOW()),
 (16, 9, 25, 'Identified security vulnerabilities', NOW()),
 (17, 10, 20, 'Implemented design patterns correctly', NOW());
+SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
 
 -- Insert into student_works
 INSERT INTO student_works (id, assignment_outline_id, repo_name, due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
@@ -136,6 +141,7 @@ VALUES
 (9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 18, 48, 45, '2023-09-29 21:00:00', '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
 (10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 19, 38, 35, '2023-10-31 20:00:00', '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
 (11, 1, 'alanturing/running-chocolate-tracker', '2023-04-01 23:59:59', 12, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
+SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
 
 -- Insert into work_contributors
 INSERT INTO work_contributors (user_id, student_work_id, created_at)
@@ -175,6 +181,7 @@ VALUES
 (15, 8, 15, 789012, NOW()),
 (16, 9, 16, 789012, NOW()),
 (17, 10, 17, 789012, NOW());
+SELECT setval('feedback_comment_id_seq', (SELECT MAX(id) FROM feedback_comment));
 
 -- Insert into regrade_requests
 INSERT INTO regrade_requests (id, feedback_comment_id, regrade_state, student_comment, created_at)
@@ -185,6 +192,7 @@ VALUES
 (4, 11, 'REGRADE_REQUESTED', 'The GPS tracking should be accurate now.', NOW()),
 (5, 13, 'REGRADE_REQUESTED', 'I improved the website responsiveness.', NOW()),
 (6, 16, 'REGRADE_REQUESTED', 'Found additional vulnerabilities, please review.', NOW());
+SELECT setval('regrade_requests_id_seq', (SELECT MAX(id) FROM regrade_requests));
 
 -- Insert into sessions
 INSERT INTO sessions (github_user_id, access_token, token_type, refresh_token, expires_in, created_at)

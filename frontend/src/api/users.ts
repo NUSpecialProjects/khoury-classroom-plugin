@@ -18,13 +18,13 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
 
 export const fetchUsersWithRole = async (
   role_type: string,
-  semester: ISemester
+  classroom: IClassroom
 ): Promise<IGitHubUser[]> => {
   console.log(
     "Using mocked API call for role: ",
     role_type,
     "semester: ",
-    semester
+    classroom
   );
   return Promise.resolve([
     {
@@ -55,4 +55,48 @@ export const fetchUsersWithRole = async (
       email: "",
     },
   ]);
+};
+
+export const useRoleToken = async (
+  token: string
+): Promise<IMessageResponse> => {
+  const response = await fetch(`${base_url}/github/role-token/use`, {
+    //TODO: this url needs to change
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token: token }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  return response.json() as Promise<IMessageResponse>;
+};
+
+export const createToken = async (
+  role_type: string,
+  classroom: IClassroom
+): Promise<ITokenResponse> => {
+  const response = await fetch(`${base_url}/github/role-token/create`, {
+    //TODO: this url will change
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      classroom: classroom,
+      role_type: role_type,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  return response.json() as Promise<ITokenResponse>;
 };

@@ -8,99 +8,79 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// squashes a list of student work contributors to a list of student works with an array of contributors
-func formatWorks(rawWorks []models.StudentWork) []models.FormattedStudentWork {
-	// map to group works by AssignmentOutlineID
-	workMap := make(map[int]*models.FormattedStudentWork)
+const DesiredFields = `
+	wc.student_work_id,
+	ao.classroom_id,
+	ao.name AS assignment_name,
+	sw.assignment_outline_id,
+	sw.repo_name,
+	sw.due_date,
+	sw.submitted_pr_number,
+	sw.manual_feedback_score,
+	sw.auto_grader_score,
+	sw.submission_timestamp,
+	sw.grades_published_timestamp,
+	sw.work_state,
+	sw.created_at,
+	u.first_name,
+	u.last_name
+`
 
-	for _, work := range rawWorks {
-		if _, exists := workMap[work.ID]; !exists {
-			// insert new formatted work if doesn't exist already
-			workMap[work.ID] = &models.FormattedStudentWork{
-				StudentWork:  work,
-				Contributors: []string{},
-			}
+const JoinedTable = `
+	student_works AS sw
+	JOIN
+	work_contributors AS wc ON sw.id = wc.student_work_id
+	JOIN
+	users AS u ON wc.user_id = u.id
+	JOIN
+	assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
+`
+
+// squashes a list of student work contributors to a list of student works with an array of contributors
+func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks []T, newFormattedWork func(T) F) []F {
+	workMap := make(map[int]F)
+
+	for i, work := range rawWorks {
+		if _, exists := workMap[work.GetID()]; !exists {
+			// insert new formatted work if it doesn't exist already
+			workMap[work.GetID()] = newFormattedWork(work)
 		}
 
 		// combine first and last names into a full name and add to list of contributors
-		fullName := fmt.Sprintf("%s %s", work.FirstName, work.LastName)
-		workMap[work.ID].Contributors = append(workMap[work.ID].Contributors, fullName)
-	}
+		fullName := fmt.Sprintf("%s %s", work.GetFirstName(), work.GetLastName())
+		workMap[work.GetID()].AddContributor(fullName)
 
-	// convert map values to a slice
-	var formattedWorks []models.FormattedStudentWork
-	for _, formattedWork := range workMap {
-		formattedWorks = append(formattedWorks, *formattedWork)
-	}
-
-	return formattedWorks
-}
-
-// squashes a list of student work contributors to a list of student works with an array of contributors
-func formatPaginatedWorks(rawWorks []models.PaginatedStudentWork) []models.FormattedPaginatedStudentWork {
-	// map to group works by AssignmentOutlineID
-	workMap := make(map[int]*models.FormattedPaginatedStudentWork)
-
-	for _, work := range rawWorks {
-		if _, exists := workMap[work.ID]; !exists {
-			// insert new formatted work if doesn't exist already
-			workMap[work.ID] = &models.FormattedPaginatedStudentWork{
-				PaginatedStudentWork: work,
-				Contributors:         []string{},
+		if i == 0 {
+			if prev := work.GetPrev(); prev != nil {
+				workMap[work.GetID()].SetPrev(*prev)
 			}
 		}
 
-		// combine first and last names into a full name and add to list of contributors
-		fullName := fmt.Sprintf("%s %s", work.FirstName, work.LastName)
-		workMap[work.ID].Contributors = append(workMap[work.ID].Contributors, fullName)
+		if i == len(rawWorks)-1 {
+			if next := work.GetNext(); next != nil {
+				workMap[work.GetID()].SetNext(*next)
+			}
+		}
 	}
 
 	// convert map values to a slice
-	var formattedWorks []models.FormattedPaginatedStudentWork
+	var formattedWorks []F
 	for _, formattedWork := range workMap {
-		formattedWorks = append(formattedWorks, *formattedWork)
+		formattedWorks = append(formattedWorks, formattedWork)
 	}
 
 	return formattedWorks
 }
 
 // Get all student works from an assignment
-func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]models.FormattedStudentWork, error) {
-	query := `
-SELECT
-    student_work_id,
-    classroom_id,
-    name AS assignment_name,
-    assignment_outline_id,
-    repo_name,
-    due_date,
-    submitted_pr_number,
-    manual_feedback_score,
-    auto_grader_score,
-    submission_timestamp,
-    grades_published_timestamp,
-    work_state,
-    sw.created_at,
-    first_name,
-    last_name,
-    github_username
-FROM 
-    student_works AS sw
-        JOIN 
-        work_contributors AS wc ON sw.id = wc.student_work_id
-        JOIN
-        users AS u ON wc.user_id = u.id
-        JOIN
-        assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
-WHERE
-    classroom_id = $1
-    AND
-    assignment_outline_id = $2
-ORDER BY 
-    u.last_name, u.first_name;
-`
+func (db *DB) GetWorks(ctx context.Context, assignmentID int) ([]*models.StudentWorkWithContributors, error) {
+	query := fmt.Sprintf(`
+SELECT %s FROM %s
+WHERE assignment_outline_id = $1
+ORDER BY u.last_name, u.first_name;
+`, DesiredFields, JoinedTable)
 
-	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID)
+	rows, err := db.connPool.Query(ctx, query, assignmentID)
 
 	if err != nil {
 		fmt.Println("Error in query ", err)
@@ -109,60 +89,41 @@ ORDER BY
 
 	defer rows.Close()
 
-	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentWork])
+	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RawStudentWork])
 	if err != nil {
 		fmt.Println("Error collecting rows ", err)
 		return nil, err
 	}
 
-	return formatWorks(rawWorks), nil
+	return formatWorks(rawWorks, func(work models.RawStudentWork) *models.StudentWorkWithContributors {
+		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []string{}}
+	}), nil
 }
 
 // Get a single student work from an assignment
-func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.FormattedPaginatedStudentWork, error) {
-	query := `
-SELECT
-    student_work_id,
-    classroom_id,
-    name AS assignment_name,
-    assignment_outline_id,
-    repo_name,
-    due_date,
-    submitted_pr_number,
-    manual_feedback_score,
-    auto_grader_score,
-    submission_timestamp,
-    grades_published_timestamp,
-    work_state,
-    sw.created_at,
-    first_name,
-    last_name,
-    github_username,
-    previous_student_work_id,
-    next_student_work_id
-FROM
-    (SELECT
-         *,
-         LAG(id) OVER (PARTITION BY assignment_outline_id ORDER BY id) AS previous_student_work_id,
-         LEAD(id) OVER (PARTITION BY assignment_outline_id ORDER BY id) AS next_student_work_id
-     FROM student_works) AS sw
-        JOIN
-        work_contributors AS wc ON sw.id = wc.student_work_id
-        JOIN
-        users AS u ON wc.user_id = u.id
-        JOIN
-        assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
-WHERE
-    classroom_id = $1
-    AND
-    assignment_outline_id = $2
-    AND
-    student_work_id = $3
-ORDER BY
-    u.last_name, u.first_name;
-`
+func (db *DB) GetWork(ctx context.Context, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
+	query := fmt.Sprintf(`
+WITH paginated AS
+	(SELECT
+		%s,
+		(SELECT COUNT(*) FROM student_works WHERE assignment_outline_id = %d) as total_student_works,
+		(SELECT row_num FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS row_num FROM student_works WHERE assignment_outline_id = $1) AS rn WHERE id = %d),
+		LAG(sw.id)
+			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS previous_student_work_id,
+		LEAD(sw.id)
+			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS next_student_work_id
+	FROM %s
+	WHERE assignment_outline_id = $1
+	ORDER BY u.last_name, u.first_name)
+SELECT *
+FROM paginated
+WHERE student_work_id = $2
+`, DesiredFields, assignmentID, studentWorkID, JoinedTable)
 
-	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
+	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
+	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
+
+	rows, err := db.connPool.Query(ctx, query, assignmentID, studentWorkID)
 
 	if err != nil {
 		fmt.Println("Error in query ", err)
@@ -170,11 +131,13 @@ ORDER BY
 	}
 
 	defer rows.Close()
-	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.PaginatedStudentWork])
+	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RawPaginatedStudentWork])
 	if err != nil {
 		fmt.Println("Error collecting rows ", err)
 		return nil, err
 	}
 
-	return &formatPaginatedWorks(rawWorks)[0], nil
+	return formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
+		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []string{}}
+	})[0], nil
 }
