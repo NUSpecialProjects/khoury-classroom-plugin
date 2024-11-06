@@ -42,28 +42,28 @@ const Assignment: React.FC = () => {
       }
     };
 
-    // const fetchStudentAssignments = async (semesterID: number, assignmentID: number) => {
-    //   try {
-    //     const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-    //     const result = await fetch(`${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments`,
-    //       {
-    //         method: "GET",
-    //         credentials: "include",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //       });
-    //     if (!result.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
+    const fetchStudentAssignments = async (semesterID: number, assignmentID: number) => {
+      try {
+        const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+        const result = await fetch(`${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        if (!result.ok) {
+          throw new Error("Network response was not ok");
+        }
 
-    //     const data: IStudentAssignment[] = (await result.json())
-    //     setStudentAssignment(data) 
+        const data: IStudentAssignment[] = (await result.json())
+        setStudentAssignment(data) 
 
-    //   } catch (error: unknown) {
-    //     console.log("Bad fetch, ", error)
-    //   }
-    // };
+      } catch (error: unknown) {
+        console.log("Bad fetch, ", error)
+      }
+    };
 
 
     // check if assignment has been passed through 
@@ -72,10 +72,10 @@ const Assignment: React.FC = () => {
       // const a: IAssignment = location.state.assignment
 
       // sync student assignments
-      // if (selectedSemester !== null && selectedSemester !== undefined) {
-      //   fetchStudentAssignments(selectedSemester.classroom_id, a.assignment_classroom_id)
-      //   .catch((error: unknown) => { console.log("Error fetching: ", error) })
-      // }
+      if (selectedSemester !== null && selectedSemester !== undefined) {
+        fetchStudentAssignments(selectedSemester.classroom_id, a.assignment_classroom_id)
+        .catch((error: unknown) => { console.log("Error fetching: ", error) })
+      }
 
 
     } else {
