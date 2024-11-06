@@ -27,7 +27,6 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
       setMessage("No classroom selected");
       return;
     }
-    console.log(classroom.id, role_type, duration);
     await postClassroomToken(classroom.id, role_type, duration)
       .then((data: ITokenResponse) => {
         const url = "http://localhost:3000/app/token/apply?token=" + data.token;
