@@ -2,23 +2,20 @@ import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import { Link, useNavigate } from "react-router-dom";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
-import AlertBanner from "@/components/Banner/AlertBanner";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
-  const { selectedSemester, setSelectedSemester } = useContext(
-    SelectedSemesterContext
-  );
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAssignments = async (semester: ISemester) => {
-      if (semester) {
-        getAssignments(semester.classroom_id)
+    const fetchAssignments = async (classroom: IClassroom) => {
+      if (classroom) {
+        getAssignments(classroom.id)
           .then((assignments) => {
             console.log("Assignments:", assignments);
             setAssignments(assignments);
@@ -30,12 +27,12 @@ const Dashboard: React.FC = () => {
     };
 
 
-    if (selectedSemester !== null && selectedSemester !== undefined) {
-      fetchAssignments(selectedSemester).catch((error: unknown) => {
+    if (selectedClassroom !== null && selectedClassroom !== undefined) {
+      fetchAssignments(selectedClassroom).catch((error: unknown) => {
         console.log("Error fetching:", error);
       });
     }
-  }, [selectedSemester]);
+  }, [selectedClassroom]);
 
   const handleUserGroupClick = (group: string) => {
     console.log(`Clicked on ${group}`);
@@ -52,36 +49,28 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="Dashboard">
-      {selectedSemester && (
+      {selectedClassroom && (
         <>
-          <h1>
-            {selectedSemester.org_name +
-              " - " +
-              selectedSemester.classroom_name}
-          </h1>
-          <AlertBanner
-            semester={selectedSemester}
-            onActivate={setSelectedSemester}
-          />
+          <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
               role_type="Professor"
-              semester={selectedSemester}
+              classroom={selectedClassroom}
               onClick={() => handleUserGroupClick("Professor")}
             />
 
             <UserGroupCard
               label="TAs"
               role_type="TA"
-              semester={selectedSemester}
+              classroom={selectedClassroom}
               onClick={() => handleUserGroupClick("TA")}
             />
 
             <UserGroupCard
               label="Students"
               role_type="Student"
-              semester={selectedSemester}
+              classroom={selectedClassroom}
               onClick={() => handleUserGroupClick("Student")}
             />
           </div>
@@ -102,6 +91,11 @@ const Dashboard: React.FC = () => {
           </div>
         </>
       )}
+      <div className="Dashboard__linkWrapper">
+        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}>
+          View other classrooms
+        </Link>
+      </div>
     </div>
   );
 };

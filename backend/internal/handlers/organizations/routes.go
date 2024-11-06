@@ -18,8 +18,9 @@ func Routes(app *fiber.App, params types.Params) {
 func OrgRoutes(router fiber.Router, service *OrganizationService) fiber.Router {
 	orgRouter := router.Group("/orgs").Use(middleware.Protected(service.userCfg.JWTSecret))
 
-	// Get the details of an organization
-	orgRouter.Get("/:org", service.GetOrg())
+	orgRouter.Get("/", service.GetUserOrgs())
+
+	orgRouter.Get("/org/:org_id/classrooms", service.GetClassroomsInOrg())
 
 	orgRouter.Get("/org/:org_id/classrooms", service.GetClassroomsInOrg())
 
@@ -28,6 +29,9 @@ func OrgRoutes(router fiber.Router, service *OrganizationService) fiber.Router {
 
 	// Get the organizations of the authenticated user along with the classrooms in each organization
 	orgRouter.Get("/classrooms", service.GetOrgsAndClassrooms())
+
+	// Get the details of an organization
+	orgRouter.Get("/org/:org_name", service.GetOrg())
 
 	return orgRouter
 }

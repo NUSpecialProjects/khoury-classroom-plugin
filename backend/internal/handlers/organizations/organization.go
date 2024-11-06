@@ -83,7 +83,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 func (service *OrganizationService) GetOrg() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract org_id from the path
-		orgName := c.Params("org")
+		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
 			log.Default().Println("Error getting org_name: ", orgName)
 			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
@@ -102,7 +102,6 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 			log.Default().Println("Error getting org: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
 		}
-
 		return c.Status(200).JSON(fiber.Map{"org": org})
 	}
 }

@@ -76,7 +76,6 @@ func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserCl
 		fmt.Println("FAILED TO GET USERID")
 		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
 	}
-	fmt.Println("UserID: ", userID)
 
 	session, err := store.GetSession(c.Context(), userID)
 	if err != nil {
@@ -91,7 +90,5 @@ func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserCl
 		return nil, err
 	}
 
-	fmt.Println("UserID: ", userID)
-	fmt.Println("Client: ", client)
 	return client, nil
 }

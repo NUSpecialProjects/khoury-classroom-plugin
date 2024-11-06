@@ -3,13 +3,15 @@ import { useContext } from "react";
 
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 
 import "./styles.css";
 
 const Layout: React.FC = () => {
-  const { selectedSemester } = useContext(SelectedSemesterContext);
-  return selectedSemester ? (
+  const { selectedClassroom: selectedClassroom } = useContext(
+    SelectedClassroomContext
+  );
+  return selectedClassroom ? (
     <div className="Layout">
       <div className="Layout__left">
         <LeftNav />
@@ -25,7 +27,7 @@ const Layout: React.FC = () => {
       </div>
     </div>
   ) : (
-    <Navigate to="/app/classroom/select" />
+    <Navigate to="/app/organization/select" />
   );
 };
 

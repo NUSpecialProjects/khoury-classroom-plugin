@@ -11,7 +11,7 @@ import {
 import * as Pages from "./pages";
 import Layout from "./components/Layout";
 import AuthProvider, { AuthContext } from "./contexts/auth";
-import SelectedSemesterProvider from "./contexts/selectedSemester";
+import SelectedSemesterProvider from "./contexts/selectedClassroom";
 
 import "./global.css";
 
@@ -38,8 +38,14 @@ export default function App(): React.JSX.Element {
               {/******* CLASS SELECTION: PRE-APP ACCESS STEP *******/}
 
               <Route path="classroom">
-                <Route path="create" element={<Pages.SemesterCreation />} />
-                <Route path="select" element={<Pages.SemesterSelection />} />
+                <Route path="select" element={<Pages.ClassroomSelectPage />} />
+                <Route path="create" element={<Pages.ClassroomCreatePage />} />
+              </Route>
+              <Route path="organization">
+                <Route
+                  path="select"
+                  element={<Pages.OrganizationSelectPage />}
+                />
               </Route>
 
               {/******* CLASS SELECTED: INNER APP *******/}

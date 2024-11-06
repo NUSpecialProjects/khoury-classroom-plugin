@@ -1,10 +1,12 @@
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import React, { useContext, useState } from "react";
 import LinkGenerator from "@/components/LinkGenerator";
 
 const TokenCreatePage: React.FC = () => {
   const [role_type, setRoleType] = useState<string>("Student");
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedClassroom } = useContext(
+    SelectedClassroomContext
+  );
 
   return (
     <div>
@@ -15,7 +17,7 @@ const TokenCreatePage: React.FC = () => {
         <button onClick={() => setRoleType("TA")}>Teaching Assistant</button>
       </div>
 
-      <LinkGenerator role_type={role_type} semester={selectedSemester} />
+      <LinkGenerator role_type={role_type} classroom={selectedClassroom} />
     </div>
   );
 };

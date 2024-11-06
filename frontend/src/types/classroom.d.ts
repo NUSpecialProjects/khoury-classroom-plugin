@@ -1,10 +1,14 @@
 interface IClassroom {
   id: number;
   name: string;
-  url: string;
+  org_id: number;
+  org_name: string;
 }
 
-interface IClassroomResponse {
-  available_classrooms: IClassroom[];
-  unavailable_classrooms: IClassroom[];
+interface IUserOrgsAndClassroomsResponse {
+  orgs_and_classrooms: Map<IOrganization, IClassroom[]>;
+}
+
+interface IClassroomListResponse {
+  classrooms: IClassroom[];
 }
