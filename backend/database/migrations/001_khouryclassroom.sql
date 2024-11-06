@@ -16,9 +16,10 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255), --TODO: this should be not null eventually
+    first_name VARCHAR(255), --TODO: this should be not null eventually
+    last_name VARCHAR(255), --TODO: this should be not null eventually
     github_username VARCHAR(255) NOT NULL, 
-    github_user_id INTEGER NOT NULL,
+    github_user_id INTEGER NOT NULL
 );
 
 -- TODO: Impose length on tokens
@@ -34,10 +35,11 @@ CREATE TABLE IF NOT EXISTS classroom_tokens (
 CREATE TABLE IF NOT EXISTS classroom_membership ( 
     user_id INTEGER NOT NULL,
     classroom_id INTEGER NOT NULL,
-    role USER_ROLE NOT NULL
+    classroom_role USER_ROLE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
+    UNIQUE (user_id, classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS assignment_template (

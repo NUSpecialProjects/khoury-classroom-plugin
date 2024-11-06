@@ -27,7 +27,7 @@ VALUES
 ('Ken', 'Thompson', 'kthompson', 445566);
 
 -- Insert into classroom_membership
-INSERT INTO classroom_membership (user_id, classroom_id, role, created_at)
+INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at)
 VALUES
 (1, 1, 'STUDENT', NOW()),
 (2, 1, 'PROFESSOR', NOW()),

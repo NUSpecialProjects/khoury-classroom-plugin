@@ -2,7 +2,7 @@ import React from "react";
 import GenericRolePage from "..";
 
 const ProfessorListPage: React.FC = () => {
-  const role_type = "Professor";
+  const role_type = "PROFESSOR";
   return (
     <>
       <GenericRolePage role_type={role_type} />

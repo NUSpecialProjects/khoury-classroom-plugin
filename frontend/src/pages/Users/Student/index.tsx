@@ -7,7 +7,7 @@ const StudentListPage: React.FC = () => {
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
-  const role_type = "Student";
+  const role_type = "STUDENT";
   return (
     <>
       <GenericRolePage role_type={role_type} />

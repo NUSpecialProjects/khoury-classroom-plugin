@@ -11,7 +11,7 @@ export async function getClassroomsInOrg(
     },
   });
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    throw new Error(response.statusText);
   }
   const resp: IClassroomListResponse = await response.json();
   return resp;
@@ -29,7 +29,7 @@ export async function postClassroom(
     body: JSON.stringify(classroom),
   });
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    throw new Error(response.statusText);
   }
   const resp: IClassroom = await response.json();
   return resp;
@@ -40,7 +40,7 @@ export async function postClassroomToken(
   role: string,
   duration?: number // Duration is optional
 ): Promise<IClassroomToken> {
-  const response = await fetch(`${base_url}/classrooms/${classroomId}/token`, {
+  const response = await fetch(`${base_url}/classrooms/classroom/${classroomId}/token`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -53,7 +53,7 @@ export async function postClassroomToken(
   });
 
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    throw new Error(response.statusText);
   }
 
   const resp: IClassroomToken = await response.json();
@@ -63,7 +63,7 @@ export async function postClassroomToken(
 export async function useClassroomToken(
   token: string
 ): Promise<IMessageResponse> {
-  const response = await fetch(`${base_url}/classrooms/token/${token}`, {
+  const response = await fetch(`${base_url}/classrooms/classroom/token/${token}`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -72,7 +72,7 @@ export async function useClassroomToken(
   });
 
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    throw new Error(response.statusText);
   }
 
   const resp: IMessageResponse = await response.json();

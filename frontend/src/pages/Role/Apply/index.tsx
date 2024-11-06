@@ -5,7 +5,7 @@ import useUrlParameter from "@/hooks/useUrlParameter";
 import { useClassroomToken } from "@/api/classrooms";
 
 const TokenApplyPage: React.FC = () => {
-  const inputToken = useUrlParameter("token", "/app/role/apply");
+  const inputToken = useUrlParameter("token", "/app/token/apply");
   const [message, setMessage] = useState<string>("Loading...");
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();

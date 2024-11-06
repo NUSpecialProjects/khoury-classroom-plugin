@@ -50,6 +50,10 @@ func InvalidRequestData(errors map[string]string) APIError {
 	}
 }
 
+func InvalidRoleOperation() APIError {
+	return NewAPIError(http.StatusBadRequest, errors.New("cannot downgrade user role"))
+}
+
 func InternalServerError() APIError {
 	return NewAPIError(http.StatusInternalServerError, errors.New("internal server error"))
 }

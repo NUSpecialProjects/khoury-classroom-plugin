@@ -8,13 +8,18 @@ import (
 
 func (db *DB) CreateUser(ctx context.Context, userToCreate models.User) (models.User, error) {
 	var createdUser models.User
-	err := db.connPool.QueryRow(ctx, "INSERT INTO users (name, github_username, github_user_id) VALUES ($2, $3, $4) RETURNING *",
-		userToCreate.Name,
+	err := db.connPool.QueryRow(ctx, `
+	INSERT INTO users (first_name, last_name, github_username, github_user_id)
+	VALUES ($1, $2, $3, $4)
+	RETURNING id, first_name, last_name, github_username, github_user_id`,
+		userToCreate.FirstName,
+		userToCreate.LastName,
 		userToCreate.GithubUsername,
 		userToCreate.GithubUserID,
 	).Scan(
 		&createdUser.ID,
-		&createdUser.Name,
+		&createdUser.FirstName,
+		&createdUser.LastName,
 		&createdUser.GithubUsername,
 		&createdUser.GithubUserID,
 	)
@@ -28,9 +33,13 @@ func (db *DB) CreateUser(ctx context.Context, userToCreate models.User) (models.
 
 func (db *DB) GetUserByGitHubId(ctx context.Context, githubUserID int64) (models.User, error) {
 	var user models.User
-	err := db.connPool.QueryRow(ctx, "SELECT * FROM users WHERE github_user_id = $1", githubUserID).Scan(
+	err := db.connPool.QueryRow(ctx, `
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id
+	FROM users u
+	WHERE u.github_user_id = $1`, githubUserID).Scan(
 		&user.ID,
-		&user.Name,
+		&user.FirstName,
+		&user.LastName,
 		&user.GithubUsername,
 		&user.GithubUserID,
 	)

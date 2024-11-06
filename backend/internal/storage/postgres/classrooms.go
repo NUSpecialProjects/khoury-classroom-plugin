@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"log"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -70,12 +71,28 @@ func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, classro
 	if err != nil {
 		return -1, err
 	}
-
+	log.Default().Printf("User %d added to classroom %d with role %s", userID, classroomID, classroomRole)
 	return userID, nil
 }
 
+func (db *DB) ModifyUserRole(ctx context.Context, classroomID int64, classroomRole string, userID int64) error {
+	_, err := db.connPool.Exec(ctx, "UPDATE classroom_membership SET classroom_role = $1 WHERE classroom_id = $2 AND user_id = $3",
+		classroomRole, classroomID, userID)
+
+	if err != nil {
+		return errs.NewDBError(err)
+	}
+	log.Default().Printf("User %d role modified to %s in classroom %d", userID, classroomRole, classroomID)
+
+	return nil
+}
+
 func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.UserWithRole, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT (u.id, u.Name, cm.classroom_role) FROM users u JOIN classroom_membership cm ON u.id = cm.user_id WHERE cm.classroom_id = $1", classroomID)
+	rows, err := db.connPool.Query(ctx, `
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_role
+	FROM users u
+	JOIN classroom_membership cm ON u.id = cm.user_id
+	WHERE cm.classroom_id = $1`, classroomID)
 	if err != nil {
 		return nil, err
 	}
@@ -85,17 +102,24 @@ func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]mod
 
 func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID int64) (models.UserWithRole, error) {
 	var userData models.UserWithRole
-	err := db.connPool.QueryRow(ctx, "SELECT (u.id, u.Name, u.cm.classroom_role) FROM users u JOIN classroom_membership cm ON u.id = cm.user_id WHERE cm.classroom_id = $1 AND u.id = $2", classroomID, userID).Scan(
+	err := db.connPool.QueryRow(ctx, `
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_role
+	FROM users u
+	JOIN classroom_membership cm ON u.id = cm.user_id
+	WHERE cm.classroom_id = $1 AND u.id = $2`, classroomID, userID).Scan(
 		&userData.ID,
-		&userData.Name,
+		&userData.FirstName,
+		&userData.LastName,
 		&userData.GithubUsername,
 		&userData.GithubUserID,
 		&userData.Role,
 	)
 
 	if err != nil {
+		log.Default().Printf("Error getting user %d in classroom %d: %s", userID, classroomID, err.Error())
 		return models.UserWithRole{}, errs.NewDBError(err)
 	}
+	log.Default().Printf("GOT USER IN CLASSROOM (DB): %+v", userData)
 
 	return userData, nil
 }
@@ -110,7 +134,10 @@ func (db *DB) GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Cla
 }
 
 func (db *DB) CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error) {
-	err := db.connPool.QueryRow(ctx, "INSERT INTO classroom_tokens (classroom_id, classroom_role, token, created_at, expires_at) VALUES ($1, $2, $3, $4) RETURNING (classroom_id, classroom_role, token, created_at, expires_at)",
+	err := db.connPool.QueryRow(ctx, `
+	INSERT INTO classroom_tokens (classroom_id, classroom_role, token, created_at, expires_at)
+	VALUES ($1, $2, $3, $4, $5)
+	RETURNING classroom_id, classroom_role, token, created_at, expires_at`,
 		tokenData.ClassroomID,
 		tokenData.ClassroomRole,
 		tokenData.Token,
@@ -133,7 +160,10 @@ func (db *DB) CreateClassroomToken(ctx context.Context, tokenData models.Classro
 
 func (db *DB) GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error) {
 	var tokenData models.ClassroomToken
-	err := db.connPool.QueryRow(ctx, "SELECT * FROM classroom_tokens WHERE token = $1", token).Scan(
+	err := db.connPool.QueryRow(ctx, `
+	SELECT classroom_id, classroom_role, token, created_at, expires_at
+	FROM classroom_tokens
+	WHERE token = $1`, token).Scan(
 		&tokenData.ClassroomID,
 		&tokenData.ClassroomRole,
 		&tokenData.Token,

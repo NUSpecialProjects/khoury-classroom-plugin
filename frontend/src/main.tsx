@@ -55,7 +55,6 @@ export default function App(): React.JSX.Element {
                 <Route path="grading" element={<Pages.Grading />} />
                 <Route path="settings" element={<Pages.Settings />} />
                 <Route path="token/apply" element={<Pages.RoleApply />} />
-                <Route path="token/create" element={<Pages.RoleCreation />} />
                 <Route path="students" element={<Pages.StudentListPage />} />
                 <Route path="tas" element={<Pages.TAListPage />} />
                 <Route

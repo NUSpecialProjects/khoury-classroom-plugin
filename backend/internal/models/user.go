@@ -7,7 +7,8 @@ type UserWithRole struct {
 
 type User struct {
 	ID             *int64 `json:"id,omitempty"`
-	Name           string `json:"name"`
+	FirstName      string `json:"first_name"`
+	LastName       string `json:"last_name"`
 	GithubUsername string `json:"github_username"`
 	GithubUserID   int64  `json:"github_user_id"`
 }
@@ -24,7 +25,7 @@ type GitHubUser struct {
 
 func (githubUser GitHubUser) ToUser() User {
 	return User{
-		Name:           *githubUser.Name,
+		FirstName:      *githubUser.Name,
 		GithubUsername: githubUser.Login,
 		GithubUserID:   githubUser.ID,
 	}
