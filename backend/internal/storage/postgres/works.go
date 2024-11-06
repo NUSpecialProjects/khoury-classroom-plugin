@@ -8,6 +8,35 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+const DESIRED_FIELDS = `
+	wc.student_work_id,
+	ao.classroom_id,
+	ao.name AS assignment_name,
+	sw.assignment_outline_id,
+	sw.repo_name,
+	sw.due_date,
+	sw.submitted_pr_number,
+	sw.manual_feedback_score,
+	sw.auto_grader_score,
+	sw.submission_timestamp,
+	sw.grades_published_timestamp,
+	sw.work_state,
+	sw.created_at,
+	u.first_name,
+	u.last_name,
+	u.github_username
+`
+
+const JOINED_TABLE = `
+	student_works AS sw
+	JOIN
+	work_contributors AS wc ON sw.id = wc.student_work_id
+	JOIN
+	users AS u ON wc.user_id = u.id
+	JOIN
+	assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
+`
+
 // squashes a list of student work contributors to a list of student works with an array of contributors
 func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks []T, newFormattedWork func(T) F) []F {
 	workMap := make(map[int]F)
@@ -46,39 +75,15 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 
 // Get all student works from an assignment
 func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.FormattedStudentWork, error) {
-	query := `
-SELECT
-    student_work_id,
-    classroom_id,
-    name AS assignment_name,
-    assignment_outline_id,
-    repo_name,
-    due_date,
-    submitted_pr_number,
-    manual_feedback_score,
-    auto_grader_score,
-    submission_timestamp,
-    grades_published_timestamp,
-    work_state,
-    sw.created_at,
-    first_name,
-    last_name,
-    github_username
-FROM 
-    student_works AS sw
-        JOIN 
-        work_contributors AS wc ON sw.id = wc.student_work_id
-        JOIN
-        users AS u ON wc.user_id = u.id
-        JOIN
-        assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
+	query := fmt.Sprintf(`
+SELECT %s FROM %s
 WHERE
     classroom_id = $1
     AND
     assignment_outline_id = $2
 ORDER BY 
     u.last_name, u.first_name;
-`
+`, DESIRED_FIELDS, JOINED_TABLE)
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID)
 
@@ -102,41 +107,22 @@ ORDER BY
 
 // Get a single student work from an assignment
 func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.FormattedPaginatedStudentWork, error) {
-	query := `
-WITH paginated AS (SELECT student_work_id,
-                          classroom_id,
-                          name                                                                                     AS assignment_name,
-                          assignment_outline_id,
-                          repo_name,
-                          due_date,
-                          submitted_pr_number,
-                          manual_feedback_score,
-                          auto_grader_score,
-                          submission_timestamp,
-                          grades_published_timestamp,
-                          work_state,
-                          sw.created_at,
-                          first_name,
-                          last_name,
-                          github_username,
-                          LAG(sw.id)
-                          OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name)             AS previous_student_work_id,
-                          LEAD(sw.id)
-                          OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name)             AS next_student_work_id
-                   FROM student_works AS sw
-                            JOIN
-                        work_contributors AS wc ON sw.id = wc.student_work_id
-                            JOIN
-                        users AS u ON wc.user_id = u.id
-                            JOIN
-                        assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
-                   WHERE classroom_id = $1
-                     AND assignment_outline_id = $2
-                   ORDER BY u.last_name, u.first_name)
+	query := fmt.Sprintf(`
+WITH paginated AS
+	(SELECT
+		%s,
+		LAG(sw.id)
+			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS previous_student_work_id,
+		LEAD(sw.id)
+			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS next_student_work_id
+	FROM %s
+	WHERE classroom_id = $1
+		AND assignment_outline_id = $2
+	ORDER BY u.last_name, u.first_name)
 SELECT *
 FROM paginated
 WHERE student_work_id = $3
-`
+`, DESIRED_FIELDS, JOINED_TABLE)
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
 
