@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const DESIRED_FIELDS = `
+const DesiredFields = `
 	wc.student_work_id,
 	ao.classroom_id,
 	ao.name AS assignment_name,
@@ -27,7 +27,7 @@ const DESIRED_FIELDS = `
 	u.github_username
 `
 
-const JOINED_TABLE = `
+const JoinedTable = `
 	student_works AS sw
 	JOIN
 	work_contributors AS wc ON sw.id = wc.student_work_id
@@ -83,7 +83,7 @@ WHERE
     assignment_outline_id = $2
 ORDER BY 
     u.last_name, u.first_name;
-`, DESIRED_FIELDS, JOINED_TABLE)
+`, DesiredFields, JoinedTable)
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID)
 
@@ -122,7 +122,7 @@ WITH paginated AS
 SELECT *
 FROM paginated
 WHERE student_work_id = $3
-`, DESIRED_FIELDS, JOINED_TABLE)
+`, DesiredFields, JoinedTable)
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
 
