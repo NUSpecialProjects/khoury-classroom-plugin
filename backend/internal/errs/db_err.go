@@ -17,3 +17,9 @@ func NewDBError(err error) DatabaseError {
 		Message: err.Error(),
 	}
 }
+
+func EmptyResult() DatabaseError {
+	return DatabaseError{
+		Message: "unexpected: no rows in result",
+	}
+}
