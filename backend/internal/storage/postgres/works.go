@@ -23,8 +23,7 @@ const DesiredFields = `
 	sw.work_state,
 	sw.created_at,
 	u.first_name,
-	u.last_name,
-	u.github_username
+	u.last_name
 `
 
 const JoinedTable = `
@@ -74,18 +73,14 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 }
 
 // Get all student works from an assignment
-func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.FormattedStudentWork, error) {
+func (db *DB) GetWorks(ctx context.Context, assignmentID int) ([]*models.StudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
 SELECT %s FROM %s
-WHERE
-    classroom_id = $1
-    AND
-    assignment_outline_id = $2
-ORDER BY 
-    u.last_name, u.first_name;
+WHERE assignment_outline_id = $1
+ORDER BY u.last_name, u.first_name;
 `, DesiredFields, JoinedTable)
 
-	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID)
+	rows, err := db.connPool.Query(ctx, query, assignmentID)
 
 	if err != nil {
 		fmt.Println("Error in query ", err)
@@ -94,37 +89,37 @@ ORDER BY
 
 	defer rows.Close()
 
-	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.StudentWork])
+	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RawStudentWork])
 	if err != nil {
 		fmt.Println("Error collecting rows ", err)
 		return nil, err
 	}
 
-	return formatWorks(rawWorks, func(work models.StudentWork) *models.FormattedStudentWork {
-		return &models.FormattedStudentWork{StudentWork: work, Contributors: []string{}}
+	return formatWorks(rawWorks, func(work models.RawStudentWork) *models.StudentWorkWithContributors {
+		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []string{}}
 	}), nil
 }
 
 // Get a single student work from an assignment
-func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.FormattedPaginatedStudentWork, error) {
+func (db *DB) GetWork(ctx context.Context, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
 WITH paginated AS
 	(SELECT
 		%s,
+		(SELECT COUNT(*) FROM student_works WHERE assignment_outline_id = %d) as total_student_works,
 		LAG(sw.id)
 			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS previous_student_work_id,
 		LEAD(sw.id)
 			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS next_student_work_id
 	FROM %s
-	WHERE classroom_id = $1
-		AND assignment_outline_id = $2
+	WHERE assignment_outline_id = $1
 	ORDER BY u.last_name, u.first_name)
 SELECT *
 FROM paginated
-WHERE student_work_id = $3
-`, DesiredFields, JoinedTable)
+WHERE student_work_id = $2
+`, DesiredFields, assignmentID, JoinedTable)
 
-	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
+	rows, err := db.connPool.Query(ctx, query, assignmentID, studentWorkID)
 
 	if err != nil {
 		fmt.Println("Error in query ", err)
@@ -132,13 +127,13 @@ WHERE student_work_id = $3
 	}
 
 	defer rows.Close()
-	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.PaginatedStudentWork])
+	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RawPaginatedStudentWork])
 	if err != nil {
 		fmt.Println("Error collecting rows ", err)
 		return nil, err
 	}
 
-	return formatWorks(rawWorks, func(work models.PaginatedStudentWork) *models.FormattedPaginatedStudentWork {
-		return &models.FormattedPaginatedStudentWork{PaginatedStudentWork: work, Contributors: []string{}}
+	return formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
+		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []string{}}
 	})[0], nil
 }
