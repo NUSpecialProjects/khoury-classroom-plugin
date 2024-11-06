@@ -50,6 +50,10 @@ func InvalidRequestData(errors map[string]string) APIError {
 	}
 }
 
+func ExpiredTokenError() APIError {
+	return NewAPIError(http.StatusUnauthorized, errors.New("token expired"))
+}
+
 func InvalidRoleOperation() APIError {
 	return NewAPIError(http.StatusBadRequest, errors.New("cannot downgrade user role"))
 }

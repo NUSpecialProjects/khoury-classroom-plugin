@@ -214,7 +214,7 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		// Check if the token is valid
 		if classroomToken.ExpiresAt != nil && classroomToken.ExpiresAt.Before(time.Now()) {
 			log.Default().Println("Error: classroom token expired")
-			return errs.AuthenticationError()
+			return errs.ExpiredTokenError()
 		}
 
 		// Add the user to the database if they don't exist already
