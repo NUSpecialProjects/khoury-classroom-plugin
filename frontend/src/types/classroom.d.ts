@@ -5,6 +5,10 @@ interface IClassroom {
   org_name: string;
 }
 
+interface IClassroomResponse {
+  classroom: IClassroom;
+}
+
 interface IUserOrgsAndClassroomsResponse {
   orgs_and_classrooms: Map<IOrganization, IClassroom[]>;
 }

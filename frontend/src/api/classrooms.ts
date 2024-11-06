@@ -31,8 +31,8 @@ export async function postClassroom(
   if (!response.ok) {
     throw new Error(response.statusText);
   }
-  const resp: IClassroom = await response.json();
-  return resp;
+  const resp: IClassroomResponse = await response.json();
+  return resp.classroom;
 }
 
 export async function postClassroomToken(
