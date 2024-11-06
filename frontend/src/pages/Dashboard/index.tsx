@@ -6,10 +6,12 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
+import { useClassroomUser } from "@/contexts/useClassroomUser";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const { classroomUser, loading } = useClassroomUser(selectedClassroom?.id);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,6 +82,12 @@ const Dashboard: React.FC = () => {
       {selectedClassroom && (
         <>
           <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
+          {!loading && classroomUser && (
+            <p>{"Viewing as a " + classroomUser.classroom_role}</p>
+          )}
+          {!loading && !classroomUser && (
+            <p>{"Viewing classroom you aren't in!! (Eventually, this should be impossible)"}</p>
+          )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"

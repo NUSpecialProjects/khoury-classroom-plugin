@@ -1,6 +1,7 @@
 package classrooms
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -249,5 +250,41 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 			"message":   "Token applied successfully",
 			"classroom": classroom,
 		})
+	}
+}
+
+func (service *ClassroomService) GetCurrentClassroomUser() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
+		if err != nil {
+			log.Default().Println("Error getting client:", err)
+			return errs.AuthenticationError()
+		}
+
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			log.Default().Println("Error parsing classroom ID:", err)
+			return errs.BadRequest(err)
+		}
+
+		githubUser, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			log.Default().Println("Error getting GitHub user:", err)
+			return errs.AuthenticationError()
+		}
+
+		user, err := service.store.GetUserByGitHubID(c.Context(), githubUser.ToUser().GithubUserID)
+		if err != nil {
+			log.Default().Println("Error getting user by GitHub ID:", err)
+			return errs.AuthenticationError()
+		}
+
+		userWithRole, err := service.store.GetUserInClassroom(c.Context(), classroomID, *user.ID)
+		if err != nil {
+			log.Default().Println("Error getting user in classroom:", err)
+			return errs.AuthenticationError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{"user": userWithRole})
 	}
 }

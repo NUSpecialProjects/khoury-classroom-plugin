@@ -1,5 +1,22 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
+export async function getCurrentClassroomUser(
+  classroomId: number
+): Promise<IClassroomUser> {
+  const response = await fetch(`${base_url}/classrooms/classroom/${classroomId}/user`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  const resp: { user: IClassroomUser } = await response.json();
+  return resp.user;
+}
+
 export async function getClassroomsInOrg(
   orgId: number
 ): Promise<IClassroomListResponse> {
