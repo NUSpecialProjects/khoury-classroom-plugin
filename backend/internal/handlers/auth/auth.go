@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -33,7 +34,7 @@ func (service *AuthService) GetCallbackURL() fiber.Handler {
 		authURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&allow_signup=%s",
 			clientID, redirectURI, scope, allowSignup)
 
-		return c.Status(200).JSON(fiber.Map{"url": authURL})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"url": authURL})
 	}
 }
 
@@ -44,18 +45,18 @@ func (service *AuthService) Login() fiber.Handler {
 			Code string `json:"code"`
 		}
 		if err := c.BodyParser(&requestBody); err != nil {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestBody(requestBody)
 		}
 		code := requestBody.Code
 		// create client
 		client, err := userclient.NewFromCode(service.userCfg, code)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+			return errs.NewAPIError(fiber.StatusInternalServerError, err)
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+			return errs.NewAPIError(fiber.StatusInternalServerError, err)
 		}
 
 		//TODO: move creating the user in our DB here rather than on joining a classroom?
@@ -75,13 +76,13 @@ func (service *AuthService) Login() fiber.Handler {
 		})
 
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create session"})
+			return errs.NewAPIError(fiber.StatusInternalServerError, err)
 		}
 
 		// Generate JWT token
 		jwtToken, err := middleware.GenerateJWT(userID, expirationTime, service.userCfg.JWTSecret)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to generate JWT token"})
+			return errs.NewAPIError(fiber.StatusInternalServerError, err)
 		}
 
 		c.Cookie(&fiber.Cookie{
@@ -102,12 +103,12 @@ func (service *AuthService) GetCurrentUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.AuthenticationError()
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch user"})
+			return errs.AuthenticationError()
 		}
 
 		return c.Status(200).JSON(user)
@@ -118,14 +119,14 @@ func (service *AuthService) Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID, ok := c.Locals("userID").(int64)
 		if !ok {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to retrieve userID from context"})
+			return errs.AuthenticationError()
 		}
 
 		err := service.store.DeleteSession(c.Context(), userID)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to delete session"})
+			return errs.NewAPIError(fiber.StatusInternalServerError, err)
 		}
 
-		return c.Status(200).JSON("Successfully logged out")
+		return c.Status(fiber.StatusOK).JSON("Successfully logged out")
 	}
 }

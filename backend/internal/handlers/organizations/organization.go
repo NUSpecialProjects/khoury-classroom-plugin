@@ -1,7 +1,7 @@
 package organizations
 
 import (
-	"net/http"
+	"errors"
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -21,15 +21,15 @@ func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.AuthenticationError()
 		}
 
 		orgs, err := client.GetUserOrgs(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+			return errs.AuthenticationError()
 		}
 
-		return c.Status(200).JSON(orgs)
+		return c.Status(fiber.StatusOK).JSON(orgs)
 	}
 }
 
@@ -38,7 +38,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.AuthenticationError()
 		}
 		// Get the app client
 		appClient := service.githubappclient
@@ -46,13 +46,13 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
+			return errs.AuthenticationError()
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get app installations"})
+			return errs.AuthenticationError()
 		}
 
 		// Filter the organizations to include only those with the app installed
@@ -69,7 +69,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 				}
 			}
 		}
-		return c.Status(200).JSON(fiber.Map{
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"orgs_with_app":    orgsWithAppInstalled,
 			"orgs_without_app": orgsWithoutAppInstalled,
 		})
@@ -81,21 +81,21 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
+			return errs.BadRequest(errors.New("invalid org_name"))
 		}
 
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.AuthenticationError()
 		}
 
 		// Get the organization
 		org, err := userClient.GetOrg(c.Context(), orgName)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
+			return errs.AuthenticationError()
 		}
-		return c.Status(200).JSON(fiber.Map{"org": org})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"org": org})
 	}
 }
 
@@ -111,6 +111,6 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return err
 		}
 
-		return c.Status(http.StatusOK).JSON(fiber.Map{"classrooms": classrooms})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"classrooms": classrooms})
 	}
 }
