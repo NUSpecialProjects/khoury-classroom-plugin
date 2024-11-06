@@ -23,6 +23,7 @@ export const getAssignments = async (
   return data.assignment_outlines as IAssignmentOutline[]
 };
 
+
 export const getAssignmentIndirectNav = async (
   classroomid: number, assignmentID: number
 ): Promise<IAssignmentOutline> => {
@@ -44,3 +45,21 @@ export const getAssignmentIndirectNav = async (
 
 
 };
+
+export const CreateAssignment = async () => {
+  const result = await fetch(
+      `${base_url}/forks/fork`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!result.ok) {
+        console.log(result)
+    }
+
+}
