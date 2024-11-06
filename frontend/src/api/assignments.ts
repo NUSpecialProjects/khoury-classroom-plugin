@@ -1,4 +1,4 @@
-// const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
+ const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const getAssignments = async (
   classroomId: number
@@ -33,3 +33,22 @@ export const getAssignments = async (
     },
   ]);
 };
+
+
+export const CreateAssignment = async () => {
+  const result = await fetch(
+      `${base_url}/forks/fork`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!result.ok) {
+        console.log(result)
+    }
+
+}

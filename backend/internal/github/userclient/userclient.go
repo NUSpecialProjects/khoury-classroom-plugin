@@ -88,19 +88,40 @@ func (api *UserAPI) GetOrg(ctx context.Context, orgName string) (*models.Organiz
 	return &org, nil
 }
 
-// // Helper function to parse the Link header and extract the URL for the next page
-// func getNextPageURL(linkHeader string) string {
-// 	links := strings.Split(linkHeader, ",")
-// 	for _, link := range links {
-// 		parts := strings.Split(strings.TrimSpace(link), ";")
-// 		if len(parts) < 2 {
-// 			continue
-// 		}
-// 		urlPart := strings.Trim(parts[0], "<>")
-// 		relPart := strings.Trim(parts[1], " ")
-// 		if relPart == `rel="next"` {
-// 			return urlPart
-// 		}
-// 	}
-// 	return ""
-// }
+
+func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destName string) error {
+
+	endpoint := fmt.Sprintf("/repos/%s/%s/forks", owner, repo)
+
+	// Define the payload struct for the request body
+	type ForkRequestBody struct {
+		Org string `json:"organization"`
+		DestName  string `json:"name"`
+	}
+
+	// Create an instance of the payload with the necessary data
+	payload := ForkRequestBody{
+		Org: org,
+		DestName:  destName,
+	}
+
+	req, err := api.Client.NewRequest("POST", endpoint, payload)
+	
+	
+
+	fmt.Println(req)
+
+	if err != nil {
+		return fmt.Errorf("error forking repository: %v", err)
+	}
+	// Make the API call
+	response, err := api.Client.Do(ctx, req, nil)
+	fmt.Println(response)
+	
+	
+	if err != nil {
+		return err
+	}
+
+	return  nil
+}

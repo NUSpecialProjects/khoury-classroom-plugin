@@ -2,6 +2,7 @@ import { activateSemester, deactivateSemester } from "@/api/semesters";
 import ErrorMessage from "@/components/Error";
 import { SelectedSemesterContext } from "@/contexts/selectedSemester";
 import { useContext, useState } from "react";
+import { CreateAssignment } from "@/api/assignments";
 
 const Settings: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +51,7 @@ const Settings: React.FC = () => {
           <button onClick={handleDeactivateClick}>Deactivate Class</button>
         )}
       </div>
+      <div><button onClick={CreateAssignment}>Create Assignment</button></div>
       {error && <ErrorMessage message={error} />}
     </div>
   );

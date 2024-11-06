@@ -181,12 +181,3 @@ func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, e
 
 	return orgs, nil
 }
-
-func (api *CommonAPI) ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error) {
-	forkedRepo, _, err := api.Client.Repositories.CreateFork(ctx, owner, repo, opt)
-	if err != nil {
-		return nil, fmt.Errorf("error forking repository: %v", err)
-	}
-
-	return forkedRepo, nil
-}
