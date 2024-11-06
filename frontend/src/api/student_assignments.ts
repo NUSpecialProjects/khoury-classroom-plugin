@@ -44,11 +44,11 @@ export const getStudentWorks = async (
 };
 
 export const getTotalStudentAssignments = async (
-  semesterID: number,
+  classroomID: number,
   assignmentID: number
 ): Promise<number> => {
   const response = await fetch(
-    `${base_url}/semesters/${semesterID}/assignments/${assignmentID}/student-assignments/total`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/student-assignments/total`,
     {
       method: "GET",
       credentials: "include",
