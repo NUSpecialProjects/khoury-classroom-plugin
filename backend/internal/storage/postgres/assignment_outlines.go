@@ -37,7 +37,7 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 }
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error) {
-	err := db.connPool.QueryRow(ctx, "INSERT INTO classrooms (name, org_id, org_name, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
+	err := db.connPool.QueryRow(ctx, "INSERT INTO assignment_outlines (template_id, released_at, name, classroom_id, group_assignment, main_due_data) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
 		assignmentData.TemplateID,
 		assignmentData.ReleasedAt,
 		assignmentData.Name,
