@@ -13,7 +13,7 @@ const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { classroomUser, loading: loadingCurrentClassroomUser } = useClassroomUser(selectedClassroom?.id);
-  const { classroomUsers: classroomUsersList, loading: loadingClassroomUsersList } = useClassroomUsersList(selectedClassroom?.id);
+  const { classroomUsers: classroomUsersList } = useClassroomUsersList(selectedClassroom?.id);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
     <div className="Dashboard">
       {selectedClassroom && (
         <>
-          <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
+          {loadingCurrentClassroomUser && <p>Loading...</p>}
           {!loadingCurrentClassroomUser && classroomUser && (
             <p>{"Viewing as a " + classroomUser.classroom_role}</p>
           )}
@@ -104,11 +104,6 @@ const Dashboard: React.FC = () => {
           </div>
         </>
       )}
-      <div className="Dashboard__linkWrapper">
-        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}>
-          View other classrooms
-        </Link>
-      </div>
     </div>
   );
 };
