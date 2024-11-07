@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -50,14 +51,32 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 func (s *AssignmentService) createAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var assignmentData models.AssignmentOutline
-		error := c.BodyParser(&assignmentData)
-		if error != nil {
+		err := c.BodyParser(&assignmentData)
+		if err != nil || assignmentData.OrgName == "" || assignmentData.RepoName == "" {
 			return errs.InvalidRequestBody(models.AssignmentOutline{})
 		}
+
+		client, err := middleware.GetClient(c, s.store, s.userCfg)
+
+		if err != nil {
+			return errs.AuthenticationError()
+		}
+
+		username, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			//TODO: Rebase on sebyBranch
+			return err
+		}
+
 
 		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
 			return errs.InternalServerError()
+		}
+
+		err = client.ForkRepository(c.Context(), assignmentData.OrgName, *username.Name, assignmentData.RepoName, assignmentData.RepoName + "-" + *username.Name)
+		if err != nil {
+			errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
@@ -65,6 +84,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		})
 	}
 }
+
 
 // Updates an existing assignment.
 func (s *AssignmentService) updateAssignment() fiber.Handler {

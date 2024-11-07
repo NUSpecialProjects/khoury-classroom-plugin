@@ -13,4 +13,6 @@ type AssignmentOutline struct {
 	ClassroomID     int64      `json:"classroom_id"`
 	GroupAssignment bool       `json:"group_assignment"`
 	MainDueDate     *time.Time `json:"main_due_date,omitempty"`
+	OrgName 		string	   `json:"org_name,omitempty"`
+	RepoName 		string     `json:"repo_name,omitempty"`
 }

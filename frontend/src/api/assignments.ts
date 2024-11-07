@@ -46,15 +46,19 @@ export const getAssignmentIndirectNav = async (
 
 };
 
-export const CreateAssignment = async () => {
+export const CreateAssignment = async (orgName: string, repoName: string, classroomID: number) => {
   const result = await fetch(
-      `${base_url}/forks/fork`,
+      `${base_url}/classrooms/classroom/${classroomID}/assignments`,
       {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          org_name: orgName,
+          repo_name: repoName,
+        }),
       }
     );
 

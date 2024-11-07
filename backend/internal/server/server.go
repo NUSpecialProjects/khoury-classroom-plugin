@@ -18,7 +18,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/CamPlume1/khoury-classroom/internal/handlers/forks"
 )
 
 func New(params types.Params) *fiber.App {
@@ -35,7 +34,6 @@ func New(params types.Params) *fiber.App {
 	filetree.Routes(app, params)
 	webhooks.Routes(app, params)
 	users.Routes(app, params)
-	forks.Routes(app, params)
 
 	// heartbeat route
 	app.Get("/", func(c *fiber.Ctx) error {
