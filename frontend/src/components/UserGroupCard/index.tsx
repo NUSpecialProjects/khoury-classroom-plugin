@@ -17,21 +17,27 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   givenUsersList,
   onClick,
 }) => {
-  const [numUsers, setNumUsers] = useState<number>(givenUsersList ? givenUsersList.length : 0);
-  const [userMap, setUserMap] = useState<Map<IClassroomUser, IGitHubUser>>(new Map());
+  const [numUsers, setNumUsers] = useState<number>(
+    givenUsersList ? givenUsersList.length : 0
+  );
+  const [userMap, setUserMap] = useState<Map<IClassroomUser, IGitHubUser>>(
+    new Map()
+  );
   useEffect(() => {
     const loadGitHubUsers = async () => {
       if (givenUsersList) {
         const newMap = new Map();
-        await Promise.all(givenUsersList.map(async (classroomUser) => {
-          await fetchUser(classroomUser.github_username)
-            .then((userResponse: IGitHubUserResponse) => {
-              newMap.set(classroomUser, userResponse.user);
-            })
-            .catch((error) => {
-              console.error(`Error fetching GitHub user:`, error);
-            });
-        }));
+        await Promise.all(
+          givenUsersList.map(async (classroomUser) => {
+            await fetchUser(classroomUser.github_username)
+              .then((userResponse: IGitHubUserResponse) => {
+                newMap.set(classroomUser, userResponse.user);
+              })
+              .catch((error) => {
+                console.error(`Error fetching GitHub user:`, error);
+              });
+          })
+        );
         setUserMap(newMap);
       }
     };
@@ -45,12 +51,12 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
     } else {
       const getUsers = async () => {
         await fetchUsersWithRole(role_type, classroom)
-        .then((users) => {
-          setNumUsers(users.length);
-        })
-        .catch((error) => {
-          console.error("Error fetching users:", error);
-        });
+          .then((users) => {
+            setNumUsers(users.length);
+          })
+          .catch((error) => {
+            console.error("Error fetching users:", error);
+          });
       };
 
       void getUsers();
@@ -66,11 +72,11 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
       return (
         <div key={index}>
           {!githubUser ? (
-            <div className="UserGroupCard__icon-placeholder"/>
+            <div className="UserGroupCard__icon-placeholder" />
           ) : (
             <img
               className={`UserGroupCard__icon ${index > 0 ? "UserGroupCard__icon-overlap" : ""}`}
-              src={githubUser.avatar_url} 
+              src={githubUser.avatar_url}
               alt={`${githubUser.login}'s avatar`}
             />
           )}

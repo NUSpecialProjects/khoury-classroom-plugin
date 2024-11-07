@@ -21,19 +21,19 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
           {role_label}s in {selectedClassroom?.org_name}
         </h1>
         <div>
-        <ul>
-          {userList.map((user) => (
-            <li key={user.id}>
-              {/* <img
+          <ul>
+            {userList.map((user) => (
+              <li key={user.id}>
+                {/* <img
               className={`icon`}
               src={user.} 
               alt={`${githubUser.login}'s avatar`}
             /> */}
                 {user.first_name} {user.last_name}
               </li>
-          ))}
-        </ul>
-      </div>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

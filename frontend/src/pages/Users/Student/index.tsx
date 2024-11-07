@@ -15,7 +15,11 @@ const StudentListPage: React.FC = () => {
   return (
     <>
       <GenericRolePage role_label={role_label} userList={state.users} />
-      <LinkGenerator role_type={role_type} role_label={role_label} classroom={selectedClassroom} />
+      <LinkGenerator
+        role_type={role_type}
+        role_label={role_label}
+        classroom={selectedClassroom}
+      />
     </>
   );
 };

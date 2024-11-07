@@ -10,7 +10,7 @@ const TokenApplyPage: React.FC = () => {
   const [message, setMessage] = useState<string>("Loading...");
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  const {setSelectedClassroom} = useContext(SelectedClassroomContext);
+  const { setSelectedClassroom } = useContext(SelectedClassroomContext);
 
   useEffect(() => {
     if (inputToken) {

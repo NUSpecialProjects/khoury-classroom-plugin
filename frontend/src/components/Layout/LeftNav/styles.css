@@ -49,7 +49,6 @@
     text-wrap: wrap;
   }
 
-
   &__navBar {
     display: flex;
     flex-direction: column;

@@ -12,44 +12,43 @@ const Callback: React.FC = () => {
   const { login } = useContext(AuthContext);
 
   const handleSuccessfulLogin = () => {
-    const redirectUrl = localStorage.getItem('redirectAfterLogin');
+    const redirectUrl = localStorage.getItem("redirectAfterLogin");
     console.log("Successful login");
     login();
     if (redirectUrl) {
-      localStorage.removeItem('redirectAfterLogin');
+      localStorage.removeItem("redirectAfterLogin");
       console.log("Redirecting to: ", redirectUrl);
       navigate(redirectUrl); // redirect to the page that was requested before login
     } else {
       console.log("Default Redirecting to: ", "/app/organization/select");
-      navigate('/app/organization/select'); // default redirect after login
+      navigate("/app/organization/select"); // default redirect after login
     }
-    
-  }
+  };
 
   useEffect(() => {
     //if code, good, else, route to home
     if (code) {
       sendCode(code)
-      .then((response) => {
-        if (!response.ok) {
-          console.log("Error sending code: ", response);
-          // Navigate back to login page
-          navigate("/");
+        .then((response) => {
+          if (!response.ok) {
+            console.log("Error sending code: ", response);
+            // Navigate back to login page
+            navigate("/");
+            return;
+          } else {
+            console.log("Code sent successfully");
+            //Successful login. Handle redirect
+            handleSuccessfulLogin();
+          }
+        })
+        .catch((err: unknown) => {
+          // Navigate back to login page with an error message attached
+          navigate(
+            `/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`
+          );
+          console.log("Error Occurred: ", err);
           return;
-        } else {
-          console.log("Code sent successfully");
-          //Successful login. Handle redirect
-          handleSuccessfulLogin();
-        }
-      })
-      .catch((err: unknown) => {
-        // Navigate back to login page with an error message attached
-        navigate(
-          `/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`
-        );
-        console.log("Error Occurred: ", err);
-        return;
-      });
+        });
     } else {
       navigate("/");
     }

@@ -12,8 +12,11 @@ import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { classroomUser, loading: loadingCurrentClassroomUser } = useClassroomUser(selectedClassroom?.id);
-  const { classroomUsers: classroomUsersList } = useClassroomUsersList(selectedClassroom?.id);
+  const { classroomUser, loading: loadingCurrentClassroomUser } =
+    useClassroomUser(selectedClassroom?.id);
+  const { classroomUsers: classroomUsersList } = useClassroomUsersList(
+    selectedClassroom?.id
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,7 +32,6 @@ const Dashboard: React.FC = () => {
           });
       }
     };
-
 
     if (selectedClassroom !== null && selectedClassroom !== undefined) {
       fetchAssignments(selectedClassroom).catch((error: unknown) => {
@@ -60,31 +62,62 @@ const Dashboard: React.FC = () => {
             <p>{"Viewing as a " + classroomUser.classroom_role}</p>
           )}
           {!loadingCurrentClassroomUser && !classroomUser && (
-            <p>{"Viewing classroom you aren't in!! (Eventually, this should be impossible)"}</p>
+            <p>
+              {
+                "Viewing classroom you aren't in!! (Eventually, this should be impossible)"
+              }
+            </p>
           )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
               role_type="PROFESSOR"
               classroom={selectedClassroom}
-              givenUsersList={classroomUsersList.filter((user) => user.classroom_role === "PROFESSOR")}
-              onClick={() => handleUserGroupClick("Professor", classroomUsersList.filter((user) => user.classroom_role === "PROFESSOR"))}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "PROFESSOR"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "Professor",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "PROFESSOR"
+                  )
+                )
+              }
             />
 
             <UserGroupCard
               label="TAs"
               role_type="TA"
               classroom={selectedClassroom}
-              givenUsersList={classroomUsersList.filter((user) => user.classroom_role === "TA")}
-              onClick={() => handleUserGroupClick("TA", classroomUsersList.filter((user) => user.classroom_role === "TA"))}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "TA"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "TA",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "TA"
+                  )
+                )
+              }
             />
 
             <UserGroupCard
               label="Students"
               role_type="STUDENT"
               classroom={selectedClassroom}
-              givenUsersList={classroomUsersList.filter((user) => user.classroom_role === "STUDENT")}
-              onClick={() => handleUserGroupClick("Student", classroomUsersList.filter((user) => user.classroom_role === "STUDENT"))}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "STUDENT"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "Student",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "STUDENT"
+                  )
+                )
+              }
             />
           </div>
           <Link
@@ -102,7 +135,16 @@ const Dashboard: React.FC = () => {
               </TableRow>
               {assignments.map((assignment, i: number) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell> <Link to={`/app/assignments/${assignment.id}`} state={{assignment}} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
+                  <TableCell>
+                    {" "}
+                    <Link
+                      to={`/app/assignments/${assignment.id}`}
+                      state={{ assignment }}
+                      className="Dashboard__assignmentLink"
+                    >
+                      {assignment.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{formatDate(assignment.created_at)}</TableCell>
                 </TableRow>
               ))}

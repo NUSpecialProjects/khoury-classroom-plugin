@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getClassroomUsers } from '@/api/classrooms';
+import { useState, useEffect } from "react";
+import { getClassroomUsers } from "@/api/classrooms";
 
 export function useClassroomUsersList(classroomId?: number) {
   const [classroomUsers, setClassroomUsers] = useState<IClassroomUser[]>([]);
@@ -15,7 +15,11 @@ export function useClassroomUsersList(classroomId?: number) {
             setError(null);
           })
           .catch((err) => {
-            setError(err instanceof Error ? err : new Error('Failed to fetch classroom users'));
+            setError(
+              err instanceof Error
+                ? err
+                : new Error("Failed to fetch classroom users")
+            );
             setClassroomUsers([]);
           })
           .finally(() => {

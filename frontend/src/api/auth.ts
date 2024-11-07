@@ -26,7 +26,7 @@ export const sendCode = async (code: string): Promise<Response> => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ code }),
-  })
+  });
 
   return response;
 };

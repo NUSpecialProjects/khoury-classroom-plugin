@@ -43,9 +43,13 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
   return (
     <div>
       <h3>Create {role_label} Invite Link</h3>
-      <select 
+      <select
         value={duration === undefined ? "" : duration}
-        onChange={(e) => setDuration(e.target.value === "" ? undefined : Number(e.target.value))}
+        onChange={(e) =>
+          setDuration(
+            e.target.value === "" ? undefined : Number(e.target.value)
+          )
+        }
       >
         {expirationOptions.map((option) => (
           <option key={option.label} value={option.value ?? ""}>

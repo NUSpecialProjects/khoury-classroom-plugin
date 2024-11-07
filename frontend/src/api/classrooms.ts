@@ -3,13 +3,16 @@ const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 export async function getCurrentClassroomUser(
   classroomId: number
 ): Promise<IClassroomUser> {
-  const response = await fetch(`${base_url}/classrooms/classroom/${classroomId}/user`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomId}/user`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   if (!response.ok) {
     throw new Error(response.statusText);
   }
@@ -17,14 +20,19 @@ export async function getCurrentClassroomUser(
   return resp.user;
 }
 
-export async function getClassroomUsers(classroomId: number): Promise<IClassroomUser[]> {
-  const response = await fetch(`${base_url}/classrooms/classroom/${classroomId}/students`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export async function getClassroomUsers(
+  classroomId: number
+): Promise<IClassroomUser[]> {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomId}/students`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   if (!response.ok) {
     throw new Error(response.statusText);
   }
@@ -72,17 +80,20 @@ export async function postClassroomToken(
   role: string,
   duration?: number // Duration is optional
 ): Promise<IClassroomToken> {
-  const response = await fetch(`${base_url}/classrooms/classroom/${classroomId}/token`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      classroom_role: role,
-      duration: duration,
-      })
-  });
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomId}/token`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        classroom_role: role,
+        duration: duration,
+      }),
+    }
+  );
 
   if (!response.ok) {
     throw new Error(response.statusText);
@@ -95,13 +106,16 @@ export async function postClassroomToken(
 export async function useClassroomToken(
   token: string
 ): Promise<IClassroomJoinResponse> {
-  const response = await fetch(`${base_url}/classrooms/classroom/token/${token}`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/token/${token}`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!response.ok) {
     throw new Error(response.statusText);

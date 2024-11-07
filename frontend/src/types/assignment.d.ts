@@ -10,5 +10,5 @@ interface IAssignmentOutline {
 }
 
 interface IAssignmentOutlineResponse {
-  assignment_outline: IAssignmentOutline
+  assignment_outline: IAssignmentOutline;
 }

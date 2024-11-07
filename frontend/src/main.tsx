@@ -16,17 +16,15 @@ import SelectedSemesterProvider from "./contexts/selectedClassroom";
 
 import "./global.css";
 
-
-
 // If not logged in, route to login
 const PrivateRoute = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const location = useLocation();
-  
+
   useEffect(() => {
     if (!isLoggedIn) {
       const currentUrl = location.pathname + location.search + location.hash;
-      localStorage.setItem('redirectAfterLogin', currentUrl);
+      localStorage.setItem("redirectAfterLogin", currentUrl);
     }
   }, [isLoggedIn, location]); // Only run when these values change
 
@@ -67,7 +65,10 @@ export default function App(): React.JSX.Element {
               {/******* CLASS SELECTED: INNER APP *******/}
               <Route path="" element={<Layout />}>
                 <Route path="assignments" element={<Pages.Assignments />} />
-                <Route path="assignments/create" element={<Pages.CreateAssignment />} />
+                <Route
+                  path="assignments/create"
+                  element={<Pages.CreateAssignment />}
+                />
                 <Route path="assignments/:id" element={<Pages.Assignment />} />
                 <Route path="grading" element={<Pages.Grading />} />
                 <Route path="settings" element={<Pages.Settings />} />
@@ -98,13 +99,13 @@ export default function App(): React.JSX.Element {
 let container: HTMLElement | null = null;
 let root: ReactDOM.Root | null = null;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   if (!container) {
     container = document.getElementById("root");
     if (!container) {
       throw new Error("Root element not found. Unable to render React app.");
     }
-    
+
     root = ReactDOM.createRoot(container);
     root.render(
       <React.StrictMode>
