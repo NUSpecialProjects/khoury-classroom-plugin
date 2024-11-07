@@ -24,13 +24,16 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
           sha: i === fullPath.length - 1 ? node.Entry.sha : "",
           name: seg,
           path: path.substring(1),
-          status: node.Status,
+          status: node.Status.Status,
           childNodes: {},
         };
-      } else if (node.Status !== "unmodified" && node.Status !== "renamed") {
+      } else if (
+        node.Status.Status !== "unmodified" &&
+        node.Status.Status !== "renamed"
+      ) {
         if (level.childNodes[seg].status == "unmodified") {
-          level.childNodes[seg].status = node.Status;
-        } else if (level.childNodes[seg].status !== node.Status) {
+          level.childNodes[seg].status = node.Status.Status;
+        } else if (level.childNodes[seg].status !== node.Status.Status) {
           level.childNodes[seg].status = "modified";
         }
       }

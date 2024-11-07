@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import { ResizableBox } from "react-resizable";
 
@@ -17,7 +17,20 @@ export const FileTree: React.FC<IFileTree> = ({
   ...props
 }) => {
   const [selectedFile, setSelectedFile] = useState<string>("");
-  const { root, treeDepth } = buildTree(gitTree);
+  const [root, setRoot] = useState<IFileTreeNode | null>(null);
+  const [treeDepth, setTreeDepth] = useState(0);
+
+  useEffect(() => {
+    if (gitTree.length == 0) {
+      setRoot(null);
+      setTreeDepth(0);
+      setSelectedFile("");
+      return;
+    }
+    const { root, treeDepth } = buildTree(gitTree);
+    setRoot(root);
+    setTreeDepth(treeDepth);
+  }, [gitTree]);
 
   return (
     <ResizableBox
@@ -33,12 +46,13 @@ export const FileTree: React.FC<IFileTree> = ({
       <>
         <div className="FileTree__head">Files</div>
         <div className="FileTree__body" {...props}>
-          {sortTreeNode(root).map((node) =>
-            renderTree(node, 0, treeDepth, selectedFile, (n) => {
-              setSelectedFile(n.path);
-              selectFileCallback(n);
-            })
-          )}
+          {root &&
+            sortTreeNode(root).map((node) =>
+              renderTree(node, 0, treeDepth, selectedFile, (n) => {
+                setSelectedFile(n.path);
+                selectFileCallback(n);
+              })
+            )}
           {children}
         </div>
       </>

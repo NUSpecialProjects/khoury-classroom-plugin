@@ -23,8 +23,15 @@ interface IGradingComment {
 /******************************
  * GitHub response object types
  ******************************/
+interface IGitDiff {
+  Start: number;
+  End: number;
+}
 interface IGitTreeNode {
-  Status: string;
+  Status: {
+    Status: string;
+    Diff: IGitDiff[] | null;
+  };
   Entry: {
     type: string;
     path: string;

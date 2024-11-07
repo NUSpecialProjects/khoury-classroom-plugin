@@ -29,7 +29,7 @@ const Grader: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   // states
-  const [studentWork, setstudentWork] = useState<IPaginatedStudentWork | null>(
+  const [studentWork, setStudentWork] = useState<IPaginatedStudentWork | null>(
     null
   );
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
@@ -42,6 +42,13 @@ const Grader: React.FC = () => {
 
   // fetch requested student assignment
   useEffect(() => {
+    // reset states
+    setCurrentFilePath("");
+    setCurrentFile(null);
+    setComments([]);
+    setStudentWork(null);
+    setGitTree([]);
+
     if (!selectedClassroom || !assignmentID || !studentWorkID) return;
 
     getPaginatedStudentWork(
@@ -50,18 +57,18 @@ const Grader: React.FC = () => {
       Number(studentWorkID)
     )
       .then((resp) => {
-        console.log(resp);
-        setstudentWork(resp);
+        setStudentWork(resp);
       })
       .catch((err: unknown) => {
         console.log(err);
         navigate("/404", { replace: true });
       });
-  }, [selectedClassroom, assignmentID, studentWorkID]);
+  }, [studentWorkID]);
 
   // fetch git tree from student assignment repo
   useEffect(() => {
-    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+    if (!selectedClassroom || !assignmentID || !studentWorkID || !studentWork)
+      return;
 
     getFileTree(
       selectedClassroom.id,
@@ -151,7 +158,6 @@ const Grader: React.FC = () => {
       line: Number(data.get("line")),
       body: String(data.get("comment")),
     };
-    data.set("line", "");
     setComments([...comments, comment]);
     form.reset();
   };
@@ -208,35 +214,33 @@ const Grader: React.FC = () => {
             </div>
           </div>
         </div>
-        {gitTree && (
-          <div className="Grader__body">
-            <FileTree
-              className="Grader__files"
-              gitTree={gitTree}
-              selectFileCallback={openFile}
-            />
-            <div className="Grader__browser">
-              <pre
-                className={currentFile ? "line-numbers" : "language-undefined"}
+        <div className="Grader__body">
+          <FileTree
+            className="Grader__files"
+            gitTree={gitTree}
+            selectFileCallback={openFile}
+          />
+          <div className="Grader__browser">
+            <pre
+              className={currentFile ? "line-numbers" : "language-undefined"}
+            >
+              <code
+                className={
+                  currentFile
+                    ? "line-numbers language-" +
+                      ext2lang[extractExtension(currentFile.name)]
+                    : "language-undefined"
+                }
               >
-                <code
-                  className={
-                    currentFile
-                      ? "line-numbers language-" +
-                        ext2lang[extractExtension(currentFile.name)]
-                      : "language-undefined"
-                  }
-                >
-                  {currentFile
-                    ? currentFile.content
-                    : gitTree.length == 0
-                      ? "Student has not submitted work for grading yet or repository is empty."
-                      : "Select a file to view its contents."}
-                </code>
-              </pre>
-            </div>
+                {currentFile
+                  ? currentFile.content
+                  : gitTree.length == 0
+                    ? "Student has not submitted work for grading yet or repository is empty."
+                    : "Select a file to view its contents."}
+              </code>
+            </pre>
           </div>
-        )}
+        </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <form onSubmit={saveComment}>
             <input type="number" name="line" placeholder="line number" />
