@@ -7,6 +7,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/filetree"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/hello"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/organizations"
+	"github.com/CamPlume1/khoury-classroom/internal/handlers/rubrics"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/test"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/users"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/webhooks"
@@ -25,7 +26,7 @@ func New(params types.Params) *fiber.App {
 
 	useMiddlewares(app)
 
-	//Add Route Groupings here: @TODO
+	//Add Route Groupings here: TODO
 	hello.Routes(app, params)
 	auth.Routes(app, params)
 	organizations.Routes(app, params)
@@ -34,6 +35,7 @@ func New(params types.Params) *fiber.App {
 	filetree.Routes(app, params)
 	webhooks.Routes(app, params)
 	users.Routes(app, params)
+    rubrics.Routes(app, params)
 
 	// heartbeat route
 	app.Get("/", func(c *fiber.Ctx) error {

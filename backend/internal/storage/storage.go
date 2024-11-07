@@ -14,6 +14,7 @@ type Storage interface {
 	Classroom
 	User
 	AssignmentOutline
+    Rubric
 }
 
 type Works interface {
@@ -48,4 +49,12 @@ type AssignmentOutline interface {
 	GetAssignmentsInClassroom(ctx context.Context, classroomID int64) ([]models.AssignmentOutline, error)
 	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
+}
+
+type Rubric interface {
+    CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error)
+    GetFullRubric(ctx context.Context, rubricID int64) (models.FullRubric, error)
+    GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error)
+    AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
+    GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error)
 }

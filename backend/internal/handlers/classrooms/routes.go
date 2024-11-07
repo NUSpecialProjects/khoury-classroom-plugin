@@ -14,16 +14,15 @@ func Routes(app *fiber.App, params types.Params) {
 	workService := works.NewWorkService(params.Store, params.GitHubApp)
 
 	// Create the base router
-	baseRouter := app.Group("")
 
 	// Create the classroom routes
-	classroomRoutes(baseRouter, classroomService)
+	classroomRoutes(app, classroomService)
 
 	// Create the assignment routes
-	assignments.AssignmentRoutes(baseRouter, assignmentService)
+	assignments.AssignmentRoutes(app, assignmentService)
 
 	// Create the submission routes
-	works.WorkRoutes(baseRouter, workService)
+	works.WorkRoutes(app, workService)
 }
 
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {

@@ -11,7 +11,15 @@ type Rubric struct {
     CreatedAt     time.Time   `json:"created_at"`
 }
 
-type CreateRubricRequest struct {
+type RubricItem struct {
+    ID          int64     `json:"id,omitempty"`
+    RubricID    int64     `json:"rubric_id"`
+    PointValue  int64     `json:"point_value"`
+    Explanation string    `json:"explanation"`
+    CreatedAt   time.Time `json:"created_at"`
+}
+
+type FullRubric struct {
     Rubric        Rubric       `json:"rubric"`
     RubricItems []RubricItem   `json:"rubric_items"`
 }

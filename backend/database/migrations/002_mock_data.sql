@@ -105,8 +105,21 @@ VALUES
 ('assignmentToken131', '2024-10-31 23:59:59', 9, NOW()),
 ('assignmentToken132', '2024-09-30 23:59:59', 10, NOW());
 
+-- Insert into rubrics
+INSERT INTO rubrics (name, org_id, classroom_id, reusable) VALUES 
+('Introduction to Programming Rubric', 1, 1, true),
+('Data Structures Project Rubric', 1, 1, false),
+('Algorithms Midterm Rubric', 2, 1, false),
+('Database Design Project Rubric', 2, 1, true),
+('Machine Learning Final Rubric', 3, 2, false),
+('Operating Systems Lab Rubric', 3, 2, true),
+('Web Development Assignment Rubric', 4, 2, false),
+('Network Security Exam Rubric', 4, 1, false),
+('Software Engineering Project Rubric', 5, 2, true),
+('Artificial Intelligence Assignment Rubric', 5, 2, true);
+
 -- Insert into rubric_items
-INSERT INTO rubric_items (id, assignment_outline_id, point_value, explanation, created_at)
+INSERT INTO rubric_items (id, rubric_id, point_value, explanation, created_at)
 VALUES
 (1, 1, 10, 'Tracks running distances accurately', NOW()),
 (2, 1, 10, 'Records chocolate consumption correctly', NOW()),

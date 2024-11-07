@@ -6,20 +6,11 @@ import (
 )
 
 
-func Routes(app *fiber.App, params types.Params) {
+func Routes(router fiber.Router, params types.Params) {
+	service := newRubricService(params.Store)
+    route := router.Group("/rubrics")
 
-	rubricService := newRubricService(params.Store)
+    route.Post("/rubric", service.CreateRubric())
 
-	// Create the base router
-	baseRouter := app.Group("")
-
-	RubricRoutes(baseRouter, rubricService)
-}
-
-func RubricRoutes(router fiber.Router, service *RubricService) fiber.Router {
-	rubricRouter := router.Group("/rubrics")
-
-    router.Post("/rubric", service.CreateRubric())
-
-	return rubricRouter
+    route.Get("/rubric/:rubric_id", service.GetRubricByID())
 }

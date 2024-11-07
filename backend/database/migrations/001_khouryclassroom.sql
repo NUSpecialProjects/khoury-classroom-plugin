@@ -62,8 +62,7 @@ CREATE TABLE IF NOT EXISTS rubric_items (
     point_value INTEGER NOT NULL,
     explanation VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
-    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
+    FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
 );
 
 CREATE TABLE IF NOT EXISTS assignment_outlines (
