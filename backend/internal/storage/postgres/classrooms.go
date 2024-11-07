@@ -121,7 +121,7 @@ func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID 
 }
 
 func (db *DB) GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * from classrooms where org_id = $1", orgID)
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM classrooms WHERE org_id = $1", orgID)
 	if err != nil {
 		return nil, err
 	}

@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     name VARCHAR(255) NOT NULL,
     classroom_id INTEGER NOT NULL,
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
+    main_due_date TIMESTAMP,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
     FOREIGN KEY (template_id) REFERENCES assignment_template(id)
 );
@@ -90,7 +91,7 @@ CREATE TABLE IF NOT EXISTS student_works (
     id SERIAL PRIMARY KEY,
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255),
-    due_date TIMESTAMP NOT NULL,
+    unique_due_date TIMESTAMP,
     submitted_pr_number INTEGER,
     manual_feedback_score INTEGER,
     auto_grader_score INTEGER,

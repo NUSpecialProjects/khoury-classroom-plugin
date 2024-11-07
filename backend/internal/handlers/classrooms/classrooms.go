@@ -31,7 +31,7 @@ func (s *ClassroomService) getClassroom() fiber.Handler {
 
 		classroomData, err := s.store.GetClassroomByID(c.Context(), classroomID)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"classroom": classroomData})
@@ -49,7 +49,7 @@ func (s *ClassroomService) createClassroom() fiber.Handler {
 
 		createdClassroom, err := s.store.CreateClassroom(c.Context(), classroomData)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"classroom": createdClassroom})
@@ -74,7 +74,7 @@ func (s *ClassroomService) updateClassroom() fiber.Handler {
 
 		updatedClassroom, err := s.store.UpdateClassroom(c.Context(), classroomData)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"classroom": updatedClassroom})
@@ -97,13 +97,13 @@ func (s *ClassroomService) updateClassroomName() fiber.Handler {
 
 		existingClassroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 		existingClassroom.Name = classroomData.Name
 
 		updatedClassroom, err := s.store.UpdateClassroom(c.Context(), existingClassroom)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"classroom": updatedClassroom})
@@ -120,7 +120,7 @@ func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 
 		usersInClassroom, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 		return c.Status(http.StatusOK).JSON(fiber.Map{"users": usersInClassroom})
 	}

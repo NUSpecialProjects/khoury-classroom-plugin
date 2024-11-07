@@ -5,7 +5,7 @@ import (
 )
 
 func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Router {
-	assignmentRouter := router.Group("/:classroom_id/assignments")
+	assignmentRouter := router.Group("/classrooms/classroom/:classroom_id/assignments")
 
 	// Get the assignments in a classroom
 	assignmentRouter.Get("/", service.getAssignments())
