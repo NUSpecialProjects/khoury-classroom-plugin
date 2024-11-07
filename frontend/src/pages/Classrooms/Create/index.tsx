@@ -6,7 +6,7 @@ import { getOrganizationDetails } from "@/api/organizations";
 import useUrlParameter from "@/hooks/useUrlParameter";
 import Panel from "@/components/Panel";
 import Button from "@/components/Button";
-import Dropdown from "@/components/Dropdown";
+import Input from "@/components/Input";
 
 import "./styles.css";
 
@@ -73,26 +73,22 @@ const ClassroomCreation: React.FC = () => {
           <p>Loading...</p>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Classroom Name</label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="organization">Organization</label>
-              <input
-                type="text"
-                id="organization"
-                value={organization ? organization.login : ""}
-                readOnly
-                required
-              />
-            </div>
+            <Input
+              label="Organization"
+              name="organization"
+              required
+              readOnly
+              value={organization ? organization.login : ""}
+            />
+
+            <Input
+              label="Classroom name"
+              name="classroom-name"
+              placeholder="Database Project"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
             {error && <p className="error">{error}</p>}
             {!organization && (
               <p className="error">
@@ -104,10 +100,7 @@ const ClassroomCreation: React.FC = () => {
             )}
             <div className="ClassroomCreation__buttonWrapper">
               <Button type="submit" variant="primary">Create Classroom</Button>
-              <Button type="submit" variant="secondary">Select a different organization</Button>
-              <button type="submit" className="btn btn-primary">
-                Create Classroom
-              </button>
+              <Button variant="secondary" onClick={() => navigate("/app/organization/select")}>Select a different organization</Button>
             </div>
           </form>
         )}
