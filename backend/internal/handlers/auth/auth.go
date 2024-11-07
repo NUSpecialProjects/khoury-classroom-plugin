@@ -111,7 +111,7 @@ func (service *AuthService) GetCurrentUser() fiber.Handler {
 			return errs.AuthenticationError()
 		}
 
-		return c.Status(200).JSON(user)
+		return c.Status(200).JSON(fiber.Map{"user": user})
 	}
 }
 
