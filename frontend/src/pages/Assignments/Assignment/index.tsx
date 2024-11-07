@@ -46,13 +46,10 @@ const Assignment: React.FC = () => {
             const fetchedAssignment = await getAssignmentIndirectNav(selectedClassroom.id, +id);
             if (fetchedAssignment !== null && fetchedAssignment !== undefined) {
               setAssignment(fetchedAssignment);
-<<<<<<< HEAD
-=======
               const studentWorks = await getStudentWorks(selectedClassroom.id, fetchedAssignment.id)
               if (studentWorks !== null && studentWorks !== undefined) {
                 setStudentAssignment(studentWorks);
               }
->>>>>>> staging
             }
           } catch (error) {
             console.error("Could not get assignment: ", error);
