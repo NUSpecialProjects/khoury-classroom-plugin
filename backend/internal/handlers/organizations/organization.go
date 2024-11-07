@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -22,12 +21,12 @@ func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubClientError(err)
 		}
 
 		orgs, err := client.GetUserOrgs(c.Context())
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch orgs"})
+			return errs.GithubAPIError(err)
 		}
 
 		return c.Status(200).JSON(orgs)
@@ -39,8 +38,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubClientError(err)
 		}
 		// Get the app client
 		appClient := service.githubappclient
@@ -48,15 +46,13 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
 		if err != nil {
-			log.Default().Println("Error getting user orgs: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get user organizations"})
+			return errs.GithubAPIError(err)
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
-			log.Default().Println("Error getting app installations: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get app installations"})
+			return errs.GithubAPIError(err)
 		}
 
 		// Filter the organizations to include only those with the app installed
@@ -85,22 +81,19 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			log.Default().Println("Error getting org_name: ", orgName)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
+			return errs.BadRequest(errs.MissingAPIParamError("org_name"))
 		}
 
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubClientError(err)
 		}
 
 		// Get the organization
 		org, err := userClient.GetOrg(c.Context(), orgName)
 		if err != nil {
-			log.Default().Println("Error getting org: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get org"})
+			return errs.GithubAPIError(err)
 		}
 		return c.Status(200).JSON(fiber.Map{"org": org})
 	}
@@ -129,8 +122,7 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			log.Default().Println("Error getting org_name: ", orgName)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
+			return errs.BadRequest(errs.MissingAPIParamError("org_name"))
 		}
 
 		// Parse pagination parameters
@@ -140,15 +132,13 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to create client"})
+			return errs.GithubClientError(err)
 		}
 
 		// Get the organizations repos and filter for template repos
 		repos, err := userClient.ListRepositoriesByOrg(c.Context(), orgName, itemsPerPage, pageNum)
 		if err != nil {
-			log.Default().Println("Error getting repos: ", err)
-			return c.Status(500).JSON(fiber.Map{"error": "failed to get repos"})
+			return errs.GithubAPIError(err)
 		}
 
 		var templateRepos []models.Repository
