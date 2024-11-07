@@ -41,3 +41,8 @@ type ClassroomToken struct {
 	ClassroomRole ClassroomRole `json:"classroom_role"`
 	BaseToken
 }
+
+type ClassroomRoleRequestBody struct {
+	ClassroomRole string `json:"classroom_role"`
+	Duration      *int   `json:"duration,omitempty"` // Duration is optional
+}

@@ -28,7 +28,7 @@ func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		return c.Status(fiber.StatusOK).JSON(orgs)
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"orgs": orgs})
 	}
 }
 

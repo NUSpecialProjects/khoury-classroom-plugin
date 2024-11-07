@@ -137,10 +137,7 @@ func (s *ClassroomService) removeUserFromClassroom() fiber.Handler {
 // Generates a token to join a classroom.
 func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		body := struct {
-			ClassroomRole string `json:"classroom_role"`
-			Duration      *int   `json:"duration,omitempty"` // Duration is optional
-		}{}
+		body := models.ClassroomRoleRequestBody{}
 
 		if err := c.BodyParser(&body); err != nil {
 			return errs.InvalidRequestBody(body)
@@ -173,7 +170,7 @@ func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 
 		classroomToken, err := s.store.CreateClassroomToken(c.Context(), tokenData)
 		if err != nil {
-			return errs.NewDBError(err)
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"token": classroomToken.Token})
@@ -215,7 +212,7 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		if err != nil {
 			user, err = s.store.CreateUser(c.Context(), currentGitHubUser.ToUser())
 			if err != nil {
-				return errs.NewDBError(err)
+				return errs.InternalServerError()
 			}
 		}
 
@@ -227,7 +224,7 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 				// Upgrade the user's role in the classroom
 				err := s.store.ModifyUserRole(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), *userWithRole.ID)
 				if err != nil {
-					return errs.NewAPIError(http.StatusInternalServerError, err)
+					return errs.InternalServerError()
 				}
 			} else if roleComparison >= 0 {
 				// User's current role is higher than token role, therefore do nothing and return an error
@@ -236,14 +233,14 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		} else { // user is not in the classroom, add them with the token's role
 			_, err := s.store.AddUserToClassroom(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), *user.ID)
 			if err != nil {
-				return errs.NewDBError(err)
+				return errs.InternalServerError()
 			}
 		}
 
 		// Return the classroom the user was added to
 		classroom, err := s.store.GetClassroomByID(c.Context(), classroomToken.ClassroomID)
 		if err != nil {
-			return errs.NewDBError(err)
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
