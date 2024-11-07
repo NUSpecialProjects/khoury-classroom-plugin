@@ -16,11 +16,8 @@ import {
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import {
-  getStudentAssignment,
-  getTotalStudentAssignments,
-} from "@/api/student_assignments";
-import { getGitTree, getGitBlob, createPRComment } from "@/api/grading";
+import { getPaginatedStudentWork } from "@/api/student_works";
+import { getFileTree, getFileBlob, createPRComment } from "@/api/file_tree";
 
 import "./styles.css";
 
@@ -28,13 +25,13 @@ const Grader: React.FC = () => {
   const navigate = useNavigate();
 
   // params
-  const { assignmentId, studentAssignmentId } = useParams();
+  const { assignmentID, studentWorkID } = useParams();
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   // states
-  const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
-  const [studentAssignment, setStudentAssignment] =
-    useState<IStudentAssignment | null>(null);
+  const [studentWork, setstudentWork] = useState<IPaginatedStudentWork | null>(
+    null
+  );
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
@@ -42,42 +39,34 @@ const Grader: React.FC = () => {
   const [currentFilePath, setCurrentFilePath] = useState<string>("");
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
 
-  // fetch totals for indexing purposes
-  useEffect(() => {
-    if (!selectedClassroom || !assignmentId || !studentAssignmentId) return;
-
-    getTotalStudentAssignments(selectedClassroom.id, Number(assignmentId))
-      .then((resp) => {
-        setTotalStudentAssignments(resp);
-      })
-      .catch((err: unknown) => {
-        console.log(err);
-      });
-  }, [selectedClassroom, assignmentId]);
-
   // fetch requested student assignment
   useEffect(() => {
-    if (!selectedClassroom || !assignmentId || !studentAssignmentId) return;
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
 
-    getStudentAssignment(
+    getPaginatedStudentWork(
       selectedClassroom.id,
-      Number(assignmentId),
-      Number(studentAssignmentId)
+      Number(assignmentID),
+      Number(studentWorkID)
     )
       .then((resp) => {
-        setStudentAssignment(resp);
+        console.log(resp);
+        setstudentWork(resp);
       })
       .catch((err: unknown) => {
         console.log(err);
         navigate("/404", { replace: true });
       });
-  }, [selectedClassroom, assignmentId, studentAssignmentId]);
+  }, [selectedClassroom, assignmentID, studentWorkID]);
 
   // fetch git tree from student assignment repo
   useEffect(() => {
-    if (!selectedClassroom || !studentAssignment) return;
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
 
-    getGitTree(selectedClassroom.org_name, studentAssignment.repo_name)
+    getFileTree(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID)
+    )
       .then((resp) => {
         setGitTree(resp);
       })
@@ -85,7 +74,7 @@ const Grader: React.FC = () => {
         // todo: reroute 404
         console.log(err);
       });
-  }, [studentAssignment]);
+  }, [studentWork]);
 
   // when a new file is selected, import any necessary
   // prismjs language syntax files and trigger a rehighlight
@@ -130,8 +119,13 @@ const Grader: React.FC = () => {
       return;
     }
 
-    if (!selectedClassroom || !studentAssignment) return;
-    getGitBlob(selectedClassroom.org_name, studentAssignment.repo_name, node)
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+    getFileBlob(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID),
+      node
+    )
       .then((resp) => {
         setCurrentFile(resp);
         setCachedFiles((prev) => ({
@@ -148,11 +142,17 @@ const Grader: React.FC = () => {
   const submitComment = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedClassroom || !studentAssignment || !gitTree) return;
+    if (
+      !selectedClassroom ||
+      !studentWork ||
+      !gitTree ||
+      !studentWork.repo_name
+    )
+      return;
     const data = new FormData(e.target as HTMLFormElement);
     createPRComment(
       selectedClassroom.org_name,
-      studentAssignment.repo_name,
+      studentWork.repo_name,
       currentFilePath,
       Number(data.get("line")),
       String(data.get("comment"))
@@ -160,7 +160,7 @@ const Grader: React.FC = () => {
   };
 
   return (
-    studentAssignment && (
+    studentWork && (
       <div className="Grader">
         <div className="Grader__head">
           <div className="Grader__title">
@@ -168,18 +168,19 @@ const Grader: React.FC = () => {
               <FaChevronLeft />
             </Link>
             <div>
-              <h2>{studentAssignment.assignment_name}</h2>
-              <span>{studentAssignment.student_gh_username}</span>
+              <h2>{studentWork.assignment_name}</h2>
+              <span>{studentWork.contributors}</span>
             </div>
           </div>
           <div className="Grader__nav">
             <span>
-              Student Assignment {studentAssignmentId}/{totalStudentAssignments}
+              Student Work {studentWork.row_num}/
+              {studentWork.total_student_works}
             </span>
             <div>
-              {Number(studentAssignmentId) > 1 && (
+              {studentWork.previous_student_work_id && (
                 <Link
-                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) - 1}`}
+                  to={`/app/grading/assignment/${assignmentID}/student/${studentWork.previous_student_work_id}`}
                 >
                   <Button variant="secondary">
                     <FaChevronLeft />
@@ -187,9 +188,9 @@ const Grader: React.FC = () => {
                   </Button>
                 </Link>
               )}
-              {Number(studentAssignmentId) < totalStudentAssignments && (
+              {studentWork.next_student_work_id && (
                 <Link
-                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) + 1}`}
+                  to={`/app/grading/assignment/${assignmentID}/student/${studentWork.next_student_work_id}`}
                 >
                   <Button variant="secondary">
                     Next

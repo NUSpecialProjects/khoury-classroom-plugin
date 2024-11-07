@@ -27,12 +27,13 @@ export const createPRComment = async (
   }
 };
 
-export const getGitTree = async (
-  orgName: string,
-  repoName: string
+export const getFileTree = async (
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number
 ): Promise<IGitTreeNode[]> => {
   const response = await fetch(
-    `${base_url}/grading/org/${orgName}/repo/${repoName}/tree`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/tree`,
     {
       method: "GET",
       credentials: "include",
@@ -48,13 +49,14 @@ export const getGitTree = async (
   return resp;
 };
 
-export const getGitBlob = async (
-  orgName: string,
-  repoName: string,
+export const getFileBlob = async (
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number,
   node: IFileTreeNode
 ): Promise<IGraderFile> => {
   const response = await fetch(
-    `${base_url}/grading/org/${orgName}/repo/${repoName}/blob/${node.sha}`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/blob/${node.sha}`,
     {
       method: "GET",
       credentials: "include",

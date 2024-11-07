@@ -8,7 +8,7 @@ import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
 
 const Dashboard: React.FC = () => {
-  const [assignments, setAssignments] = useState<IAssignment[]>([]);
+  const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const navigate = useNavigate();
 
@@ -25,40 +25,10 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    const SyncWithClassroom = async (classroom: IClassroom) => {
-      try {
-        //TODO: this call isn't necessary any more b/c of the refactor?
-        console.log("Using mocked API call for classroom: ", classroom);
-        // const base_url: string = import.meta.env
-        //   .VITE_PUBLIC_API_DOMAIN as string;
-        // const result = await fetch(`${base_url}/github/sync`, {
-        //   method: "POST",
-        //   credentials: "include",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({ classroom_id: classroom.classroom_id }),
-        // });
-        const result = await Promise.resolve({ ok: true });
-
-        if (!result.ok) {
-          throw new Error("Network response was not ok");
-        }
-      } catch (error: unknown) {
-        console.error("Error making API call:", error);
-      }
-    };
-
     if (selectedClassroom !== null && selectedClassroom !== undefined) {
-      SyncWithClassroom(selectedClassroom)
-        .then(() => {
-          fetchAssignments(selectedClassroom).catch((error: unknown) => {
-            console.log("Error fetching:", error);
-          });
-        })
-        .catch((error: unknown) => {
-          console.error("Error syncing:", error);
-        });
+      fetchAssignments(selectedClassroom).catch((error: unknown) => {
+        console.log("Error fetching:", error);
+      });
     }
   }, [selectedClassroom]);
 
@@ -107,20 +77,21 @@ const Dashboard: React.FC = () => {
             <Table cols={2}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Assignment Name</TableCell>
-                <TableCell>Due Date</TableCell>
+                <TableCell>Created Date</TableCell>
               </TableRow>
               {assignments.map((assignment, i: number) => (
                 <TableRow key={i} className="Assignment__submission">
                   <TableCell>
                     {" "}
                     <Link
-                      to={`/app/assignments/${i + 1}`}
+                      to={`/app/assignments/${assignment.id}`}
+                      state={{ assignment }}
                       className="Dashboard__assignmentLink"
                     >
                       {assignment.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
+                  <TableCell>{formatDate(assignment.created_at)}</TableCell>
                 </TableRow>
               ))}
             </Table>

@@ -57,15 +57,17 @@ func atoi(s string) int {
 }
 
 func (api *AppAPI) GetFileTree(owner string, repo string, pullNumber int) ([]models.FileTreeNode, error) {
-	// Get the reference to the branch
-	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
+	// Get the specified pull request
+	pr, _, err := api.Client.PullRequests.Get(context.Background(), owner, repo, pullNumber)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
+	if pr.Head.SHA == nil {
+		return nil, fmt.Errorf("error fetching PR branch head: %v", err)
+	}
 
-	// Get the latest commit from the ref
-	commitSha := ref.Object.GetSHA()
-	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSha)
+	// Get the latest commit in the PR
+	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, *pr.Head.SHA)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching commit: %v", err)
 	}
