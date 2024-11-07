@@ -11,5 +11,5 @@ interface IRepository {
 }
 
 interface IRepositoryResponse {
-    repos: IRepository[];
+    template_repos: IRepository[];
 }

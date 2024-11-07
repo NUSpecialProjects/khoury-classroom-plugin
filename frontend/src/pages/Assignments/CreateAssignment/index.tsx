@@ -18,7 +18,7 @@ const CreateAssignment: React.FC = () => {
                 // TODO: Implement dynamic pagination in template dropdown
                 getOrganizationTemplates(orgName, "100", "1")
                     .then((response) => {
-                        setTemplates(response.repos);
+                        setTemplates(response.template_repos);
                     })
                     .catch((err: unknown) => {
                         console.error("Error fetching templates:", err);
@@ -38,7 +38,7 @@ const CreateAssignment: React.FC = () => {
             <RepositoryDropdown
                 repositories={templates}
                 onChange={(selectedRepoId: number) => {
-                    console.log(selectedRepoId);
+                    // PLACEHOLDER
                 }}
                 loading={loadingTemplates}
             />
