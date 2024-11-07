@@ -110,8 +110,6 @@ SELECT * FROM (paginated NATURAL JOIN joined_tables)
 WHERE student_work_id = $3
 `, DesiredFields, JoinedTable)
 
-	fmt.Println(query)
-
 	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
 	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
 

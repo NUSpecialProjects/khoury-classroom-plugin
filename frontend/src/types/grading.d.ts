@@ -11,6 +11,15 @@ interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   assignmentId: number;
 }
 
+/********************
+ * Grading page types
+ ********************/
+interface IGradingComment {
+  path: string;
+  line: number;
+  body: string;
+}
+
 /******************************
  * GitHub response object types
  ******************************/

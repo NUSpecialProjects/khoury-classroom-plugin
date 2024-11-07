@@ -17,7 +17,7 @@ import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getPaginatedStudentWork } from "@/api/student_works";
-import { getFileTree, getFileBlob, createPRComment } from "@/api/file_tree";
+import { getFileTree, getFileBlob, createPRComment } from "@/api/grading";
 
 import "./styles.css";
 
@@ -38,6 +38,7 @@ const Grader: React.FC = () => {
   );
   const [currentFilePath, setCurrentFilePath] = useState<string>("");
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
+  const [comments, setComments] = useState<IGradingComment[]>([]);
 
   // fetch requested student assignment
   useEffect(() => {
@@ -71,7 +72,7 @@ const Grader: React.FC = () => {
         setGitTree(resp);
       })
       .catch((err: unknown) => {
-        // todo: reroute 404
+        setGitTree([]);
         console.log(err);
       });
   }, [studentWork]);
@@ -139,23 +140,29 @@ const Grader: React.FC = () => {
       });
   };
 
-  const submitComment = (e: React.FormEvent) => {
+  const saveComment = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !selectedClassroom ||
-      !studentWork ||
-      !gitTree ||
-      !studentWork.repo_name
-    )
-      return;
-    const data = new FormData(e.target as HTMLFormElement);
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+    const comment: IGradingComment = {
+      path: currentFilePath,
+      line: Number(data.get("line")),
+      body: String(data.get("comment")),
+    };
+    data.set("line", "");
+    setComments([...comments, comment]);
+    form.reset();
+  };
+
+  const submitComments = () => {
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
     createPRComment(
-      selectedClassroom.org_name,
-      studentWork.repo_name,
-      currentFilePath,
-      Number(data.get("line")),
-      String(data.get("comment"))
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID),
+      comments
     );
   };
 
@@ -222,18 +229,21 @@ const Grader: React.FC = () => {
                 >
                   {currentFile
                     ? currentFile.content
-                    : "Select a file to view its contents."}
+                    : gitTree.length == 0
+                      ? "Student has not submitted work for grading yet or repository is empty."
+                      : "Select a file to view its contents."}
                 </code>
               </pre>
             </div>
           </div>
         )}
-        <div>
-          <form onSubmit={submitComment}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <form onSubmit={saveComment}>
             <input type="number" name="line" placeholder="line number" />
             <input type="text" name="comment" placeholder="comment" />
-            <button type="submit">submit comment</button>
+            <button type="submit">SAVE COMMENT</button>
           </form>
+          <button onClick={submitComments}>POST COMMENTS</button>
         </div>
       </div>
     )

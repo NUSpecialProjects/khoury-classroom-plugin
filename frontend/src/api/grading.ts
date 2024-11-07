@@ -1,14 +1,13 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const createPRComment = async (
-  orgName: string,
-  repoName: string,
-  filePath: string,
-  line: number,
-  comment: string
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number,
+  comments: IGradingComment[]
 ) => {
   const response = await fetch(
-    `${base_url}/grading/org/${orgName}/repo/${repoName}/comment`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/grade`,
     {
       method: "POST",
       credentials: "include",
@@ -16,13 +15,13 @@ export const createPRComment = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        file_path: filePath,
-        line,
-        comment,
+        body: "",
+        comments,
       }),
     }
   );
   if (!response.ok) {
+    console.log(response);
     throw new Error("Network response was not ok");
   }
 };
