@@ -81,7 +81,7 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			return errs.BadRequest(errs.MissingAPIParamError("org_name"))
+			return errs.MissingAPIParamError("org_name")
 		}
 
 		// Get the user client
@@ -122,12 +122,18 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			return errs.BadRequest(errs.MissingAPIParamError("org_name"))
+			return errs.MissingAPIParamError("org_name")
 		}
 
 		// Parse pagination parameters
-		itemsPerPage := c.QueryInt("itemsPerPage")
-		pageNum := c.QueryInt("pageNum")
+		itemsPerPage, err := strconv.Atoi(c.Query("items_per_page"))
+		if err != nil {
+			return errs.MissingAPIParamError("items_per_page")
+		}
+		pageNum, err := strconv.Atoi(c.Query("page_num"))
+		if err != nil {
+			return errs.MissingAPIParamError("page_num")
+		}
 
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)

@@ -38,8 +38,8 @@ export const getOrganizationTemplates = async (
   pageNum: string = ""
 ): Promise<IRepositoryResponse> => {
   const url = new URL(`${base_url}/orgs/org/${orgName}/templates`);
-  url.searchParams.append("itemsPerPage", itemsPerPage);
-  url.searchParams.append("pageNum", pageNum);
+  url.searchParams.append("items_per_page", itemsPerPage);
+  url.searchParams.append("page_num", pageNum);
 
   const response = await fetch(url.toString(), {
     method: "GET",
