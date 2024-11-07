@@ -127,6 +127,8 @@ func (service *AuthService) Logout() fiber.Handler {
 			return errs.NewAPIError(fiber.StatusInternalServerError, err)
 		}
 
+		c.ClearCookie("jwt_cookie")
+
 		return c.Status(fiber.StatusOK).JSON("Successfully logged out")
 	}
 }

@@ -6,12 +6,14 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
-import { useClassroomUser } from "@/contexts/useClassroomUser";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignment[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { classroomUser, loading } = useClassroomUser(selectedClassroom?.id);
+  const { classroomUser, loading: loadingCurrentClassroomUser } = useClassroomUser(selectedClassroom?.id);
+  const { classroomUsers: classroomUsersList, loading: loadingClassroomUsersList } = useClassroomUsersList(selectedClassroom?.id);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,16 +66,16 @@ const Dashboard: React.FC = () => {
     }
   }, [selectedClassroom]);
 
-  const handleUserGroupClick = (group: string) => {
+  const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     console.log(`Clicked on ${group}`);
     if (group === "Professor") {
-      navigate("/app/professors");
+      navigate("/app/professors", { state: { users } });
     }
     if (group === "TA") {
-      navigate("/app/tas");
+      navigate("/app/tas", { state: { users } });
     }
     if (group === "Student") {
-      navigate("/app/students");
+      navigate("/app/students", { state: { users } });
     }
   };
 
@@ -82,32 +84,35 @@ const Dashboard: React.FC = () => {
       {selectedClassroom && (
         <>
           <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
-          {!loading && classroomUser && (
+          {!loadingCurrentClassroomUser && classroomUser && (
             <p>{"Viewing as a " + classroomUser.classroom_role}</p>
           )}
-          {!loading && !classroomUser && (
+          {!loadingCurrentClassroomUser && !classroomUser && (
             <p>{"Viewing classroom you aren't in!! (Eventually, this should be impossible)"}</p>
           )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
-              role_type="Professor"
+              role_type="PROFESSOR"
               classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("Professor")}
+              givenUsersList={classroomUsersList.filter((user) => user.classroom_role === "PROFESSOR")}
+              onClick={() => handleUserGroupClick("Professor", classroomUsersList.filter((user) => user.classroom_role === "PROFESSOR"))}
             />
 
             <UserGroupCard
               label="TAs"
               role_type="TA"
               classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("TA")}
+              givenUsersList={classroomUsersList.filter((user) => user.classroom_role === "TA")}
+              onClick={() => handleUserGroupClick("TA", classroomUsersList.filter((user) => user.classroom_role === "TA"))}
             />
 
             <UserGroupCard
               label="Students"
-              role_type="Student"
+              role_type="STUDENT"
               classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("Student")}
+              givenUsersList={classroomUsersList.filter((user) => user.classroom_role === "STUDENT")}
+              onClick={() => handleUserGroupClick("Student", classroomUsersList.filter((user) => user.classroom_role === "STUDENT"))}
             />
           </div>
           <div className="Dashboard__assignmentsWrapper">

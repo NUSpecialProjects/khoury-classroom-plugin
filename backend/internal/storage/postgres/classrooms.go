@@ -87,7 +87,7 @@ func (db *DB) ModifyUserRole(ctx context.Context, classroomID int64, classroomRo
 
 func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.UserWithRole, error) {
 	rows, err := db.connPool.Query(ctx, `
-	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_role
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_role as role
 	FROM users u
 	JOIN classroom_membership cm ON u.id = cm.user_id
 	WHERE cm.classroom_id = $1`, classroomID)

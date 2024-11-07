@@ -3,11 +3,13 @@ import React, { useState } from "react";
 
 interface CreateTokenProps {
   role_type: string;
+  role_label: string;
   classroom: IClassroom | null;
 }
 
 const LinkGenerator: React.FC<CreateTokenProps> = ({
   role_type,
+  role_label,
   classroom,
 }) => {
   const [message, setMessage] = useState<string>("");
@@ -40,6 +42,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
 
   return (
     <div>
+      <h3>Create {role_label} Invite Link</h3>
       <select 
         value={duration === undefined ? "" : duration}
         onChange={(e) => setDuration(e.target.value === "" ? undefined : Number(e.target.value))}
@@ -51,7 +54,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
         ))}
       </select>
       <button onClick={handleCreateToken} disabled={!classroom}>
-        Create {role_type} Link
+        Generate {role_label} Link
       </button>
       {message && <p>{message}</p>}
     </div>

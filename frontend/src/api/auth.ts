@@ -17,3 +17,24 @@ export const getCurrentUser = async (): Promise<boolean> => {
   }
   // return Promise.resolve(false);
 };
+
+export const sendCode = async (code: string): Promise<Response> => {
+  const response = await fetch(`${base_url}/login`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code }),
+  })
+
+  return response;
+};
+
+export const logout = async (): Promise<Response> => {
+  const response = await fetch(`${base_url}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  return response;
+};

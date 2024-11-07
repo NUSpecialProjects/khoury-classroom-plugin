@@ -17,6 +17,21 @@ export async function getCurrentClassroomUser(
   return resp.user;
 }
 
+export async function getClassroomUsers(classroomId: number): Promise<IClassroomUser[]> {
+  const response = await fetch(`${base_url}/classrooms/classroom/${classroomId}/students`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  const resp: { users: IClassroomUser[] } = await response.json();
+  return resp.users;
+}
+
 export async function getClassroomsInOrg(
   orgId: number
 ): Promise<IClassroomListResponse> {

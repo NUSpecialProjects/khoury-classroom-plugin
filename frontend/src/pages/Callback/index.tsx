@@ -3,6 +3,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import "./styles.css";
+import { sendCode } from "@/api/auth";
 
 const Callback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -10,42 +11,45 @@ const Callback: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
+  const handleSuccessfulLogin = () => {
+    const redirectUrl = localStorage.getItem('redirectAfterLogin');
+    console.log("Successful login");
+    login();
+    if (redirectUrl) {
+      localStorage.removeItem('redirectAfterLogin');
+      console.log("Redirecting to: ", redirectUrl);
+      navigate(redirectUrl); // redirect to the page that was requested before login
+    } else {
+      console.log("Default Redirecting to: ", "/app/organization/select");
+      navigate('/app/organization/select'); // default redirect after login
+    }
+    
+  }
+
   useEffect(() => {
     //if code, good, else, route to home
     if (code) {
-      const sendCode = () => {
-        const base_url: string = import.meta.env
-          .VITE_PUBLIC_API_DOMAIN as string;
-
-        fetch(`${base_url}/login`, {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              // Navigate back to login page
-              navigate("/");
-              return;
-            } else {
-              //Successful login. Navigate to dashboard page and call login
-              login();
-              navigate("/app/organization/select");
-            }
-          })
-          .catch((err: unknown) => {
-            // Navigate back to login page with an error message attached
-            navigate(
-              `/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`
-            );
-            console.log("Error Occurred: ", err);
-            return;
-          });
-      };
-      sendCode();
+      sendCode(code)
+      .then((response) => {
+        if (!response.ok) {
+          console.log("Error sending code: ", response);
+          // Navigate back to login page
+          navigate("/");
+          return;
+        } else {
+          console.log("Code sent successfully");
+          //Successful login. Handle redirect
+          handleSuccessfulLogin();
+        }
+      })
+      .catch((err: unknown) => {
+        // Navigate back to login page with an error message attached
+        navigate(
+          `/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`
+        );
+        console.log("Error Occurred: ", err);
+        return;
+      });
     } else {
       navigate("/");
     }

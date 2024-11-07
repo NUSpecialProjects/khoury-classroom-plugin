@@ -16,6 +16,19 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
   return response.json();
 };
 
+export const fetchUser = async (user_name: string): Promise<IGitHubUserResponse> => {
+  const response = await fetch(`${base_url}/users/user/${user_name}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  return response.json()
+};
+
 export const fetchUsersWithRole = async (
   role_type: string,
   classroom: IClassroom
