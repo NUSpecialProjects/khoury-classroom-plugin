@@ -74,7 +74,7 @@ const ClassroomCreation: React.FC = () => {
         ) : (
           <form onSubmit={handleSubmit}>
             <Input
-              label="Organization"
+              label="Organization name"
               name="organization"
               required
               readOnly
@@ -84,7 +84,7 @@ const ClassroomCreation: React.FC = () => {
             <Input
               label="Classroom name"
               name="classroom-name"
-              placeholder="Database Project"
+              placeholder="Enter a name for your classroom..."
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
