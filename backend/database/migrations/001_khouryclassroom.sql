@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS assignment_template (
 
 CREATE TABLE IF NOT EXISTS rubrics (
     id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     org_id INTEGER NOT NULL,
     classroom_id INTEGER NOT NULL,
     reusable BOOLEAN NOT NULL,
