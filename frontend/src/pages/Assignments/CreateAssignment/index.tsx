@@ -38,6 +38,7 @@ const CreateAssignment: React.FC = () => {
       <RepositoryDropdown
         repositories={templates}
         onChange={(selectedRepoId: number) => {
+          console.log("Selected repo ID:", selectedRepoId);
           // PLACEHOLDER
         }}
         loading={loadingTemplates}
