@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { postClassroom } from "@/api/classrooms";
-import "./styles.css";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import useUrlParameter from "@/hooks/useUrlParameter";
 import { getOrganizationDetails } from "@/api/organizations";
+import useUrlParameter from "@/hooks/useUrlParameter";
+import Panel from "@/components/Panel";
+import Button from "@/components/Button";
+
+import "./styles.css";
 
 const ClassroomCreation: React.FC = () => {
   const [name, setName] = useState("");
@@ -63,47 +66,49 @@ const ClassroomCreation: React.FC = () => {
   };
 
   return (
-    <div className="ClassroomCreation">
-      <h1>Create a New Classroom</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Classroom Name</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="organization">Organization</label>
-            <input
-              type="text"
-              id="organization"
-              value={organization ? organization.login : ""}
-              readOnly
-              required
-            />
-          </div>
-          {error && <p className="error">{error}</p>}
-          {!organization && (
-            <p className="error">
-              <Link to="/app/organization/select">
-                Click here to select an organization
-              </Link>
-              .
-            </p>
-          )}
-          <button type="submit" className="btn btn-primary">
-            Create Classroom
-          </button>
-        </form>
-      )}
-    </div>
+    <Panel title="New Classroom" logo={true}>
+      <div className="ClassroomCreation">
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="name">Classroom Name</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="organization">Organization</label>
+              <input
+                type="text"
+                id="organization"
+                value={organization ? organization.login : ""}
+                readOnly
+                required
+              />
+            </div>
+            {error && <p className="error">{error}</p>}
+            {!organization && (
+              <p className="error">
+                <Link to="/app/organization/select">
+                  Click here to select an organization
+                </Link>
+                .
+              </p>
+            )}
+            <Button type="submit" variant="primary">Create Classroom</Button>
+            <button type="submit" className="btn btn-primary">
+              Create Classroom
+            </button>
+          </form>
+        )}
+      </div>
+    </Panel>
   );
 };
 
