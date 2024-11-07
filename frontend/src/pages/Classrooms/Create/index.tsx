@@ -6,6 +6,7 @@ import { getOrganizationDetails } from "@/api/organizations";
 import useUrlParameter from "@/hooks/useUrlParameter";
 import Panel from "@/components/Panel";
 import Button from "@/components/Button";
+import Dropdown from "@/components/Dropdown";
 
 import "./styles.css";
 
@@ -101,10 +102,13 @@ const ClassroomCreation: React.FC = () => {
                 .
               </p>
             )}
-            <Button type="submit" variant="primary">Create Classroom</Button>
-            <button type="submit" className="btn btn-primary">
-              Create Classroom
-            </button>
+            <div className="ClassroomCreation__buttonWrapper">
+              <Button type="submit" variant="primary">Create Classroom</Button>
+              <Button type="submit" variant="secondary">Select a different organization</Button>
+              <button type="submit" className="btn btn-primary">
+                Create Classroom
+              </button>
+            </div>
           </form>
         )}
       </div>
