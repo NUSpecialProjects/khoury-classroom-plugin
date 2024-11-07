@@ -98,7 +98,7 @@ const Assignment: React.FC = () => {
             {studentWorks && studentWorks.length > 0 &&
               studentWorks.map((sa, i) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell>{sa.contributors}</TableCell>
+                  <TableCell>{sa.contributors.join(", ")}</TableCell>
                   <TableCell>Passing</TableCell>
                   <TableCell>12 Sep, 11:34pm</TableCell>
                 </TableRow>
