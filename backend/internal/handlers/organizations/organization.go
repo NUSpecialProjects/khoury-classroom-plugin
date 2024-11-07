@@ -134,8 +134,8 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		}
 
 		// Parse pagination parameters
-		itemsPerPage := c.QueryInt("itemsPerPage", 30)
-		pageNum := c.QueryInt("pageNum", 1)
+		itemsPerPage := c.QueryInt("itemsPerPage")
+		pageNum := c.QueryInt("pageNum")
 
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
