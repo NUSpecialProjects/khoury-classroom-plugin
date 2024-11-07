@@ -40,12 +40,6 @@ export const getAssignmentIndirectNav = async (
   }
 
   const data: IAssignmentOutline = (await result.json() as IAssignmentOutlineResponse).assignment_outline
-<<<<<<< HEAD
-  return data
-
-
-=======
   
   return data
->>>>>>> staging
 };
