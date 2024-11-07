@@ -130,7 +130,7 @@ SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
 -- Insert into student_works
 INSERT INTO student_works (id, assignment_outline_id, repo_name, unique_due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
 VALUES
-(1, 1, 'kennysmith/running-chocolate-tracker', '2023-02-01 23:59:59', 10, 28, 20, '2023-01-31 20:00:00', '2023-02-05 10:00:00', 'GRADE_PUBLISHED', NOW()),
+(1, 1, 'khoury-classroom-plugin', '2023-02-01 23:59:59', 96, 28, 20, '2023-01-31 20:00:00', '2023-02-05 10:00:00', 'GRADE_PUBLISHED', NOW()),
 (2, 2, 'kennysmith/compiler-design', '2023-03-01 23:59:59', 11, 25, 22, '2023-02-28 18:00:00', '2023-03-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
 (3, 3, 'alanturing/linux-module', '2023-04-01 23:59:59', 12, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
 (4, 4, 'adalovelace/encryption-algorithms', '2023-05-01 23:59:59', 13, 45, 40, '2023-04-29 19:00:00', '2023-05-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
@@ -140,7 +140,7 @@ VALUES
 (8, 8, 'linustorvalds/cloud-deployment', '2023-09-01 23:59:59', 17, 40, 35, '2023-08-30 20:00:00', '2023-09-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
 (9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 18, 48, 45, '2023-09-29 21:00:00', '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
 (10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 19, 38, 35, '2023-10-31 20:00:00', '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
-(11, 1, 'alanturing/running-chocolate-tracker', '2023-04-01 23:59:59', 12, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
+(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 1, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
 SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
 
 -- Insert into work_contributors+
