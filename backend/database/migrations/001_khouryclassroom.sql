@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS rubrics (
     org_id INTEGER NOT NULL,
     classroom_id INTEGER NOT NULL,
     reusable BOOLEAN NOT NULL,
-    created_at TIMESTAMP DEFAULT NOT(),
+    created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS rubric_items (
     point_value INTEGER NOT NULL,
     explanation VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (rubric_id) REFERENCES ruubrics(id),
+    FOREIGN KEY (rubric_id) REFERENCES rubrics(id),
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
