@@ -15,7 +15,7 @@ func (s *RubricService) CreateRubric() fiber.Handler {
         var request models.FullRubric
         err := c.BodyParser(&request)
         if err != nil {
-            errs.BadRequest(err)
+            return errs.BadRequest(err)
         }
 
         rubricData      := request.Rubric
@@ -24,7 +24,7 @@ func (s *RubricService) CreateRubric() fiber.Handler {
         // create rubric entry
         createdRubric, err := s.store.CreateRubric(c.Context(), rubricData)
         if err != nil {
-            errs.InternalServerError()
+            return errs.InternalServerError()
         }
 
         // create each item
@@ -34,7 +34,7 @@ func (s *RubricService) CreateRubric() fiber.Handler {
 
             createdItem, err := s.store.AddItemToRubric(c.Context(), item)
             if err != nil {
-                errs.InternalServerError()
+                return errs.InternalServerError()
             }
             createdItems = append(createdItems, createdItem)
         }
