@@ -10,7 +10,7 @@ import {
 } from "@/components/Table/index.tsx";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
-import { getStudentAssignments } from "@/api/student_assignments";
+import { getStudentWorks } from "@/api/student_assignments";
 import { formatDate } from "@/utils/date";
 
 import "./styles.css";
@@ -21,7 +21,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [studentAssignments, setStudentAssignments] = useState<
-    IStudentAssignment[]
+    IStudentWork[]
   >([]);
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
@@ -30,7 +30,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 
   useEffect(() => {
     if (!selectedClassroom) return;
-    getStudentAssignments(selectedClassroom.id, assignmentId)
+    getStudentWorks(selectedClassroom.id, assignmentId)
       .then((studentAssignments) => {
         console.log(studentAssignments);
         setStudentAssignments(studentAssignments);
@@ -68,7 +68,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                     navigate(`assignment/${assignmentId}/student/${i + 1}`);
                   }}
                 >
-                  <TableCell>{studentAssignment.student_gh_username}</TableCell>
+                  <TableCell>{studentAssignment.contributors}</TableCell>
                   <TableCell>-/100</TableCell>
                 </TableRow>
               ))}
@@ -80,7 +80,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 };
 
 const Grading: React.FC = () => {
-  const [assignments, setAssignments] = useState<IAssignment[]>([]);
+  const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
@@ -108,8 +108,8 @@ const Grading: React.FC = () => {
         {assignments.map((assignment, i: number) => (
           <GradingAssignmentRow key={i} assignmentId={i + 1}>
             <TableCell>{assignment.name}</TableCell>
-            <TableCell>{formatDate(assignment.inserted_date)}</TableCell>
-            <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
+            <TableCell>{formatDate(assignment.created_at)}</TableCell>
+            <TableCell>{formatDate(assignment.main_due_data)}</TableCell>
           </GradingAssignmentRow>
         ))}
       </Table>
