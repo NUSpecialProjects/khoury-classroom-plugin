@@ -253,9 +253,9 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 	}
 }
 
-func (service *ClassroomService) GetCurrentClassroomUser() fiber.Handler {
+func (s *ClassroomService) GetCurrentClassroomUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := middleware.GetClient(c, service.store, service.userCfg)
+		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
 			log.Default().Println("Error getting client:", err)
 			return errs.AuthenticationError()
@@ -273,13 +273,13 @@ func (service *ClassroomService) GetCurrentClassroomUser() fiber.Handler {
 			return errs.AuthenticationError()
 		}
 
-		user, err := service.store.GetUserByGitHubID(c.Context(), githubUser.ToUser().GithubUserID)
+		user, err := s.store.GetUserByGitHubID(c.Context(), githubUser.ToUser().GithubUserID)
 		if err != nil {
 			log.Default().Println("Error getting user by GitHub ID:", err)
 			return errs.AuthenticationError()
 		}
 
-		userWithRole, err := service.store.GetUserInClassroom(c.Context(), classroomID, *user.ID)
+		userWithRole, err := s.store.GetUserInClassroom(c.Context(), classroomID, *user.ID)
 		if err != nil {
 			log.Default().Println("Error getting user in classroom:", err)
 			return errs.AuthenticationError()
