@@ -21,11 +21,19 @@ func (api *CommonAPI) Ping(ctx context.Context) (string, error) {
 	return message, nil
 }
 
-func (api *CommonAPI) ListRepositoriesByOrg(ctx context.Context, orgName string) ([]*github.Repository, error) {
-	repos, _, err := api.Client.Repositories.ListByOrg(ctx, orgName, nil)
-
+func (api *CommonAPI) ListRepositoriesByOrg(ctx context.Context, orgName string, itemsPerPage int, pageNum int) ([]*models.Repository, error) {
+	// Construct the request
+	endpoint := fmt.Sprintf("/orgs/%s/repos?per_page=%d&page=%d", orgName, itemsPerPage, pageNum)
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
 	if err != nil {
-		return repos, fmt.Errorf("error fetching repositories: %v", err)
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Execute the request
+	var repos []*models.Repository
+	_, err = api.Client.Do(ctx, req, &repos)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching repositories: %v", err)
 	}
 
 	return repos, nil

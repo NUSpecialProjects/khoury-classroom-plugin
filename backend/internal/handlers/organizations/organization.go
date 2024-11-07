@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"errors"
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -21,12 +20,12 @@ func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubClientError(err)
 		}
 
 		orgs, err := client.GetUserOrgs(c.Context())
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubAPIError(err)
 		}
 
 		return c.Status(fiber.StatusOK).JSON(orgs)
@@ -38,7 +37,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubClientError(err)
 		}
 		// Get the app client
 		appClient := service.githubappclient
@@ -46,13 +45,13 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubAPIError(err)
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubAPIError(err)
 		}
 
 		// Filter the organizations to include only those with the app installed
@@ -81,19 +80,19 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		// Extract org_id from the path
 		orgName := c.Params("org_name")
 		if orgName == "" || orgName == "undefined" {
-			return errs.BadRequest(errors.New("invalid org_name"))
+			return errs.MissingAPIParamError("org_name")
 		}
 
 		// Get the user client
 		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubClientError(err)
 		}
 
 		// Get the organization
 		org, err := userClient.GetOrg(c.Context(), orgName)
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubAPIError(err)
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"org": org})
 	}
@@ -112,5 +111,46 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{"classrooms": classrooms})
+	}
+}
+
+func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Extract org_id from the path
+		orgName := c.Params("org_name")
+		if orgName == "" || orgName == "undefined" {
+			return errs.MissingAPIParamError("org_name")
+		}
+
+		// Parse pagination parameters
+		itemsPerPage, err := strconv.Atoi(c.Query("items_per_page"))
+		if err != nil {
+			return errs.MissingAPIParamError("items_per_page")
+		}
+		pageNum, err := strconv.Atoi(c.Query("page_num"))
+		if err != nil {
+			return errs.MissingAPIParamError("page_num")
+		}
+
+		// Get the user client
+		userClient, err := middleware.GetClient(c, service.store, service.userCfg)
+		if err != nil {
+			return errs.GithubClientError(err)
+		}
+
+		// Get the organizations repos and filter for template repos
+		repos, err := userClient.ListRepositoriesByOrg(c.Context(), orgName, itemsPerPage, pageNum)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		var templateRepos []models.Repository
+		for _, repo := range repos {
+			if repo.IsTemplate && !repo.Archived {
+				templateRepos = append(templateRepos, *repo)
+			}
+		}
+
+		return c.Status(200).JSON(fiber.Map{"template_repos": templateRepos})
 	}
 }

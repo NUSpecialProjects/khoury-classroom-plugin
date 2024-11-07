@@ -87,6 +87,12 @@ const Dashboard: React.FC = () => {
               onClick={() => handleUserGroupClick("Student", classroomUsersList.filter((user) => user.classroom_role === "STUDENT"))}
             />
           </div>
+          <Link
+            to={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
+            className="Dashboard__assignmentLink"
+          >
+            Create Assignment
+          </Link>
           <div className="Dashboard__assignmentsWrapper">
             <h2 style={{ marginBottom: 0 }}>Assignments</h2>
             <Table cols={2}>
