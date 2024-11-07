@@ -3,6 +3,7 @@ import Settings from "./Settings";
 import Dashboard from "./Dashboard";
 import Assignments from "./Assignments";
 import Assignment from "./Assignments/Assignment";
+import CreateAssignment from "./Assignments/CreateAssignment";
 import Grading from "./Grading";
 import Grader from "./Grading/Grader";
 import Callback from "./Callback";
@@ -24,6 +25,7 @@ export {
   Dashboard,
   Assignments,
   Assignment,
+  CreateAssignment,
   Grading,
   Grader,
   Callback,
