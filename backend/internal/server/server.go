@@ -35,7 +35,7 @@ func New(params types.Params) *fiber.App {
 	filetree.Routes(app, params)
 	webhooks.Routes(app, params)
 	users.Routes(app, params)
-    rubrics.Routes(app, params)
+	rubrics.Routes(app, params)
 
 	// heartbeat route
 	app.Get("/", func(c *fiber.Ctx) error {
