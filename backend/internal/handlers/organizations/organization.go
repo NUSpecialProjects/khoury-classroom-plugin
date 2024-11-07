@@ -127,9 +127,9 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Extract org_id from the path
-		org_name := c.Params("org_name")
-		if org_name == "" || org_name == "undefined" {
-			log.Default().Println("Error getting org_name: ", org_name)
+		orgName := c.Params("org_name")
+		if orgName == "" || orgName == "undefined" {
+			log.Default().Println("Error getting org_name: ", orgName)
 			return c.Status(400).JSON(fiber.Map{"error": "invalid org_name"})
 		}
 
@@ -145,7 +145,7 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		}
 
 		// Get the organizations repos and filter for template repos
-		repos, err := userClient.ListRepositoriesByOrg(c.Context(), org_name, itemsPerPage, pageNum)
+		repos, err := userClient.ListRepositoriesByOrg(c.Context(), orgName, itemsPerPage, pageNum)
 		if err != nil {
 			log.Default().Println("Error getting repos: ", err)
 			return c.Status(500).JSON(fiber.Map{"error": "failed to get repos"})
