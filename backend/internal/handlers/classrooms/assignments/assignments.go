@@ -19,7 +19,7 @@ func (s *AssignmentService) getAssignments() fiber.Handler {
 
 		assignments, err := s.store.GetAssignmentsInClassroom(c.Context(), classroomID)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
@@ -38,7 +38,7 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 
 		assignment, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
@@ -57,7 +57,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 
 		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
-			return err
+			return errs.InternalServerError()
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{

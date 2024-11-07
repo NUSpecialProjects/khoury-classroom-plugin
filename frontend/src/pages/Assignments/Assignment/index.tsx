@@ -46,6 +46,13 @@ const Assignment: React.FC = () => {
             const fetchedAssignment = await getAssignmentIndirectNav(selectedClassroom.id, +id);
             if (fetchedAssignment !== null && fetchedAssignment !== undefined) {
               setAssignment(fetchedAssignment);
+<<<<<<< HEAD
+=======
+              const studentWorks = await getStudentWorks(selectedClassroom.id, fetchedAssignment.id)
+              if (studentWorks !== null && studentWorks !== undefined) {
+                setStudentAssignment(studentWorks);
+              }
+>>>>>>> staging
             }
           } catch (error) {
             console.error("Could not get assignment: ", error);
@@ -94,7 +101,7 @@ const Assignment: React.FC = () => {
             {studentWorks && studentWorks.length > 0 &&
               studentWorks.map((sa, i) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell>{sa.contributors}</TableCell>
+                  <TableCell>{sa.contributors.join(", ")}</TableCell>
                   <TableCell>Passing</TableCell>
                   <TableCell>12 Sep, 11:34pm</TableCell>
                 </TableRow>

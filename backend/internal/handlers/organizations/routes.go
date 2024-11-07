@@ -30,5 +30,8 @@ func OrgRoutes(router fiber.Router, service *OrganizationService) fiber.Router {
 	// Get the details of an organization
 	orgRouter.Get("/org/:org_name", service.GetOrg())
 
+	// Get the template repositries of an organization
+	orgRouter.Get("/org/:org_name/templates", service.GetOrgTemplateRepos())
+
 	return orgRouter
 }

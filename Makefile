@@ -29,7 +29,13 @@ frontend:
 	cd frontend && npm run dev
 
 # Build and run whole app
-.PHONY: all
-all:
+.PHONY: app
+app:
 	$(MAKE) DETACHED=-d backend
+	$(MAKE) frontend
+
+# Build and run whole app with no caching
+.PHONY: clean-app
+clean-app:
+	$(MAKE) DETACHED=-d restart-backend
 	$(MAKE) frontend
