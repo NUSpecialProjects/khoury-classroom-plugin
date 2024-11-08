@@ -61,10 +61,11 @@ const CreateAssignment: React.FC = () => {
     };
 
     const handleSubmit = (data: AssignmentFormData) => {
-        console.log(data);
-
         createAssignmentTemplate(data.classroomId, data.templateRepo!)
-        createAssignment(data.templateRepo!.id, data, )
+        createAssignment(data.templateRepo!.id, data)
+
+        // Navigate back to dashboard
+        
     }
 
     return (

@@ -51,7 +51,7 @@ export const createAssignmentTemplate = async (
   assignment: IRepository
 ): Promise<IRepository> => {
   const result = await fetch(
-    `${base_url}/assignments/classrooms/classroom/${classroomId}/template`,
+    `${base_url}/classrooms/classroom/${classroomId}/assignments/template`,
     {
       method: "POST",
       credentials: "include",
@@ -79,7 +79,7 @@ export const createAssignment = async (
   assignment: AssignmentFormData
 ): Promise<AssignmentFormData> => {
   const result = await fetch(
-    `${base_url}/assignments/classrooms/classroom/${assignment.classroomId}`,
+    `${base_url}/classrooms/classroom/${assignment.classroomId}/assignments`,
     {
       method: "POST",
       credentials: "include",

@@ -77,12 +77,17 @@ func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (b
 		return false, errs.NewDBError(err)
 	}
 
+	fmt.Println("Tempalte ID: ", templateID, " Exists: ", exists)
+
 	return exists, nil
 }
 
 func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error) {
+	fmt.Println("Template Repo Owner ID: ", assignmentTemplateData.TemplateRepoOwner.ID)
+	fmt.Println("Template ID: ", assignmentTemplateData.TemplateID)
+
 	err := db.connPool.QueryRow(ctx, "INSERT INTO assignment_template (template_repo_owner, template_repo_id) VALUES ($1, $2) RETURNING *",
-		strconv.FormatInt(int64(assignmentTemplateData.TemplateRepoOwner.ID), 10),
+		strconv.FormatInt(assignmentTemplateData.TemplateRepoOwner.ID, 10),
 		assignmentTemplateData.TemplateID,
 	).Scan(&assignmentTemplateData.ID,
 		&assignmentTemplateData.TemplateRepoOwner.ID,

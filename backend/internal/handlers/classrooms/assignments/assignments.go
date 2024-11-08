@@ -88,6 +88,7 @@ func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
 		}
 
 		// Create the template if it does not exist
+		fmt.Println("Creating template...")
 		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
 		if err != nil {
 			fmt.Println("Error creating template")
