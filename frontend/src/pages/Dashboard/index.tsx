@@ -65,8 +65,6 @@ const Dashboard: React.FC = () => {
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
-              role_type="PROFESSOR"
-              classroom={selectedClassroom}
               givenUsersList={classroomUsersList.filter(
                 (user) => user.classroom_role === "PROFESSOR"
               )}
@@ -82,8 +80,6 @@ const Dashboard: React.FC = () => {
 
             <UserGroupCard
               label="TAs"
-              role_type="TA"
-              classroom={selectedClassroom}
               givenUsersList={classroomUsersList.filter(
                 (user) => user.classroom_role === "TA"
               )}
@@ -99,8 +95,6 @@ const Dashboard: React.FC = () => {
 
             <UserGroupCard
               label="Students"
-              role_type="STUDENT"
-              classroom={selectedClassroom}
               givenUsersList={classroomUsersList.filter(
                 (user) => user.classroom_role === "STUDENT"
               )}
