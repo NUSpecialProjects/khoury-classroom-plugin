@@ -7,3 +7,22 @@ interface IGitHubUser {
   name: string | null;
   email: string | null;
 }
+
+interface IGitHubUserResponse {
+  user: IGitHubUser;
+}
+
+interface IClassroomUser {
+  id: number;
+  first_name: string;
+  last_name: string;
+  github_username: string;
+  github_user_id: number;
+  classroom_role: ClassroomRole;
+}
+
+enum ClassroomRole {
+  PROFESSOR = "PROFESSOR",
+  TA = "TA",
+  STUDENT = "STUDENT",
+}

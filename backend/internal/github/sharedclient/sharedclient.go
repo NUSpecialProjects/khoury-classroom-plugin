@@ -158,3 +158,8 @@ func (api *CommonAPI) ForkRepository(ctx context.Context, owner string, repo str
 
 	return forkedRepo, nil
 }
+
+func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.User, error) {
+	user, _, err := api.Client.Users.Get(ctx, userName)
+	return user, err
+}

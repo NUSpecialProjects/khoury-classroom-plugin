@@ -50,7 +50,6 @@ const ClassroomCreation: React.FC = () => {
     })
       .then((createdClassroom) => {
         setSelectedClassroom(createdClassroom);
-        console.log("Created classroom:", createdClassroom);
         navigate("/app/dashboard");
       })
       .catch((error) => {

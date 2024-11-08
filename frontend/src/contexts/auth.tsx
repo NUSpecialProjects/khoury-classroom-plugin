@@ -1,17 +1,17 @@
-import { getCurrentUser } from "@/api/auth";
+import { getCurrentUser, logout as logoutApi } from "@/api/auth";
 import { useState, createContext, useLayoutEffect } from "react";
 
 interface IAuthContext {
   isLoggedIn: boolean;
   login: () => void;
+  logout: () => void;
 }
 
-// Handle Auth State- Vulnerable to XSS?
-export const AuthContext: React.Context<IAuthContext> =
-  createContext<IAuthContext>({
-    isLoggedIn: false,
-    login: () => {},
-  });
+export const AuthContext = createContext<IAuthContext>({
+  isLoggedIn: false,
+  login: () => {},
+  logout: () => {},
+});
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -24,8 +24,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       .then((ok) => {
         setIsLoggedIn(ok);
       })
-      .catch((err: unknown) => {
-        console.log("Error fetching current user: ", err);
+      .catch((_: unknown) => {
+        setIsLoggedIn(false);
       })
       .finally(() => {
         setLoading(false);
@@ -36,12 +36,23 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoggedIn(true);
   };
 
+  const logout = () => {
+    logoutApi()
+      .then(() => {
+        setIsLoggedIn(false);
+      })
+      .catch((_: Error) => {
+      });
+  };
+
+  if (loading) {
+    return null;
+  }
+
   return (
-    !loading && (
-      <AuthContext.Provider value={{ isLoggedIn, login }}>
-        {children}
-      </AuthContext.Provider>
-    )
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

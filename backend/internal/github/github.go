@@ -78,4 +78,6 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
 	ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error)
+
+	GetUser(ctx context.Context, userName string) (*github.User, error)
 }
