@@ -4,9 +4,10 @@ import { getOrganizationTemplates } from "@/api/organizations";
 
 import MultiStepForm from '@/components/MultiStepForm';
 import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/main';
-import { AssignmentFormData } from "@/components/MultiStepForm/Interfaces/CreateAssignment";
 import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
+import { createAssignment, createAssignmentTemplate } from "@/api/assignments";
+import { AssignmentFormData } from "@/components/MultiStepForm/Interfaces/CreateAssignment";
 
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -52,21 +53,26 @@ const CreateAssignment: React.FC = () => {
     ];
 
     const initialData: AssignmentFormData = {
-        name: '',
-        description: '',
-        dueDate: null,
-        isGroupAssignment: false,
-        selectedRepoId: 0,
+        assignmentName: '',
+        classroomId: selectedClassroom?.id || -1,
+        groupAssignment: false,
+        mainDueDate: null,
+        templateRepo: null
     };
+
+    const handleSubmit = (data: AssignmentFormData) => {
+        console.log(data);
+
+        createAssignmentTemplate(data.classroomId, data.templateRepo!)
+        createAssignment(data.templateRepo!.id, data, )
+    }
 
     return (
         <div>
             <h1>Create Assignment</h1>
             <MultiStepForm
                 steps={steps}
-                submitFunc={(data) => {
-                    console.log(data);
-                }}
+                submitFunc={handleSubmit}
                 initialData={initialData}
             />
         </div>

@@ -48,33 +48,32 @@ VALUES
 (5, 10, 'TA', NOW());
 
 -- Insert into assignment_template
-INSERT INTO assignment_template (id, template_repo_owner, template_repo_id, created_at)
+INSERT INTO assignment_template (template_repo_owner, template_repo_id, created_at)
 VALUES
-(1, 'kennysmith', '1000', NOW()),
-(2, 'gracehopper', '1001', NOW()),
-(3, 'linustorvalds', '1002', NOW()),
-(4, 'alanturing', '1003', NOW()),
-(5, 'adalovelace', '1004', NOW()),
-(6, 'mhamilton', '1005', NOW()),
-(7, 'timbl', '1006', NOW()),
-(8, 'bliskov', '1007', NOW()),
-(9, 'dritchie', '1008', NOW()),
-(10, 'kthompson', '1009', NOW());
-SELECT setval('assignment_template_id_seq', (SELECT MAX(id) FROM assignment_template));
+('kennysmith', 1000, NOW()),
+('gracehopper', 1001, NOW()),
+('linustorvalds', 1002, NOW()),
+('alanturing', 1003, NOW()),
+('adalovelace', 1004, NOW()),
+('mhamilton', 1005, NOW()),
+('timbl', 1006, NOW()),
+('bliskov', 1007, NOW()),
+('dritchie', 1008, NOW()),
+('kthompson', 1009, NOW());
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
 VALUES
-(1, 1, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, FALSE),
-(2, 2, NOW(), '2023-02-01 09:00:00', 'Compiler Design', 1, TRUE),
-(3, 3, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 2, FALSE),
-(4, 4, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 2, TRUE),
-(5, 5, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 3, FALSE),
-(6, 6, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 4, TRUE),
-(7, 7, NOW(), '2023-07-01 09:00:00', 'Website Development', 5, FALSE),
-(8, 8, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, TRUE),
-(9, 9, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
-(10, 10, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
+(1, 1001, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, FALSE),
+(2, 1002, NOW(), '2023-02-01 09:00:00', 'Compiler Design', 1, TRUE),
+(3, 1003, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 2, FALSE),
+(4, 1004, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 2, TRUE),
+(5, 1005, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 3, FALSE),
+(6, 1006, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 4, TRUE),
+(7, 1007, NOW(), '2023-07-01 09:00:00', 'Website Development', 5, FALSE),
+(8, 1008, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, TRUE),
+(9, 1009, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
+(10, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
 SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
 
 -- Insert into rubric_items

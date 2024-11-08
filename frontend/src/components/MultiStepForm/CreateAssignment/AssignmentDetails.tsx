@@ -8,15 +8,15 @@ const AssignmentDetails: React.FC<StepComponentProps<AssignmentFormData>> = ({ d
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
       const { name, value, type } = e.target;
-      let updatedValue: string | boolean | Date | null = value;
 
       if (type === 'checkbox') {
-        updatedValue = (e.target as HTMLInputElement).checked;
+        const target = e.target as HTMLInputElement;
+        onChange({ [name]: target.checked });
       } else if (type === 'date') {
-        updatedValue = value ? new Date(value) : null;
+        onChange({ [name]: value ? new Date(value) : null });
+      } else {
+        onChange({ [name]: value });
       }
-
-      onChange({ [name]: updatedValue });
     },
     [onChange]
   );
@@ -30,30 +30,20 @@ const AssignmentDetails: React.FC<StepComponentProps<AssignmentFormData>> = ({ d
         <input
           id="assignmentName"
           type="text"
-          name="name"
-          value={data.name}
+          name="assignmentName"
+          value={data.assignmentName}
           onChange={handleInputChange}
           required
         />
       </div>
 
       <div className="form-group">
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={data.description}
-          onChange={handleInputChange}
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="dueDate">Due Date:</label>
+        <label htmlFor="mainDueDate">Due Date:</label>
         <input
-          id="dueDate"
+          id="mainDueDate"
           type="date"
-          name="dueDate"
-          value={data.dueDate ? data.dueDate.toISOString().split('T')[0] : ''}
+          name="mainDueDate"
+          value={data.mainDueDate ? data.mainDueDate.toISOString().split('T')[0] : ''}
           onChange={handleInputChange}
           required
         />
@@ -61,14 +51,13 @@ const AssignmentDetails: React.FC<StepComponentProps<AssignmentFormData>> = ({ d
 
       <div className="form-group checkbox-group">
         <input
-          id="isGroupAssignment"
+          id="groupAssignment"
           type="checkbox"
-          name="isGroupAssignment"
-          checked={data.isGroupAssignment}
+          name="groupAssignment"
+          checked={data.groupAssignment}
           onChange={handleInputChange}
-          required
         />
-        <label htmlFor="isGroupAssignment">Group Assignment</label>
+        <label htmlFor="groupAssignment">Group Assignment</label>
       </div>
     </form>
   );

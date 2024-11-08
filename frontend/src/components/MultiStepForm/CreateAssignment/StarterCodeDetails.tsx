@@ -9,11 +9,11 @@ const StarterCodeDetails: React.FC<StarterCodeDetailsProps> = ({ data, onChange,
       <div>
         <RepositoryDropdown
           repositories={repositories}
-          onChange={(selectedRepoId: number) => {
-            onChange({ selectedRepoId });
+          onChange={(selectedTemplate: IRepository) => {
+            onChange({ templateRepo: selectedTemplate });
           }}
           loading={isLoading}
-          selectedRepoId={data.selectedRepoId}
+          selectedRepo={data.templateRepo}
         />
       </div>
     </div>

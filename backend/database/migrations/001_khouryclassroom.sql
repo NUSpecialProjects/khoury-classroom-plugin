@@ -43,9 +43,8 @@ CREATE TABLE IF NOT EXISTS classroom_membership (
 );
 
 CREATE TABLE IF NOT EXISTS assignment_template (
-    id SERIAL PRIMARY KEY,
+    template_repo_id INTEGER PRIMARY KEY,
     template_repo_owner VARCHAR(255) NOT NULL,
-    template_repo_id VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -59,7 +58,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     main_due_date TIMESTAMP,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
-    FOREIGN KEY (template_id) REFERENCES assignment_template(id)
+    FOREIGN KEY (template_id) REFERENCES assignment_template(template_repo_id)
 );
 
 -- TODO: Impose length on tokens

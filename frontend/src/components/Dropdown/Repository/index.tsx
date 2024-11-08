@@ -1,10 +1,10 @@
 import React, { ChangeEvent } from 'react';
 
 interface RepositoryDropdownProps {
-  repositories: IRepository[];
-  onChange?: (selectedRepoId: number) => void;
-  selectedRepoId?: number;
-  loading: boolean;
+    repositories: IRepository[];
+    onChange?: (selectedTemplate: IRepository) => void;
+    selectedRepo: IRepository | null;
+    loading: boolean;
 }
 
 const PLACEHOLDER_OPTION = 'Select a repository';
@@ -14,13 +14,15 @@ const NO_REPOSITORIES_OPTION = 'No repositories available';
 const RepositoryDropdown: React.FC<RepositoryDropdownProps> = ({
     onChange,
     repositories,
-    selectedRepoId,
+    selectedRepo,
     loading,
 }) => {
     const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(event.target.value, 10);
-        if (onChange && !isNaN(selectedId)) {
-            onChange(selectedId);
+        const selectedRepo = repositories.find((repo) => repo.id === selectedId);
+
+        if (onChange && selectedRepo) {
+            onChange(selectedRepo);
         }
     };
 
@@ -50,7 +52,7 @@ const RepositoryDropdown: React.FC<RepositoryDropdownProps> = ({
 
     return (
         <select
-            value={selectedRepoId ?? ''}
+            value={selectedRepo?.name ?? ''}
             onChange={handleChange}
         >
             <option value="" disabled>
