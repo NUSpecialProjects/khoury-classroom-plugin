@@ -62,7 +62,7 @@ const Dashboard: React.FC = () => {
           ) : classroomUser ? (
             <p>Viewing as a {classroomUser.classroom_role}</p>
           ) : (
-            <p>Viewing classroom you aren't in!! (Eventually, this should be impossible)</p>
+            <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
           )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
