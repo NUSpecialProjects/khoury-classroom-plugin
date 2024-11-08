@@ -77,8 +77,8 @@ const Assignment: React.FC = () => {
             <div className="Assignment__dates">
               <span>
                 Due Date:{" "}
-                {assignment.main_due_data
-                  ? assignment.main_due_data.toString()
+                {assignment.main_due_date
+                  ? assignment.main_due_date.toString()
                   : "N/A"}
               </span>
             </div>

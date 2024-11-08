@@ -1,7 +1,13 @@
 import { useEffect, useContext, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getOrganizationTemplates } from "@/api/organizations";
-import RepositoryDropdown from "@/components/Dropdown/Repository";
+
+import MultiStepForm from '@/components/MultiStepForm';
+import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/main';
+import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
+import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
+import { createAssignment, createAssignmentTemplate } from "@/api/assignments";
+import { AssignmentFormData } from "@/components/MultiStepForm/Interfaces/CreateAssignment";
 
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -32,19 +38,46 @@ const CreateAssignment: React.FC = () => {
     fetchTemplates(orgName);
   }, [orgName]);
 
-  return (
-    <div>
-      <h1>Create Assignment</h1>
-      <RepositoryDropdown
-        repositories={templates}
-        onChange={(selectedRepoId: number) => {
-          console.log("Selected repo ID:", selectedRepoId);
-          // PLACEHOLDER
-        }}
-        loading={loadingTemplates}
-      />
-    </div>
-  );
+    const steps: Step<AssignmentFormData>[] = [
+        { title: 'Assignment Details', component: AssignmentDetails },
+        {
+            title: 'Starter Code Repository',
+            component: (props: StepComponentProps<AssignmentFormData>) => (
+                <StarterCodeDetails
+                    {...props}
+                    repositories={templates}
+                    isLoading={loadingTemplates}
+                />
+            )
+        },
+    ];
+
+    const initialData: AssignmentFormData = {
+        assignmentName: '',
+        classroomId: selectedClassroom?.id || -1,
+        groupAssignment: false,
+        mainDueDate: null,
+        templateRepo: null
+    };
+
+    const handleSubmit = (data: AssignmentFormData) => {
+        createAssignmentTemplate(data.classroomId, data.templateRepo!)
+        createAssignment(data.templateRepo!.id, data)
+
+        // Navigate back to dashboard
+        
+    }
+
+    return (
+        <div>
+            <h1>Create Assignment</h1>
+            <MultiStepForm
+                steps={steps}
+                submitFunc={handleSubmit}
+                initialData={initialData}
+            />
+        </div>
+    );
 };
 
 export default CreateAssignment;
