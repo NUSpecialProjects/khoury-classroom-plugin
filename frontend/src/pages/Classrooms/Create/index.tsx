@@ -23,8 +23,7 @@ const ClassroomCreation: React.FC = () => {
           .then((org) => {
             setOrganization(org);
           })
-          .catch((error) => {
-            console.error("Error fetching organization details:", error);
+          .catch((_) => {
             setError("Failed to fetch organization details. Please try again.");
           })
           .finally(() => {
@@ -52,8 +51,7 @@ const ClassroomCreation: React.FC = () => {
         setSelectedClassroom(createdClassroom);
         navigate("/app/dashboard");
       })
-      .catch((error) => {
-        console.error("Error creating classroom:", error);
+      .catch((_) => {
         setError("Failed to create classroom. Please try again.");
       })
       .finally(() => {

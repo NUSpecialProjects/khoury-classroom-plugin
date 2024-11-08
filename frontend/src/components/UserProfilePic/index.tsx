@@ -11,8 +11,8 @@ const UserProfilePic: React.FC = () => {
       try {
         const currentUser = (await fetchCurrentUser()) as IGitHubUser;
         setUser(currentUser);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch (_) {
+        // do nothing
       }
     };
 
@@ -21,14 +21,7 @@ const UserProfilePic: React.FC = () => {
 
   return (
     <div className="User">
-      {user ? (
-        <img src={user.avatar_url} alt={user.login} className="User__avatar" />
-      ) : (
-        // <div className="UserGroupCard__iconUser__avatar"> </div>
-        <div>
-          <IoLogoOctocat />
-        </div>
-      )}
+      {user && <img src={user.avatar_url} alt={user.login} className="User__avatar" />}
     </div>
   );
 };

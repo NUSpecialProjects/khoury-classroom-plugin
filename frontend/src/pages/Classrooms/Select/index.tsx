@@ -27,8 +27,8 @@ const ClassroomSelection: React.FC = () => {
           //TODO: this is broken
           setClassrooms(data.classrooms);
         }
-      } catch (error) {
-        console.error("Error fetching organizations and classrooms:", error);
+      } catch (_) {
+        // do nothing
       } finally {
         setLoading(false);
       }
