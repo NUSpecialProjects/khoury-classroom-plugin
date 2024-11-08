@@ -121,3 +121,51 @@ func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, er
 	}
 	return contents, nil
 }
+
+func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
+	team := &github.NewTeam{
+		Name: teamName,
+	}
+
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
+	if err != nil {
+		return nil, fmt.Errorf("error creating team: %v", err)
+	}
+
+	return createdTeam, nil
+}
+
+func (api *AppAPI) AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error {
+	_, _, err := api.Client.Teams.AddTeamMembership(ctx, teamID, userName, opt)
+	if err != nil {
+		return fmt.Errorf("error adding member to team: %v", err)
+	}
+
+	return nil
+}
+
+func (api *AppAPI) AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error {
+	opt := &github.TeamAddTeamRepoOptions{
+		Permission: permission,
+	}
+
+	_, err := api.Client.Teams.AddTeamRepo(ctx, teamID, ownerName, repoName, opt)
+	if err != nil {
+		return fmt.Errorf("error assigning permission to team: %v", err)
+	}
+
+	return nil
+}
+
+func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error {
+	opt := &github.RepositoryAddCollaboratorOptions{
+		Permission: permission,
+	}
+
+	_, err := api.Client.Repositories.AddCollaborator(ctx, ownerName, repoName, userName, opt)
+	if err != nil {
+		return fmt.Errorf("error assigning permission to user: %v", err)
+	}
+
+	return nil
+}

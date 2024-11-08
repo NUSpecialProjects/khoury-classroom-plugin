@@ -8,9 +8,9 @@ import {
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
-import { getStudentAssignments } from "@/api/student_assignments";
+import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 
 import "./styles.css";
@@ -20,21 +20,22 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   children,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
-  const [studentAssignments, setStudentAssignments] = useState<
-    IStudentAssignment[]
-  >([]);
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const [studentAssignments, setStudentAssignments] = useState<IStudentWork[]>(
+    []
+  );
+  const { selectedClassroom: selectedClassroom } = useContext(
+    SelectedClassroomContext
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!selectedSemester) return;
-    getStudentAssignments(selectedSemester.classroom_id, assignmentId)
+    if (!selectedClassroom) return;
+    getStudentWorks(selectedClassroom.id, assignmentId)
       .then((studentAssignments) => {
-        console.log(studentAssignments);
         setStudentAssignments(studentAssignments);
       })
-      .catch((err: unknown) => {
-        console.error("Error fetching student assignments:", err);
+      .catch((_) => {
+        // do nothing
       });
   }, []);
 
@@ -63,10 +64,12 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                 <TableRow
                   key={i}
                   onClick={() => {
-                    navigate(`assignment/${assignmentId}/student/${i + 1}`);
+                    navigate(
+                      `assignment/${assignmentId}/student/${studentAssignment.student_work_id}`
+                    );
                   }}
                 >
-                  <TableCell>{studentAssignment.student_gh_username}</TableCell>
+                  <TableCell>{studentAssignment.contributors}</TableCell>
                   <TableCell>-/100</TableCell>
                 </TableRow>
               ))}
@@ -78,16 +81,18 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 };
 
 const Grading: React.FC = () => {
-  const [assignments, setAssignments] = useState<IAssignment[]>([]);
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
+  const { selectedClassroom: selectedClassroom } = useContext(
+    SelectedClassroomContext
+  );
   useEffect(() => {
-    if (!selectedSemester) return;
-    getAssignments(selectedSemester.classroom_id)
+    if (!selectedClassroom) return;
+    getAssignments(selectedClassroom.id)
       .then((assignments) => {
         setAssignments(assignments);
       })
-      .catch((err: unknown) => {
-        console.error("Error fetching assignments:", err);
+      .catch((_) => {
+        // do nothing
       });
   }, []);
 
@@ -104,8 +109,8 @@ const Grading: React.FC = () => {
         {assignments.map((assignment, i: number) => (
           <GradingAssignmentRow key={i} assignmentId={i + 1}>
             <TableCell>{assignment.name}</TableCell>
-            <TableCell>{formatDate(assignment.inserted_date)}</TableCell>
-            <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
+            <TableCell>{formatDate(assignment.created_at)}</TableCell>
+            <TableCell>{formatDate(assignment.main_due_data)}</TableCell>
           </GradingAssignmentRow>
         ))}
       </Table>

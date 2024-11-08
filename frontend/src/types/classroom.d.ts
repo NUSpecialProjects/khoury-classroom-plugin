@@ -1,10 +1,31 @@
 interface IClassroom {
   id: number;
   name: string;
-  url: string;
+  org_id: number;
+  org_name: string;
 }
 
 interface IClassroomResponse {
-  available_classrooms: IClassroom[];
-  unavailable_classrooms: IClassroom[];
+  classroom: IClassroom;
+}
+
+interface IUserOrgsAndClassroomsResponse {
+  orgs_and_classrooms: Map<IOrganization, IClassroom[]>;
+}
+
+interface IClassroomListResponse {
+  classrooms: IClassroom[];
+}
+
+interface IClassroomToken {
+  classroom_id: number;
+  classroom_role: string;
+  token: string;
+  expires_at: string | null;
+  created_at: string;
+}
+
+interface IClassroomJoinResponse {
+  message: string;
+  classroom: IClassroom;
 }

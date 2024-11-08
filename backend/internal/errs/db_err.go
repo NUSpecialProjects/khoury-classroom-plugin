@@ -1,26 +1,25 @@
 package errs
 
-
 import (
-  "fmt"
-  "errors"
+	"fmt"
 )
 
-
 type DatabaseError struct {
-  Message   any   `json:"msg"`
+	Message any `json:"msg"`
 }
 
 func (e DatabaseError) Error() string {
-	return fmt.Sprintf("db error: %d", e.Message)
+	return fmt.Sprintf("DB error: %d", e.Message)
 }
 
 func NewDBError(err error) DatabaseError {
-  return DatabaseError {
-    Message:    err.Error(),
-  }
+	return DatabaseError{
+		Message: err.Error(),
+	}
 }
 
-func DBSemesterLogicError() DatabaseError {
-  return NewDBError(errors.New("Multiple semesters should not share a classroom id"))
+func EmptyResult() DatabaseError {
+	return DatabaseError{
+		Message: "unexpected: no rows in result",
+	}
 }

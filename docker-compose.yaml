@@ -31,7 +31,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - ./database/migrations:/docker-entrypoint-initdb.d/
+      - ./backend/database/migrations:/docker-entrypoint-initdb.d/
 volumes:
   db:
     driver: local

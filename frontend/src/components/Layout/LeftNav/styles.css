@@ -49,6 +49,13 @@
     text-wrap: wrap;
   }
 
+  &__orgNameHeader {
+    color: var(--caption-text);
+    font-weight: 400;
+    padding-bottom: 20px;
+    text-wrap: wrap;
+  }
+
 
   &__navBar {
     display: flex;

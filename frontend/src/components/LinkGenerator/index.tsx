@@ -1,49 +1,64 @@
+import { postClassroomToken } from "@/api/classrooms";
 import React, { useState } from "react";
 
 interface CreateTokenProps {
   role_type: string;
-  semester: ISemester | null;
+  role_label: string;
+  classroom: IClassroom | null;
 }
 
-const LinkGenerator: React.FC<CreateTokenProps> = ({ role_type, semester }) => {
+const LinkGenerator: React.FC<CreateTokenProps> = ({
+  role_type,
+  role_label,
+  classroom,
+}) => {
   const [message, setMessage] = useState<string>("");
+  const [duration, setDuration] = useState<number | undefined>(10080); // Default to 7 days
+
+  const expirationOptions = [
+    { label: "1 hour", value: 60 },
+    { label: "6 hours", value: 360 },
+    { label: "12 hours", value: 720 },
+    { label: "1 day", value: 1440 },
+    { label: "7 days", value: 10080 },
+    { label: "Never", value: undefined },
+  ];
 
   const handleCreateToken = async () => {
-    try {
-      const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
-      const response = await fetch(`${base_url}/github/role-token/create`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          semester: semester,
-          role_type: role_type,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
+    if (!classroom) {
+      setMessage("No classroom selected");
+      return;
+    }
+    await postClassroomToken(classroom.id, role_type, duration)
+      .then((data: ITokenResponse) => {
         const url = "http://localhost:3000/app/token/apply?token=" + data.token;
         setMessage("Link created! " + url);
         navigator.clipboard.writeText(url);
-      } else {
-        setMessage("Failed to create token");
-      }
-    } catch (error) {
-      console.error("Error creating token:", error);
-      setMessage("Error creating token");
-    }
+      })
+      .catch((error) => {
+        setMessage("Error creating token: " + error);
+      });
   };
 
   return (
     <div>
-      <button
-        onClick={handleCreateToken}
-        disabled={!semester || !semester.active}
+      <h3>Create {role_label} Invite Link</h3>
+      <select
+        value={duration === undefined ? "" : duration}
+        onChange={(e) =>
+          setDuration(
+            e.target.value === "" ? 10080 : Number(e.target.value)
+          )
+        }
       >
-        Create {role_type} Link
+        {expirationOptions.map((option) => (
+          <option key={option.label} value={option.value ?? ""}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <button onClick={handleCreateToken} disabled={!classroom}>
+        Generate {role_label} Link
       </button>
       {message && <p>{message}</p>}
     </div>

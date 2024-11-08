@@ -1,23 +1,34 @@
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import React, { useContext } from "react";
 
 interface GenericRolePageProps {
-  role_type: string;
+  role_label: string;
+  userList: IClassroomUser[];
 }
 
 const GenericRolePage: React.FC<GenericRolePageProps> = ({
-  role_type,
+  role_label,
+  userList,
 }: GenericRolePageProps) => {
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { selectedClassroom: selectedClassroom } = useContext(
+    SelectedClassroomContext
+  );
 
   return (
     <div>
-      <h1>Create Role Token</h1>
       <div>
-        <p>
-          Users with role [{role_type}] in org [{selectedSemester?.org_id}]
-        </p>
-        <p>(actually put the list here)</p>
+        <h1>
+          {role_label}s in {selectedClassroom?.org_name}
+        </h1>
+        <div>
+          <ul>
+            {userList.map((user) => (
+              <li key={user.id}>
+                {user.first_name} {user.last_name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

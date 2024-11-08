@@ -15,13 +15,9 @@ import {
 } from "./funcs";
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
-import { SelectedSemesterContext } from "@/contexts/selectedSemester";
-import {
-  getStudentAssignment,
-  getGitTree,
-  getGitBlob,
-  getTotalStudentAssignments,
-} from "@/api/student_assignments";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+import { getPaginatedStudentWork } from "@/api/student_works";
+import { getFileTree, getFileBlob, createPRComment } from "@/api/grading";
 
 import "./styles.css";
 
@@ -29,66 +25,62 @@ const Grader: React.FC = () => {
   const navigate = useNavigate();
 
   // params
-  const { assignmentId, studentAssignmentId } = useParams();
-  const { selectedSemester } = useContext(SelectedSemesterContext);
+  const { assignmentID, studentWorkID } = useParams();
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   // states
-  const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
-  const [studentAssignment, setStudentAssignment] =
-    useState<IStudentAssignment | null>(null);
+  const [studentWork, setStudentWork] = useState<IPaginatedStudentWork | null>(
+    null
+  );
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
   );
+  const [currentFilePath, setCurrentFilePath] = useState<string>("");
   const [currentFile, setCurrentFile] = useState<IGraderFile | null>(null);
-
-  // fetch totals for indexing purposes
-  useEffect(() => {
-    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
-
-    getTotalStudentAssignments(
-      selectedSemester.classroom_id,
-      Number(assignmentId)
-    )
-      .then((resp) => {
-        setTotalStudentAssignments(resp);
-      })
-      .catch((err: unknown) => {
-        console.log(err);
-      });
-  }, [selectedSemester, assignmentId]);
+  const [comments, setComments] = useState<IGradingComment[]>([]);
 
   // fetch requested student assignment
   useEffect(() => {
-    if (!selectedSemester || !assignmentId || !studentAssignmentId) return;
+    // reset states
+    setCurrentFilePath("");
+    setCurrentFile(null);
+    setComments([]);
+    setStudentWork(null);
+    setGitTree([]);
 
-    getStudentAssignment(
-      selectedSemester.classroom_id,
-      Number(assignmentId),
-      Number(studentAssignmentId)
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+
+    getPaginatedStudentWork(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID)
     )
       .then((resp) => {
-        setStudentAssignment(resp);
+        setStudentWork(resp);
       })
-      .catch((err: unknown) => {
-        console.log(err);
+      .catch((_: unknown) => {
         navigate("/404", { replace: true });
       });
-  }, [selectedSemester, assignmentId, studentAssignmentId]);
+  }, [studentWorkID]);
 
   // fetch git tree from student assignment repo
   useEffect(() => {
-    if (!selectedSemester || !studentAssignment) return;
+    if (!selectedClassroom || !assignmentID || !studentWorkID || !studentWork)
+      return;
 
-    getGitTree(selectedSemester.org_name, studentAssignment.repo_name)
+    getFileTree(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID)
+    )
       .then((resp) => {
         setGitTree(resp);
       })
-      .catch((err: unknown) => {
-        // todo: reroute 404
-        console.log(err);
+      .catch((_: unknown) => {
+        setGitTree([]);
       });
-  }, [studentAssignment]);
+  }, [studentWork]);
 
   // when a new file is selected, import any necessary
   // prismjs language syntax files and trigger a rehighlight
@@ -109,30 +101,37 @@ const Grader: React.FC = () => {
             }
           }
           await ext2langLoader[lang]();
-        } catch (err: unknown) {
+        } catch (_: unknown) {
           // Prism does not support language or mapping does not exist
-          console.log(err);
+          // do nothing
         }
       };
       loadLanguages()
         .then(() => {
           Prism.highlightAll();
         })
-        .catch((err: unknown) => {
-          console.log(err);
+        .catch((_: unknown) => {
+          // do nothing
         });
     }
   }, [currentFile]);
 
   const openFile = (node: IFileTreeNode) => {
+    setCurrentFilePath(node.path);
+
     // Check if the content is already cached
     if (node.sha in cachedFiles) {
       setCurrentFile(cachedFiles[node.sha]);
       return;
     }
 
-    if (!selectedSemester || !studentAssignment) return;
-    getGitBlob(selectedSemester.org_name, studentAssignment.repo_name, node)
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+    getFileBlob(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID),
+      node
+    )
       .then((resp) => {
         setCurrentFile(resp);
         setCachedFiles((prev) => ({
@@ -140,14 +139,38 @@ const Grader: React.FC = () => {
           [node.sha]: resp,
         }));
       })
-      .catch((err: unknown) => {
+      .catch((_: unknown) => {
         // todo: reroute 404
-        console.log(err);
       });
   };
 
+  const saveComment = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+    const comment: IGradingComment = {
+      path: currentFilePath,
+      line: Number(data.get("line")),
+      body: String(data.get("comment")),
+    };
+    setComments([...comments, comment]);
+    form.reset();
+  };
+
+  const submitComments = () => {
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+    createPRComment(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID),
+      comments
+    );
+  };
+
   return (
-    studentAssignment && (
+    studentWork && (
       <div className="Grader">
         <div className="Grader__head">
           <div className="Grader__title">
@@ -155,18 +178,19 @@ const Grader: React.FC = () => {
               <FaChevronLeft />
             </Link>
             <div>
-              <h2>{studentAssignment.assignment_name}</h2>
-              <span>{studentAssignment.student_gh_username}</span>
+              <h2>{studentWork.assignment_name}</h2>
+              <span>{studentWork.contributors}</span>
             </div>
           </div>
           <div className="Grader__nav">
             <span>
-              Student Assignment {studentAssignmentId}/{totalStudentAssignments}
+              Student Work {studentWork.row_num}/
+              {studentWork.total_student_works}
             </span>
             <div>
-              {Number(studentAssignmentId) > 1 && (
+              {studentWork.previous_student_work_id && (
                 <Link
-                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) - 1}`}
+                  to={`/app/grading/assignment/${assignmentID}/student/${studentWork.previous_student_work_id}`}
                 >
                   <Button variant="secondary">
                     <FaChevronLeft />
@@ -174,9 +198,9 @@ const Grader: React.FC = () => {
                   </Button>
                 </Link>
               )}
-              {Number(studentAssignmentId) < totalStudentAssignments && (
+              {studentWork.next_student_work_id && (
                 <Link
-                  to={`/app/grading/assignment/${assignmentId}/student/${Number(studentAssignmentId) + 1}`}
+                  to={`/app/grading/assignment/${assignmentID}/student/${studentWork.next_student_work_id}`}
                 >
                   <Button variant="secondary">
                     Next
@@ -207,10 +231,20 @@ const Grader: React.FC = () => {
               >
                 {currentFile
                   ? currentFile.content
-                  : "Select a file to view its contents."}
+                  : gitTree.length == 0
+                    ? "Student has not submitted work for grading yet or repository is empty."
+                    : "Select a file to view its contents."}
               </code>
             </pre>
           </div>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <form onSubmit={saveComment}>
+            <input type="number" name="line" placeholder="line number" />
+            <input type="text" name="comment" placeholder="comment" />
+            <button type="submit">SAVE COMMENT</button>
+          </form>
+          <button onClick={submitComments}>POST COMMENTS</button>
         </div>
       </div>
     )

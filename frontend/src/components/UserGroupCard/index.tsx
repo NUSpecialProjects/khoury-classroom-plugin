@@ -1,53 +1,64 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
-import { fetchUsersWithRole } from "@/api/users";
+import { fetchUser } from "@/api/users";
 
 interface IUserGroupCardProps {
   label: string;
-  role_type: string;
-  semester: ISemester;
+  givenUsersList: IClassroomUser[];
   onClick?: () => void;
 }
 
 const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   label,
-  role_type,
-  semester,
+  givenUsersList,
   onClick,
 }) => {
-  const [numUsers, setNumUsers] = useState<number>(0);
-
+  const [userMap, setUserMap] = useState<Map<IClassroomUser, IGitHubUser>>(
+    new Map()
+  );
   useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const users = await fetchUsersWithRole(role_type, semester);
-        setNumUsers(users.length);
-      } catch (error) {
-        console.error("Error fetching users:", error);
+    const loadGitHubUsers = async () => {
+      if (givenUsersList) {
+        const newMap = new Map();
+        await Promise.all(
+          givenUsersList.map(async (classroomUser) => {
+            await fetchUser(classroomUser.github_username)
+              .then((userResponse: IGitHubUserResponse) => {
+                newMap.set(classroomUser, userResponse.user);
+              })
+              .catch((_) => {
+                // do nothing
+              });
+          })
+        );
+        setUserMap(newMap);
       }
     };
 
-    void getUsers();
-  }, [role_type, semester]);
+    void loadGitHubUsers();
+  }, [givenUsersList]);
 
-  let userIcons = [];
+  let userIcons: React.ReactNode[] = [];
+  const MAX_USERS_TO_SHOW = 3;
 
-  if (numUsers > 3) {
-    // Cap placeholders at 3, add overlap starting from the second icon
-    userIcons = [1, 2, 3].map((_, index) => (
-      <div
-        className={`UserGroupCard__icon ${index > 0 ? "UserGroupCard__icon-overlap" : ""}`}
-        key={index}
-      />
-    ));
-  } else {
-    // Render placeholders equal to the number, add overlap starting from the second icon
-    userIcons = Array.from({ length: numUsers }).map((_, index) => (
-      <div
-        className={`UserGroupCard__icon ${index > 0 ? "UserGroupCard__icon-overlap" : ""}`}
-        key={index}
-      />
-    ));
+  if (givenUsersList && givenUsersList.length > 0) {
+    const usersToShow = givenUsersList.slice(0, MAX_USERS_TO_SHOW);
+    userIcons = usersToShow.map((classroomUser, index) => {
+      const githubUser = userMap.get(classroomUser);
+      return (
+        <div key={index}>
+          {!githubUser ? (
+            <div className="UserGroupCard__icon-placeholder" />
+          ) : (
+            <img
+              className={`UserGroupCard__icon ${index > 0 ? "UserGroupCard__icon-overlap" : ""}`}
+              src={githubUser.avatar_url}
+              alt={`${githubUser.login}'s avatar`}
+            />
+          )}
+        </div>
+      );
+    });
   }
 
   return (
@@ -56,7 +67,7 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
         <h3 className="UserGroupCard__label">{label}</h3>
         <div className="UserGroupCard__detailsWrapper">
           <div className="UserGroupCard__icons">{userIcons}</div>
-          <p className="UserGroupCard__number">{numUsers}</p>
+          <p className="UserGroupCard__number">{givenUsersList.length}</p>
         </div>
       </div>
     </div>
