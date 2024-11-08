@@ -39,7 +39,9 @@ VALUES
 (7, 'Tim', 'Berners-Lee', 'timbl', 890123, 'PROFESSOR'),
 (8, 'Barbara', 'Liskov', 'bliskov', 678901, 'STUDENT'),
 (9, 'Dennis', 'Ritchie', 'dritchie', 112233, 'PROFESSOR'),
-(10, 'Ken', 'Thompson', 'kthompson', 445566, 'TA');
+(10, 'Ken', 'Thompson', 'kthompson', 445566, 'TA'),
+(11, 'Cam', 'Plume', 'CamPlume1', 116120547, 'STUDENT'),
+(12, 'Nick', 'Tietje', 'ntietje1', 124538220, 'STUDENT');
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership

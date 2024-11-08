@@ -100,7 +100,7 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 
 		err = s.store.CreateStudentWork(c.Context(), &studentwork, username.ID)
 		if err != nil {
-			fmt.Printf(err.Error())
+			fmt.Println(err.Error())
 			return errs.InternalServerError()
 		}
 
