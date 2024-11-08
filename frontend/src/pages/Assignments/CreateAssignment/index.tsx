@@ -4,7 +4,7 @@ import { getOrganizationTemplates } from "@/api/organizations";
 import { useNavigate } from "react-router-dom";
 
 import MultiStepForm from '@/components/MultiStepForm';
-import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/main';
+import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/Main';
 import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
 import { createAssignment, createAssignmentTemplate } from "@/api/assignments";
@@ -66,7 +66,7 @@ const CreateAssignment: React.FC = () => {
     const handleSubmit = (data: AssignmentFormData) => {
         createAssignmentTemplate(data.classroomId, data.templateRepo!)
         createAssignment(data.templateRepo!.id, data)
-        
+
         navigate('/app/dashboard');
     }
 
