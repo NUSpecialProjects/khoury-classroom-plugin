@@ -2,7 +2,6 @@ package works
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -25,7 +24,7 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 
 		works, err := s.store.GetWorks(c.Context(), classroomID, assignmentID)
 		if err != nil {
-			return c.SendStatus(404)
+			return err
 		}
 		return c.Status(200).JSON(fiber.Map{
 			"student_works": works,
@@ -38,7 +37,7 @@ func (s *WorkService) getWorkByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		work, err := getWork(s, c)
 		if err != nil {
-			return c.SendStatus(404)
+			return err
 		}
 		return c.Status(200).JSON(fiber.Map{
 			"student_work": work,
@@ -50,7 +49,7 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		work, err := getWork(s, c)
 		if err != nil {
-			return c.SendStatus(404)
+			return err
 		}
 		if work.RepoName == nil || work.SubmittedPRNumber == nil {
 			return errs.BadRequest(errors.New("work has not been submitted for grading yet"))
@@ -58,15 +57,16 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 
 		var requestBody models.PRReview
 		if err := c.BodyParser(&requestBody); err != nil {
-			fmt.Println(err)
-			return c.Status(400).JSON(fiber.Map{"error": "invalid request body"})
+			return errs.InvalidRequestBody(requestBody)
 		}
 
-		cmt, err := s.githubappclient.CreatePRReview(c.Context(), work.OrgName, *work.RepoName, *work.SubmittedPRNumber, requestBody.Body, requestBody.Comments)
+		review, err := s.githubappclient.CreatePRReview(c.Context(), work.OrgName, *work.RepoName, *work.SubmittedPRNumber, requestBody.Body, requestBody.Comments)
 		if err != nil {
-			return err
+			return errs.GithubAPIError(err)
 		}
 
-		return c.Status(http.StatusOK).JSON(cmt)
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"review": review,
+		})
 	}
 }

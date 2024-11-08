@@ -44,8 +44,8 @@ export const getFileTree = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json()) as IGitTreeNode[];
-  return resp;
+  const resp = (await response.json()) as IGitTreeResponse;
+  return resp.tree;
 };
 
 export const getFileBlob = async (

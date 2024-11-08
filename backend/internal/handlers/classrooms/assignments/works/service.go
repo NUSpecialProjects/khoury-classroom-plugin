@@ -34,5 +34,14 @@ func getWork(s *WorkService, c *fiber.Ctx) (*models.PaginatedStudentWorkWithCont
 		return nil, errs.BadRequest(err)
 	}
 
-	return s.store.GetWork(c.Context(), classroomID, assignmentID, studentWorkID)
+	work, err := s.store.GetWork(c.Context(), classroomID, assignmentID, studentWorkID)
+	if err != nil {
+		return nil, errs.NotFoundMultiple("student work", map[string]string{
+			"classroom ID":          c.Params("classroom_id"),
+			"assignment outline ID": c.Params("assignment_id"),
+			"student work ID":       c.Params("work_id"),
+		})
+	}
+
+	return work, nil
 }

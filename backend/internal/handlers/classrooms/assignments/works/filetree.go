@@ -19,10 +19,12 @@ func (s *WorkService) GetFileTree(c *fiber.Ctx) error {
 
 	tree, err := s.githubappclient.GetFileTree(work.OrgName, *work.RepoName, *work.SubmittedPRNumber)
 	if err != nil {
-		return err
+		return errs.GithubAPIError(err)
 	}
 
-	return c.Status(http.StatusOK).JSON(tree)
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"tree": tree,
+	})
 }
 
 func (s *WorkService) GetFileBlob(c *fiber.Ctx) error {
@@ -36,7 +38,7 @@ func (s *WorkService) GetFileBlob(c *fiber.Ctx) error {
 
 	content, err := s.githubappclient.GetFileBlob(work.OrgName, *work.RepoName, c.Params("sha"))
 	if err != nil {
-		return err
+		return errs.GithubAPIError(err)
 	}
 
 	return c.Status(http.StatusOK).Send(content)

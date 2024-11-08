@@ -44,3 +44,7 @@ interface IGraderFile {
   name: string;
   content: string;
 }
+
+interface IGitTreeResponse {
+  tree: IGitTreeNode[];
+}

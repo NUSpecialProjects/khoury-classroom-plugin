@@ -64,7 +64,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                 <TableRow
                   key={i}
                   onClick={() => {
-                    navigate(`assignment/${assignmentId}/student/${i + 1}`);
+                    navigate(
+                      `assignment/${assignmentId}/student/${studentAssignment.student_work_id}`
+                    );
                   }}
                 >
                   <TableCell>{studentAssignment.contributors}</TableCell>
