@@ -42,7 +42,7 @@ const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       setSelectedClassroomState(classroom);
       Cookies.set(COOKIE_NAME, JSON.stringify(classroom), {
         expires: 30,
-        SameSite: "Strict",
+        sameSite: "Lax"
       });
     }
   };
