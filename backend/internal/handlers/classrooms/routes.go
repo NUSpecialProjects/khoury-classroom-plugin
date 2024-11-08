@@ -1,6 +1,8 @@
 package classrooms
 
 import (
+	"fmt"
+
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms/assignments"
 	"github.com/CamPlume1/khoury-classroom/internal/handlers/classrooms/assignments/works"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
@@ -9,21 +11,21 @@ import (
 )
 
 func Routes(app *fiber.App, params types.Params) {
+	fmt.Println("Hit routes")
 	classroomService := newClassroomService(params.Store, &params.UserCfg)
 	assignmentService := assignments.NewAssignmentService(params.Store, &params.UserCfg)
 	workService := works.NewWorkService(params.Store, params.GitHubApp)
 
-	// Create the base router
-	baseRouter := app.Group("")
+	
+	// Create the assignment routes
+	assignments.AssignmentRoutes(app, assignmentService)
 
 	// Create the classroom routes
-	classroomRoutes(baseRouter, classroomService)
+	classroomRoutes(app, classroomService)
 
-	// Create the assignment routes
-	assignments.AssignmentRoutes(baseRouter, assignmentService)
 
 	// Create the submission routes
-	works.WorkRoutes(baseRouter, workService)
+	works.WorkRoutes(app, workService)
 }
 
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {

@@ -14,3 +14,12 @@ type Assignment struct {
 type AssignmentClassroomID struct {
 	AssignmentClassroomID int64 `json:"assignment_classroom_id"`
 }
+
+
+type AssignmentAcceptRequest struct {
+	OrgName string   		`json:"org_name"`	
+	OrgID int 				`json:"org_id"`	
+	SourceRepoName string 	`json:"repo_name"`	
+	AssignmentName string	`json:"assignment_name"`	
+	AssignmentID	int64	`json:"assignment_id"`	
+}

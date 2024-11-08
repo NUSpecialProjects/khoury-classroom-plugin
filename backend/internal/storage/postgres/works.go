@@ -96,6 +96,10 @@ ORDER BY u.last_name, u.first_name;
 		return nil, err
 	}
 
+	for _, work := range rawWorks {
+		fmt.Println(work.FirstName)
+	}
+
 	return formatWorks(rawWorks, func(work models.RawStudentWork) *models.StudentWorkWithContributors {
 		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []string{}}
 	}), nil
@@ -147,4 +151,57 @@ WHERE student_work_id = $3
 	}
 
 	return formatted[0], nil
+}
+
+
+func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error {
+	
+
+	var userID int 
+	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, GHUserID).Scan(&userID)
+	if err != nil {
+		return fmt.Errorf("user %d does not exist in database", userID)
+	}
+	
+	
+	var studentWorkID int
+	err = db.connPool.QueryRow(ctx,
+		`INSERT INTO student_works (assignment_outline_id,
+    		repo_name,
+    		unique_due_date,
+    		submitted_pr_number,
+    		manual_feedback_score,
+    		auto_grader_score,
+    		submission_timestamp,
+    		grades_published_timestamp,
+    		work_state)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+		work.AssignmentOutlineID,
+		work.RepoName,
+		work.UniqueDueDate,
+		work.SubmittedPRNumber,
+		work.ManualFeedbackScore,
+		work.AutoGraderScore,
+		work.SubmissionTimestamp,
+		work.GradesPublishedTimestamp,
+		work.WorkState,
+	).Scan(&studentWorkID)
+
+	if err != nil {
+		return fmt.Errorf("error inserting student works")
+	}
+
+	// Get user ID
+
+
+	_, err = db.connPool.Exec(ctx,
+		`INSERT INTO work_contributors (user_id, student_work_id) VALUES ($1, $2)`,
+		userID, // Assuming this field exists on the work model
+		studentWorkID,
+	)
+	if err != nil {
+		return fmt.Errorf("error inserting work contributors")
+	}
+	return nil
+
 }
