@@ -59,8 +59,7 @@ const Grader: React.FC = () => {
       .then((resp) => {
         setStudentWork(resp);
       })
-      .catch((err: unknown) => {
-        console.log(err);
+      .catch((_: unknown) => {
         navigate("/404", { replace: true });
       });
   }, [studentWorkID]);
@@ -78,9 +77,8 @@ const Grader: React.FC = () => {
       .then((resp) => {
         setGitTree(resp);
       })
-      .catch((err: unknown) => {
+      .catch((_: unknown) => {
         setGitTree([]);
-        console.log(err);
       });
   }, [studentWork]);
 
@@ -103,17 +101,17 @@ const Grader: React.FC = () => {
             }
           }
           await ext2langLoader[lang]();
-        } catch (err: unknown) {
+        } catch (_: unknown) {
           // Prism does not support language or mapping does not exist
-          console.log(err);
+          // do nothing
         }
       };
       loadLanguages()
         .then(() => {
           Prism.highlightAll();
         })
-        .catch((err: unknown) => {
-          console.log(err);
+        .catch((_: unknown) => {
+          // do nothing
         });
     }
   }, [currentFile]);
@@ -141,9 +139,8 @@ const Grader: React.FC = () => {
           [node.sha]: resp,
         }));
       })
-      .catch((err: unknown) => {
+      .catch((_: unknown) => {
         // todo: reroute 404
-        console.log(err);
       });
   };
 

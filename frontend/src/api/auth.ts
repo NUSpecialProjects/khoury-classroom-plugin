@@ -11,8 +11,7 @@ export const getCurrentUser = async (): Promise<boolean> => {
     });
 
     return result.ok;
-  } catch (error) {
-    console.log("Error fetching current user:", error);
+  } catch (_) {
     return false;
   }
   // return Promise.resolve(false);

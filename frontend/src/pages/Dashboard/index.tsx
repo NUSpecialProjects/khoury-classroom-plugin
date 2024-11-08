@@ -26,21 +26,20 @@ const Dashboard: React.FC = () => {
           .then((assignments) => {
             setAssignments(assignments);
           })
-          .catch((err: unknown) => {
-            console.error("Error fetching assignments:", err);
+          .catch((_: unknown) => {
+            // do nothing
           });
       }
     };
 
     if (selectedClassroom !== null && selectedClassroom !== undefined) {
-      fetchAssignments(selectedClassroom).catch((error: unknown) => {
-        console.log("Error fetching:", error);
+      fetchAssignments(selectedClassroom).catch((_: unknown) => {
+        // do nothing
       });
     }
   }, [selectedClassroom]);
 
   const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
-    console.log(`Clicked on ${group}`);
     if (group === "Professor") {
       navigate("/app/professors", { state: { users } });
     }
