@@ -15,10 +15,17 @@ interface IStudentWork {
   contributors: [string];
 }
 
+interface IPaginatedStudentWork extends IStudentWork {
+  row_num: number;
+  total_student_works: number;
+  previous_student_work_id: number | null;
+  next_student_work_id: number | null;
+}
+
 interface IStudentWorkResponses {
   student_works: [IStudentWork];
 }
 
-interface IStudentWorkResponse {
-  student_work: IStudentWork;
+interface IPaginatedStudentWorkResponse {
+  student_work: IPaginatedStudentWork;
 }

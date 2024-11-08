@@ -218,6 +218,7 @@ export const ext2lang: { [ext: string]: string } = {
 
   // Docker and Infrastructure as Code
   dockerfile: "docker",
+  dockerignore: "docker",
   tf: "hcl",
   hcl: "hcl",
 

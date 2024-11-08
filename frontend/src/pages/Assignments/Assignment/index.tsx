@@ -7,7 +7,7 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { FaChevronLeft } from "react-icons/fa6";
 import { getAssignmentIndirectNav } from "@/api/assignments";
-import { getStudentWorks } from "@/api/student_assignments";
+import { getStudentWorks } from "@/api/student_works";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -56,7 +56,7 @@ const Assignment: React.FC = () => {
               if (studentWorks !== null && studentWorks !== undefined) {
                 setStudentAssignment(studentWorks);
               }
-            } 
+            }
           } catch (_) {
             // do nothing
           }

@@ -4,6 +4,7 @@ import "time"
 
 type StudentWork struct {
 	ID                       int        `json:"student_work_id" db:"student_work_id"`
+	OrgName                  string     `json:"org_name" db:"org_name"`
 	ClassroomID              int        `json:"classroom_id" db:"classroom_id"`
 	AssignmentName           *string    `json:"assignment_name" db:"assignment_name"`
 	AssignmentOutlineID      int        `json:"assignment_outline_id" db:"assignment_outline_id"`
@@ -57,42 +58,24 @@ type IStudentWork interface {
 	GetID() int
 	GetFirstName() string
 	GetLastName() string
-	GetPrev() *int
-	GetNext() *int
 }
 
 type IFormattedStudentWork interface {
 	AddContributor(contributor string)
-	SetPrev(prev int)
-	SetNext(next int)
 }
 
-func (w RawStudentWork) GetID() int               { return w.ID }
-func (w RawStudentWork) GetFirstName() string     { return w.FirstName }
-func (w RawStudentWork) GetLastName() string      { return w.LastName }
-func (w RawStudentWork) GetNext() *int            { return nil }
-func (w RawStudentWork) GetPrev() *int            { return nil }
-func (w RawStudentWork) GetWorkBase() StudentWork { return w.StudentWork }
+func (w RawStudentWork) GetID() int           { return w.ID }
+func (w RawStudentWork) GetFirstName() string { return w.FirstName }
+func (w RawStudentWork) GetLastName() string  { return w.LastName }
 
-func (w RawPaginatedStudentWork) GetID() int               { return w.ID }
-func (w RawPaginatedStudentWork) GetFirstName() string     { return w.FirstName }
-func (w RawPaginatedStudentWork) GetLastName() string      { return w.LastName }
-func (w RawPaginatedStudentWork) GetNext() *int            { return w.NextStudentWorkID }
-func (w RawPaginatedStudentWork) GetPrev() *int            { return w.PreviousStudentWorkID }
-func (w RawPaginatedStudentWork) GetWorkBase() StudentWork { return w.StudentWork }
+func (w RawPaginatedStudentWork) GetID() int           { return w.ID }
+func (w RawPaginatedStudentWork) GetFirstName() string { return w.FirstName }
+func (w RawPaginatedStudentWork) GetLastName() string  { return w.LastName }
 
 func (w *StudentWorkWithContributors) AddContributor(contributor string) {
 	w.Contributors = append(w.Contributors, contributor)
 }
-func (w *StudentWorkWithContributors) SetPrev(prev int) {}
-func (w *StudentWorkWithContributors) SetNext(next int) {}
 
 func (w *PaginatedStudentWorkWithContributors) AddContributor(contributor string) {
 	w.Contributors = append(w.Contributors, contributor)
-}
-func (w *PaginatedStudentWorkWithContributors) SetPrev(prev int) {
-	w.PreviousStudentWorkID = &prev
-}
-func (w *PaginatedStudentWorkWithContributors) SetNext(next int) {
-	w.NextStudentWorkID = &next
 }

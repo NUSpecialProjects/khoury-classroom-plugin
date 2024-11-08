@@ -10,6 +10,7 @@ import (
 )
 
 const DesiredFields = `
+	c.org_name,
 	wc.student_work_id,
 	ao.classroom_id,
 	ao.name AS assignment_name,
@@ -35,13 +36,15 @@ const JoinedTable = `
 	users AS u ON wc.user_id = u.id
 	JOIN
 	assignment_outlines AS ao ON sw.assignment_outline_id = ao.id
+	JOIN
+	classrooms AS c ON ao.classroom_id = c.id
 `
 
 // squashes a list of student work contributors to a list of student works with an array of contributors
 func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks []T, newFormattedWork func(T) F) []F {
 	workMap := make(map[int]F)
 
-	for i, work := range rawWorks {
+	for _, work := range rawWorks {
 		if _, exists := workMap[work.GetID()]; !exists {
 			// insert new formatted work if it doesn't exist already
 			workMap[work.GetID()] = newFormattedWork(work)
@@ -50,18 +53,6 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 		// combine first and last names into a full name and add to list of contributors
 		fullName := fmt.Sprintf("%s %s", work.GetFirstName(), work.GetLastName())
 		workMap[work.GetID()].AddContributor(fullName)
-
-		if i == 0 {
-			if prev := work.GetPrev(); prev != nil {
-				workMap[work.GetID()].SetPrev(*prev)
-			}
-		}
-
-		if i == len(rawWorks)-1 {
-			if next := work.GetNext(); next != nil {
-				workMap[work.GetID()].SetNext(*next)
-			}
-		}
 	}
 
 	// convert map values to a slice
@@ -104,22 +95,20 @@ ORDER BY u.last_name, u.first_name;
 // Get a single student work from an assignment
 func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
-WITH paginated AS
-	(SELECT
-		%s,
-		(SELECT COUNT(*) FROM student_works WHERE assignment_outline_id = %d) as total_student_works,
-		(SELECT row_num FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS row_num FROM student_works WHERE assignment_outline_id = $1) AS rn WHERE id = %d),
-		LAG(sw.id)
-			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS previous_student_work_id,
-		LEAD(sw.id)
-			OVER (PARTITION BY assignment_outline_id ORDER BY u.last_name, u.first_name) AS next_student_work_id
-	FROM %s
-	WHERE classroom_id = $1 AND assignment_outline_id = $2
-	ORDER BY u.last_name, u.first_name)
-SELECT *
-FROM paginated
+WITH joined_tables AS
+         (SELECT %s FROM %s ORDER BY last_name, first_name),
+     squashed AS
+         (SELECT DISTINCT ON (student_work_id) * FROM joined_tables WHERE classroom_id = $1 AND assignment_outline_id = $2),
+     paginated AS
+         (SELECT student_work_id,
+                 ROW_NUMBER() OVER (ORDER BY last_name, first_name) as row_num,
+								 COUNT(student_work_id) OVER () as total_student_works,
+                 LAG(student_work_id) OVER (ORDER BY last_name, first_name) as previous_student_work_id,
+                 LEAD(student_work_id) OVER (ORDER BY last_name, first_name) as next_student_work_id
+          FROM squashed)
+SELECT * FROM (paginated NATURAL JOIN joined_tables)
 WHERE student_work_id = $3
-`, DesiredFields, assignmentID, studentWorkID, JoinedTable)
+`, DesiredFields, JoinedTable)
 
 	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
 	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
