@@ -26,22 +26,15 @@ const Callback: React.FC = () => {
     //if code, good, else, route to home
     if (code) {
       sendCode(code)
-        .then((response) => {
-          if (!response.ok) {
-            // Navigate back to login page
-            navigate("/");
-            return;
-          } else {
-            //Successful login. Handle redirect
-            handleSuccessfulLogin();
-          }
+        .then(() => {
+          //Successful login. Handle redirect
+          handleSuccessfulLogin();
         })
-        .catch((err: unknown) => {
+        .catch((err: Error) => {
           // Navigate back to login page with an error message attached
           navigate(
-            `/?error=${encodeURIComponent("An error occurred while logging in. Please try again.")}`
+            `/?error=${encodeURIComponent(err.message)}`
           );
-          console.log("Error Occurred: ", err);
           return;
         });
     } else {

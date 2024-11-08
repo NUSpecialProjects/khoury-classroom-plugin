@@ -33,13 +33,12 @@ const Assignment: React.FC = () => {
             if (studentWorks !== null && studentWorks !== undefined) {
               setStudentAssignment(studentWorks);
             }
-          } catch (error) {
-            console.error("Could not get assignment: ", error);
+          } catch (_) {
+            // do nothing
           }
         })();
       }
     } else {
-      console.log("Fetching assignment from backend");
       // fetch the assignment from backend
       if (id && selectedClassroom !== null && selectedClassroom !== undefined) {
         (async () => {
@@ -57,9 +56,9 @@ const Assignment: React.FC = () => {
               if (studentWorks !== null && studentWorks !== undefined) {
                 setStudentAssignment(studentWorks);
               }
-            }
-          } catch (error) {
-            console.error("Could not get assignment: ", error);
+            } 
+          } catch (_) {
+            // do nothing
           }
         })();
       }

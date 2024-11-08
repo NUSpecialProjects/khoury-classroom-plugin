@@ -24,8 +24,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       .then((ok) => {
         setIsLoggedIn(ok);
       })
-      .catch((err: unknown) => {
-        console.log("Error fetching current user: ", err);
+      .catch((_: unknown) => {
         setIsLoggedIn(false);
       })
       .finally(() => {
@@ -38,8 +37,12 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = () => {
-    logoutApi();
-    setIsLoggedIn(false);
+    logoutApi()
+      .then(() => {
+        setIsLoggedIn(false);
+      })
+      .catch((_: Error) => {
+      });
   };
 
   if (loading) {

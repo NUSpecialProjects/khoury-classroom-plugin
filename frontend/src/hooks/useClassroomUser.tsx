@@ -17,11 +17,7 @@ export function useClassroomUser(classroomId?: number) {
             setError(null);
           })
           .catch((err) => {
-            setError(
-              err instanceof Error
-                ? err
-                : new Error("Failed to fetch classroom user")
-            );
+            setError(err);
             setClassroomUser(null);
           })
           .finally(() => {

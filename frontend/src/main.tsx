@@ -24,9 +24,9 @@ const PrivateRoute = () => {
   useEffect(() => {
     if (!isLoggedIn) {
       const currentUrl = location.pathname + location.search + location.hash;
-      localStorage.setItem("redirectAfterLogin", currentUrl);
+      localStorage.setItem("redirectAfterLogin", currentUrl); // store the current url to redirect to after login
     }
-  }, [isLoggedIn, location]); // Only run when these values change
+  }, [isLoggedIn, location]);
 
   if (!isLoggedIn) {
     return <Navigate to="/" replace />;

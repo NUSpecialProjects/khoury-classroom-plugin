@@ -27,13 +27,7 @@ func (cr ClassroomRole) Compare(other ClassroomRole) int16 {
 		Student:   1,
 	}
 
-	if roleRank[cr] > roleRank[other] {
-		return 1
-	} else if roleRank[cr] < roleRank[other] {
-		return -1
-	} else {
-		return 0
-	}
+	return roleRank[cr] - roleRank[other]
 }
 
 type ClassroomToken struct {

@@ -47,7 +47,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
         value={duration === undefined ? "" : duration}
         onChange={(e) =>
           setDuration(
-            e.target.value === "" ? undefined : Number(e.target.value)
+            e.target.value === "" ? 10080 : Number(e.target.value)
           )
         }
       >

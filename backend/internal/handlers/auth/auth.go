@@ -15,7 +15,7 @@ import (
 
 func (service *AuthService) Ping() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.Status(200).JSON(fiber.Map{
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"message": `Back in the good old days -- the "Golden Era" of computers, it was easy to separate the men from the boys (sometimes called "Real Men" and "Quiche Eaters" in the literature). During this period, the Real Men were the ones that understood computer programming, and the Quiche Eaters were the ones that didn't. A real computer programmer said things like "DO 10 I=1,10" and "ABEND" (they actually talked in capital letters, you understand), and the rest of the world said things like "computers are too complicated for me" and "I can't relate to computers -- they're so impersonal". (A previous work [1] points out that Real Men don't "relate" to anything, and aren't afraid of being impersonal.)
 
 			But, as usual, times change. We are faced today with a world in which little old ladies can get computers in their microwave ovens, 12-year-old kids can blow Real Men out of the water playing Asteroids and Pac-Man, and anyone can buy and even understand their very own Personal Computer. The Real Programmer is in danger of becoming extinct, of being replaced by high-school students with TRASH-80's.
@@ -95,7 +95,7 @@ func (service *AuthService) Login() fiber.Handler {
 			Path:     "/",
 		})
 
-		return c.Status(200).JSON("Successfully logged in")
+		return c.Status(fiber.StatusOK).JSON("Successfully logged in")
 	}
 }
 
@@ -103,7 +103,7 @@ func (service *AuthService) GetCurrentUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return errs.AuthenticationError()
+			return errs.GithubClientError(err)
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
@@ -111,7 +111,7 @@ func (service *AuthService) GetCurrentUser() fiber.Handler {
 			return errs.AuthenticationError()
 		}
 
-		return c.Status(200).JSON(fiber.Map{"user": user})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"user": user})
 	}
 }
 

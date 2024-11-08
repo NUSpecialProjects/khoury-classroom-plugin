@@ -64,9 +64,10 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   }, [role_type, classroom, givenUsersList]);
 
   let userIcons: React.ReactNode[] = [];
+  const MAX_USERS_TO_SHOW = 3;
 
   if (givenUsersList && givenUsersList.length > 0) {
-    const usersToShow = givenUsersList.slice(0, 3);
+    const usersToShow = givenUsersList.slice(0, MAX_USERS_TO_SHOW);
     userIcons = usersToShow.map((classroomUser, index) => {
       const githubUser = userMap.get(classroomUser);
       return (
