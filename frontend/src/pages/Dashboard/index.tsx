@@ -24,7 +24,6 @@ const Dashboard: React.FC = () => {
       if (classroom) {
         getAssignments(classroom.id)
           .then((assignments) => {
-            console.log("Assignments:", assignments);
             setAssignments(assignments);
           })
           .catch((_: unknown) => {

@@ -24,8 +24,8 @@ useEffect(() => {
                 const url = "http://localhost:3000/app/token/apply?token=" + data.token;
                 setLink(url);
             })
-            .catch((error) => {
-                console.log("Error creating token: " + error);
+            .catch((_) => {
+                // do nothing
             });
     };
 

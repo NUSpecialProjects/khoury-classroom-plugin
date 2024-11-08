@@ -15,8 +15,7 @@ const CopyLink: React.FC<ICopyLinkProps> = ({
         try {
             await navigator.clipboard.writeText(link);
             alert('Link copied to clipboard!');
-        } catch (error) {
-            console.error('Failed to copy the link: ', error);
+        } catch (_) {
             alert('Error copying link, please try again.');
         }
     }
