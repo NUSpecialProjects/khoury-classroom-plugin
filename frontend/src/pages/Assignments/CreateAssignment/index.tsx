@@ -1,7 +1,12 @@
 import { useEffect, useContext, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getOrganizationTemplates } from "@/api/organizations";
-import RepositoryDropdown from "@/components/Dropdown/Repository";
+
+import MultiStepForm from '@/components/MultiStepForm';
+import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/main';
+import { AssignmentFormData } from "@/components/MultiStepForm/Interfaces/CreateAssignment";
+import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
+import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
 
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -32,19 +37,40 @@ const CreateAssignment: React.FC = () => {
     fetchTemplates(orgName);
   }, [orgName]);
 
-  return (
-    <div>
-      <h1>Create Assignment</h1>
-      <RepositoryDropdown
-        repositories={templates}
-        onChange={(selectedRepoId: number) => {
-          console.log("Selected repo ID:", selectedRepoId);
-          // PLACEHOLDER
-        }}
-        loading={loadingTemplates}
-      />
-    </div>
-  );
+    const steps: Step<AssignmentFormData>[] = [
+        { title: 'Assignment Details', component: AssignmentDetails },
+        {
+            title: 'Starter Code Repository',
+            component: (props: StepComponentProps<AssignmentFormData>) => (
+                <StarterCodeDetails
+                    {...props}
+                    repositories={templates}
+                    isLoading={loadingTemplates}
+                />
+            )
+        },
+    ];
+
+    const initialData: AssignmentFormData = {
+        name: '',
+        description: '',
+        dueDate: null,
+        isGroupAssignment: false,
+        selectedRepoId: 0,
+    };
+
+    return (
+        <div>
+            <h1>Create Assignment</h1>
+            <MultiStepForm
+                steps={steps}
+                submitFunc={(data) => {
+                    console.log(data);
+                }}
+                initialData={initialData}
+            />
+        </div>
+    );
 };
 
 export default CreateAssignment;

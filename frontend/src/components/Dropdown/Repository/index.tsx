@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { ChangeEvent } from 'react';
 
 interface RepositoryDropdownProps {
   repositories: IRepository[];
@@ -7,51 +7,58 @@ interface RepositoryDropdownProps {
   loading: boolean;
 }
 
+const PLACEHOLDER_OPTION = 'Select a repository';
+const LOADING_OPTION = 'Loading repositories...';
+const NO_REPOSITORIES_OPTION = 'No repositories available';
+
 const RepositoryDropdown: React.FC<RepositoryDropdownProps> = ({
-  repositories,
-  onChange,
-  selectedRepoId,
-  loading,
+    onChange,
+    repositories,
+    selectedRepoId,
+    loading,
 }) => {
-  const [value, setValue] = useState<string>(selectedRepoId?.toString() || "");
+    const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        const selectedId = parseInt(event.target.value, 10);
+        if (onChange && !isNaN(selectedId)) {
+            onChange(selectedId);
+        }
+    };
 
-  useEffect(() => {
-    setValue(selectedRepoId?.toString() || "");
-  }, [selectedRepoId]);
+    const renderOptions = () => {
+        if (loading) {
+            return (
+                <option value="" disabled>
+                    {LOADING_OPTION}
+                </option>
+            );
+        }
 
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = parseInt(event.target.value, 10);
-    setValue(event.target.value);
-    if (onChange) {
-      onChange(selectedId);
-    }
-  };
+        if (repositories.length === 0) {
+            return (
+                <option value="" disabled>
+                    {NO_REPOSITORIES_OPTION}
+                </option>
+            );
+        }
 
-  return (
-    <select value={value} onChange={handleChange}>
-      <option value="" disabled>
-        {value
-          ? repositories.find((repo) => repo.id === parseInt(value, 10))
-              ?.name || "Select a repository"
-          : "Select a repository"}
-      </option>
-      {loading ? (
-        <option className="Dropdown__option" value="" disabled>
-          Loading templates...
-        </option>
-      ) : repositories.length > 0 ? (
-        repositories.map((repo) => (
-          <option key={repo.id} value={repo.id.toString()}>
-            {repo.name}
-          </option>
-        ))
-      ) : (
-        <option value="" disabled>
-          No repositories available
-        </option>
-      )}
-    </select>
-  );
+        return repositories.map((repo) => (
+            <option key={repo.id} value={repo.id}>
+                {repo.name}
+            </option>
+        ));
+    };
+
+    return (
+        <select
+            value={selectedRepoId ?? ''}
+            onChange={handleChange}
+        >
+            <option value="" disabled>
+                {PLACEHOLDER_OPTION}
+            </option>
+            {renderOptions()}
+        </select>
+    );
 };
 
 export default RepositoryDropdown;
