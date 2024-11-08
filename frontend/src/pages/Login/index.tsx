@@ -5,6 +5,10 @@ import ErrorMessage from "@/components/Error";
 import { getCallbackURL } from "@/api/login";
 
 import { AuthContext } from "@/contexts/auth";
+import { FaGithub } from "react-icons/fa6";
+
+import Button from "@/components/Button";
+
 
 enum LoginStatus {
   LOADING = "LOADING",
@@ -12,9 +16,6 @@ enum LoginStatus {
   LOGIN_ERRORED = "LOGIN ERRORED",
   READY = "READY",
 }
-import { FaGithub } from "react-icons/fa6";
-
-import Button from "@/components/Button";
 
 const Login: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -45,7 +46,6 @@ const Login: React.FC = () => {
       } catch (_) {
         setStatus(LoginStatus.LOGIN_ERRORED);
         setError("Error occurred while communicating with the server");
-        console.log("Error occurred while fetching callback URL");
       }
     };
     fetchCallbackURL();
