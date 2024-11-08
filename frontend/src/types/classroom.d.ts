@@ -5,10 +5,27 @@ interface IClassroom {
   org_name: string;
 }
 
+interface IClassroomResponse {
+  classroom: IClassroom;
+}
+
 interface IUserOrgsAndClassroomsResponse {
   orgs_and_classrooms: Map<IOrganization, IClassroom[]>;
 }
 
 interface IClassroomListResponse {
   classrooms: IClassroom[];
+}
+
+interface IClassroomToken {
+  classroom_id: number;
+  classroom_role: string;
+  token: string;
+  expires_at: string | null;
+  created_at: string;
+}
+
+interface IClassroomJoinResponse {
+  message: string;
+  classroom: IClassroom;
 }

@@ -18,7 +18,7 @@ export const getStudentWork = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json() as IStudentWorkResponse).student_work;
+  const resp = ((await response.json()) as IStudentWorkResponse).student_work;
   return resp;
 };
 
@@ -27,7 +27,7 @@ export const getStudentWorks = async (
   assignmentID: number
 ): Promise<IStudentWork[]> => {
   const response = await fetch(
-`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works`,
     {
       method: "GET",
       credentials: "include",
@@ -39,7 +39,7 @@ export const getStudentWorks = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = (await response.json() as IStudentWorkResponses).student_works;
+  const resp = ((await response.json()) as IStudentWorkResponses).student_works;
   return resp;
 };
 

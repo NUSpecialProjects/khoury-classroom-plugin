@@ -22,5 +22,8 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Rou
 	// Generate a token to accept this assignment
 	assignmentRouter.Post("/assignment/:assignment_id/token", service.generateAssignmentToken())
 
+	// Use a token to accept an assignment
+	assignmentRouter.Post("/assignment/token/:token", service.useAssignmentToken())
+
 	return assignmentRouter
 }

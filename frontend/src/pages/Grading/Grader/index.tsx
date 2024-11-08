@@ -77,7 +77,10 @@ const Grader: React.FC = () => {
   useEffect(() => {
     if (!selectedClassroom || !studentAssignment) return;
 
-    getGitTree(selectedClassroom.org_name, (studentAssignment.repo_name ? studentAssignment.repo_name : ""))
+    getGitTree(
+      selectedClassroom.org_name,
+      studentAssignment.repo_name ? studentAssignment.repo_name : ""
+    )
       .then((resp) => {
         setGitTree(resp);
       })
@@ -129,7 +132,11 @@ const Grader: React.FC = () => {
     }
 
     if (!selectedClassroom || !studentAssignment) return;
-    getGitBlob(selectedClassroom.org_name, (studentAssignment.repo_name ? studentAssignment.repo_name : ""), node)
+    getGitBlob(
+      selectedClassroom.org_name,
+      studentAssignment.repo_name ? studentAssignment.repo_name : "",
+      node
+    )
       .then((resp) => {
         setCurrentFile(resp);
         setCachedFiles((prev) => ({

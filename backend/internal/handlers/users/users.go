@@ -4,25 +4,29 @@ import (
 	"net/http"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
-	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
-// Creates a user representing a TA, Student, or Professor.
-func (s *UserService) CreateUser() fiber.Handler {
+func (s *UserService) GetUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var userToCreate models.User
-		err := c.BodyParser(&userToCreate)
+		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
-			return errs.InvalidRequestBody(models.User{})
+			return errs.AuthenticationError()
 		}
 
-		createdUser, err := s.store.CreateUser(c.Context(), userToCreate)
-		if err != nil {
-			return err
+		userName := c.Params("user_name")
+		if userName == "" {
+			return errs.BadRequest(err)
 		}
 
-		// Implement logic here
-		return c.Status(http.StatusOK).JSON(createdUser)
+		user, err := client.GetUser(c.Context(), userName)
+		if err != nil {
+			return errs.AuthenticationError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"user": user,
+		})
 	}
 }

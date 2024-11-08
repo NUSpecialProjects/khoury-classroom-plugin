@@ -12,7 +12,7 @@ interface IStudentWork {
   grades_published_timestamp?: Date;
   work_state: string;
   created_at: Date;
-  contributors: [string]
+  contributors: [string];
 }
 
 interface IStudentWorkResponses {
@@ -20,6 +20,5 @@ interface IStudentWorkResponses {
 }
 
 interface IStudentWorkResponse {
-  student_work: IStudentWork
-
+  student_work: IStudentWork;
 }

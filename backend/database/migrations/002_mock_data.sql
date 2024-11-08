@@ -3,63 +3,49 @@ INSERT INTO classrooms (id, name, org_id, org_name, created_at)
 VALUES
 (1, 'Kennys Coding Classroom', 182810684, 'KennyCodeOrg', NOW()),
 (2, 'Advanced Running Analytics', 182810684, 'RunTechOrg', NOW()),
-(3, 'Chocolate Lovers Unite', 98767, 'ChocoOrg', NOW()),
-(4, 'Data Structures and Algorithms', 98768, 'CodeMasters', NOW()),
-(5, 'Mobile App Development', 98769, 'AppDevs', NOW()),
-(6, 'AI and Machine Learning', 98770, 'AIMLGroup', NOW()),
+(3, 'Chocolate Lovers Unite', 182810684, 'ChocoOrg', NOW()),
+(4, 'Data Structures and Algorithms', 182810684, 'CodeMasters', NOW()),
+(5, 'Mobile App Development', 182810684, 'AppDevs', NOW()),
+(6, 'AI and Machine Learning', 182810684, 'AIMLGroup', NOW()),
 (7, 'Web Development Bootcamp', 98771, 'WebCoders', NOW()),
 (8, 'Cloud Computing', 98772, 'CloudExperts', NOW()),
 (9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW()),
 (10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW());
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
--- Insert into classroom_tokens
-INSERT INTO classroom_tokens (token, expires_at, classroom_id, created_at)
-VALUES
-('classroomToken123', '2024-12-31 23:59:59', 1, NOW()),
-('classroomToken124', '2024-11-30 23:59:59', 2, NOW()),
-('classroomToken125', '2024-10-31 23:59:59', 3, NOW()),
-('classroomToken126', '2024-09-30 23:59:59', 4, NOW()),
-('classroomToken127', '2024-08-31 23:59:59', 5, NOW()),
-('classroomToken128', '2024-07-31 23:59:59', 6, NOW()),
-('classroomToken129', '2024-06-30 23:59:59', 7, NOW()),
-('classroomToken130', '2024-05-31 23:59:59', 8, NOW()),
-('classroomToken131', '2024-04-30 23:59:59', 9, NOW()),
-('classroomToken132', '2024-03-31 23:59:59', 10, NOW());
-
 -- Create users (Kenny and others)
-INSERT INTO users (id, first_name, last_name, github_username, github_user_id, role)
+INSERT INTO users (id, first_name, last_name, github_username, github_user_id)
 VALUES
-(1, 'Kenny', 'Smith', 'kennysmith', 123456, 'STUDENT'),
-(2, 'Grace', 'Hopper', 'gracehopper', 789012, 'PROFESSOR'),
-(3, 'Alan', 'Turing', 'alanturing', 345678, 'STUDENT'),
-(4, 'Ada', 'Lovelace', 'adalovelace', 901234, 'STUDENT'),
-(5, 'Linus', 'Torvalds', 'linustorvalds', 567890, 'TA'),
-(6, 'Margaret', 'Hamilton', 'mhamilton', 234567, 'STUDENT'),
-(7, 'Tim', 'Berners-Lee', 'timbl', 890123, 'PROFESSOR'),
-(8, 'Barbara', 'Liskov', 'bliskov', 678901, 'STUDENT'),
-(9, 'Dennis', 'Ritchie', 'dritchie', 112233, 'PROFESSOR'),
-(10, 'Ken', 'Thompson', 'kthompson', 445566, 'TA');
+(1, 'Kenny', 'Smith', 'kennysmith', 123456),
+(2, 'Grace', 'Hopper', 'gracehopper', 789012),
+(3, 'Alan', 'Turing', 'alanturing', 345678),
+(4, 'Ada', 'Lovelace', 'adalovelace', 901234),
+(5, 'Linus', 'Torvalds', 'linustorvalds', 567890),
+(6, 'Margaret', 'Hamilton', 'mhamilton', 234567),
+(7, 'Tim', 'Berners-Lee', 'timbl', 890123),
+(8, 'Barbara', 'Liskov', 'bliskov', 678901),
+(9, 'Dennis', 'Ritchie', 'dritchie', 112233),
+(10, 'Ken', 'Thompson', 'kthompson', 445566);
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
-INSERT INTO classroom_membership (user_id, classroom_id, created_at)
+INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at)
 VALUES
-(1, 1, NOW()),
-(2, 1, NOW()),
-(3, 1, NOW()),
-(4, 2, NOW()),
-(5, 2, NOW()),
-(6, 3, NOW()),
-(7, 3, NOW()),
-(8, 4, NOW()),
-(9, 4, NOW()),
-(10, 5, NOW()),
-(1, 6, NOW()),
-(3, 7, NOW()),
-(6, 8, NOW()),
-(8, 9, NOW()),
-(5, 10, NOW());
+(1, 1, 'STUDENT', NOW()),
+(2, 1, 'PROFESSOR', NOW()),
+(3, 1, 'STUDENT', NOW()),
+(4, 2, 'STUDENT', NOW()),
+(5, 2, 'TA', NOW()),
+(6, 3, 'STUDENT', NOW()),
+(7, 3, 'PROFESSOR', NOW()),
+(8, 4, 'STUDENT', NOW()),
+(9, 4, 'PROFESSOR', NOW()),
+(10, 5, 'TA', NOW()),
+(1, 6, 'STUDENT', NOW()),
+(3, 7, 'STUDENT', NOW()),
+(6, 8, 'STUDENT', NOW()),
+(8, 9, 'STUDENT', NOW()),
+(5, 10, 'TA', NOW());
 
 -- Insert into assignment_template
 INSERT INTO assignment_template (id, template_repo_owner, template_repo_id, created_at)
@@ -90,20 +76,6 @@ VALUES
 (9, 9, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
 (10, 10, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
 SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
-
--- Insert into assignment_tokens
-INSERT INTO assignment_tokens (token, expires_at, assignment_outline_id, created_at)
-VALUES
-('assignmentToken123', '2024-06-30 23:59:59', 1, NOW()),
-('assignmentToken124', '2024-05-31 23:59:59', 2, NOW()),
-('assignmentToken125', '2024-04-30 23:59:59', 3, NOW()),
-('assignmentToken126', '2024-03-31 23:59:59', 4, NOW()),
-('assignmentToken127', '2024-02-28 23:59:59', 5, NOW()),
-('assignmentToken128', '2024-01-31 23:59:59', 6, NOW()),
-('assignmentToken129', '2024-12-31 23:59:59', 7, NOW()),
-('assignmentToken130', '2024-11-30 23:59:59', 8, NOW()),
-('assignmentToken131', '2024-10-31 23:59:59', 9, NOW()),
-('assignmentToken132', '2024-09-30 23:59:59', 10, NOW());
 
 -- Insert into rubric_items
 INSERT INTO rubric_items (id, assignment_outline_id, point_value, explanation, created_at)
@@ -193,17 +165,3 @@ VALUES
 (5, 13, 'REGRADE_REQUESTED', 'I improved the website responsiveness.', NOW()),
 (6, 16, 'REGRADE_REQUESTED', 'Found additional vulnerabilities, please review.', NOW());
 SELECT setval('regrade_requests_id_seq', (SELECT MAX(id) FROM regrade_requests));
-
--- Insert into sessions
-INSERT INTO sessions (github_user_id, access_token, token_type, refresh_token, expires_in, created_at)
-VALUES
-(123456, 'accessTokenKenny', 'Bearer', 'refreshTokenKenny', 3600, NOW()),
-(789012, 'accessTokenGrace', 'Bearer', 'refreshTokenGrace', 3600, NOW()),
-(345678, 'accessTokenAlan', 'Bearer', 'refreshTokenAlan', 3600, NOW()),
-(901234, 'accessTokenAda', 'Bearer', 'refreshTokenAda', 3600, NOW()),
-(567890, 'accessTokenLinus', 'Bearer', 'refreshTokenLinus', 3600, NOW()),
-(234567, 'accessTokenMargaret', 'Bearer', 'refreshTokenMargaret', 3600, NOW()),
-(890123, 'accessTokenTim', 'Bearer', 'refreshTokenTim', 3600, NOW()),
-(678901, 'accessTokenBarbara', 'Bearer', 'refreshTokenBarbara', 3600, NOW()),
-(112233, 'accessTokenDennis', 'Bearer', 'refreshTokenDennis', 3600, NOW()),
-(445566, 'accessTokenKen', 'Bearer', 'refreshTokenKen', 3600, NOW());

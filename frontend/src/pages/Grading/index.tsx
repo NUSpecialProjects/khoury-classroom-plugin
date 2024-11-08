@@ -20,9 +20,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   children,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
-  const [studentAssignments, setStudentAssignments] = useState<
-    IStudentWork[]
-  >([]);
+  const [studentAssignments, setStudentAssignments] = useState<IStudentWork[]>(
+    []
+  );
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
