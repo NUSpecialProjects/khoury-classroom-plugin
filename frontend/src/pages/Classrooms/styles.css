@@ -14,8 +14,8 @@
         flex-direction: column;
         gap: 20px;
     }
+}
 
-    &__ButtonWrapper {
-        margin-top: 30px;
-    }
+.ButtonWrapper {
+    margin-top: 30px;
 }

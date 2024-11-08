@@ -16,7 +16,7 @@ const navigate = useNavigate();
                         <div>To add students to your classroom, invite them using this link!</div>
                     </div>
                 </div>
-                <div className="Invite__ButtonWrapper">
+                <div className="ButtonWrapper">
                     <Button variant="primary" onClick={() => navigate("/app/classroom/success")}>Continue</Button>
                 </div>
             </div>
