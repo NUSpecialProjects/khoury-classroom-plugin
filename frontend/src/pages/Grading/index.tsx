@@ -10,7 +10,7 @@ import {
 } from "@/components/Table/index.tsx";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
-import { getStudentWorks } from "@/api/student_assignments";
+import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 
 import "./styles.css";
@@ -32,11 +32,10 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
     if (!selectedClassroom) return;
     getStudentWorks(selectedClassroom.id, assignmentId)
       .then((studentAssignments) => {
-        console.log(studentAssignments);
         setStudentAssignments(studentAssignments);
       })
-      .catch((err: unknown) => {
-        console.error("Error fetching student assignments:", err);
+      .catch((_) => {
+        // do nothing
       });
   }, []);
 
@@ -65,7 +64,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                 <TableRow
                   key={i}
                   onClick={() => {
-                    navigate(`assignment/${assignmentId}/student/${i + 1}`);
+                    navigate(
+                      `assignment/${assignmentId}/student/${studentAssignment.student_work_id}`
+                    );
                   }}
                 >
                   <TableCell>{studentAssignment.contributors}</TableCell>
@@ -90,8 +91,8 @@ const Grading: React.FC = () => {
       .then((assignments) => {
         setAssignments(assignments);
       })
-      .catch((err: unknown) => {
-        console.error("Error fetching assignments:", err);
+      .catch((_) => {
+        // do nothing
       });
   }, []);
 

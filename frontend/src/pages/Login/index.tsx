@@ -45,7 +45,6 @@ const Login: React.FC = () => {
       } catch (_) {
         setStatus(LoginStatus.LOGIN_ERRORED);
         setError("Error occurred while communicating with the server");
-        console.log("Error occurred while fetching callback URL");
       }
     };
     fetchCallbackURL();
