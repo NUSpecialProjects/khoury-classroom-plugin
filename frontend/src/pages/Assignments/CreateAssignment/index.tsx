@@ -20,8 +20,8 @@ const CreateAssignment: React.FC = () => {
           .then((response) => {
             setTemplates(response.template_repos);
           })
-          .catch((err: unknown) => {
-            console.error("Error fetching templates:", err);
+          .catch((_: unknown) => {
+            // do nothing
           })
           .finally(() => {
             setLoadingTemplates(false);

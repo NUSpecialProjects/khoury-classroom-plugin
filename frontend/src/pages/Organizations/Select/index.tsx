@@ -27,8 +27,8 @@ const OrganizationSelection: React.FC = () => {
         if (data.orgs_without_app) {
           setOrgsWithoutApp(data.orgs_without_app);
         }
-      } catch (error) {
-        console.error("Error fetching organizations:", error);
+      } catch (_) {
+        // do nothing
       } finally {
         setLoadingOrganizations(false);
       }
@@ -43,8 +43,8 @@ const OrganizationSelection: React.FC = () => {
       .then((orgDetails) => {
         setSelectedOrg(orgDetails);
       })
-      .catch((error) => {
-        console.error("Error fetching organization details:", error);
+      .catch((_) => {
+        // do nothing 
       });
   };
 

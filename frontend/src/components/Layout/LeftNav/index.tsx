@@ -70,6 +70,7 @@ const LeftNav: React.FC = () => {
             fill="#405DC5"
           />
         </svg>
+
       </div>
       <div className="LeftNav__headerWrapper">
         <h3 className="LeftNav__classNameHeader">

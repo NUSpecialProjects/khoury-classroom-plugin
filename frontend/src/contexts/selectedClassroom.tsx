@@ -27,8 +27,8 @@ const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const parsedValue = JSON.parse(cookieValue) as IClassroom;
         setSelectedClassroomState(parsedValue);
-      } catch (error: unknown) {
-        console.log("Error parsing classroom cookie: ", error);
+      } catch (_: unknown) {
+        // do nothing
       }
     }
     setLoading(false);
@@ -42,7 +42,7 @@ const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       setSelectedClassroomState(classroom);
       Cookies.set(COOKIE_NAME, JSON.stringify(classroom), {
         expires: 30,
-        SameSite: "Strict",
+        sameSite: "Lax"
       });
     }
   };

@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
-import { fetchUser, fetchUsersWithRole } from "@/api/users";
+import { fetchUser } from "@/api/users";
 
 interface IUserGroupCardProps {
   label: string;
-  role_type: string;
-  classroom: IClassroom;
-  givenUsersList?: IClassroomUser[];
+  givenUsersList: IClassroomUser[];
   onClick?: () => void;
 }
 
 const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   label,
-  role_type,
-  classroom,
   givenUsersList,
   onClick,
 }) => {
-  const [numUsers, setNumUsers] = useState<number>(
-    givenUsersList ? givenUsersList.length : 0
-  );
   const [userMap, setUserMap] = useState<Map<IClassroomUser, IGitHubUser>>(
     new Map()
   );
@@ -33,8 +26,8 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
               .then((userResponse: IGitHubUserResponse) => {
                 newMap.set(classroomUser, userResponse.user);
               })
-              .catch((error) => {
-                console.error(`Error fetching GitHub user:`, error);
+              .catch((_) => {
+                // do nothing
               });
           })
         );
@@ -44,24 +37,6 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
 
     void loadGitHubUsers();
   }, [givenUsersList]);
-
-  useEffect(() => {
-    if (givenUsersList) {
-      setNumUsers(givenUsersList.length);
-    } else {
-      const getUsers = async () => {
-        await fetchUsersWithRole(role_type, classroom)
-          .then((users) => {
-            setNumUsers(users.length);
-          })
-          .catch((error) => {
-            console.error("Error fetching users:", error);
-          });
-      };
-
-      void getUsers();
-    }
-  }, [role_type, classroom, givenUsersList]);
 
   let userIcons: React.ReactNode[] = [];
   const MAX_USERS_TO_SHOW = 3;
@@ -92,7 +67,7 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
         <h3 className="UserGroupCard__label">{label}</h3>
         <div className="UserGroupCard__detailsWrapper">
           <div className="UserGroupCard__icons">{userIcons}</div>
-          <p className="UserGroupCard__number">{numUsers}</p>
+          <p className="UserGroupCard__number">{givenUsersList.length}</p>
         </div>
       </div>
     </div>

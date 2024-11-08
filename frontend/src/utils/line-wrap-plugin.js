@@ -9,10 +9,8 @@ import Prism from "prismjs";
     wrapLines: function (env) {
       if (!env || !env.element) return;
 
-      console.log(env.element.innerHTML);
 
       const lines = env.element.innerHTML.split("\n");
-      console.log(lines);
 
       env.element.innerHTML = lines
         .map((line) => `<div class="line-wrapper">${line}</div>`)

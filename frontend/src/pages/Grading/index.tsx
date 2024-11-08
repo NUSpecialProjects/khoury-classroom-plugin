@@ -34,8 +34,8 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
       .then((studentAssignments) => {
         setStudentAssignments(studentAssignments);
       })
-      .catch((err: unknown) => {
-        console.error("Error fetching student assignments:", err);
+      .catch((_) => {
+        // do nothing
       });
   }, []);
 
@@ -91,8 +91,8 @@ const Grading: React.FC = () => {
       .then((assignments) => {
         setAssignments(assignments);
       })
-      .catch((err: unknown) => {
-        console.error("Error fetching assignments:", err);
+      .catch((_) => {
+        // do nothing
       });
   }, []);
 

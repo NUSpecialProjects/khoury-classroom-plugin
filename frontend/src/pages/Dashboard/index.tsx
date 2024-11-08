@@ -26,21 +26,20 @@ const Dashboard: React.FC = () => {
           .then((assignments) => {
             setAssignments(assignments);
           })
-          .catch((err: unknown) => {
-            console.error("Error fetching assignments:", err);
+          .catch((_: unknown) => {
+            // do nothing
           });
       }
     };
 
     if (selectedClassroom !== null && selectedClassroom !== undefined) {
-      fetchAssignments(selectedClassroom).catch((error: unknown) => {
-        console.log("Error fetching:", error);
+      fetchAssignments(selectedClassroom).catch((_: unknown) => {
+        // do nothing
       });
     }
   }, [selectedClassroom]);
 
   const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
-    console.log(`Clicked on ${group}`);
     if (group === "Professor") {
       navigate("/app/professors", { state: { users } });
     }
@@ -66,8 +65,6 @@ const Dashboard: React.FC = () => {
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
-              role_type="PROFESSOR"
-              classroom={selectedClassroom}
               givenUsersList={classroomUsersList.filter(
                 (user) => user.classroom_role === "PROFESSOR"
               )}
@@ -83,8 +80,6 @@ const Dashboard: React.FC = () => {
 
             <UserGroupCard
               label="TAs"
-              role_type="TA"
-              classroom={selectedClassroom}
               givenUsersList={classroomUsersList.filter(
                 (user) => user.classroom_role === "TA"
               )}
@@ -100,8 +95,6 @@ const Dashboard: React.FC = () => {
 
             <UserGroupCard
               label="Students"
-              role_type="STUDENT"
-              classroom={selectedClassroom}
               givenUsersList={classroomUsersList.filter(
                 (user) => user.classroom_role === "STUDENT"
               )}
