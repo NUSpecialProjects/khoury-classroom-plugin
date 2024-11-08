@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
 import { fetchCurrentUser } from "@/api/users";
-import { IoLogoOctocat } from "react-icons/io";
 
 const UserProfilePic: React.FC = () => {
   const [user, setUser] = useState<IGitHubUser | null>(null);
