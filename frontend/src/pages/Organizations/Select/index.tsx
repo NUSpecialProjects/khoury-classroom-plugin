@@ -51,7 +51,7 @@ const OrganizationSelection: React.FC = () => {
   //TODO: visually disable the button while it's loading the org details
   return (
     <Panel title="Your Organizations" logo={true}>
-      <>
+      <div className="Organization">
         <OrganizationDropdown
           orgsWithApp={orgsWithApp}
           orgsWithoutApp={orgsWithoutApp}
@@ -59,25 +59,26 @@ const OrganizationSelection: React.FC = () => {
           loading={loadingOrganizations}
           onSelect={handleOrganizationSelect}
         />
-        {selectedOrg &&
-          orgsWithApp.some((org) => org.login === selectedOrg.login) && (
-            <Button
-              variant="primary"
-              onClick={() =>
-                navigate(`/app/classroom/select?org_id=${selectedOrg.id}`)
-              }
-            >
-              View Classrooms for {selectedOrg.login}
-            </Button>
-          )}
-      </>
-      <div className="Creation__buttonWrapper">
-        {selectedOrg &&
-          orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
-            <Button variant="primary" href={selectedOrg.html_url}>
-              Install GitGrader for {selectedOrg.login}
-            </Button>
-          )}
+
+        <div className="Organization__buttonWrapper">
+          {selectedOrg &&
+            orgsWithApp.some((org) => org.login === selectedOrg.login) && (
+              <Button
+                variant="primary"
+                onClick={() =>
+                  navigate(`/app/classroom/select?org_id=${selectedOrg.id}`)
+                }
+              >
+                View Classrooms for {selectedOrg.login}
+              </Button>
+            )}
+          {selectedOrg &&
+            orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
+              <Button variant="primary" href={selectedOrg.html_url}>
+                Install GitGrader for {selectedOrg.login}
+              </Button>
+            )}
+        </div>
       </div>
     </Panel>
   );

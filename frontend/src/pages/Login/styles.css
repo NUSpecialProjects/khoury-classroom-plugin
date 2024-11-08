@@ -23,7 +23,3 @@
   align-items: center;
   margin-bottom: 50px;
 }
-
-.Button--secondary {
-  font-size: var(--font-size-m);
-}
