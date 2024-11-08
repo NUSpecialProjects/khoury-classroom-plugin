@@ -5,6 +5,9 @@ import ErrorMessage from "@/components/Error";
 import { getCallbackURL } from "@/api/login";
 
 import { AuthContext } from "@/contexts/auth";
+import { FaGithub } from "react-icons/fa6";
+
+import Button from "@/components/Button";
 
 enum LoginStatus {
   LOADING = "LOADING",
@@ -12,9 +15,6 @@ enum LoginStatus {
   LOGIN_ERRORED = "LOGIN ERRORED",
   READY = "READY",
 }
-import { FaGithub } from "react-icons/fa6";
-
-import Button from "@/components/Button";
 
 const Login: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
