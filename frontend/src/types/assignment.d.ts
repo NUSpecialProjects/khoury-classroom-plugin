@@ -6,7 +6,7 @@ interface IAssignmentOutline {
   name: string;
   classroom_id: number;
   group_assignment: boolean;
-  main_due_data: Date | null;
+  main_due_date: Date | null;
 }
 
 interface IAssignmentOutlineResponse {

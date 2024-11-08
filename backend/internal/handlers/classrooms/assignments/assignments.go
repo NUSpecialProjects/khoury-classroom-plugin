@@ -1,6 +1,7 @@
 package assignments
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -62,6 +63,40 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"created_assignment": createdAssignment,
+		})
+	}
+}
+
+func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var assignmentData models.AssignmentTemplate
+
+		error := c.BodyParser(&assignmentData)
+		if error != nil {
+			fmt.Println("Error parsing body")
+			return errs.InvalidRequestBody(models.AssignmentTemplate{})
+		}
+
+		// Check if the template already exists
+		exists, err := s.store.AssignmentTemplateExists(c.Context(), assignmentData.TemplateID)
+		if err != nil {
+			fmt.Println("Error checking if template exists")
+			return errs.InternalServerError()
+		}
+		if exists {
+			return c.Status(http.StatusOK).JSON("Template already exists")
+		}
+
+		// Create the template if it does not exist
+		fmt.Println("Creating template...")
+		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
+		if err != nil {
+			fmt.Println("Error creating template")
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"created_template": createdTemplate,
 		})
 	}
 }
