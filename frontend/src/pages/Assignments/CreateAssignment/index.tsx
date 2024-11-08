@@ -1,6 +1,7 @@
 import { useEffect, useContext, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getOrganizationTemplates } from "@/api/organizations";
+import { useNavigate } from "react-router-dom";
 
 import MultiStepForm from '@/components/MultiStepForm';
 import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/main';
@@ -15,6 +16,8 @@ const CreateAssignment: React.FC = () => {
 
   const [templates, setTemplates] = useState<IRepository[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTemplates = async (orgName: string | undefined) => {
@@ -63,9 +66,8 @@ const CreateAssignment: React.FC = () => {
     const handleSubmit = (data: AssignmentFormData) => {
         createAssignmentTemplate(data.classroomId, data.templateRepo!)
         createAssignment(data.templateRepo!.id, data)
-
-        // Navigate back to dashboard
         
+        navigate('/app/dashboard');
     }
 
     return (

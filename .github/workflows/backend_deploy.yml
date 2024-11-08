@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - feature/kho-134/v2/create-assignment
     paths:
       - 'backend/**'
       - '.github/workflows/backend_deploy.yml'
