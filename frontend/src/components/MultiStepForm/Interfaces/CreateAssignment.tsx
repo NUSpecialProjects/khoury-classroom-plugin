@@ -1,4 +1,4 @@
-import { StepComponentProps } from "./main";
+import { StepComponentProps } from "./Main";
 
 export interface AssignmentFormData {
     assignmentName: string
