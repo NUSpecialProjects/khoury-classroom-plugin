@@ -5,6 +5,8 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Link } from "react-router-dom";
 import { getClassroomsInOrg } from "@/api/classrooms";
 import useUrlParameter from "@/hooks/useUrlParameter";
+import { Table, TableRow, TableCell } from "@/components/Table";
+import { MdAdd } from "react-icons/md";
 
 const ClassroomSelection: React.FC = () => {
   const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
@@ -51,33 +53,36 @@ const ClassroomSelection: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : hasClassrooms ? (
-          <div>
-            {classrooms.map((classroom) => (
-              <div
-                key={classroom.id}
-                className="Selection__tableRow"
-                onClick={() => handleClassroomSelect(classroom)}
-              >
-                <p>{classroom.name}</p>
-              </div>
+          <Table cols={1}>
+            <TableRow>
+              <TableCell>Classroom Name</TableCell>
+            </TableRow>
+            {classrooms.map((classroom, i: number) => (
+              <TableRow key={i} className="Selection__tableRow">
+                <TableCell>
+                  <div key={classroom.id} onClick={() => handleClassroomSelect(classroom)}>{classroom.name}</div>
+                </TableCell>
+              </TableRow>
             ))}
-          </div>
+            <TableRow className="add-row">
+              <TableCell style={{ textDecoration: "none" }}>
+                <Link to={`/app/classroom/create?org_id=${orgID}`}>
+                  <MdAdd />Create a new classroom
+                </Link>
+              </TableCell>
+            </TableRow>
+          </Table>
         ) : (
           <div>
             <p>You have no classes.</p>
           </div>
         )}
       </div>
-      <div className="Selection__linkWrapper">
-        <Link to={`/app/classroom/create?org_id=${orgID}`}>
-          {" "}
-          Create a new classroom instead →
-        </Link>
-      </div>
+  
       <div className="Selection__linkWrapper">
         <Link to={`/app/organization/select`}>
           {" "}
-          Choose a different organization
+          Choose a different organization →
         </Link>
       </div>
     </div>
