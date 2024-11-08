@@ -51,12 +51,12 @@ func (service *AuthService) Login() fiber.Handler {
 		// create client
 		client, err := userclient.NewFromCode(service.userCfg, code)
 		if err != nil {
-			return errs.NewAPIError(fiber.StatusInternalServerError, err)
+			return errs.InternalServerError()
 		}
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return errs.NewAPIError(fiber.StatusInternalServerError, err)
+			return errs.InternalServerError()
 		}
 
 		//TODO: move creating the user in our DB here rather than on joining a classroom?
@@ -76,13 +76,13 @@ func (service *AuthService) Login() fiber.Handler {
 		})
 
 		if err != nil {
-			return errs.NewAPIError(fiber.StatusInternalServerError, err)
+			return errs.InternalServerError()
 		}
 
 		// Generate JWT token
 		jwtToken, err := middleware.GenerateJWT(userID, expirationTime, service.userCfg.JWTSecret)
 		if err != nil {
-			return errs.NewAPIError(fiber.StatusInternalServerError, err)
+			return errs.InternalServerError()
 		}
 
 		c.Cookie(&fiber.Cookie{
@@ -124,7 +124,7 @@ func (service *AuthService) Logout() fiber.Handler {
 
 		err := service.store.DeleteSession(c.Context(), userID)
 		if err != nil {
-			return errs.NewAPIError(fiber.StatusInternalServerError, err)
+			return errs.InternalServerError()
 		}
 
 		c.ClearCookie("jwt_cookie")

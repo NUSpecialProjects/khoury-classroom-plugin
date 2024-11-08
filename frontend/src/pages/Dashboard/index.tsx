@@ -57,16 +57,12 @@ const Dashboard: React.FC = () => {
     <div className="Dashboard">
       {selectedClassroom && (
         <>
-          {loadingCurrentClassroomUser && <p>Loading...</p>}
-          {!loadingCurrentClassroomUser && classroomUser && (
-            <p>{"Viewing as a " + classroomUser.classroom_role}</p>
-          )}
-          {!loadingCurrentClassroomUser && !classroomUser && (
-            <p>
-              {
-                "Viewing classroom you aren't in!! (Eventually, this should be impossible)"
-              }
-            </p>
+          {loadingCurrentClassroomUser ? (
+            <p>Loading...</p>
+          ) : classroomUser ? (
+            <p>Viewing as a {classroomUser.classroom_role}</p>
+          ) : (
+            <p>Viewing classroom you aren't in!! (Eventually, this should be impossible)</p>
           )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard

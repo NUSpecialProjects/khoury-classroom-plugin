@@ -24,11 +24,6 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
           <ul>
             {userList.map((user) => (
               <li key={user.id}>
-                {/* <img
-              className={`icon`}
-              src={user.} 
-              alt={`${githubUser.login}'s avatar`}
-            /> */}
                 {user.first_name} {user.last_name}
               </li>
             ))}

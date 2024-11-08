@@ -18,5 +18,11 @@ interface IClassroomUser {
   last_name: string;
   github_username: string;
   github_user_id: number;
-  classroom_role: string;
+  classroom_role: ClassroomRole;
+}
+
+enum ClassroomRole {
+  PROFESSOR = "PROFESSOR",
+  TA = "TA",
+  STUDENT = "STUDENT",
 }

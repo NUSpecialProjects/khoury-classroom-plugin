@@ -13,14 +13,11 @@ const Callback: React.FC = () => {
 
   const handleSuccessfulLogin = () => {
     const redirectUrl = localStorage.getItem("redirectAfterLogin");
-    console.log("Successful login");
-    login();
+    login(); // set the user's login status to true
     if (redirectUrl) {
       localStorage.removeItem("redirectAfterLogin");
-      console.log("Redirecting to: ", redirectUrl);
       navigate(redirectUrl); // redirect to the page that was requested before login
     } else {
-      console.log("Default Redirecting to: ", "/app/organization/select");
       navigate("/app/organization/select"); // default redirect after login
     }
   };
@@ -31,12 +28,10 @@ const Callback: React.FC = () => {
       sendCode(code)
         .then((response) => {
           if (!response.ok) {
-            console.log("Error sending code: ", response);
             // Navigate back to login page
             navigate("/");
             return;
           } else {
-            console.log("Code sent successfully");
             //Successful login. Handle redirect
             handleSuccessfulLogin();
           }

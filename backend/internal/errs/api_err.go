@@ -55,7 +55,7 @@ func ExpiredTokenError() APIError {
 }
 
 func InvalidRoleOperation() APIError {
-	return NewAPIError(http.StatusBadRequest, errors.New("cannot downgrade user role"))
+	return NewAPIError(http.StatusBadRequest, errors.New("invalid role operation attempted"))
 }
 
 func InternalServerError() APIError {
