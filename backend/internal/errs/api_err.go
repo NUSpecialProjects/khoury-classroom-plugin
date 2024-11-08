@@ -50,12 +50,24 @@ func InvalidRequestData(errors map[string]string) APIError {
 	}
 }
 
+func ExpiredTokenError() APIError {
+	return NewAPIError(http.StatusUnauthorized, errors.New("token expired"))
+}
+
+func InvalidRoleOperation() APIError {
+	return NewAPIError(http.StatusBadRequest, errors.New("invalid role operation attempted"))
+}
+
 func InternalServerError() APIError {
 	return NewAPIError(http.StatusInternalServerError, errors.New("internal server error"))
 }
 
-func GithubIntegrationError(err error) APIError {
-	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("error with github integration: %s", err.Error()))
+func GithubClientError(err error) APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("GitHub Client Error: %s", err.Error()))
+}
+
+func GithubAPIError(err error) APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("GitHub API Request Error: %s", err.Error()))
 }
 
 func MissingAPIParamError(field string) APIError {

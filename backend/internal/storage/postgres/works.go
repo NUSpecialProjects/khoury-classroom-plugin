@@ -15,7 +15,7 @@ const DesiredFields = `
 	ao.name AS assignment_name,
 	sw.assignment_outline_id,
 	sw.repo_name,
-	sw.due_date,
+	sw.unique_due_date,
 	sw.submitted_pr_number,
 	sw.manual_feedback_score,
 	sw.auto_grader_score,

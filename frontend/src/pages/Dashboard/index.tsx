@@ -6,10 +6,17 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 
 const Dashboard: React.FC = () => {
-  const [assignments, setAssignments] = useState<IAssignment[]>([]);
+  const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const { classroomUser, loading: loadingCurrentClassroomUser } =
+    useClassroomUser(selectedClassroom?.id);
+  const { classroomUsers: classroomUsersList } = useClassroomUsersList(
+    selectedClassroom?.id
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +24,7 @@ const Dashboard: React.FC = () => {
       if (classroom) {
         getAssignments(classroom.id)
           .then((assignments) => {
+            console.log("Assignments:", assignments);
             setAssignments(assignments);
           })
           .catch((err: unknown) => {
@@ -25,53 +33,23 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    const SyncWithClassroom = async (classroom: IClassroom) => {
-      try {
-        //TODO: this call isn't necessary any more b/c of the refactor?
-        console.log("Using mocked API call for classroom: ", classroom);
-        // const base_url: string = import.meta.env
-        //   .VITE_PUBLIC_API_DOMAIN as string;
-        // const result = await fetch(`${base_url}/github/sync`, {
-        //   method: "POST",
-        //   credentials: "include",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({ classroom_id: classroom.classroom_id }),
-        // });
-        const result = await Promise.resolve({ ok: true });
-
-        if (!result.ok) {
-          throw new Error("Network response was not ok");
-        }
-      } catch (error: unknown) {
-        console.error("Error making API call:", error);
-      }
-    };
-
     if (selectedClassroom !== null && selectedClassroom !== undefined) {
-      SyncWithClassroom(selectedClassroom)
-        .then(() => {
-          fetchAssignments(selectedClassroom).catch((error: unknown) => {
-            console.log("Error fetching:", error);
-          });
-        })
-        .catch((error: unknown) => {
-          console.error("Error syncing:", error);
-        });
+      fetchAssignments(selectedClassroom).catch((error: unknown) => {
+        console.log("Error fetching:", error);
+      });
     }
   }, [selectedClassroom]);
 
-  const handleUserGroupClick = (group: string) => {
+  const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     console.log(`Clicked on ${group}`);
     if (group === "Professor") {
-      navigate("/app/professors");
+      navigate("/app/professors", { state: { users } });
     }
     if (group === "TA") {
-      navigate("/app/tas");
+      navigate("/app/tas", { state: { users } });
     }
     if (group === "Student") {
-      navigate("/app/students");
+      navigate("/app/students", { state: { users } });
     }
   };
 
@@ -79,59 +57,97 @@ const Dashboard: React.FC = () => {
     <div className="Dashboard">
       {selectedClassroom && (
         <>
-          <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
+          {loadingCurrentClassroomUser ? (
+            <p>Loading...</p>
+          ) : classroomUser ? (
+            <p>Viewing as a {classroomUser.classroom_role}</p>
+          ) : (
+            <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
+          )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
-              role_type="Professor"
+              role_type="PROFESSOR"
               classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("Professor")}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "PROFESSOR"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "Professor",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "PROFESSOR"
+                  )
+                )
+              }
             />
 
             <UserGroupCard
               label="TAs"
               role_type="TA"
               classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("TA")}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "TA"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "TA",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "TA"
+                  )
+                )
+              }
             />
 
             <UserGroupCard
               label="Students"
-              role_type="Student"
+              role_type="STUDENT"
               classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("Student")}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "STUDENT"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "Student",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "STUDENT"
+                  )
+                )
+              }
             />
           </div>
+          <Link
+            to={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
+            className="Dashboard__assignmentLink"
+          >
+            Create Assignment
+          </Link>
           <div className="Dashboard__assignmentsWrapper">
             <h2 style={{ marginBottom: 0 }}>Assignments</h2>
             <Table cols={2}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Assignment Name</TableCell>
-                <TableCell>Due Date</TableCell>
+                <TableCell>Created Date</TableCell>
               </TableRow>
               {assignments.map((assignment, i: number) => (
                 <TableRow key={i} className="Assignment__submission">
                   <TableCell>
                     {" "}
                     <Link
-                      to={`/app/assignments/${i + 1}`}
+                      to={`/app/assignments/${assignment.id}`}
+                      state={{ assignment }}
                       className="Dashboard__assignmentLink"
                     >
                       {assignment.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
+                  <TableCell>{formatDate(assignment.created_at)}</TableCell>
                 </TableRow>
               ))}
             </Table>
           </div>
         </>
       )}
-      <div className="Dashboard__linkWrapper">
-        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}>
-          View other classrooms
-        </Link>
-      </div>
     </div>
   );
 };

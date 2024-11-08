@@ -55,7 +55,7 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	Ping(ctx context.Context) (string, error)
 
 	// List the repositories in an organization
-	ListRepositoriesByOrg(ctx context.Context, orgName string) ([]*github.Repository, error)
+	ListRepositoriesByOrg(ctx context.Context, orgName string, itemsPerPage int, pageNum int) ([]*models.Repository, error)
 
 	// List the commits in a repository
 	ListCommits(ctx context.Context, owner string, repo string, opts *github.CommitsListOptions) ([]*github.RepositoryCommit, error)
@@ -86,4 +86,6 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CreateRegularPRComment(ctx context.Context, owner string, repo string, pullNumber int, commentBody string) (*github.IssueComment, error)
 
 	ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error)
+
+	GetUser(ctx context.Context, userName string) (*github.User, error)
 }

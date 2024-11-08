@@ -17,7 +17,7 @@ import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
-  getStudentAssignment,
+  getStudentWork,
   getGitTree,
   getGitBlob,
   getTotalStudentAssignments,
@@ -35,7 +35,7 @@ const Grader: React.FC = () => {
   // states
   const [totalStudentAssignments, setTotalStudentAssignments] = useState(0);
   const [studentAssignment, setStudentAssignment] =
-    useState<IStudentAssignment | null>(null);
+    useState<IStudentWork | null>(null);
   const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [cachedFiles, setCachedFiles] = useState<Record<string, IGraderFile>>(
     {}
@@ -59,7 +59,7 @@ const Grader: React.FC = () => {
   useEffect(() => {
     if (!selectedClassroom || !assignmentId || !studentAssignmentId) return;
 
-    getStudentAssignment(
+    getStudentWork(
       selectedClassroom.id,
       Number(assignmentId),
       Number(studentAssignmentId)
@@ -77,7 +77,10 @@ const Grader: React.FC = () => {
   useEffect(() => {
     if (!selectedClassroom || !studentAssignment) return;
 
-    getGitTree(selectedClassroom.org_name, studentAssignment.repo_name)
+    getGitTree(
+      selectedClassroom.org_name,
+      studentAssignment.repo_name ? studentAssignment.repo_name : ""
+    )
       .then((resp) => {
         setGitTree(resp);
       })
@@ -129,7 +132,11 @@ const Grader: React.FC = () => {
     }
 
     if (!selectedClassroom || !studentAssignment) return;
-    getGitBlob(selectedClassroom.org_name, studentAssignment.repo_name, node)
+    getGitBlob(
+      selectedClassroom.org_name,
+      studentAssignment.repo_name ? studentAssignment.repo_name : "",
+      node
+    )
       .then((resp) => {
         setCurrentFile(resp);
         setCachedFiles((prev) => ({
@@ -153,7 +160,7 @@ const Grader: React.FC = () => {
             </Link>
             <div>
               <h2>{studentAssignment.assignment_name}</h2>
-              <span>{studentAssignment.student_gh_username}</span>
+              <span>{studentAssignment.contributors}</span>
             </div>
           </div>
           <div className="Grader__nav">
