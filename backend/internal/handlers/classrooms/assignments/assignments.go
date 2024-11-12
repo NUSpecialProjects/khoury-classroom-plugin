@@ -87,7 +87,7 @@ func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
 		// Create the template if it does not exist
 		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -81,11 +80,10 @@ func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateDa
 		VALUES ($1, $2)
 		RETURNING *
 	`,
-		strconv.FormatInt(assignmentTemplateData.TemplateRepoOwner.ID, 10),
+		assignmentTemplateData.TemplateRepoOwner.Login,
 		assignmentTemplateData.TemplateID,
-	).Scan(&assignmentTemplateData.ID,
-		&assignmentTemplateData.TemplateRepoOwner.ID,
-		&assignmentTemplateData.TemplateID,
+	).Scan(&assignmentTemplateData.TemplateID,
+		&assignmentTemplateData.TemplateRepoOwner.Login,
 		&assignmentTemplateData.CreatedAt)
 
 	if err != nil {
