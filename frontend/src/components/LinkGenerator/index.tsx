@@ -14,6 +14,8 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
 }) => {
   const [message, setMessage] = useState<string>("");
   const [duration, setDuration] = useState<number | undefined>(10080); // Default to 7 days
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+
 
   const expirationOptions = [
     { label: "1 hour", value: 60 },
@@ -31,7 +33,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
     }
     await postClassroomToken(classroom.id, role_type, duration)
       .then((data: ITokenResponse) => {
-        const url = "http://localhost:3000/app/token/apply?token=" + data.token;
+        const url = `${base_url}/app/token/apply?token=${data.token}`;
         setMessage("Link created! " + url);
         navigator.clipboard.writeText(url);
       })
