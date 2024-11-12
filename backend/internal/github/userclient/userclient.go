@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
-	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
@@ -128,13 +127,14 @@ func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destNa
 	//Initialize post request
 	req, err := api.Client.NewRequest("POST", endpoint, payload)
 	if err != nil {
-		return errs.DBUnknownError(err)
+		// No errors package for github service level. Can add another ticket
+		return err
 	}
 
 	// Make the API call
 	response, err := api.Client.Do(ctx, req, nil)
 	if err != nil && response.StatusCode != 202 {
-		return errs.DBUnknownError(err)
+		return err
 	}
 
 	return  nil

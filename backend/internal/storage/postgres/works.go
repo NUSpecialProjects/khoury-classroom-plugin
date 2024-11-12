@@ -146,7 +146,6 @@ func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, G
 	var userID int 
 	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, GHUserID).Scan(&userID)
 	if err != nil {
-		fmt.Print(err.Error())
 		return fmt.Errorf("user %d does not exist in database", userID)
 	}
 	
