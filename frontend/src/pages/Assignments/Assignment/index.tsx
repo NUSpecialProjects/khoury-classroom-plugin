@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 
 import "./styles.css";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
@@ -83,7 +83,9 @@ const Assignment: React.FC = () => {
           <div className="Assignment__externalButtons">
             <Button href="" variant="secondary">View in Github Classroom</Button>
             <Button href="" variant="secondary">View Starter Code</Button>
-            <Button href="" variant="secondary">View Rubric</Button>
+            <Link to={`/app/assignments/${assignment.id}/rubric`} state={{assignment}}>
+              <Button href="" variant="secondary">View Rubric</Button>
+            </Link>
           </div>
 
           <h2>Metrics</h2>
