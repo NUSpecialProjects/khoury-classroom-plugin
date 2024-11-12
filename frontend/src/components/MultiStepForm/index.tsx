@@ -12,7 +12,6 @@ const MultiStepForm = <T,>({ steps, submitFunc, initialData }: MultiStepFormProp
   const handleNext = useCallback(() => {
     setCurrentStepIndex((prev) => Math.min(prev + 1, totalSteps - 1));
   }, [totalSteps]);
-
   const handlePrevious = useCallback(() => {
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   }, []);

@@ -1,7 +1,6 @@
 package assignments
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -149,14 +148,12 @@ func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
 
 		error := c.BodyParser(&assignmentData)
 		if error != nil {
-			fmt.Println("Error parsing body")
 			return errs.InvalidRequestBody(models.AssignmentTemplate{})
 		}
 
 		// Check if the template already exists
 		exists, err := s.store.AssignmentTemplateExists(c.Context(), assignmentData.TemplateID)
 		if err != nil {
-			fmt.Println("Error checking if template exists")
 			return errs.InternalServerError()
 		}
 		if exists {
@@ -164,10 +161,8 @@ func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
 		}
 
 		// Create the template if it does not exist
-		fmt.Println("Creating template...")
 		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
 		if err != nil {
-			fmt.Println("Error creating template")
 			return errs.InternalServerError()
 		}
 

@@ -33,9 +33,7 @@ const RepositoryDropdown: React.FC<RepositoryDropdownProps> = ({
                     {LOADING_OPTION}
                 </option>
             );
-        }
-
-        if (repositories.length === 0) {
+        } else if (repositories.length === 0) {
             return (
                 <option value="" disabled>
                     {NO_REPOSITORIES_OPTION}
@@ -52,7 +50,7 @@ const RepositoryDropdown: React.FC<RepositoryDropdownProps> = ({
 
     return (
         <select
-            value={selectedRepo?.name ?? ''}
+            value={selectedRepo?.id ?? ''}
             onChange={handleChange}
         >
             <option value="" disabled>
