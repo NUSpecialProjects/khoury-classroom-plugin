@@ -54,7 +54,7 @@ export const getAssignmentIndirectNav = async (
 
 export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
   const result = await fetch(
-      `${base_url}/assignments/classrooms/classroom/${classroomID}/accept`,
+      `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
       {
         method: "POST",
         credentials: "include",
