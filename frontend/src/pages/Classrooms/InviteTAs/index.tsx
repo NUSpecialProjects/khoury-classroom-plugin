@@ -13,6 +13,8 @@ const InviteTAs: React.FC = () => {
     const { selectedClassroom } = useContext(SelectedClassroomContext);
     const [link, setLink] = useState<string>("");
     const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+    const [error, setError] = useState<string | null>(null);
+
     useEffect(() => {
         const handleCreateToken = async () => {
             if (!selectedClassroom) {
@@ -20,11 +22,11 @@ const InviteTAs: React.FC = () => {
             }
             await postClassroomToken(selectedClassroom.id, "TA")
                 .then((data: ITokenResponse) => {
-                    const url = base_url + "/app/token/apply?token=" + data.token;
+                    const url = `${base_url}/app/token/apply?token=${data.token}`;
                     setLink(url);
                 })
                 .catch((_) => {
-                    // do nothing
+                    setError("Failed to generate invite URL. Please try again.");
                 });
         };
 
@@ -42,6 +44,7 @@ const InviteTAs: React.FC = () => {
                         <div>{"To add TA’s to your classroom, invite them using this link!"}</div>
                     </div>
                     <CopyLink link={link} name="invite-tas"></CopyLink>
+                    {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
                     <Button variant="primary" onClick={() => navigate("/app/classroom/invite-students")}>Continue</Button>

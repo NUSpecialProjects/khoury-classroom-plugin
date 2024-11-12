@@ -53,7 +53,7 @@ const ClassroomCreation: React.FC = () => {
     })
       .then((createdClassroom) => {
         setSelectedClassroom(createdClassroom);
-        navigate("/app/dashboard");
+        navigate("/app/classroom/invite-tas");
       })
       .catch((_) => {
         setError("Failed to create classroom. Please try again.");
