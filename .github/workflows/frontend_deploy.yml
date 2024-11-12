@@ -36,6 +36,7 @@ jobs:
       run: |
         echo "VITE_PUBLIC_API_DOMAIN=${{ secrets.VITE_PUBLIC_API_DOMAIN }}" > .env
         echo "VITE_GITHUB_CLIENT_ID=${{ secrets.VITE_GITHUB_CLIENT_ID }}" >> .env
+        echo "VITE_PUBLIC_FRONTEND_DOMAIN=${{ secrets.VITE_PUBLIC_FRONTEND_DOMAIN }}" >> .env
 
     - name: Build the app
       run: |

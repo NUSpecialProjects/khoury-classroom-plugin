@@ -1,5 +1,6 @@
 import { getCurrentUser, logout as logoutApi } from "@/api/auth";
-import { useState, createContext, useLayoutEffect } from "react";
+import { useState, createContext, useLayoutEffect, useContext } from "react";
+import { SelectedClassroomContext } from "./selectedClassroom";
 
 interface IAuthContext {
   isLoggedIn: boolean;
@@ -18,6 +19,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const { setSelectedClassroom } = useContext(SelectedClassroomContext);
 
   useLayoutEffect(() => {
     getCurrentUser()
@@ -39,6 +41,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     logoutApi()
       .then(() => {
+        setSelectedClassroom(null);
         setIsLoggedIn(false);
       })
       .catch((_: Error) => {
