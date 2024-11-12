@@ -17,13 +17,6 @@ enum LoginStatus {
   READY = "READY",
 }
 
-enum LoginStatus {
-  LOADING = "LOADING",
-  CALLBACK_ERRORED = "CALLBACK ERRORED",
-  LOGIN_ERRORED = "LOGIN ERRORED",
-  READY = "READY",
-}
-
 const Login: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
 
