@@ -46,6 +46,8 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 
 	// Callback for the OAUTH flow
 	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
+
+	ForkRepository(ctx context.Context, org, owner, repo, destName string) error
 }
 
 type GitHubBaseClient interface { //All methods in the SHARED client
@@ -76,8 +78,6 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 
 	// Create a new pull request review
 	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
-
-	ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error)
 
 	GetUser(ctx context.Context, userName string) (*github.User, error)
 }

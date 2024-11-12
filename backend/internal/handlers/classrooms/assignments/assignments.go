@@ -3,8 +3,11 @@ package assignments
 import (
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -65,6 +68,81 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		})
 	}
 }
+
+
+
+func (s *AssignmentService) acceptAssignment() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var assignment models.AssignmentAcceptRequest
+		err := c.BodyParser(&assignment)
+		if err != nil {
+			return errs.InvalidRequestBody(models.AssignmentOutline{})
+		}
+
+		client, err := middleware.GetClient(c, s.store, s.userCfg)
+
+		if err != nil {
+			return errs.AuthenticationError()
+		}
+
+		username, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			//TODO: Rebase on sebyBranch for correct errors
+			return err
+		}
+
+		forkName := assignment.SourceRepoName + "-" + strings.ReplaceAll((username.Login), " ", "")
+
+		studentwork := createMockStudentWork(forkName, assignment.AssignmentName, int(assignment.AssignmentID))
+
+
+		err = s.store.CreateStudentWork(c.Context(), &studentwork, username.ID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
+		if err != nil {
+			errs.InternalServerError()
+		}
+
+		c.Status(http.StatusOK)
+		return nil
+	}
+}
+
+
+
+
+
+//TODO: Integrate with actual assignment information when infrastructure is available
+func createMockStudentWork(repo string, assName string, assID int) models.StudentWork {
+	assignmentName := assName
+	repoName := repo
+	submittedPRNumber := 42
+	manualFeedbackScore := 85
+	autoGraderScore := 90
+	uniqueDueDate := time.Now().AddDate(0, 0, 7)            // Due in 7 days MOCK
+	submissionTimestamp := time.Now().AddDate(0, 0, -1)     // Submitted yesterday MOCK
+	gradesPublishedTimestamp := time.Now().AddDate(0, 0, -1) // Grades published yesterday MOCK
+	return models.StudentWork{
+		ID:                       1,
+		ClassroomID:              101,
+		AssignmentName:           &assignmentName,
+		AssignmentOutlineID:      assID,
+		RepoName:                 &repoName,
+		UniqueDueDate:            &uniqueDueDate,
+		SubmittedPRNumber:        &submittedPRNumber,
+		ManualFeedbackScore:      &manualFeedbackScore,
+		AutoGraderScore:          &autoGraderScore,
+		SubmissionTimestamp:      &submissionTimestamp,
+		GradesPublishedTimestamp: &gradesPublishedTimestamp,
+		WorkState:                "SUBMITTED",
+		CreatedAt:                time.Now(),
+	}
+}
+
+
 
 // Updates an existing assignment.
 func (s *AssignmentService) updateAssignment() fiber.Handler {
