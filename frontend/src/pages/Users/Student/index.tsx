@@ -8,16 +8,6 @@ const StudentListPage: React.FC = () => {
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
-<<<<<<< HEAD
-  const role_type = "Student";
-  return (
-    <>
-      <GenericRolePage role_type={role_type} />
-      <div>
-        <p>Add {role_type}</p>
-        <LinkGenerator role_type={role_type} classroom={selectedClassroom} />
-      </div>
-=======
   const location = useLocation();
   const state = location.state as { users: IClassroomUser[] };
   const role_type = "STUDENT";
@@ -30,7 +20,6 @@ const StudentListPage: React.FC = () => {
         role_label={role_label}
         classroom={selectedClassroom}
       />
->>>>>>> main
     </>
   );
 };

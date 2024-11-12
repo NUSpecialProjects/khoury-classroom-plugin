@@ -21,19 +21,14 @@ const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<IClassroom | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useLayoutEffect(() => {
+  useLayoutEffect(() => { 
     const cookieValue = Cookies.get(COOKIE_NAME);
     if (cookieValue) {
       try {
         const parsedValue = JSON.parse(cookieValue) as IClassroom;
         setSelectedClassroomState(parsedValue);
-<<<<<<< HEAD
-      } catch (error: unknown) {
-        console.log("Error parsing classroom cookie: ", error);
-=======
       } catch (_: unknown) {
         // do nothing
->>>>>>> main
       }
     }
     setLoading(false);
@@ -47,11 +42,7 @@ const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
       setSelectedClassroomState(classroom);
       Cookies.set(COOKIE_NAME, JSON.stringify(classroom), {
         expires: 30,
-<<<<<<< HEAD
-        SameSite: "Strict",
-=======
         sameSite: "Lax"
->>>>>>> main
       });
     }
   };

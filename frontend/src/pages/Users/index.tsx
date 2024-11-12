@@ -17,12 +17,6 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   return (
     <div>
       <div>
-<<<<<<< HEAD
-        <p>
-          Users with role [{role_type}] in org [{selectedClassroom?.org_id}]
-        </p>
-        <p>(actually put the list here)</p>
-=======
         <h1>
           {role_label}s in {selectedClassroom?.org_name}
         </h1>
@@ -35,7 +29,6 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
             ))}
           </ul>
         </div>
->>>>>>> main
       </div>
     </div>
   );

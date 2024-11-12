@@ -1,25 +1,15 @@
-<<<<<<< HEAD
-import { createToken } from "@/api/users";
-=======
 import { postClassroomToken } from "@/api/classrooms";
->>>>>>> main
 import React, { useState } from "react";
 
 interface CreateTokenProps {
   role_type: string;
-<<<<<<< HEAD
-=======
   role_label: string;
->>>>>>> main
   classroom: IClassroom | null;
 }
 
 const LinkGenerator: React.FC<CreateTokenProps> = ({
   role_type,
-<<<<<<< HEAD
-=======
   role_label,
->>>>>>> main
   classroom,
 }) => {
   const [message, setMessage] = useState<string>("");
@@ -39,11 +29,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
       setMessage("No classroom selected");
       return;
     }
-<<<<<<< HEAD
-    await createToken(role_type, classroom)
-=======
     await postClassroomToken(classroom.id, role_type, duration)
->>>>>>> main
       .then((data: ITokenResponse) => {
         const url = "http://localhost:3000/app/token/apply?token=" + data.token;
         setMessage("Link created! " + url);
@@ -56,10 +42,6 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
 
   return (
     <div>
-<<<<<<< HEAD
-      <button onClick={handleCreateToken} disabled={!classroom}>
-        Create {role_type} Link
-=======
       <h3>Create {role_label} Invite Link</h3>
       <select
         value={duration === undefined ? "" : duration}
@@ -77,7 +59,6 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
       </select>
       <button onClick={handleCreateToken} disabled={!classroom}>
         Generate {role_label} Link
->>>>>>> main
       </button>
       {message && <p>{message}</p>}
     </div>

@@ -4,42 +4,19 @@ import { fetchUser } from "@/api/users";
 
 interface IUserGroupCardProps {
   label: string;
-<<<<<<< HEAD
-  role_type: string;
-  classroom: IClassroom;
-=======
   givenUsersList: IClassroomUser[];
->>>>>>> main
   onClick?: () => void;
 }
 
 const UserGroupCard: React.FC<IUserGroupCardProps> = ({
   label,
-<<<<<<< HEAD
-  role_type,
-  classroom,
-=======
   givenUsersList,
->>>>>>> main
   onClick,
 }) => {
   const [userMap, setUserMap] = useState<Map<IClassroomUser, IGitHubUser>>(
     new Map()
   );
   useEffect(() => {
-<<<<<<< HEAD
-    const getUsers = async () => {
-      try {
-        const users = await fetchUsersWithRole(role_type, classroom);
-        setNumUsers(users.length);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    void getUsers();
-  }, [role_type, classroom]);
-=======
     const loadGitHubUsers = async () => {
       if (givenUsersList) {
         const newMap = new Map();
@@ -60,7 +37,6 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
 
     void loadGitHubUsers();
   }, [givenUsersList]);
->>>>>>> main
 
   let userIcons: React.ReactNode[] = [];
   const MAX_USERS_TO_SHOW = 3;

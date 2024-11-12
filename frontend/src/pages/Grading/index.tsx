@@ -10,11 +10,7 @@ import {
 } from "@/components/Table/index.tsx";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
-<<<<<<< HEAD
-import { getStudentWorks } from "@/api/student_assignments";
-=======
 import { getStudentWorks } from "@/api/student_works";
->>>>>>> main
 import { formatDate } from "@/utils/date";
 
 import "./styles.css";
@@ -24,15 +20,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   children,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
-<<<<<<< HEAD
-  const [studentAssignments, setStudentAssignments] = useState<
-    IStudentWork[]
-  >([]);
-=======
   const [studentAssignments, setStudentAssignments] = useState<IStudentWork[]>(
     []
   );
->>>>>>> main
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
