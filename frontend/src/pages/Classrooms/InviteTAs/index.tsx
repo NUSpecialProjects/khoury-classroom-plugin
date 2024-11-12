@@ -12,7 +12,7 @@ const InviteTAs: React.FC = () => {
     const navigate = useNavigate();
     const { selectedClassroom } = useContext(SelectedClassroomContext);
     const [link, setLink] = useState<string>("");
-
+    const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
     useEffect(() => {
         const handleCreateToken = async () => {
             if (!selectedClassroom) {
@@ -20,7 +20,7 @@ const InviteTAs: React.FC = () => {
             }
             await postClassroomToken(selectedClassroom.id, "TA")
                 .then((data: ITokenResponse) => {
-                    const url = "http://localhost:3000/app/token/apply?token=" + data.token;
+                    const url = base_url + "/app/token/apply?token=" + data.token;
                     setLink(url);
                 })
                 .catch((_) => {
