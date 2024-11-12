@@ -72,6 +72,6 @@ export const acceptAssignment = async (orgName: string, repoName: string, classr
     );
 
     if (!result.ok) {
-        console.log(result)
+      throw new Error(result.statusText);
     }
 }

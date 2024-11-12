@@ -11,7 +11,7 @@ const Settings: React.FC = () => {
 
   const stubAssignmentAcceptEntry = () => {
     // Call the function with the required arguments
-    if (selectedClassroom!= null){
+    if (selectedClassroom != null){
       acceptAssignment("NUSpecialProjects", "practicum-take-home", selectedClassroom.id, "practicum-take-home");
     }
     else {

@@ -23,3 +23,7 @@ func EmptyResult() DatabaseError {
 		Message: "unexpected: no rows in result",
 	}
 }
+
+func DBUnknownError(err error) DatabaseError {
+	return NewDBError(err) 
+}
