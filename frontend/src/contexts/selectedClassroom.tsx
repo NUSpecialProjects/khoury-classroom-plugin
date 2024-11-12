@@ -21,8 +21,7 @@ const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<IClassroom | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useLayoutEffect(() => { 
-    const cookieValue = Cookies.get(COOKIE_NAME);
+  useLayoutEffect(() => {    const cookieValue = Cookies.get(COOKIE_NAME);
     if (cookieValue) {
       try {
         const parsedValue = JSON.parse(cookieValue) as IClassroom;
