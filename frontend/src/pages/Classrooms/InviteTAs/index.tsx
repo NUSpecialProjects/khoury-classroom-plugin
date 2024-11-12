@@ -24,7 +24,7 @@ const InviteTAs: React.FC = () => {
                     setLink(url);
                 })
                 .catch((_) => {
-                    // do nothing
+                    // show error message (TODO)
                 });
         };
 
