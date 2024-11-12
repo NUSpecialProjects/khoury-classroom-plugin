@@ -25,7 +25,7 @@ useEffect(() => {
                 setLink(url);
             })
             .catch((_) => {
-                // do nothing
+                // show error message (TODO)
             });
     };
 
