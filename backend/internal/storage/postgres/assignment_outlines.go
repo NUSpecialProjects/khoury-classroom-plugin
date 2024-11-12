@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -39,15 +38,11 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 }
 
 func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error) {
-	fmt.Println("Assignment Data: ", assignmentData)
-	fmt.Println("Assignment Data Template ID: ", assignmentData.TemplateID)
-	fmt.Println("Assignment Data Released At: ", assignmentData.ReleasedAt)
-	fmt.Println("Assignment Data Name: ", assignmentData.Name)
-	fmt.Println("Assignment Data Classroom ID: ", assignmentData.ClassroomID)
-	fmt.Println("Assignment Data Group Assignment: ", assignmentData.GroupAssignment)
-	fmt.Println("Assignment Data Main Due Date: ", assignmentData.MainDueDate)
-
-	err := db.connPool.QueryRow(ctx, "INSERT INTO assignment_outlines (template_id, released_at, name, classroom_id, group_assignment, main_due_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+	err := db.connPool.QueryRow(ctx, `
+		INSERT INTO assignment_outlines (template_id, released_at, name, classroom_id, group_assignment, main_due_date)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING *
+	`,
 		assignmentData.TemplateID,
 		assignmentData.ReleasedAt,
 		assignmentData.Name,
@@ -77,16 +72,15 @@ func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (b
 		return false, errs.NewDBError(err)
 	}
 
-	fmt.Println("Tempalte ID: ", templateID, " Exists: ", exists)
-
 	return exists, nil
 }
 
 func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error) {
-	fmt.Println("Template Repo Owner ID: ", assignmentTemplateData.TemplateRepoOwner.ID)
-	fmt.Println("Template ID: ", assignmentTemplateData.TemplateID)
-
-	err := db.connPool.QueryRow(ctx, "INSERT INTO assignment_template (template_repo_owner, template_repo_id) VALUES ($1, $2) RETURNING *",
+	err := db.connPool.QueryRow(ctx, `
+		INSERT INTO assignment_template (template_repo_owner, template_repo_id)
+		VALUES ($1, $2)
+		RETURNING *
+	`,
 		strconv.FormatInt(assignmentTemplateData.TemplateRepoOwner.ID, 10),
 		assignmentTemplateData.TemplateID,
 	).Scan(&assignmentTemplateData.ID,

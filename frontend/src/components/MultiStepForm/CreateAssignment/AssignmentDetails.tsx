@@ -3,19 +3,30 @@ import { StepComponentProps } from '../Interfaces/Main';
 import { AssignmentFormData } from '../Interfaces/CreateAssignment';
 
 const AssignmentDetails: React.FC<StepComponentProps<AssignmentFormData>> = ({ data, onChange }) => {
-  const handleInputChange = useCallback(
-    (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-      const { name, value, type } = e.target;
+  const handleCheckboxChange = (target: HTMLInputElement) => {
+    onChange({ [target.name]: target.checked });
+  };
+  const handleDateChange = (target: HTMLInputElement) => {
+    onChange({ [target.name]: target.value ? new Date(target.value) : null });
+  };
+  const handleTextChange = (target: HTMLInputElement | HTMLTextAreaElement) => {
+    onChange({ [target.name]: target.value });
+  };
 
-      if (type === 'checkbox') {
-        const target = e.target as HTMLInputElement;
-        onChange({ [name]: target.checked });
-      } else if (type === 'date') {
-        onChange({ [name]: value ? new Date(value) : null });
-      } else {
-        onChange({ [name]: value });
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { type } = e.target;
+      const target = e.target as HTMLInputElement;
+
+      switch (type) {
+        case 'checkbox':
+          handleCheckboxChange(target);
+          break;
+        case 'date':
+          handleDateChange(target);
+          break;
+        default:
+          handleTextChange(target);
       }
     },
     [onChange]
