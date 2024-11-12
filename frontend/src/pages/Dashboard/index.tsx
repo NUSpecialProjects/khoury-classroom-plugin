@@ -24,7 +24,6 @@ const Dashboard: React.FC = () => {
       if (classroom) {
         getAssignments(classroom.id)
           .then((assignments) => {
-            console.log("Assignments:", assignments);
             setAssignments(assignments);
           })
           .catch((_: unknown) => {
@@ -141,11 +140,6 @@ const Dashboard: React.FC = () => {
           </div>
         </>
       )}
-      <div className="Dashboard__linkWrapper">
-        <Link to={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}>
-          View other classrooms
-        </Link>
-      </div>
     </div>
   );
 };
