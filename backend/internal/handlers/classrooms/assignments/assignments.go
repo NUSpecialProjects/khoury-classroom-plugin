@@ -103,7 +103,7 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 
 		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
 		if err != nil {
-			errs.InternalServerError()
+			return errs.InternalServerError()
 		}
 
 		c.Status(http.StatusOK)
