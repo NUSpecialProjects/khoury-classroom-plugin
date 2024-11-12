@@ -19,7 +19,7 @@ useEffect(() => {
         if (!selectedClassroom) {
             return;
         }
-        await postClassroomToken(selectedClassroom.id, "TA")
+        await postClassroomToken(selectedClassroom.id, "STUDENT")
             .then((data: ITokenResponse) => {
                 const url = "http://localhost:3000/app/token/apply?token=" + data.token;
                 setLink(url);
