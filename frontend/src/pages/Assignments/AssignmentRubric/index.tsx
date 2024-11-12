@@ -62,7 +62,7 @@ const AssignmentRubric: React.FC = () => {
             </>
           ) : (
             <div className="AssignmentRubric__noRubric">
-              <div>This Assignment does not have a Rubric yet.</div>
+              <div className="AssignmentRubric__noRubricTitle">This Assignment does not have a Rubric yet.</div>
               <Button href="" variant="secondary"> Import existing rubric</Button>
               <Button href=""> Add new rubric</Button>
             </div>
