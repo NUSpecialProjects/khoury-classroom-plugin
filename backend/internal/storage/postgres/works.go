@@ -155,8 +155,8 @@ WHERE student_work_id = $3
 
 
 func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error {
-	fmt.Printf("Given GH User ID: %d", GHUserID)
 
+	//Get internal ID of inserting user
 	var userID int 
 	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, GHUserID).Scan(&userID)
 	if err != nil {
@@ -164,7 +164,7 @@ func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, G
 		return fmt.Errorf("user %d does not exist in database", userID)
 	}
 	
-	
+	// TODO: Make a single transaction once we institute atomicity infrastructure
 	var studentWorkID int
 	err = db.connPool.QueryRow(ctx,
 		`INSERT INTO student_works (assignment_outline_id,
@@ -192,12 +192,10 @@ func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, G
 		return fmt.Errorf("error inserting student works")
 	}
 
-	// Get user ID
-
-
+	// Insert forking user as work contributor
 	_, err = db.connPool.Exec(ctx,
 		`INSERT INTO work_contributors (user_id, student_work_id) VALUES ($1, $2)`,
-		userID, // Assuming this field exists on the work model
+		userID, 
 		studentWorkID,
 	)
 	if err != nil {

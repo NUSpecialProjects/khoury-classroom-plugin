@@ -20,7 +20,7 @@ const Settings: React.FC = () => {
   return (
     <div>
       <h1>Settings</h1>
-      <div><button onClick={handleCreateAssignment}>Create Assignment</button></div>
+      <div><button onClick={handleCreateAssignment}>Accept Example Assignment</button></div>
     </div>
   );
 };
