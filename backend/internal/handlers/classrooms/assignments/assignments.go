@@ -87,8 +87,7 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 
 		username, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			//TODO: Rebase on sebyBranch for correct errors
-			return err
+			return errs.GithubAPIError(err)
 		}
 
 		forkName := assignment.SourceRepoName + "-" + strings.ReplaceAll((username.Login), " ", "")
