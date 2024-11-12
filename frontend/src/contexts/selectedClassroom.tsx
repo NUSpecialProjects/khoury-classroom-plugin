@@ -5,13 +5,13 @@ const COOKIE_NAME = "selectedClassroom";
 
 interface ISelectedClassroomContext {
   selectedClassroom: IClassroom | null;
-  setSelectedClassroom: (classroom: IClassroom) => void;
+  setSelectedClassroom: (classroom: IClassroom | null) => void;
 }
 
 export const SelectedClassroomContext: React.Context<ISelectedClassroomContext> =
   createContext<ISelectedClassroomContext>({
     selectedClassroom: null,
-    setSelectedClassroom: (_: IClassroom) => {},
+    setSelectedClassroom: (_: IClassroom | null) => {},
   });
 
 const SelectedClassroomProvider: React.FC<{ children: React.ReactNode }> = ({

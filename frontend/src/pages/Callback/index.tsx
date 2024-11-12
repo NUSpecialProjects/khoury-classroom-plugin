@@ -16,9 +16,9 @@ const Callback: React.FC = () => {
     login(); // set the user's login status to true
     if (redirectUrl) {
       localStorage.removeItem("redirectAfterLogin");
-      navigate(redirectUrl); // redirect to the page that was requested before login
+      navigate(redirectUrl, { replace: true }); // redirect to the page that was requested before login
     } else {
-      navigate("/app/organization/select"); // default redirect after login
+      navigate("/app/organization/select", { replace: true }); // default redirect after login
     }
   };
 
@@ -33,7 +33,8 @@ const Callback: React.FC = () => {
         .catch((err: Error) => {
           // Navigate back to login page with an error message attached
           navigate(
-            `/?error=${encodeURIComponent(err.message)}`
+            `/?error=${encodeURIComponent(err.message)}`,
+            { replace: true }
           );
           return;
         });
