@@ -134,9 +134,10 @@ func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destNa
 	// Make the API call
 	response, err := api.Client.Do(ctx, req, nil)
 	fmt.Println(response)
+	fmt.Println("Status: " + response.Status)
 	
 	
-	if err != nil {
+	if err != nil && response.StatusCode != 202 {
 		return err
 	}
 
