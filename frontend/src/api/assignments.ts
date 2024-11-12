@@ -49,3 +49,29 @@ export const getAssignmentIndirectNav = async (
 
   return data;
 };
+
+
+
+export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
+  const result = await fetch(
+      `${base_url}/assignments/classrooms/classroom/${classroomID}/accept`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          org_name: orgName,
+          repo_name: repoName,
+          assignment_name: assignmentName,
+          assignment_id: 1,
+          org_id: 182810684
+        }),
+      }
+    );
+
+    if (!result.ok) {
+        console.log(result)
+    }
+}

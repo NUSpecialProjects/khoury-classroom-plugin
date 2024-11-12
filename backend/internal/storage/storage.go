@@ -19,6 +19,7 @@ type Storage interface {
 type Works interface {
 	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
 	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
+	CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error
 }
 
 type Test interface {
