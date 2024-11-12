@@ -97,3 +97,8 @@ a {
   border-style: solid;
   border-color: var(--border-neutral);
 }
+
+.add-row {
+  color: var(--brand);
+}
+

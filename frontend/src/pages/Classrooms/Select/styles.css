@@ -26,33 +26,8 @@
     text-decoration: underline;
     cursor: pointer;
   }
-
-  .Selection__link:hover {
-    text-decoration: none;
-  }
-
-  &__actionButton {
-    text-align: center;
-    background-color: var(--brand);
-    color: var(--primary-text-white);
-    font-size: var(--font-size-s);
-    width: 80px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-
-    &:hover {
-      background: var(--brand-gradient-bright);
-      transition: background 0.5s ease;
-    }
-  }
+  
 }
-
-.SubTable {
-  padding-left: 60px;
-  /* same padding as the chevron */
-}
-
 .TableRow {
   align-items: center;
 }

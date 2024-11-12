@@ -4,14 +4,14 @@ import "./styles.css";
 interface IDropdownProps {
   label: string;
   name: string;
-  title: string;
+  placeholder: string;
   options: string[];
 }
 
 const Dropdown: React.FC<IDropdownProps> = ({
   label,
   name,
-  title,
+  placeholder,
   options,
 }) => {
   return (
@@ -20,7 +20,7 @@ const Dropdown: React.FC<IDropdownProps> = ({
         {label}
       </label>
       <select id={name} name={name} className="Dropdown">
-        <option className="Dropdown__option">{title}</option>
+        <option className="Dropdown__option">{placeholder}</option>
         {options.map((option, index) => (
           <option className="Dropdown__option" key={index} value={option}>
             {option}

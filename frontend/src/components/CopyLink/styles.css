@@ -1,0 +1,45 @@
+.CopyLink {
+    min-width: fit-content;
+    max-width: 500px;
+    padding: 10px;
+    background: var(--page-background);
+    color: var(--primary-text);
+    font-size: var(--body-font-size);
+    border-radius: 5px;
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--button-border-color);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+    &__link {
+        width: 100%;
+        border: 0px;
+        font-size: var(--body-font-size);
+    }
+
+    &__copyButton {
+        background-color: var(--page-background);
+        color: var(--primary-text);
+        border-width: var(--border-width);
+        border-style: var(--border-style);
+        border-color: var(--button-border-color);
+        padding: 10px;
+        border-radius: 5px;
+        font-size: var(--font-size-s);
+        margin-left: auto;
+
+        &:hover {
+            background: var(--panels-background);
+        }
+
+        &:active {
+            background-color: var(--brand);
+            color: var(--primary-text-white);
+        }
+    }
+}
