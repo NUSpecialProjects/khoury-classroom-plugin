@@ -12,6 +12,7 @@ const InviteTAs: React.FC = () => {
     const navigate = useNavigate();
     const { selectedClassroom } = useContext(SelectedClassroomContext);
     const [link, setLink] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const handleCreateToken = async () => {
@@ -24,7 +25,7 @@ const InviteTAs: React.FC = () => {
                     setLink(url);
                 })
                 .catch((_) => {
-                    // show error message (TODO)
+                    setError("Failed to generate invite URL. Please try again.");
                 });
         };
 
@@ -42,6 +43,7 @@ const InviteTAs: React.FC = () => {
                         <div>{"To add TA’s to your classroom, invite them using this link!"}</div>
                     </div>
                     <CopyLink link={link} name="invite-tas"></CopyLink>
+                    {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
                     <Button variant="primary" onClick={() => navigate("/app/classroom/invite-students")}>Continue</Button>

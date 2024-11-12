@@ -6,13 +6,13 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useNavigate } from "react-router-dom";
 import { postClassroomToken } from "@/api/classrooms";
 
-
 import "../styles.css";
 
 const InviteStudents: React.FC = () => {
 const navigate = useNavigate();
 const { selectedClassroom } = useContext(SelectedClassroomContext);
 const [link, setLink] = useState<string>("");
+const [error, setError] = useState<string | null>(null);
 
 useEffect(() => {
     const handleCreateToken = async () => {
@@ -25,7 +25,7 @@ useEffect(() => {
                 setLink(url);
             })
             .catch((_) => {
-                // show error message (TODO)
+                setError("Failed to generate invite URL. Please try again.");
             });
     };
 
@@ -43,6 +43,7 @@ useEffect(() => {
                         <div>{"To add students to your classroom, invite them using this link!"}</div>
                     </div>
                     <CopyLink link={link} name="invite-students"></CopyLink>
+                    {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
                     <Button variant="primary" onClick={() => navigate("/app/classroom/success")}>Continue</Button>
