@@ -2,7 +2,9 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 30vh;
+  width: fit-content;
+  text-wrap: wrap;
+  min-width: 35vh;
   background: var(--brand-gradient);
   gap: 10px;
   padding: 20px;
@@ -27,15 +29,42 @@
     }
   }
 
+  &__headerWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-top: 5px;
+  }
+
   &__classNameHeader {
     text-wrap: wrap;
-    padding-bottom: 20px;
     padding-top: 10px;
+    font-weight: 600;
   }
+
+  &__orgNameHeader {
+    color: var(--caption-text);
+    font-weight: 400;
+    padding-bottom: 20px;
+    text-wrap: wrap;
+  }
+
+  &__orgNameHeader {
+    color: var(--caption-text);
+    font-weight: 400;
+    padding-bottom: 20px;
+    text-wrap: wrap;
+  }
+
 
   &__navBar {
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  &__buttonWrapper {
+    display: flex;
+    margin-top: auto;
   }
 }

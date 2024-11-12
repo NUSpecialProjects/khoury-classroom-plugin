@@ -1,7 +1,6 @@
 package organizations
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -29,7 +28,7 @@ func (service *OrganizationService) GetUserOrgs() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		return c.Status(200).JSON(orgs)
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"orgs": orgs})
 	}
 }
 
@@ -69,7 +68,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 				}
 			}
 		}
-		return c.Status(200).JSON(fiber.Map{
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"orgs_with_app":    orgsWithAppInstalled,
 			"orgs_without_app": orgsWithoutAppInstalled,
 		})
@@ -95,7 +94,7 @@ func (service *OrganizationService) GetOrg() fiber.Handler {
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
-		return c.Status(200).JSON(fiber.Map{"org": org})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"org": org})
 	}
 }
 
@@ -111,9 +110,7 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return err
 		}
 
-		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"classrooms": classrooms,
-		})
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{"classrooms": classrooms})
 	}
 }
 

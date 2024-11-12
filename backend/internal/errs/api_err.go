@@ -39,6 +39,14 @@ func NotFound(title string, withKey string, withValue any) APIError {
 	return NewAPIError(http.StatusNotFound, fmt.Errorf("%s with %s='%s' not found", title, withKey, withValue))
 }
 
+func NotFoundMultiple(title string, params map[string]string) APIError {
+	var resp []string
+	for key, value := range params {
+		resp = append(resp, fmt.Sprintf("%s='%s'", key, value))
+	}
+	return NewAPIError(http.StatusNotFound, fmt.Errorf("%s with %s not found", title, strings.Join(resp, ", ")))
+}
+
 func Conflict(title string, withKey string, withValue any) APIError {
 	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict: %s with %s='%s' already exists", title, withKey, withValue))
 }
@@ -48,6 +56,14 @@ func InvalidRequestData(errors map[string]string) APIError {
 		StatusCode: http.StatusUnprocessableEntity,
 		Message:    errors,
 	}
+}
+
+func ExpiredTokenError() APIError {
+	return NewAPIError(http.StatusUnauthorized, errors.New("token expired"))
+}
+
+func InvalidRoleOperation() APIError {
+	return NewAPIError(http.StatusBadRequest, errors.New("invalid role operation attempted"))
 }
 
 func InternalServerError() APIError {

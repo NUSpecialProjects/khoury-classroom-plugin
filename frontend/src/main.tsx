@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import {
   BrowserRouter as Router,
@@ -6,6 +6,7 @@ import {
   Route,
   Navigate,
   Outlet,
+  useLocation,
 } from "react-router-dom";
 
 import * as Pages from "./pages";
@@ -18,9 +19,20 @@ import "./global.css";
 // If not logged in, route to login
 const PrivateRoute = () => {
   const { isLoggedIn } = useContext(AuthContext);
-  // return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
+  const location = useLocation();
 
-  return isLoggedIn ? <Outlet /> : <Navigate to="/" />;
+  useEffect(() => {
+    if (!isLoggedIn) {
+      const currentUrl = location.pathname + location.search + location.hash;
+      localStorage.setItem("redirectAfterLogin", currentUrl); // store the current url to redirect to after login
+    }
+  }, [isLoggedIn, location]);
+
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default function App(): React.JSX.Element {
@@ -48,15 +60,18 @@ export default function App(): React.JSX.Element {
                 />
               </Route>
 
+              <Route path="token/apply" element={<Pages.RoleApply />} />
+
               {/******* CLASS SELECTED: INNER APP *******/}
               <Route path="" element={<Layout />}>
                 <Route path="assignments" element={<Pages.Assignments />} />
-                <Route path="assignments/create" element={<Pages.CreateAssignment />} />
+                <Route
+                  path="assignments/create"
+                  element={<Pages.CreateAssignment />}
+                />
                 <Route path="assignments/:id" element={<Pages.Assignment />} />
                 <Route path="grading" element={<Pages.Grading />} />
                 <Route path="settings" element={<Pages.Settings />} />
-                <Route path="token/apply" element={<Pages.RoleApply />} />
-                <Route path="token/create" element={<Pages.RoleCreation />} />
                 <Route path="students" element={<Pages.StudentListPage />} />
                 <Route path="tas" element={<Pages.TAListPage />} />
                 <Route
@@ -64,7 +79,7 @@ export default function App(): React.JSX.Element {
                   element={<Pages.ProfessorListPage />}
                 />
                 <Route
-                  path="grading/assignment/:assignmentId/student/:studentAssignmentId"
+                  path="grading/assignment/:assignmentID/student/:studentWorkID"
                   element={<Pages.Grader />}
                 />
                 <Route path="settings" element={<Pages.Settings />} />
@@ -81,10 +96,21 @@ export default function App(): React.JSX.Element {
   );
 }
 
-// Safely handle the root element -> Enforced by eslint
-const rootElement = document.getElementById("root");
-if (!rootElement) {
-  throw new Error("Root element not found. Unable to render React app.");
-}
+let container: HTMLElement | null = null;
+let root: ReactDOM.Root | null = null;
 
-ReactDOM.createRoot(rootElement).render(<App />);
+document.addEventListener("DOMContentLoaded", function () {
+  if (!container) {
+    container = document.getElementById("root");
+    if (!container) {
+      throw new Error("Root element not found. Unable to render React app.");
+    }
+
+    root = ReactDOM.createRoot(container);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  }
+});

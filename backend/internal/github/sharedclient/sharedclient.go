@@ -101,71 +101,67 @@ func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo 
 	return pr, nil
 }
 
-// func (api *CommonAPI) CreateInlinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, line int, side string, commentBody string) (*github.PullRequestComment, error) {
-// 	newComment := &github.PullRequestComment{
-// 		CommitID: github.String(commitID),
-// 		Path:     github.String(path),
-// 		Body:     github.String(commentBody),
-// 		Side:     github.String(side),
-// 		Line:     github.Int(line),
-// 	}
+func (api *CommonAPI) CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error) {
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews", owner, repo, pullNumber)
 
-// 	cmt, _, err := api.Client.PullRequests.CreateComment(ctx, owner, repo, pullNumber, newComment)
-
-// 	return cmt, err
-// }
-
-// func (api *CommonAPI) CreateMultilinePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, startLine int, endLine int, side string, commentBody string) (*github.PullRequestComment, error) {
-// 	newComment := &github.PullRequestComment{
-// 		CommitID:  github.String(commitID),
-// 		Path:      github.String(path),
-// 		Body:      github.String(commentBody),
-// 		StartSide: github.String(side),
-// 		Side:      github.String(side),
-// 		StartLine: github.Int(startLine),
-// 		Line:      github.Int(endLine),
-// 	}
-
-// 	cmt, _, err := api.Client.PullRequests.CreateComment(ctx, owner, repo, pullNumber, newComment)
-
-// 	return cmt, err
-// }
-
-func (api *CommonAPI) CreateFilePRComment(ctx context.Context, owner string, repo string, pullNumber int, commitID string, path string, commentBody string) (*github.PullRequestComment, error) {
-	// Construct the request payload
-	newComment := map[string]interface{}{
-		"body":         commentBody,
-		"commit_id":    commitID,
-		"path":         path,
-		"subject_type": "file",
+	// Create a new POST request
+	requestBody := map[string]interface{}{
+		"event":    "COMMENT",
+		"body":     body,
+		"comments": comments,
 	}
 
-	// Create a new request
-	req, err := api.Client.NewRequest("POST", fmt.Sprintf("/repos/%s/%s/pulls/%d/comments", owner, repo, pullNumber), newComment)
+	req, err := api.Client.NewRequest("POST", endpoint, requestBody)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Response object to store the created comment
+	// Response container
 	var cmt github.PullRequestComment
 
 	// Make the API call
 	_, err = api.Client.Do(ctx, req, &cmt)
 	if err != nil {
-		return nil, fmt.Errorf("error creating PR comment with subject_type 'file': %v", err)
+		return nil, fmt.Errorf("error creating PR comment: %v", err)
 	}
 
 	return &cmt, nil
 }
 
-func (api *CommonAPI) CreateRegularPRComment(ctx context.Context, owner string, repo string, pullNumber int, commentBody string) (*github.IssueComment, error) {
-	newComment := &github.IssueComment{
-		Body: github.String(commentBody),
+func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {
+	// Construct the URL for the list assignments endpoint
+	endpoint := "/user/orgs"
+
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	cmt, _, err := api.Client.Issues.CreateComment(ctx, owner, repo, pullNumber, newComment)
+	// Response container
+	var orgs []models.Organization
 
-	return cmt, err
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, &orgs)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching organizations: %v", err)
+	}
+
+	return orgs, nil
+}
+
+func (api *CommonAPI) ForkRepository(ctx context.Context, owner string, repo string, opt *github.RepositoryCreateForkOptions) (*github.Repository, error) {
+	forkedRepo, _, err := api.Client.Repositories.CreateFork(ctx, owner, repo, opt)
+	if err != nil {
+		return nil, fmt.Errorf("error forking repository: %v", err)
+	}
+
+	return forkedRepo, nil
+}
+
+func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.User, error) {
+	user, _, err := api.Client.Users.Get(ctx, userName)
+	return user, err
 }
 
 func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, error) {

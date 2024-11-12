@@ -7,10 +7,11 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
     sha: "",
     name: "",
     path: "",
+    status: "unmodified",
     childNodes: {},
   };
   tree1D.forEach((node) => {
-    const fullPath = node.path.split("/");
+    const fullPath = node.Entry.path.split("/");
     let level: IFileTreeNode = root;
     treeDepth = Math.max(treeDepth, fullPath.length);
 
@@ -19,12 +20,22 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
       path += "/" + seg;
       if (!(seg in level.childNodes)) {
         level.childNodes[seg] = {
-          type: i === fullPath.length - 1 ? node.type : "tree",
-          sha: i === fullPath.length - 1 ? node.sha : "",
+          type: i === fullPath.length - 1 ? node.Entry.type : "tree",
+          sha: i === fullPath.length - 1 ? node.Entry.sha : "",
           name: seg,
           path: path.substring(1),
+          status: node.Status.Status,
           childNodes: {},
         };
+      } else if (
+        node.Status.Status !== "unmodified" &&
+        node.Status.Status !== "renamed"
+      ) {
+        if (level.childNodes[seg].status == "unmodified") {
+          level.childNodes[seg].status = node.Status.Status;
+        } else if (level.childNodes[seg].status !== node.Status.Status) {
+          level.childNodes[seg].status = "modified";
+        }
       }
 
       level = level.childNodes[seg];
@@ -61,6 +72,7 @@ export const renderTree = (
         depth={depth}
         name={node.name}
         path={node.path}
+        status={node.status}
         onClick={() => {
           selectFileCallback(node);
         }}
@@ -73,8 +85,10 @@ export const renderTree = (
     <FileTreeDirectory
       key={node.name}
       name={node.name}
+      path={node.path}
       depth={depth}
       treeDepth={treeDepth}
+      status={node.status}
     >
       {sortTreeNode(node).map((childNode) =>
         renderTree(

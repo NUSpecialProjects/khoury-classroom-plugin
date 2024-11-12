@@ -6,10 +6,17 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const { classroomUser, loading: loadingCurrentClassroomUser } =
+    useClassroomUser(selectedClassroom?.id);
+  const { classroomUsers: classroomUsersList } = useClassroomUsersList(
+    selectedClassroom?.id
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,30 +27,28 @@ const Dashboard: React.FC = () => {
             console.log("Assignments:", assignments);
             setAssignments(assignments);
           })
-          .catch((err: unknown) => {
-            console.error("Error fetching assignments:", err);
+          .catch((_: unknown) => {
+            // do nothing
           });
       }
     };
 
-
     if (selectedClassroom !== null && selectedClassroom !== undefined) {
-      fetchAssignments(selectedClassroom).catch((error: unknown) => {
-        console.log("Error fetching:", error);
+      fetchAssignments(selectedClassroom).catch((_: unknown) => {
+        // do nothing
       });
     }
   }, [selectedClassroom]);
 
-  const handleUserGroupClick = (group: string) => {
-    console.log(`Clicked on ${group}`);
+  const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     if (group === "Professor") {
-      navigate("/app/professors");
+      navigate("/app/professors", { state: { users } });
     }
     if (group === "TA") {
-      navigate("/app/tas");
+      navigate("/app/tas", { state: { users } });
     }
     if (group === "Student") {
-      navigate("/app/students");
+      navigate("/app/students", { state: { users } });
     }
   };
 
@@ -51,27 +56,57 @@ const Dashboard: React.FC = () => {
     <div className="Dashboard">
       {selectedClassroom && (
         <>
-          <h1>{selectedClassroom.org_name + " - " + selectedClassroom.name}</h1>
+          {loadingCurrentClassroomUser ? (
+            <p>Loading...</p>
+          ) : classroomUser ? (
+            <p>Viewing as a {classroomUser.classroom_role}</p>
+          ) : (
+            <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
+          )}
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
-              role_type="Professor"
-              classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("Professor")}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "PROFESSOR"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "Professor",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "PROFESSOR"
+                  )
+                )
+              }
             />
 
             <UserGroupCard
               label="TAs"
-              role_type="TA"
-              classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("TA")}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "TA"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "TA",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "TA"
+                  )
+                )
+              }
             />
 
             <UserGroupCard
               label="Students"
-              role_type="Student"
-              classroom={selectedClassroom}
-              onClick={() => handleUserGroupClick("Student")}
+              givenUsersList={classroomUsersList.filter(
+                (user) => user.classroom_role === "STUDENT"
+              )}
+              onClick={() =>
+                handleUserGroupClick(
+                  "Student",
+                  classroomUsersList.filter(
+                    (user) => user.classroom_role === "STUDENT"
+                  )
+                )
+              }
             />
           </div>
           <Link
@@ -89,7 +124,16 @@ const Dashboard: React.FC = () => {
               </TableRow>
               {assignments.map((assignment, i: number) => (
                 <TableRow key={i} className="Assignment__submission">
-                  <TableCell> <Link to={`/app/assignments/${assignment.id}`} state={{assignment}} className="Dashboard__assignmentLink">{assignment.name}</Link></TableCell>
+                  <TableCell>
+                    {" "}
+                    <Link
+                      to={`/app/assignments/${assignment.id}`}
+                      state={{ assignment }}
+                      className="Dashboard__assignmentLink"
+                    >
+                      {assignment.name}
+                    </Link>
+                  </TableCell>
                   <TableCell>{formatDate(assignment.created_at)}</TableCell>
                 </TableRow>
               ))}

@@ -9,7 +9,10 @@ import (
 func Routes(app *fiber.App, params types.Params) {
 	organizationService := NewOrganizationService(params.Store, params.GitHubApp, &params.UserCfg)
 
-	OrgRoutes(app, organizationService)
+	// Create the base router
+	baseRouter := app.Group("")
+
+	OrgRoutes(baseRouter, organizationService)
 }
 
 func OrgRoutes(router fiber.Router, service *OrganizationService) fiber.Router {

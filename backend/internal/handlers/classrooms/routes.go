@@ -14,15 +14,16 @@ func Routes(app *fiber.App, params types.Params) {
 	workService := works.NewWorkService(params.Store, params.GitHubApp)
 
 	// Create the base router
+	baseRouter := app.Group("")
 
 	// Create the classroom routes
-	classroomRoutes(app, classroomService)
+	classroomRoutes(baseRouter, classroomService)
 
 	// Create the assignment routes
-	assignments.AssignmentRoutes(app, assignmentService)
+	assignments.AssignmentRoutes(baseRouter, assignmentService)
 
 	// Create the submission routes
-	works.WorkRoutes(app, workService)
+	works.WorkRoutes(baseRouter, workService)
 }
 
 func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Router {
@@ -54,6 +55,12 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 
 	// Generate a token to join this classroom
 	classroomRouter.Post("/classroom/:classroom_id/token", service.generateClassroomToken())
+
+	// Use a token to join a classroom
+	classroomRouter.Post("/classroom/token/:token", service.useClassroomToken())
+
+	// Get the current authenticated user + their role in the classroom
+	classroomRouter.Get("/classroom/:classroom_id/user", service.GetCurrentClassroomUser())
 
 	return classroomRouter
 }
