@@ -1,16 +1,9 @@
-.Creation {
+.ClassroomCreation {
   &__buttonWrapper {
     margin-top: 30px;
     padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  &__message {
-    text-align: center;
-    font-size: var(--font-size-s);
-    color: var(--brand);
-    padding: 3px;
   }
 }
