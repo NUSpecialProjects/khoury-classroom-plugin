@@ -9,7 +9,6 @@ import { FaGithub } from "react-icons/fa6";
 
 import Button from "@/components/Button";
 
-
 enum LoginStatus {
   LOADING = "LOADING",
   CALLBACK_ERRORED = "CALLBACK ERRORED",

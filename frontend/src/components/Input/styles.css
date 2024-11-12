@@ -1,0 +1,28 @@
+.Input {
+  max-width: 400px;
+  padding: 10px;
+  background: var(--page-background);
+  color: var(--primary-text);
+  font-size: var(--body-font-size);
+  border-radius: 5px;
+  border-width: var(--border-width);
+  border-style: var(--border-style);
+  border-color: var(--button-border-color);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding-bottom: 10px;
+
+  &__wrapper {
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+  }
+
+  &__label {
+    font-size: var(--font-size-s);
+    font-weight: 500;
+    padding-bottom: 10px;
+  }
+}
