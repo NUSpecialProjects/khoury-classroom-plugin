@@ -102,3 +102,20 @@ a {
   color: var(--brand);
 }
 
+.simplebar-wrapper {
+  flex-grow: 1;
+}
+.simplebar-offset {
+  display: flex;
+}
+.simplebar-content-wrapper {
+  display: flex;
+  flex-grow: 1;
+}
+
+.simplebar-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
