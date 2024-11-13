@@ -1,7 +1,7 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import SimpleBar from "simplebar-react";
-import "simplebar/dist/simplebar.min.css";
+import "simplebar-react/dist/simplebar.min.css";
 
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
