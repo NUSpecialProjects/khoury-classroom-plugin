@@ -74,8 +74,6 @@ export const createAssignmentTemplate = async (
   return data.assignment_template as IRepository
 };
 
-
-
 export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
   const result = await fetch(
       `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
