@@ -69,8 +69,6 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 	}
 }
 
-
-
 func (s *AssignmentService) acceptAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
@@ -112,21 +110,20 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 	}
 }
 
-//TODO: Choose naming pattern once we have a full assignment flow. Stub for now
+// TODO: Choose naming pattern once we have a full assignment flow. Stub for now
 func generateForkName(sourceName, userName string) string {
 	return sourceName + "-" + strings.ReplaceAll(userName, " ", "")
 }
 
-
-//TODO: Integrate with actual assignment information when infrastructure is available
+// TODO: Integrate with actual assignment information when infrastructure is available
 func createMockStudentWork(repo string, assName string, assID int) models.StudentWork {
 	assignmentName := assName
 	repoName := repo
 	submittedPRNumber := 42
 	manualFeedbackScore := 85
 	autoGraderScore := 90
-	uniqueDueDate := time.Now().AddDate(0, 0, 7)            // Due in 7 days MOCK
-	submissionTimestamp := time.Now().AddDate(0, 0, -1)     // Submitted yesterday MOCK
+	uniqueDueDate := time.Now().AddDate(0, 0, 7)             // Due in 7 days MOCK
+	submissionTimestamp := time.Now().AddDate(0, 0, -1)      // Submitted yesterday MOCK
 	gradesPublishedTimestamp := time.Now().AddDate(0, 0, -1) // Grades published yesterday MOCK
 	return models.StudentWork{
 		ID:                       1,
@@ -145,7 +142,35 @@ func createMockStudentWork(repo string, assName string, assID int) models.Studen
 	}
 }
 
+func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var assignmentData models.AssignmentTemplate
 
+		error := c.BodyParser(&assignmentData)
+		if error != nil {
+			return errs.InvalidRequestBody(assignmentData)
+		}
+
+		// Check if the template already exists
+		exists, err := s.store.AssignmentTemplateExists(c.Context(), assignmentData.TemplateID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+		if exists {
+			return c.Status(http.StatusOK).JSON("Template already exists")
+		}
+
+		// Create the template if it does not exist
+		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"created_template": createdTemplate,
+		})
+	}
+}
 
 // Updates an existing assignment.
 func (s *AssignmentService) updateAssignment() fiber.Handler {
