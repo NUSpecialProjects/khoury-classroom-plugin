@@ -71,12 +71,6 @@ const LeftNav: React.FC = () => {
           />
         </svg>
       </div>
-      <div className="LeftNav__headerWrapper">
-        <h3 className="LeftNav__classNameHeader">
-          {selectedClassroom?.org_name}
-        </h3>
-        <div className="LeftNav__orgNameHeader">{selectedClassroom?.name}</div>
-      </div>
       <div className="LeftNav__navBar">
         {navItems.map((item, index) => (
           <NavLink

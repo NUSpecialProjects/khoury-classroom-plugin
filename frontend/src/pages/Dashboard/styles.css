@@ -1,7 +1,27 @@
 .Dashboard {
+  &__classroomNameDetailsWrapper {
+    padding-bottom: 20px;
+  }
+
+  &__classroomNameDetails {
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: var(--brand);
+    border-bottom-color: var(--border-color);
+    border-bottom-style: var(--border-style);
+    border-bottom-width: var(--border-width);
+  }
+
+  &__classroomName {
+    color: var(--primary-text);
+  }
+
   &__classroomDetailsWrapper {
     display: flex;
     gap: 15px;
+    padding-bottom: 20px;
   }
 
   &__assignmentsWrapper {

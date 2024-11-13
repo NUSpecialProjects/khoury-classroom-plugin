@@ -8,6 +8,7 @@ import { getAssignments } from "@/api/assignments";
 import { formatDate } from "@/utils/date";
 import { useClassroomUser } from "@/hooks/useClassroomUser";
 import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
+import { MdChevronRight } from "react-icons/md"
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
@@ -62,6 +63,14 @@ const Dashboard: React.FC = () => {
           ) : (
             <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
           )}
+          <div className="Dashboard__classroomNameDetailsWrapper">
+            <h3 className="Dashboard__classroomNameDetails">
+              {selectedClassroom?.org_name} <MdChevronRight />
+              <div className="Dashboard__classroomName">
+                {selectedClassroom?.name}
+              </div>
+            </h3>
+          </div>
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Professors"
