@@ -69,7 +69,7 @@ const Assignment: React.FC = () => {
     <div className="Assignment">
       {assignment && (
         <>
-          <SubPageHeader pageTitle={assignment.name}>
+          <SubPageHeader pageTitle={assignment.name} chevronLink={"/app/dashboard"}>
             <div className="Assignment__dates">
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Released on:"}</div>
