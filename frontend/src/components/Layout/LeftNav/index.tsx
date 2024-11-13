@@ -1,4 +1,5 @@
 import { FaTachometerAlt } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
 import { MdFactCheck, MdEditDocument } from "react-icons/md";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
@@ -11,7 +12,7 @@ const LeftNav: React.FC = () => {
     { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
     { name: "Grading", dest: "/app/grading", Icon: MdFactCheck },
     { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
-    { name: "Settings", dest: "/app/settings", Icon: MdEditDocument },
+    { name: "Settings", dest: "/app/settings", Icon: FaGear },
   ];
 
   const { selectedClassroom } = useContext(SelectedClassroomContext);

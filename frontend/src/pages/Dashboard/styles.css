@@ -21,7 +21,18 @@
   &__classroomDetailsWrapper {
     display: flex;
     gap: 15px;
-    padding-bottom: 20px;
+  }
+
+  &__assignmentsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding-bottom: 5px;
+  }
+
+  &__createAssignmentButton {
+    margin-left: auto;
   }
 
   &__assignmentsWrapper {

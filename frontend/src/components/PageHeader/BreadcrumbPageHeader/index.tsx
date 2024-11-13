@@ -11,7 +11,7 @@ interface IBreadcrumbPageHeader extends IPageHeader {
 const BreadcrumbPageHeader: React.FC<IBreadcrumbPageHeader> = ({ pageTitle, breadcrumbItems }) => {
     return (
         <div className="PageHeader__wrapper">
-            <h1 className="PageHeader__pageTitle">
+            <h1 className="BreadcrumbPageHeader__pageTitle">
                 {pageTitle}
                 {breadcrumbItems.map((item, index) => (
                     <React.Fragment key={index}>

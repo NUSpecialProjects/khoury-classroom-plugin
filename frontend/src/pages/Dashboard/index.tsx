@@ -1,6 +1,7 @@
 import "./styles.css";
 import UserGroupCard from "@/components/UserGroupCard";
 import { Table, TableRow, TableCell } from "@/components/Table";
+import { MdAdd } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
@@ -9,6 +10,7 @@ import { formatDate } from "@/utils/date";
 import { useClassroomUser } from "@/hooks/useClassroomUser";
 import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
+import Button from "@/components/Button";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
@@ -64,7 +66,7 @@ const Dashboard: React.FC = () => {
             <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
           )}
           <BreadcrumbPageHeader pageTitle={selectedClassroom?.org_name} breadcrumbItems={[selectedClassroom?.name]}></BreadcrumbPageHeader>
-          
+
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
               label="Students"
@@ -111,14 +113,19 @@ const Dashboard: React.FC = () => {
               }
             />
           </div>
-          <Link
-            to={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
-            className="Dashboard__assignmentLink"
-          >
-            Create Assignment
-          </Link>
+
           <div className="Dashboard__assignmentsWrapper">
-            <h2 style={{ marginBottom: 0 }}>Assignments</h2>
+            <div className="Dashboard__assignmentsHeader">
+              <h2 style={{ marginBottom: 0 }}>Assignments</h2>
+              <div className="Dashboard__createAssignmentButton">
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => (navigate(`/app/assignments/create?org_name=${selectedClassroom?.org_name}`))}>
+                  <MdAdd/> Create Assignment
+                </Button>
+              </div>
+            </div>
             <Table cols={2}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Assignment Name</TableCell>

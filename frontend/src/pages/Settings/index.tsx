@@ -1,12 +1,14 @@
 import { AuthContext } from "@/contexts/auth";
 import { useContext } from "react";
+import PageHeader from "@/components/PageHeader";
+import Button from "@/components/Button";
 
 const Settings: React.FC = () => {
   const { logout } = useContext(AuthContext);
   return (
     <div>
-      <h1>Settings</h1>
-      <button onClick={logout}>Logout</button>
+      <PageHeader pageTitle="Settings"></PageHeader>
+      <Button variant="primary" onClick={logout}>Logout</Button>
     </div>
   );
 };

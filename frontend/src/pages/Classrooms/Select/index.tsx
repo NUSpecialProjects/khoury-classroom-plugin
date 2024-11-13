@@ -61,7 +61,7 @@ const ClassroomSelection: React.FC = () => {
               <TableCell>
                 <div className="Selection__tableHeaderText">Classroom Name</div>
                 <div className="Selection__tableHeaderButton">
-                  <Button onClick={() => navigate(`/app/classroom/create?org_id=${orgID}`)}>
+                  <Button size="small" onClick={() => navigate(`/app/classroom/create?org_id=${orgID}`)}>
                     <MdAdd /> New Classroom
                   </Button>
                 </div>
