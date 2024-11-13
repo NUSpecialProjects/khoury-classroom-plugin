@@ -64,24 +64,24 @@ const Dashboard: React.FC = () => {
             <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
           )}
           <div className="Dashboard__classroomNameDetailsWrapper">
-            <h3 className="Dashboard__classroomNameDetails">
+            <h1 className="Dashboard__classroomNameDetails">
               {selectedClassroom?.org_name} <MdChevronRight />
               <div className="Dashboard__classroomName">
                 {selectedClassroom?.name}
               </div>
-            </h3>
+            </h1>
           </div>
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
-              label="Professors"
+              label="Students"
               givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "PROFESSOR"
+                (user) => user.classroom_role === "STUDENT"
               )}
               onClick={() =>
                 handleUserGroupClick(
-                  "Professor",
+                  "Student",
                   classroomUsersList.filter(
-                    (user) => user.classroom_role === "PROFESSOR"
+                    (user) => user.classroom_role === "STUDENT"
                   )
                 )
               }
@@ -103,15 +103,15 @@ const Dashboard: React.FC = () => {
             />
 
             <UserGroupCard
-              label="Students"
+              label="Professors"
               givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "STUDENT"
+                (user) => user.classroom_role === "PROFESSOR"
               )}
               onClick={() =>
                 handleUserGroupClick(
-                  "Student",
+                  "Professor",
                   classroomUsersList.filter(
-                    (user) => user.classroom_role === "STUDENT"
+                    (user) => user.classroom_role === "PROFESSOR"
                   )
                 )
               }
