@@ -1,11 +1,13 @@
 package assignments
 
 import (
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
+	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2"
 )
 
-func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Router {
-	assignmentRouter := router.Group("/classrooms/classroom/:classroom_id/assignments")
+func AssignmentRoutes(router fiber.Router, service *AssignmentService, params *types.Params) fiber.Router {
+	assignmentRouter := router.Group("/classrooms/classroom/:classroom_id/assignments").Use(middleware.Protected(params.UserCfg.JWTSecret))
 
 	// Get the assignments in a classroom
 	assignmentRouter.Get("/", service.getAssignments())
@@ -15,6 +17,12 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Rou
 
 	// Create an assignment
 	assignmentRouter.Post("/", service.createAssignment())
+
+	//accept an assignment
+	assignmentRouter.Post("/accept", service.acceptAssignment())
+
+	// Create an assignment template
+	assignmentRouter.Put("/template", service.createAssignmentTemplate())
 
 	// Update an assignment
 	assignmentRouter.Put("/assignment/:assignment_id", service.updateAssignment())

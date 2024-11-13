@@ -19,6 +19,7 @@ type Storage interface {
 type Works interface {
 	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
 	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
+	CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error
 }
 
 type Test interface {
@@ -53,4 +54,6 @@ type AssignmentOutline interface {
 	GetAssignmentsInClassroom(ctx context.Context, classroomID int64) ([]models.AssignmentOutline, error)
 	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
+	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
+	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
 }
