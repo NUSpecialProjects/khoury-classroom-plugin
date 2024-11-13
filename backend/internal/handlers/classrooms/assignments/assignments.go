@@ -148,7 +148,7 @@ func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
 
 		error := c.BodyParser(&assignmentData)
 		if error != nil {
-			return errs.InvalidRequestBody(models.AssignmentTemplate{})
+			return errs.InvalidRequestBody(assignmentData)
 		}
 
 		// Check if the template already exists
