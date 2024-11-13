@@ -67,7 +67,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 }
 
 // Updates an existing assignment.
-func (s *AssignmentService) updateAssignment() fiber.Handler {
+func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)

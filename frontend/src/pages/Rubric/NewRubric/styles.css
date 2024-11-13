@@ -1,0 +1,53 @@
+.NewRubric {
+    &__body {
+        display: flex;
+        border: 1px solid #ccc;
+        padding: 30px;
+        width: 80%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.5rem;
+        padding-top: 20px;
+        font-weight: bold;
+        border-bottom-width: var(--border-width);
+        border-bottom-style: var(--border-style);
+        border-bottom-color: var(--border-color);
+        padding-bottom: 10px;
+
+    }
+
+    &__noRubric {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    &__decisionButtons {
+        width: 40%;
+        display: flex;
+        flex-direction: row;
+        align-self: flex-end;
+    }
+
+    &__noRubricTitle {
+        padding-bottom: 30px;
+
+    }
+
+    &__itemsTitle {
+        font-size: var(--font-size-s);
+        font-weight: 500;
+        padding-bottom: 10px;     
+        padding: 10px;
+     
+    }
+}
