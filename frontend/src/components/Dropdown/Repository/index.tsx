@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
 
-interface RepositoryDropdownProps {
+interface IRepositoryDropdownProps {
     repositories: IRepository[];
     onChange?: (selectedTemplate: IRepository) => void;
     selectedRepo: IRepository | null;
@@ -11,7 +11,7 @@ const PLACEHOLDER_OPTION = 'Select a repository';
 const LOADING_OPTION = 'Loading repositories...';
 const NO_REPOSITORIES_OPTION = 'No repositories available';
 
-const RepositoryDropdown: React.FC<RepositoryDropdownProps> = ({
+const RepositoryDropdown: React.FC<IRepositoryDropdownProps> = ({
     onChange,
     repositories,
     selectedRepo,

@@ -1,7 +1,7 @@
 import React from 'react';
 import RepositoryDropdown from "@/components/Dropdown/Repository";
 
-interface StarterCodeDetailsProps extends StepComponentProps<AssignmentFormData> {
+interface StarterCodeDetailsProps extends IStepComponentProps<IAssignmentFormData> {
   repositories: IRepository[];
   isLoading: boolean;
 }

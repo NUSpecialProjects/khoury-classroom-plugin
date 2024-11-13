@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-const AssignmentDetails: React.FC<StepComponentProps<AssignmentFormData>> = ({ data, onChange }) => {
+const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({ data, onChange }) => {
   const handleCheckboxChange = (target: HTMLInputElement) => {
     onChange({ [target.name]: target.checked });
   };

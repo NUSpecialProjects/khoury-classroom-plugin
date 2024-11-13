@@ -1,6 +1,6 @@
 import { useState, useCallback, ReactElement } from 'react';
 
-const MultiStepForm = <T,>({ steps, submitFunc, initialData }: MultiStepFormProps<T>): ReactElement => {
+const MultiStepForm = <T,>({ steps, submitFunc, initialData }: IMultiStepFormProps<T>): ReactElement => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [formData, setFormData] = useState<T>(initialData);
 

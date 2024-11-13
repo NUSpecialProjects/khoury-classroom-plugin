@@ -39,11 +39,11 @@ const CreateAssignment: React.FC = () => {
     fetchTemplates(orgName);
   }, [orgName]);
 
-    const steps: Step<AssignmentFormData>[] = [
+    const steps: IStep<IAssignmentFormData>[] = [
         { title: 'Assignment Details', component: AssignmentDetails },
         {
             title: 'Starter Code Repository',
-            component: (props: StepComponentProps<AssignmentFormData>) => (
+            component: (props: IStepComponentProps<IAssignmentFormData>) => (
                 <StarterCodeDetails
                     {...props}
                     repositories={templates}
@@ -53,7 +53,7 @@ const CreateAssignment: React.FC = () => {
         },
     ];
 
-    const initialData: AssignmentFormData = {
+    const initialData: IAssignmentFormData = {
         assignmentName: '',
         classroomId: selectedClassroom?.id || -1,
         groupAssignment: false,
@@ -61,7 +61,7 @@ const CreateAssignment: React.FC = () => {
         templateRepo: null
     };
 
-    const handleSubmit = async (data: AssignmentFormData) => {
+    const handleSubmit = async (data: IAssignmentFormData) => {
         await createAssignmentTemplate(data.classroomId, data.templateRepo!);
         await createAssignment(data.templateRepo!.id, data);
 

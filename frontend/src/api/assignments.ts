@@ -98,8 +98,8 @@ export const acceptAssignment = async (orgName: string, repoName: string, classr
 
 export const createAssignment = async (
   templateId: number,
-  assignment: AssignmentFormData
-): Promise<AssignmentFormData> => {
+  assignment: IAssignmentFormData
+): Promise<IAssignmentFormData> => {
   const result = await fetch(
     `${base_url}/classrooms/classroom/${assignment.classroomId}/assignments`,
     {
@@ -124,5 +124,5 @@ export const createAssignment = async (
 
   const data = (await result.json())
 
-  return data.assignment_outline as AssignmentFormData
+  return data.assignment_outline as IAssignmentFormData
 };

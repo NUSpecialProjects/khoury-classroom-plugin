@@ -2,18 +2,18 @@
 // MultiStepForm types
 // ==============================
 
-interface StepComponentProps<T> {
+interface IStepComponentProps<T> {
     data: T;
     onChange: (newData: Partial<T>) => void;
 }
   
-interface Step<T> {
+interface IStep<T> {
     title: string;
-    component: React.ComponentType<StepComponentProps<T>>;
+    component: React.ComponentType<IStepComponentProps<T>>;
 }
 
-interface MultiStepFormProps<T> {
-    steps: Step<T>[];
+interface IMultiStepFormProps<T> {
+    steps: IStep<T>[];
     submitFunc: (data: T) => void;
     initialData: T;
 }
@@ -22,7 +22,7 @@ interface MultiStepFormProps<T> {
 // Specific form data types
 // ==============================
 
-interface AssignmentFormData {
+interface IAssignmentFormData {
     assignmentName: string
     classroomId: number
     groupAssignment: boolean
