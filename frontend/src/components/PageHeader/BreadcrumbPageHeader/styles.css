@@ -1,0 +1,13 @@
+.PageHeader__pageTitle {
+    color: var(--brand);
+}
+
+.BreadcrumbPageHeader {
+    &__item {
+        color: var(--brand);
+    }
+
+    &__lastItem {
+        color: var(--primary-text);
+    }
+}
