@@ -4,11 +4,9 @@ import { getOrganizationTemplates } from "@/api/organizations";
 import { useNavigate } from "react-router-dom";
 
 import MultiStepForm from '@/components/MultiStepForm';
-import { Step, StepComponentProps } from '@/components/MultiStepForm/Interfaces/Main';
 import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
 import { createAssignment, createAssignmentTemplate } from "@/api/assignments";
-import { AssignmentFormData } from "@/components/MultiStepForm/Interfaces/CreateAssignment";
 
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);

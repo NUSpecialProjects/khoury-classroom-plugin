@@ -1,6 +1,10 @@
 import React from 'react';
 import RepositoryDropdown from "@/components/Dropdown/Repository";
-import { StarterCodeDetailsProps } from '../Interfaces/CreateAssignment';
+
+interface StarterCodeDetailsProps extends StepComponentProps<AssignmentFormData> {
+  repositories: IRepository[];
+  isLoading: boolean;
+}
 
 const StarterCodeDetails: React.FC<StarterCodeDetailsProps> = ({ data, onChange, repositories, isLoading }) => {
   return (

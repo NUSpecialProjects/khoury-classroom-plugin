@@ -1,5 +1,3 @@
-import { AssignmentFormData } from "@/components/MultiStepForm/Interfaces/CreateAssignment";
-
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
 export const getAssignments = async (
@@ -53,7 +51,7 @@ export const createAssignmentTemplate = async (
   const result = await fetch(
     `${base_url}/classrooms/classroom/${classroomId}/assignments/template`,
     {
-      method: "POST",
+      method: "PUT",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
