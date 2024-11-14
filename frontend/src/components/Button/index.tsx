@@ -18,6 +18,7 @@ const ButtonWrapper: React.FC<IButtonProps> = ({ children, href }) => {
 };
 
 const Button: React.FC<IButtonProps> = ({
+  className,
   children,
   href,
   variant = "primary",
@@ -25,7 +26,7 @@ const Button: React.FC<IButtonProps> = ({
 }) => {
   return (
     <ButtonWrapper href={href}>
-      <button className={`Button Button--${variant}`} {...props}>
+      <button className={`Button Button--${variant} ${className}`} {...props}>
         {children}
       </button>
     </ButtonWrapper>

@@ -13,6 +13,7 @@ import CodeLine from "./CodeLine";
 
 import "@/assets/prism-vs-dark.css";
 import "./styles.css";
+import SimpleBar from "simplebar-react";
 
 interface ICodeBrowser extends React.HTMLProps<HTMLDivElement> {
   assignmentID: string | undefined;
@@ -132,24 +133,26 @@ const CodeBrowser: React.FC<ICodeBrowser> = ({
       className={"CodeBrowser" + (className ? " " + className : "")}
       {...props}
     >
-      <pre>
-        <code
-          data-diff={JSON.stringify(file?.diff ?? "")}
-          className={
-            file
-              ? "language-" + ext2lang[extractExtension(file.name)]
-              : "language-undefined"
-          }
-        >
-          {file ? (
-            fileContents
-          ) : (
-            <div style={{ gridColumn: "span 2" }}>
-              Select a file to view its contents.
-            </div>
-          )}
-        </code>
-      </pre>
+      <SimpleBar className="CodeBrowser__scroll">
+        <pre>
+          <code
+            data-diff={JSON.stringify(file?.diff ?? "")}
+            className={
+              file
+                ? "language-" + ext2lang[extractExtension(file.name)]
+                : "language-undefined"
+            }
+          >
+            {file ? (
+              fileContents
+            ) : (
+              <div style={{ gridColumn: "span 2" }}>
+                Select a file to view its contents.
+              </div>
+            )}
+          </code>
+        </pre>
+      </SimpleBar>
     </div>
   );
 };

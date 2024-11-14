@@ -33,6 +33,10 @@
     flex-direction: row;
     padding: 20px;
     gap: 10px;
+
+    .Button {
+      flex: 1;
+    }
   }
 
   &____contentWrapper {

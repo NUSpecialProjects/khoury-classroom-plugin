@@ -23,7 +23,7 @@
   }
   &__content {
     all: inherit;
-    display: flex;
+    display: block;
     overflow: hidden;
     text-wrap: wrap;
     width: 100%;
@@ -166,12 +166,11 @@
     }
 
     .CodeLine__newCommentButtons {
-      display: flex;
-      width: fit-content;
+      display: inline-flex;
       gap: 5px;
 
       > .Button {
-        width: fit-content;
+        flex-shrink: 0;
         padding: 8px 16px;
         font-weight: 500;
       }

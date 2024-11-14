@@ -8,6 +8,7 @@ import { getFileTree } from "@/api/grading";
 import { buildTree, renderTree, sortTreeNode } from "./funcs";
 
 import "./styles.css";
+import SimpleBar from "simplebar-react";
 
 /****************
  * TREE COMPONENT
@@ -16,7 +17,6 @@ export const FileTree: React.FC<IFileTree> = ({
   selectFileCallback,
   children,
   className,
-  ...props
 }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { assignmentID, studentWorkID } = useContext(GraderContext);
@@ -67,19 +67,17 @@ export const FileTree: React.FC<IFileTree> = ({
         <div className="ResizeHandle" style={{ zIndex: treeDepth * 2 + 1 }} />
       }
     >
-      <>
-        <div className="FileTree__head">Files</div>
-        <div className="FileTree__body" {...props}>
-          {root &&
-            sortTreeNode(root).map((node) =>
-              renderTree(node, 0, treeDepth, selectedFile, (n) => {
-                setSelectedFile(n.path);
-                selectFileCallback(n);
-              })
-            )}
-          {children}
-        </div>
-      </>
+      <div className="FileTree__head">Files</div>
+      <SimpleBar className="FileTree__body">
+        {root &&
+          sortTreeNode(root).map((node) =>
+            renderTree(node, 0, treeDepth, selectedFile, (n) => {
+              setSelectedFile(n.path);
+              selectFileCallback(n);
+            })
+          )}
+        {children}
+      </SimpleBar>
     </ResizableBox>
   );
 };

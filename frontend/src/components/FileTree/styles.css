@@ -48,6 +48,10 @@
       background: var(--brand-lighter);
     }
   }
+
+  .simplebar-track {
+    margin-right: 5px;
+  }
 }
 
 .FileTreeDirectory {
