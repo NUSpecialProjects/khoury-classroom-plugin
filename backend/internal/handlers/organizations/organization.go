@@ -144,13 +144,17 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		var templateRepos []models.Repository
+		var templateRepos []models.AssignmentTemplate
 		for _, repo := range repos {
 			if repo.IsTemplate && !repo.Archived {
-				templateRepos = append(templateRepos, *repo)
+				templateRepos = append(templateRepos, models.AssignmentTemplate{
+					TemplateRepoOwner: repo.Owner.Login,
+					TemplateRepoName:  repo.Name,
+					TemplateID:        repo.ID,
+				})
 			}
 		}
 
-		return c.Status(200).JSON(fiber.Map{"template_repos": templateRepos})
+		return c.Status(200).JSON(fiber.Map{"templates": templateRepos})
 	}
 }

@@ -12,7 +12,7 @@ const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const orgName = selectedClassroom?.org_name;
 
-  const [templates, setTemplates] = useState<IRepository[]>([]);
+  const [templates, setTemplates] = useState<IAssignmentTemplate[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
 
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const CreateAssignment: React.FC = () => {
         // TODO: Implement dynamic pagination in template dropdown
         getOrganizationTemplates(orgName, "100", "1")
           .then((response) => {
-            setTemplates(response.template_repos);
+            setTemplates(response.templates);
           })
           .catch((_: unknown) => {
             // do nothing
