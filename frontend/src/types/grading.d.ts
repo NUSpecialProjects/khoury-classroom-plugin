@@ -1,23 +1,14 @@
-/******************************
- * Grading page component types
- ******************************/
-interface IGradingSubmissionRow {
-  name: string;
-  score: number | null;
-  maxScore: number;
-}
-
-interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
-  assignmentId: number;
-}
-
 /********************
  * Grading page types
  ********************/
+interface IGradingCommentMap {
+  [path: string]: { [line: number]: { [commentID: number]: IGradingComment } };
+}
 interface IGradingComment {
   path: string;
   line: number;
   body: string;
+  points: number;
 }
 
 /******************************
@@ -38,11 +29,6 @@ interface IGitTreeNode {
     sha: string;
     status: string;
   };
-}
-
-interface IGraderFile {
-  name: string;
-  content: string;
 }
 
 interface IGitTreeResponse {

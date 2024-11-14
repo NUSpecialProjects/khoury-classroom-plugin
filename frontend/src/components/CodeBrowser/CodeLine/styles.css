@@ -1,0 +1,185 @@
+.CodeLine {
+  display: contents;
+  width: 100%;
+  line-height: 1.5em;
+
+  /* ANTHRACITE :) */
+  --comment-background: #292c33;
+  --comment-border: #434854;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &__number {
+    all: inherit;
+    position: relative;
+    display: flex;
+    color: #777;
+    padding-right: 2.7em;
+    white-space: nowrap;
+    user-select: none;
+    justify-content: end;
+  }
+  &__content {
+    all: inherit;
+    display: flex;
+    overflow: hidden;
+    text-wrap: wrap;
+    width: 100%;
+  }
+
+  &--diff {
+    .CodeLine__number {
+      color: #d6d6d6;
+    }
+
+    &:hover .CodeLine__newCommentButton {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &__newCommentButton {
+    position: absolute;
+    top: -0.25em;
+    right: 0.25em;
+    content: "+";
+    background: var(--brand-lighter);
+    height: 2em;
+    width: 2em;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border-radius: 3px;
+    opacity: 0;
+    display: flex;
+    transform: scale(0.5);
+    transition: 0.15s;
+    cursor: pointer;
+  }
+
+  &__comments {
+    padding: 20px;
+    width: 100%;
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--comment-border);
+    background: var(--comment-background);
+    border-radius: 4px;
+    margin: 0.75em 0;
+    font-family: var(--primary-font);
+  }
+
+  &__comment {
+    width: 100%;
+    display: table-row;
+  }
+
+  &__newCommentForm {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+
+    textarea,
+    input {
+      resize: vertical;
+      width: 100%;
+      outline: none;
+      background: rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--comment-border);
+      border-radius: 4px;
+      padding: 10px;
+      color: white;
+      font-family: var(--primary-font);
+
+      &:focus {
+        border-color: var(--brand-lighter);
+      }
+    }
+
+    .CodeLine__newCommentPoints {
+      display: flex;
+      align-items: center;
+
+      label {
+        margin-right: 10px;
+      }
+      input {
+        width: 60px;
+        height: 100%;
+        text-align: center;
+        -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+        appearance: textfield;
+        border-right: none;
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+        }
+
+        &:focus ~ .CodeLine__newCommentPoints__spinners {
+          border-color: var(--brand-lighter);
+        }
+      }
+
+      &__spinners {
+        height: 100%;
+        border: 1px solid var(--comment-border);
+        border-left: none;
+        border-bottom-right-radius: 4px;
+        border-top-right-radius: 4px;
+
+        > div {
+          background: rgba(0, 0, 0, 0.1);
+          height: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 1.5em;
+          cursor: pointer;
+          user-select: none;
+          border-left: 1px solid var(--comment-border);
+
+          &:first-of-type {
+            border-bottom: 1px solid var(--comment-border);
+            &:active {
+              background: var(--green);
+            }
+          }
+          &:last-of-type {
+            &:active {
+              background: var(--red);
+            }
+          }
+
+          &:hover {
+            background: var(--comment-border);
+          }
+        }
+      }
+    }
+
+    .CodeLine__newCommentButtons {
+      display: flex;
+      width: fit-content;
+      gap: 5px;
+
+      > .Button {
+        width: fit-content;
+        padding: 8px 16px;
+        font-weight: 500;
+      }
+
+      .CodeLine__newCommentCancel {
+        background: var(--comment-border);
+        border: 1px solid var(--comment-border);
+      }
+    }
+  }
+}

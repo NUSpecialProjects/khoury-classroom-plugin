@@ -60,7 +60,13 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 			return errs.InvalidRequestBody(requestBody)
 		}
 
-		review, err := s.githubappclient.CreatePRReview(c.Context(), work.OrgName, *work.RepoName, *work.SubmittedPRNumber, requestBody.Body, requestBody.Comments)
+		var comments []models.PRReviewComment
+		for _, comment := range requestBody.Comments {
+			comments = append(comments, comment.PRReviewComment)
+		}
+
+		// todo: extract point value, insert into DB
+		review, err := s.githubappclient.CreatePRReview(c.Context(), work.OrgName, *work.RepoName, *work.SubmittedPRNumber, requestBody.Body, comments)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}

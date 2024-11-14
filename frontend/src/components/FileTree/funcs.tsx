@@ -7,6 +7,7 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
     sha: "",
     name: "",
     path: "",
+    diff: null,
     status: "unmodified",
     childNodes: {},
   };
@@ -24,6 +25,7 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
           sha: i === fullPath.length - 1 ? node.Entry.sha : "",
           name: seg,
           path: path.substring(1),
+          diff: i === fullPath.length - 1 ? node.Status.Diff : null,
           status: node.Status.Status,
           childNodes: {},
         };

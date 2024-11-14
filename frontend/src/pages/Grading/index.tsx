@@ -15,6 +15,10 @@ import { formatDate } from "@/utils/date";
 
 import "./styles.css";
 
+interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
+  assignmentId: number;
+}
+
 const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   assignmentId,
   children,
@@ -34,8 +38,8 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
       .then((studentAssignments) => {
         setStudentAssignments(studentAssignments);
       })
-      .catch((_) => {
-        // do nothing
+      .catch((err: unknown) => {
+        console.error("Error fetching student assignments:", err);
       });
   }, []);
 
@@ -69,7 +73,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                     );
                   }}
                 >
-                  <TableCell>{studentAssignment.contributors}</TableCell>
+                  <TableCell>
+                    {studentAssignment.contributors.join(", ")}
+                  </TableCell>
                   <TableCell>-/100</TableCell>
                 </TableRow>
               ))}
@@ -91,8 +97,8 @@ const Grading: React.FC = () => {
       .then((assignments) => {
         setAssignments(assignments);
       })
-      .catch((_) => {
-        // do nothing
+      .catch((err: unknown) => {
+        console.error("Error fetching assignments:", err);
       });
   }, []);
 

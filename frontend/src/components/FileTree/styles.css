@@ -106,7 +106,8 @@
   }
 }
 
-.FileTree__nodeName {
+.FileTree__nodeName,
+.FileTree__nodeName > span {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;

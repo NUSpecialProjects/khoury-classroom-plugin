@@ -4,8 +4,18 @@ export const createPRComment = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,
-  comments: IGradingComment[]
+  comments: IGradingCommentMap
 ) => {
+  console.log(comments);
+  const comments1D: IGradingComment[] = [];
+  for (const pathComments of Object.values(comments)) {
+    for (const lineComments of Object.values(pathComments)) {
+      for (const comment of Object.values(lineComments)) {
+        comments1D.push(comment);
+      }
+    }
+  }
+
   const response = await fetch(
     `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/grade`,
     {
@@ -16,7 +26,7 @@ export const createPRComment = async (
       },
       body: JSON.stringify({
         body: "",
-        comments,
+        comments: comments1D,
       }),
     }
   );
@@ -51,10 +61,10 @@ export const getFileBlob = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,
-  node: IFileTreeNode
-): Promise<IGraderFile> => {
+  sha: string
+): Promise<string> => {
   const response = await fetch(
-    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/blob/${node.sha}`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/blob/${sha}`,
     {
       method: "GET",
       credentials: "include",
@@ -66,7 +76,6 @@ export const getFileBlob = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const content = await response.text();
-  const file: IGraderFile = { content, name: node.name };
-  return file;
+
+  return await response.text();
 };
