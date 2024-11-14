@@ -1,6 +1,7 @@
 package assignments
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/CamPlume1/khoury-classroom/internal/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -110,6 +112,105 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 	}
 }
 
+// Generates a token to accept an assignment.
+func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		body := models.AssignmentTokenRequestBody{}
+
+		if err := c.BodyParser(&body); err != nil {
+			return errs.InvalidRequestBody(body)
+		}
+
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		token, err := utils.GenerateToken(16)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		tokenData := models.AssignmentToken{
+			AssignmentID: assignmentID,
+			BaseToken: models.BaseToken{
+				Token:     token,
+				CreatedAt: time.Now(),
+			},
+		}
+
+		// Set ExpiresAt only if Duration is provided
+		if body.Duration != nil {
+			expiresAt := time.Now().Add(time.Duration(*body.Duration) * time.Minute)
+			tokenData.ExpiresAt = &expiresAt
+		}
+
+		assignmentToken, err := s.store.CreateAssignmentToken(c.Context(), tokenData)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{"token": assignmentToken.Token})
+	}
+}
+
+// Uses an assignment token to accept an assignment.
+func (s *AssignmentService) useAssignmentToken() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+
+		token := c.Params("token")
+		if token == "" {
+			return errs.BadRequest(errors.New("token is required"))
+		}
+
+		assignment, err := s.store.GetAssignmentByToken(c.Context(), token)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		assignmentWithTemplate, err := s.store.GetAssignmentWithTemplateByAssignmentID(c.Context(), int64(assignment.ID))
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		//Retrieve user client
+		client, err := middleware.GetClient(c, s.store, s.userCfg)
+		if err != nil {
+			return errs.AuthenticationError()
+		}
+
+		// Retrieve current session
+		user, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		classroom, err := s.store.GetClassroomByID(c.Context(), assignment.ClassroomID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		templateRepoName := assignmentWithTemplate.Template.TemplateRepoName
+
+		//Insert into DB
+		forkName := generateForkName(templateRepoName, user.Login)
+		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
+		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		// Generate Fork via GH User
+		err = client.ForkRepository(c.Context(), classroom.OrgName, classroom.OrgName, templateRepoName, forkName)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		c.Status(http.StatusOK)
+		return nil
+	}
+}
+
 // TODO: Choose naming pattern once we have a full assignment flow. Stub for now
 func generateForkName(sourceName, userName string) string {
 	return sourceName + "-" + strings.ReplaceAll(userName, " ", "")
@@ -174,22 +275,6 @@ func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
 
 // Updates an existing assignment.
 func (s *AssignmentService) updateAssignment() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
-}
-
-// Generates a token to accept an assignment.
-func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
-}
-
-// Uses a token to accept an assignment.
-func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)

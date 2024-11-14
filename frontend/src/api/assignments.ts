@@ -59,6 +59,7 @@ export const createAssignmentTemplate = async (
       body: JSON.stringify({
         template_repo_id: assignment.id,
         template_repo_owner: assignment.owner,
+        template_repo_name: assignment.name //TODO: this should be the template repo name
       })
     }
   );

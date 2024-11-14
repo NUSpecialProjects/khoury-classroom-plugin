@@ -56,4 +56,7 @@ type AssignmentOutline interface {
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
 	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
 	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
+	GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assignmentID int64) (models.AssignmentOutlineWithTemplate, error)
+	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
+	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
 }
