@@ -141,7 +141,13 @@ const CodeBrowser: React.FC<ICodeBrowser> = ({
               : "language-undefined"
           }
         >
-          {file ? fileContents : "Select a file to view its contents."}
+          {file ? (
+            fileContents
+          ) : (
+            <div style={{ gridColumn: "span 2" }}>
+              Select a file to view its contents.
+            </div>
+          )}
         </code>
       </pre>
     </div>
