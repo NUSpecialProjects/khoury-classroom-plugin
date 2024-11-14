@@ -6,8 +6,9 @@ import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { FaChevronLeft } from "react-icons/fa6";
-import { getAssignmentIndirectNav } from "@/api/assignments";
+import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
+import CopyLink from "@/components/CopyLink";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -15,6 +16,9 @@ const Assignment: React.FC = () => {
   const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
+  const [inviteLink, setInviteLink] = useState<string>("");
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -65,6 +69,25 @@ const Assignment: React.FC = () => {
     }
   }, [selectedClassroom]);
 
+  useEffect(() => {
+    const generateInviteLink = async () => {
+      if (!assignment) return;
+      
+      try {
+        if (!selectedClassroom) return;
+        const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
+        const url = `${base_url}/app/assignments/accept?token=${tokenData.token}`;
+        setInviteLink(url);
+      } catch (error) {
+        setLinkError("Failed to generate assignment invite link");
+      }
+    };
+
+    if (assignment) {
+      generateInviteLink();
+    }
+  }, [assignment]);
+
   return (
     <div className="Assignment">
       {assignment && (
@@ -95,6 +118,10 @@ const Assignment: React.FC = () => {
               View Rubric
             </Button>
           </div>
+
+          <h2>Assignment Link</h2>
+          <CopyLink link={inviteLink} name="invite-assignment" />
+          {linkError && <p className="error">{linkError}</p>}
 
           <h2>Metrics</h2>
           <div>Metrics go here</div>
