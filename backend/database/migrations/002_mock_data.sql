@@ -50,8 +50,8 @@ VALUES
 (8, 9, 'STUDENT', NOW()),
 (5, 10, 'TA', NOW());
 
--- Insert into assignment_template
-INSERT INTO assignment_template (template_repo_owner, template_repo_id, created_at, template_name)
+-- Insert into assignment_templates
+INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_name)
 VALUES
 ('kennysmith', 1000, NOW(), 'Template 1'),
 ('gracehopper', 1001, NOW(), 'Template 2'),

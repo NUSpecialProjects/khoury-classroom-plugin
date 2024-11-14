@@ -24,7 +24,7 @@ func (db *DB) GetAssignmentTemplateByID(ctx context.Context, assignmentTemplateI
 
 func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error) {
 	var exists bool
-	err := db.connPool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM assignment_template WHERE template_repo_id = $1)", templateID).Scan(&exists)
+	err := db.connPool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM assignment_templates WHERE template_repo_id = $1)", templateID).Scan(&exists)
 	if err != nil {
 		return false, errs.NewDBError(err)
 	}
@@ -34,7 +34,7 @@ func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (b
 
 func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error) {
 	err := db.connPool.QueryRow(ctx, `
-		INSERT INTO assignment_template (template_repo_owner, template_name, template_repo_id)
+		INSERT INTO assignment_templates (template_repo_owner, template_name, template_repo_id)
 		VALUES ($1, $2, $3)
 		RETURNING *
 	`,

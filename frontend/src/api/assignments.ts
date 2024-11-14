@@ -66,7 +66,7 @@ export const createAssignmentTemplate = async (
 
   const data = (await result.json())
 
-  return data.assignment_template as IRepository
+  return data.assignment_templates as IRepository
 };
 
 export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
