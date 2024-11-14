@@ -27,7 +27,8 @@ VALUES
 (9, 'Dennis', 'Ritchie', 'dritchie', 112233),
 (10, 'Ken', 'Thompson', 'kthompson', 445566),
 (11, 'Cam', 'Plume', 'CamPlume1', 116120547),
-(12, 'Nick', 'Tietje', 'ntietje1', 124538220);
+(12, 'Nick', 'Tietje', 'ntietje1', 124538220),
+(13, 'Seby', 'Tremblay', 'sebytremblay', 91509344);
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
@@ -50,18 +51,18 @@ VALUES
 (5, 10, 'TA', NOW());
 
 -- Insert into assignment_template
-INSERT INTO assignment_template (template_repo_owner, template_repo_id, created_at)
+INSERT INTO assignment_template (template_repo_owner, template_repo_id, created_at, template_name)
 VALUES
-('kennysmith', 1000, NOW()),
-('gracehopper', 1001, NOW()),
-('linustorvalds', 1002, NOW()),
-('alanturing', 1003, NOW()),
-('adalovelace', 1004, NOW()),
-('mhamilton', 1005, NOW()),
-('timbl', 1006, NOW()),
-('bliskov', 1007, NOW()),
-('dritchie', 1008, NOW()),
-('kthompson', 1009, NOW());
+('kennysmith', 1000, NOW(), 'Template 1'),
+('gracehopper', 1001, NOW(), 'Template 2'),
+('linustorvalds', 1002, NOW(), 'Tempalte 1'),
+('alanturing', 1003, NOW(), 'Template 2'),
+('adalovelace', 1004, NOW(), 'Template 1'),
+('mhamilton', 1005, NOW(), 'Template 2'),
+('timbl', 1006, NOW(), 'Template 1'),
+('bliskov', 1007, NOW(), 'Template 2'),
+('dritchie', 1008, NOW(), 'Template 1'),
+('kthompson', 1009, NOW(), 'Template 2');
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)

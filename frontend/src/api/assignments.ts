@@ -46,7 +46,7 @@ export const getAssignmentIndirectNav = async (
 
 export const createAssignmentTemplate = async (
   classroomId: number,
-  assignment: IRepository
+  assignment: IAssignmentTemplate
 ): Promise<IRepository> => {
   const result = await fetch(
     `${base_url}/classrooms/classroom/${classroomId}/assignments/template`,
@@ -56,10 +56,7 @@ export const createAssignmentTemplate = async (
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        template_repo_id: assignment.id,
-        template_repo_owner: assignment.owner,
-      })
+      body: JSON.stringify(assignment),
     }
   );
 
@@ -97,7 +94,7 @@ export const acceptAssignment = async (orgName: string, repoName: string, classr
 };
 
 export const createAssignment = async (
-  templateId: number,
+  templateRepo: IAssignmentTemplate,
   assignment: IAssignmentFormData
 ): Promise<IAssignmentFormData> => {
   const result = await fetch(
@@ -109,7 +106,7 @@ export const createAssignment = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        template_id: templateId,
+        template_repo: templateRepo,
         name: assignment.assignmentName,
         classroom_id: assignment.classroomId,
         group_assignment: assignment.groupAssignment,

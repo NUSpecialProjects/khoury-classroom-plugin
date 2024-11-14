@@ -27,5 +27,5 @@ interface IAssignmentFormData {
     classroomId: number
     groupAssignment: boolean
     mainDueDate: Date | null
-    templateRepo: IRepository | null
+    templateRepo: IAssignmentTemplate | null
 }

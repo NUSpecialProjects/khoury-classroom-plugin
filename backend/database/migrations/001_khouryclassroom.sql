@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS classroom_membership (
 CREATE TABLE IF NOT EXISTS assignment_template (
     template_repo_id INTEGER PRIMARY KEY,
     template_repo_owner VARCHAR(255) NOT NULL,
+    template_name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 

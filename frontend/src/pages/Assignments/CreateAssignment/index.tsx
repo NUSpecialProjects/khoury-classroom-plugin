@@ -63,7 +63,7 @@ const CreateAssignment: React.FC = () => {
 
     const handleSubmit = async (data: IAssignmentFormData) => {
         await createAssignmentTemplate(data.classroomId, data.templateRepo!);
-        await createAssignment(data.templateRepo!.id, data);
+        await createAssignment(data.templateRepo!, data);
 
         navigate('/app/dashboard');
     }

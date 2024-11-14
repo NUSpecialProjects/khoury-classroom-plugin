@@ -36,18 +36,19 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 	return assignmentOutline, nil
 }
 
-func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error) {
+func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutlineRequest) (models.AssignmentOutline, error) {
+	var assignmentData models.AssignmentOutline
+
 	err := db.connPool.QueryRow(ctx, `
-		INSERT INTO assignment_outlines (template_id, released_at, name, classroom_id, group_assignment, main_due_date)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO assignment_outlines (template_id, name, classroom_id, group_assignment, main_due_date)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING *
 	`,
-		assignmentData.TemplateID,
-		assignmentData.ReleasedAt,
-		assignmentData.Name,
-		assignmentData.ClassroomID,
-		assignmentData.GroupAssignment,
-		assignmentData.MainDueDate,
+		assignmentRequestData.TemplateRepo.TemplateID,
+		assignmentRequestData.Name,
+		assignmentRequestData.ClassroomID,
+		assignmentRequestData.GroupAssignment,
+		assignmentRequestData.MainDueDate,
 	).Scan(&assignmentData.ID,
 		&assignmentData.TemplateID,
 		&assignmentData.CreatedAt,
@@ -62,33 +63,4 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 	}
 
 	return assignmentData, nil
-}
-
-func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error) {
-	var exists bool
-	err := db.connPool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM assignment_template WHERE template_repo_id = $1)", templateID).Scan(&exists)
-	if err != nil {
-		return false, errs.NewDBError(err)
-	}
-
-	return exists, nil
-}
-
-func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error) {
-	err := db.connPool.QueryRow(ctx, `
-		INSERT INTO assignment_template (template_repo_owner, template_repo_id)
-		VALUES ($1, $2)
-		RETURNING *
-	`,
-		assignmentTemplateData.TemplateRepoOwner.Login,
-		assignmentTemplateData.TemplateID,
-	).Scan(&assignmentTemplateData.TemplateID,
-		&assignmentTemplateData.TemplateRepoOwner.Login,
-		&assignmentTemplateData.CreatedAt)
-
-	if err != nil {
-		return models.AssignmentTemplate{}, errs.NewDBError(err)
-	}
-
-	return assignmentTemplateData, nil
 }
