@@ -91,6 +91,7 @@ func (api *CommonAPI) CreateBranch(ctx context.Context, owner, repo, baseBranch,
 
 	return &branch, nil
 }
+
 func (api *CommonAPI) GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error) {
 	pr, _, err := api.Client.PullRequests.Get(ctx, owner, repo, pullNumber)
 

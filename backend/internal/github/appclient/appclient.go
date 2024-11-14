@@ -172,12 +172,11 @@ func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string,
 }
 
 func (api *AppAPI) CreateBaseAssignmentRepo(ctx context.Context, orgName, templateRepoName, newRepoName string) error {
-	fmt.Println("Trying to create base assignment repo with name: ", orgName, templateRepoName, newRepoName)
-
 	// Construct the request
 	endpoint := fmt.Sprintf("/repos/%s/%s/generate", orgName, templateRepoName)
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]string{
-		"name": newRepoName,
+		"name":  newRepoName,
+		"owner": orgName,
 	})
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)

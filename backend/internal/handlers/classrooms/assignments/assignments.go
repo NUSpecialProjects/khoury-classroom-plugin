@@ -76,8 +76,8 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		}
 
 		// Create base repository using assignment template
-		baseRepoName := fmt.Sprintf("%s-%s", classroom.OrgName, createdAssignment.Name)
-		err = s.createBaseRepository(c.Context(), classroom.OrgName, createdAssignment.Name, baseRepoName)
+		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
+		err = s.createBaseRepository(c.Context(), classroom.OrgName, assignmentData.TemplateRepo.TemplateRepoName, baseRepoName)
 		if err != nil {
 			fmt.Println(err)
 			return errs.InternalServerError()
@@ -98,12 +98,12 @@ func (s *AssignmentService) createBaseRepository(ctx context.Context, orgName, t
 		return errs.InternalServerError()
 	}
 
-	// Create development branch
-	_, err = s.appClient.CreateBranch(ctx, orgName, newRepoName, "main", "development")
-	if err != nil {
-		fmt.Println(err)
-		return errs.InternalServerError()
-	}
+	// // Create development branch
+	// _, err = s.appClient.CreateBranch(ctx, orgName, newRepoName, "main", "development")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return errs.InternalServerError()
+	// }
 
 	return nil
 }
