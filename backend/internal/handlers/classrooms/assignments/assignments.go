@@ -1,6 +1,8 @@
 package assignments
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -62,6 +64,22 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		// Store assignment in DB
 		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
+			fmt.Println(err)
+			return errs.InternalServerError()
+		}
+
+		// Get classroom and assignment template
+		classroom, err := s.store.GetClassroomByID(c.Context(), createdAssignment.ClassroomID)
+		if err != nil {
+			fmt.Println(err)
+			return errs.InternalServerError()
+		}
+
+		// Create base repository using assignment template
+		baseRepoName := fmt.Sprintf("%s-%s", classroom.OrgName, createdAssignment.Name)
+		err = s.createBaseRepository(c.Context(), classroom.OrgName, createdAssignment.Name, baseRepoName)
+		if err != nil {
+			fmt.Println(err)
 			return errs.InternalServerError()
 		}
 
@@ -69,6 +87,25 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			"created_assignment": createdAssignment,
 		})
 	}
+}
+
+// Create base repository using assignment template
+func (s *AssignmentService) createBaseRepository(ctx context.Context, orgName, templateRepoName, newRepoName string) error {
+	// Create base repository using assignment template repository
+	err := s.appClient.CreateBaseAssignmentRepo(ctx, orgName, templateRepoName, newRepoName)
+	if err != nil {
+		fmt.Println(err)
+		return errs.InternalServerError()
+	}
+
+	// Create development branch
+	_, err = s.appClient.CreateBranch(ctx, orgName, newRepoName, "main", "development")
+	if err != nil {
+		fmt.Println(err)
+		return errs.InternalServerError()
+	}
+
+	return nil
 }
 
 func (s *AssignmentService) acceptAssignment() fiber.Handler {
