@@ -86,8 +86,8 @@ const Assignment: React.FC = () => {
               </div>
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Due Date:"}</div>
-                {assignment.main_due_data
-                  ? new Date(assignment.main_due_data).toLocaleString("en-US", {
+                {assignment.main_due_date
+                  ? new Date(assignment.main_due_date).toLocaleString("en-US", {
                     month: "long",
                     day: "numeric",
                     year: "numeric",
