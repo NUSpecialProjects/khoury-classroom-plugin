@@ -154,3 +154,41 @@ func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.Use
 	user, _, err := api.Client.Users.Get(ctx, userName)
 	return user, err
 }
+
+//Given a repo name and org name, create a push ruleset to protect the .github directory
+func (api *CommonAPI) CreatePushRuleset(ctx context.Context, orgName, repoName string) error {
+	endpoint := fmt.Sprintf("/repos/%s/%s/rulesets", orgName, repoName)
+
+	body := map[string]interface{}{
+        "name":       "Restrict .github Directory Edits: Preserves Submission Deadline",
+        "target":     "branch",
+        "enforcement": "active",
+        "rules": []map[string]interface{}{
+            {
+                "type": "file_path",
+                "parameters": map[string]interface{}{
+                    "operator": "starts_with",
+                    "pattern":  ".github/",
+                },
+                "actions": map[string]interface{}{
+                    "block": map[string]interface{}{
+                        "enabled": true,
+                        "reason":  "Modification of the .github directory is restricted. Please contact course staff for an extension",
+                    },
+                },
+            },
+        },
+    }
+	req, err := api.Client.NewRequest("POST", endpoint, body)
+	if err != nil {
+		fmt.Printf("Request Construction failed")
+	}
+
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		fmt.Printf("request execution failed")
+	}
+
+	return nil
+	
+}
