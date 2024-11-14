@@ -2,13 +2,7 @@ import React from "react";
 import './styles.css';
 import '../styles.css';
 import { Link } from "react-router-dom";
-import { IPageHeader } from '../types';
 import { FaChevronLeft } from "react-icons/fa6";
-
-interface ISubPageHeader extends IPageHeader {
-    chevronLink: string;
-    children: React.ReactNode;
-}
 
 const SubPageHeader: React.FC<ISubPageHeader> = ({ pageTitle, chevronLink, children }) => {
     return (

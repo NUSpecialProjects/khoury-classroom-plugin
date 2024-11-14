@@ -1,12 +1,7 @@
 import React from "react";
 import './styles.css';
 import '../styles.css';
-import { IPageHeader } from '../types';
 import { MdChevronRight } from "react-icons/md"
-
-interface IBreadcrumbPageHeader extends IPageHeader {
-    breadcrumbItems: string[];
-}
 
 const BreadcrumbPageHeader: React.FC<IBreadcrumbPageHeader> = ({ pageTitle, breadcrumbItems }) => {
     return (
