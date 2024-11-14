@@ -55,14 +55,14 @@ INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created
 VALUES
 ('kennysmith', 1000, NOW(), 'Template 1'),
 ('gracehopper', 1001, NOW(), 'Template 2'),
-('linustorvalds', 1002, NOW(), 'Tempalte 1'),
-('alanturing', 1003, NOW(), 'Template 2'),
-('adalovelace', 1004, NOW(), 'Template 1'),
-('mhamilton', 1005, NOW(), 'Template 2'),
-('timbl', 1006, NOW(), 'Template 1'),
-('bliskov', 1007, NOW(), 'Template 2'),
-('dritchie', 1008, NOW(), 'Template 1'),
-('kthompson', 1009, NOW(), 'Template 2');
+('linustorvalds', 1002, NOW(), 'Tempalte 3'),
+('alanturing', 1003, NOW(), 'Template 4'),
+('adalovelace', 1004, NOW(), 'Template 5'),
+('mhamilton', 1005, NOW(), 'Template 6'),
+('timbl', 1006, NOW(), 'Template 7'),
+('bliskov', 1007, NOW(), 'Template 8'),
+('dritchie', 1008, NOW(), 'Template 9'),
+('kthompson', 1009, NOW(), 'Template 10');
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)

@@ -12,7 +12,7 @@ const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const orgName = selectedClassroom?.org_name;
 
-  const [templates, setTemplates] = useState<IAssignmentTemplate[]>([]);
+  const [templates, setTemplates] = useState<ITemplateRepo[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
 
   const navigate = useNavigate();

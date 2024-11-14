@@ -46,8 +46,8 @@ export const getAssignmentIndirectNav = async (
 
 export const createAssignmentTemplate = async (
   classroomId: number,
-  assignment: IAssignmentTemplate
-): Promise<IRepository> => {
+  template: ITemplateRepo
+) => {
   const result = await fetch(
     `${base_url}/classrooms/classroom/${classroomId}/assignments/template`,
     {
@@ -56,45 +56,41 @@ export const createAssignmentTemplate = async (
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(assignment),
+      body: JSON.stringify(template),
     }
   );
 
   if (!result.ok) {
     throw new Error("Network response was not ok");
   }
-
-  const data = (await result.json())
-
-  return data.assignment_templates as IRepository
 };
 
 export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
   const result = await fetch(
-      `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          org_name: orgName,
-          repo_name: repoName,
-          assignment_name: assignmentName,
-          assignment_id: 1,
-          org_id: 182810684
-        }),
-      }
-    );
-
-    if (!result.ok) {
-      throw new Error(result.statusText);
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        org_name: orgName,
+        repo_name: repoName,
+        assignment_name: assignmentName,
+        assignment_id: 1,
+        org_id: 182810684
+      }),
     }
+  );
+
+  if (!result.ok) {
+    throw new Error(result.statusText);
+  }
 };
 
 export const createAssignment = async (
-  templateRepo: IAssignmentTemplate,
+  templateRepo: ITemplateRepo,
   assignment: IAssignmentFormData
 ): Promise<IAssignmentFormData> => {
   const result = await fetch(

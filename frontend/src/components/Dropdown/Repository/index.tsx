@@ -1,9 +1,9 @@
 import React, { ChangeEvent } from 'react';
 
 interface ITemplateRepoDropdownProps {
-    repositories: IAssignmentTemplate[];
-    onChange?: (selectedTemplate: IAssignmentTemplate) => void;
-    selectedRepo: IAssignmentTemplate | null;
+    repositories: ITemplateRepo[];
+    onChange?: (selectedTemplate: ITemplateRepo) => void;
+    selectedRepo: ITemplateRepo | null;
     loading: boolean;
 }
 

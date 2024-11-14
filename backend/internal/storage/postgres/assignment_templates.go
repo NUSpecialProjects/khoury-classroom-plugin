@@ -7,21 +7,6 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 )
 
-func (db *DB) GetAssignmentTemplateByID(ctx context.Context, assignmentTemplateID int64) (models.AssignmentTemplate, error) {
-	var assignmentTemplate models.AssignmentTemplate
-	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_templates WHERE id = $1", assignmentTemplateID).Scan(
-		&assignmentTemplate.TemplateID,
-		&assignmentTemplate.TemplateRepoOwner,
-		&assignmentTemplate.TemplateRepoName,
-		&assignmentTemplate.CreatedAt,
-	)
-	if err != nil {
-		return models.AssignmentTemplate{}, errs.NewDBError(err)
-	}
-
-	return assignmentTemplate, nil
-}
-
 func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error) {
 	var exists bool
 	err := db.connPool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM assignment_templates WHERE template_repo_id = $1)", templateID).Scan(&exists)
@@ -33,11 +18,9 @@ func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (b
 }
 
 func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error) {
-	err := db.connPool.QueryRow(ctx, `
-		INSERT INTO assignment_templates (template_repo_owner, template_name, template_repo_id)
-		VALUES ($1, $2, $3)
-		RETURNING *
-	`,
+	err := db.connPool.QueryRow(ctx, `INSERT INTO assignment_templates (template_repo_owner, template_name, template_repo_id)
+			VALUES ($1, $2, $3)
+			RETURNING *`,
 		assignmentTemplateData.TemplateRepoOwner,
 		assignmentTemplateData.TemplateRepoName,
 		assignmentTemplateData.TemplateID,

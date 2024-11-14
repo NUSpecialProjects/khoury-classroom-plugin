@@ -2,7 +2,7 @@ import React from 'react';
 import TemplateRepoDropdown from "@/components/Dropdown/Repository";
 
 interface StarterCodeDetailsProps extends IStepComponentProps<IAssignmentFormData> {
-  repositories: IAssignmentTemplate[];
+  repositories: ITemplateRepo[];
   isLoading: boolean;
 }
 
@@ -13,7 +13,7 @@ const StarterCodeDetails: React.FC<StarterCodeDetailsProps> = ({ data, onChange,
       <div>
         <TemplateRepoDropdown
           repositories={repositories}
-          onChange={(selectedTemplate: IAssignmentTemplate) => {
+          onChange={(selectedTemplate: ITemplateRepo) => {
             onChange({ templateRepo: selectedTemplate });
           }}
           loading={isLoading}
