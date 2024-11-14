@@ -2,6 +2,7 @@ package assignments
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -73,7 +74,6 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 
 func (s *AssignmentService) acceptAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-
 		// Check + parse FE request
 		var assignment models.AssignmentAcceptRequest
 		err := c.BodyParser(&assignment)
@@ -115,19 +115,23 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 // Generates a token to accept an assignment.
 func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		fmt.Println("Generating assignment token")
 		body := models.AssignmentTokenRequestBody{}
 
 		if err := c.BodyParser(&body); err != nil {
+			fmt.Println("Error parsing body", err)
 			return errs.InvalidRequestBody(body)
 		}
 
 		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
 		if err != nil {
+			fmt.Println("Error parsing assignment ID", err)
 			return errs.BadRequest(err)
 		}
 
 		token, err := utils.GenerateToken(16)
 		if err != nil {
+			fmt.Println("Error generating token", err)
 			return errs.InternalServerError()
 		}
 
@@ -147,6 +151,7 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 
 		assignmentToken, err := s.store.CreateAssignmentToken(c.Context(), tokenData)
 		if err != nil {
+			fmt.Println("Error creating assignment token", err)
 			return errs.InternalServerError()
 		}
 
@@ -157,36 +162,42 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 // Uses an assignment token to accept an assignment.
 func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-
+		fmt.Println("Using assignment token")
 		token := c.Params("token")
 		if token == "" {
+			fmt.Println("Token is required")
 			return errs.BadRequest(errors.New("token is required"))
 		}
 
 		assignment, err := s.store.GetAssignmentByToken(c.Context(), token)
 		if err != nil {
+			fmt.Println("Error getting assignment by token", err)
 			return errs.InternalServerError()
 		}
 
 		assignmentWithTemplate, err := s.store.GetAssignmentWithTemplateByAssignmentID(c.Context(), int64(assignment.ID))
 		if err != nil {
+			fmt.Println("Error getting assignment with template by assignment ID", err)
 			return errs.InternalServerError()
 		}
 
 		//Retrieve user client
 		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
+			fmt.Println("Error getting client", err)
 			return errs.AuthenticationError()
 		}
 
 		// Retrieve current session
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
+			fmt.Println("Error getting current user", err)
 			return errs.GithubAPIError(err)
 		}
 
 		classroom, err := s.store.GetClassroomByID(c.Context(), assignment.ClassroomID)
 		if err != nil {
+			fmt.Println("Error getting classroom by ID", err)
 			return errs.InternalServerError()
 		}
 
@@ -197,17 +208,23 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
 		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
 		if err != nil {
+			fmt.Println("Error creating student work", err)
 			return errs.InternalServerError()
 		}
 
 		// Generate Fork via GH User
 		err = client.ForkRepository(c.Context(), classroom.OrgName, classroom.OrgName, templateRepoName, forkName)
 		if err != nil {
+			fmt.Println("Error forking repository", err)
 			return errs.InternalServerError()
 		}
 
-		c.Status(http.StatusOK)
-		return nil
+		fmt.Println("Assignment accepted")
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"message":    "Assignment accepted",
+			"assignment": assignment,
+		})
 	}
 }
 

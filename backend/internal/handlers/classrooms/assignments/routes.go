@@ -12,6 +12,12 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService, params *t
 	// Get the assignments in a classroom
 	assignmentRouter.Get("/", service.getAssignments())
 
+	// Generate a token to accept this assignment
+	assignmentRouter.Post("/assignment/:assignment_id/token", service.generateAssignmentToken())
+
+	// Use a token to accept an assignment
+	assignmentRouter.Post("/token/:token", service.useAssignmentToken())
+
 	// Get the details of an assignment
 	assignmentRouter.Get("/assignment/:assignment_id", service.getAssignment())
 
@@ -26,12 +32,6 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService, params *t
 
 	// Update an assignment
 	assignmentRouter.Put("/assignment/:assignment_id", service.updateAssignment())
-
-	// Generate a token to accept this assignment
-	assignmentRouter.Post("/assignment/:assignment_id/token", service.generateAssignmentToken())
-
-	// Use a token to accept an assignment
-	assignmentRouter.Post("/assignment/token/:token", service.useAssignmentToken())
 
 	return assignmentRouter
 }
