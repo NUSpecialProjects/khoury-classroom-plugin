@@ -89,14 +89,7 @@ const LeftNav: React.FC = () => {
         ))}
       </div>
       <div className="LeftNav__buttonWrapper">
-        <Button
-          onClick={() => {
-            navigate(
-              `/app/classroom/select?org_id=${selectedClassroom?.org_id}`
-            );
-          }}
-          variant="primary"
-        >
+        <Button href={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`} variant="primary">
           View all classrooms
         </Button>
       </div>

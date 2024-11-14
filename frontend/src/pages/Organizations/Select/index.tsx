@@ -65,9 +65,7 @@ const OrganizationSelection: React.FC = () => {
             orgsWithApp.some((org) => org.login === selectedOrg.login) && (
               <Button
                 variant="primary"
-                onClick={() =>
-                  navigate(`/app/classroom/select?org_id=${selectedOrg.id}`)
-                }
+                href={`/app/classroom/select?org_id=${selectedOrg.id}`}
               >
                 View Classrooms for {selectedOrg.login}
               </Button>

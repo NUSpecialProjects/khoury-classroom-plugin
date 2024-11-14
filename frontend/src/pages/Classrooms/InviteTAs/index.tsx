@@ -47,7 +47,7 @@ const InviteTAs: React.FC = () => {
                     {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
-                    <Button variant="primary" onClick={() => navigate("/app/classroom/invite-students")}>Continue</Button>
+                    <Button variant="primary" href="/app/classroom/invite-students">Continue</Button>
                 </div>
             </div>
         </Panel>

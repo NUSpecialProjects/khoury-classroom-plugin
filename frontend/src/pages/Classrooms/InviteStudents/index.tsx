@@ -47,7 +47,7 @@ const InviteStudents: React.FC = () => {
                     {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
-                    <Button variant="primary" onClick={() => navigate("/app/classroom/success")}>Continue</Button>
+                    <Button variant="primary" href="/app/classroom/success">Continue</Button>
                 </div>
             </div>
         </Panel>

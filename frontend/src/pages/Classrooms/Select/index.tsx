@@ -61,7 +61,7 @@ const ClassroomSelection: React.FC = () => {
               <TableCell>
                 <div className="Selection__tableHeaderText">Classroom Name</div>
                 <div className="Selection__tableHeaderButton">
-                  <Button size="small" onClick={() => navigate(`/app/classroom/create?org_id=${orgID}`)}>
+                  <Button size="small" href={`/app/classroom/create?org_id=${orgID}`}>
                     <MdAdd /> New Classroom
                   </Button>
                 </div>
@@ -86,7 +86,7 @@ const ClassroomSelection: React.FC = () => {
                   <br></br>
                   Please create a new classroom to get started.
                 </div>
-                <Button variant="secondary" onClick={() => navigate(`/app/classroom/create?org_id=${orgID}`)}>
+                <Button variant="secondary" href={`/app/classroom/create?org_id=${orgID}`}>
                     <MdAdd /> New Classroom
                   </Button>
               </EmptyDataBanner>
