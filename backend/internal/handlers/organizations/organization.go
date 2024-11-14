@@ -158,7 +158,10 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 				if exists, err := service.store.AssignmentTemplateExists(c.Context(), repo.ID); err != nil {
 					return errs.NewDBError(err)
 				} else if !exists {
-					service.store.CreateAssignmentTemplate(c.Context(), templateRepo)
+					_, err := service.store.CreateAssignmentTemplate(c.Context(), templateRepo)
+					if err != nil {
+						return errs.NewDBError(err)
+					}
 				}
 			}
 		}
