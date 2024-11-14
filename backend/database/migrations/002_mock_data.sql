@@ -50,18 +50,18 @@ VALUES
 (5, 10, 'TA', NOW());
 
 -- Insert into assignment_template
-INSERT INTO assignment_template (template_repo_owner, template_repo_id, created_at)
+INSERT INTO assignment_template (template_repo_owner, template_repo_id, template_repo_name, created_at)
 VALUES
-('kennysmith', 1000, NOW()),
-('gracehopper', 1001, NOW()),
-('linustorvalds', 1002, NOW()),
-('alanturing', 1003, NOW()),
-('adalovelace', 1004, NOW()),
-('mhamilton', 1005, NOW()),
-('timbl', 1006, NOW()),
-('bliskov', 1007, NOW()),
-('dritchie', 1008, NOW()),
-('kthompson', 1009, NOW());
+('kennysmith', 1000, 'Running and Chocolate Tracker App', NOW()),
+('gracehopper', 1001, 'Compiler Design', NOW()),
+('linustorvalds', 1002, 'Linux Kernel Module', NOW()),
+('alanturing', 1003, 'Encryption Algorithms', NOW()),
+('adalovelace', 1004, 'Mobile App for Runners', NOW()),
+('mhamilton', 1005, 'AI Chatbot', NOW()),
+('timbl', 1006, 'Website Development', NOW()),
+('bliskov', 1007, 'Cloud Deployment', NOW()),
+('dritchie', 1008, 'Cybersecurity Analysis', NOW()),
+('kthompson', 1009, 'Software Design Patterns', NOW());
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
