@@ -1,7 +1,6 @@
 import Panel from "@/components/Panel";
 import Button from "@/components/Button";
 import CopyLink from "@/components/CopyLink";
-import { useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { postClassroomToken } from "@/api/classrooms";
@@ -9,7 +8,6 @@ import { postClassroomToken } from "@/api/classrooms";
 import "../styles.css";
 
 const InviteTAs: React.FC = () => {
-    const navigate = useNavigate();
     const { selectedClassroom } = useContext(SelectedClassroomContext);
     const [link, setLink] = useState<string>("");
     const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
@@ -47,7 +45,7 @@ const InviteTAs: React.FC = () => {
                     {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
-                    <Button variant="primary" onClick={() => navigate("/app/classroom/invite-students")}>Continue</Button>
+                    <Button variant="primary" href="/app/classroom/invite-students">Continue</Button>
                 </div>
             </div>
         </Panel>
