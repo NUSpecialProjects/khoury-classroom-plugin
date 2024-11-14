@@ -1,6 +1,5 @@
 import React from "react";
 import './styles.css';
-import { IPageHeader } from "./types";
 
 const PageHeader: React.FC<IPageHeader> = ({ pageTitle }) => {
     return (
