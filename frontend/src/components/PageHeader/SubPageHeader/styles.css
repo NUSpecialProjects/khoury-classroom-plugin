@@ -1,0 +1,21 @@
+.SubPageHeader {
+    &__pageTitle {
+        padding-bottom: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-bottom-color: var(--border-color);
+        border-bottom-style: var(--border-style);
+        border-bottom-width: var(--border-width);
+        color: var(--primary-text);
+    }
+
+    &__leftSideContents {
+        display: flex;
+        gap: 10px;
+    }
+
+    &__rightSideContents {
+        margin-left: auto;
+    }
+}

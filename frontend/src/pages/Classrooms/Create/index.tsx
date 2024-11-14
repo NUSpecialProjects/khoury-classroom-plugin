@@ -97,7 +97,7 @@ const ClassroomCreation: React.FC = () => {
             )}
             <div className="ClassroomCreation__buttonWrapper">
               <Button type="submit" variant="primary">Create Classroom</Button>
-              <Button variant="secondary" onClick={() => navigate("/app/organization/select")}>Select a different organization</Button>
+              <Button variant="secondary" href="/app/organization/select">Select a different organization</Button>
             </div>
           </form>
         )}

@@ -2,6 +2,8 @@ import { acceptAssignment } from "@/api/assignments";
 import { AuthContext } from "@/contexts/auth";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useContext } from "react";
+import PageHeader from "@/components/PageHeader";
+import Button from "@/components/Button";
 
 const Settings: React.FC = () => {
   const { logout } = useContext(AuthContext);
@@ -25,9 +27,9 @@ const Settings: React.FC = () => {
 
   return (
     <div>
-      <h1>Settings</h1>
-      <button onClick={logout}>Logout</button>
-      <button onClick={stubAssignmentAcceptEntry}>Accept Example Assignment</button>
+      <PageHeader pageTitle="Settings"></PageHeader>
+      <Button variant="primary" onClick={logout}>Logout</Button>
+      <Button variant="secondary" onClick={stubAssignmentAcceptEntry}>Accept Example Assignment</Button>
     </div>
   );
 };
