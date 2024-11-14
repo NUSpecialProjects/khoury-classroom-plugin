@@ -36,7 +36,7 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 	return assignmentOutline, nil
 }
 
-func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutlineRequest) (models.AssignmentOutline, error) {
+func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutline) (models.AssignmentOutline, error) {
 	var assignmentData models.AssignmentOutline
 
 	err := db.connPool.QueryRow(ctx, `
@@ -44,7 +44,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING *
 	`,
-		assignmentRequestData.TemplateRepo.TemplateID,
+		assignmentRequestData.TemplateID,
 		assignmentRequestData.Name,
 		assignmentRequestData.ClassroomID,
 		assignmentRequestData.GroupAssignment,

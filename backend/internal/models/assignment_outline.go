@@ -15,14 +15,6 @@ type AssignmentOutline struct {
 	MainDueDate     *time.Time `json:"main_due_date,omitempty"`
 }
 
-type AssignmentOutlineRequest struct {
-	TemplateRepo    AssignmentTemplate `json:"template_repo"`
-	Name            string             `json:"name"`
-	ClassroomID     int64              `json:"classroom_id"`
-	GroupAssignment bool               `json:"group_assignment"`
-	MainDueDate     *time.Time         `json:"main_due_date,omitempty"`
-}
-
 type AssignmentClassroomID struct {
 	AssignmentClassroomID int64 `json:"assignment_classroom_id"`
 }

@@ -44,27 +44,6 @@ export const getAssignmentIndirectNav = async (
   return data
 };
 
-export const createAssignmentTemplate = async (
-  classroomId: number,
-  template: ITemplateRepo
-) => {
-  const result = await fetch(
-    `${base_url}/classrooms/classroom/${classroomId}/assignments/template`,
-    {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(template),
-    }
-  );
-
-  if (!result.ok) {
-    throw new Error("Network response was not ok");
-  }
-};
-
 export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
   const result = await fetch(
     `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
@@ -90,7 +69,7 @@ export const acceptAssignment = async (orgName: string, repoName: string, classr
 };
 
 export const createAssignment = async (
-  templateRepo: ITemplateRepo,
+  templateRepoID: number,
   assignment: IAssignmentFormData
 ): Promise<IAssignmentFormData> => {
   const result = await fetch(
@@ -102,7 +81,7 @@ export const createAssignment = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        template_repo: templateRepo,
+        template_id: templateRepoID,
         name: assignment.assignmentName,
         classroom_id: assignment.classroomId,
         group_assignment: assignment.groupAssignment,

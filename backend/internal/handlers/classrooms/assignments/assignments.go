@@ -53,7 +53,7 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 func (s *AssignmentService) createAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Parse request body
-		var assignmentData models.AssignmentOutlineRequest
+		var assignmentData models.AssignmentOutline
 		error := c.BodyParser(&assignmentData)
 		if error != nil {
 			return errs.InvalidRequestBody(assignmentData)
@@ -140,36 +140,6 @@ func createMockStudentWork(repo string, assName string, assID int) models.Studen
 		GradesPublishedTimestamp: &gradesPublishedTimestamp,
 		WorkState:                "SUBMITTED",
 		CreatedAt:                time.Now(),
-	}
-}
-
-func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		var assignmentData models.AssignmentTemplate
-
-		error := c.BodyParser(&assignmentData)
-		if error != nil {
-			return errs.InvalidRequestBody(assignmentData)
-		}
-
-		// Check if the template already exists
-		exists, err := s.store.AssignmentTemplateExists(c.Context(), assignmentData.TemplateID)
-		if err != nil {
-			return errs.InternalServerError()
-		}
-		if exists {
-			return c.Status(http.StatusOK).JSON("Template already exists")
-		}
-
-		// Create the template if it does not exist
-		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
-		if err != nil {
-			return err
-		}
-
-		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"created_template": createdTemplate,
-		})
 	}
 }
 

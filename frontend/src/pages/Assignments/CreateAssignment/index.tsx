@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import MultiStepForm from '@/components/MultiStepForm';
 import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
-import { createAssignment, createAssignmentTemplate } from "@/api/assignments";
+import { createAssignment } from "@/api/assignments";
 
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -62,10 +62,9 @@ const CreateAssignment: React.FC = () => {
     };
 
     const handleSubmit = async (data: IAssignmentFormData): Promise<boolean> => {
-        if (!data || !data.templateRepo) return false;
+        if (!data?.templateRepo?.template_repo_id) return false;
 
-        await createAssignmentTemplate(data.classroomId, data.templateRepo);
-        await createAssignment(data.templateRepo, data);
+        await createAssignment(data.templateRepo.template_repo_id, data);
 
         navigate('/app/dashboard');
         return true;

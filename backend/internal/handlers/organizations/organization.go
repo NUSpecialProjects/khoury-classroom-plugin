@@ -147,11 +147,19 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		var templateRepos []models.AssignmentTemplate
 		for _, repo := range repos {
 			if repo.IsTemplate && !repo.Archived {
-				templateRepos = append(templateRepos, models.AssignmentTemplate{
+				templateRepo := models.AssignmentTemplate{
 					TemplateRepoOwner: repo.Owner.Login,
 					TemplateRepoName:  repo.Name,
 					TemplateID:        repo.ID,
-				})
+				}
+				templateRepos = append(templateRepos, templateRepo)
+
+				// Store the template locally if it doesn't already exist
+				if exists, err := service.store.AssignmentTemplateExists(c.Context(), repo.ID); err != nil {
+					return errs.NewDBError(err)
+				} else if !exists {
+					service.store.CreateAssignmentTemplate(c.Context(), templateRepo)
+				}
 			}
 		}
 
