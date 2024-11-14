@@ -8,6 +8,7 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { getAssignmentIndirectNav } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
+import { formatDate } from "@/utils/date";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -74,27 +75,13 @@ const Assignment: React.FC = () => {
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Released on:"}</div>
                 {assignment.created_at
-                  ? new Date(assignment.created_at).toLocaleString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })
+                  ? formatDate(new Date(assignment.created_at))
                   : "N/A"}
               </div>
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Due Date:"}</div>
                 {assignment.main_due_date
-                  ? new Date(assignment.main_due_date).toLocaleString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })
+                  ? formatDate(new Date(assignment.main_due_date))
                   : "N/A"}
               </div>
             </div>
