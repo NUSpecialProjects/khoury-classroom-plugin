@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { GraderContext } from "@/contexts/grader";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
@@ -19,9 +19,16 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     useContext(GraderContext);
   const [editing, setEditing] = useState(false);
 
+  const points = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setEditing(false);
+  }, [path]);
+
   const adjustPoints = (x: number) => {
-    const input = document.getElementById("points") as HTMLInputElement;
-    input.value = (parseInt(input.value, 10) + x).toString();
+    if (!points.current) return;
+    const pts = points.current.value;
+    points.current.value = (parseInt(pts, 10) + x).toString();
   };
 
   const saveComment = (e: React.FormEvent) => {
@@ -33,10 +40,14 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     const comment: IGradingComment = {
       path,
       line: Number(data.get("line")),
-      body: String(data.get("comment")),
+      body: String(data.get("comment")).trim(),
       points: Number(data.get("points")),
     };
+    if (comment.points == 0 && comment.body == "") return;
+    if (comment.body == "")
+      comment.body = "No comment left for this point adjustment.";
     addComment(comment);
+    setEditing(false);
     form.reset();
   };
 
@@ -66,8 +77,26 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
           {/************ Display any existing comments *************/}
           {comments[path]?.[line] &&
             Object.entries(comments[path][line]).map(([i, comment]) => {
+              const pointSign =
+                comment.points > 0
+                  ? "positive"
+                  : comment.points < 0
+                    ? "negative"
+                    : "neutral";
               return (
-                <div className="CodeLine__comment" key={Number(i)}>
+                <div
+                  className="CodeLine__commentWrapper CodeLine__comment"
+                  key={Number(i)}
+                >
+                  <div
+                    className={`CodeLine__commentPoints CodeLine__commentPoints--${pointSign}`}
+                  >
+                    {comment.points == 0
+                      ? "Comment"
+                      : comment.points > 0
+                        ? `+${comment.points}`
+                        : comment.points}
+                  </div>
                   {comment.body}
                 </div>
               );
@@ -75,13 +104,14 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
 
           {/************ Display form to create new comment *************/}
           {editing && (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div className="CodeLine__commentWrapper">
               <form className="CodeLine__newCommentForm" onSubmit={saveComment}>
                 <input readOnly hidden type="number" name="line" value={line} />
 
                 <div className="CodeLine__newCommentPoints">
                   <label htmlFor="points">Point Adjustment</label>
                   <input
+                    ref={points}
                     id="points"
                     type="number"
                     name="points"

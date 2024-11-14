@@ -11,6 +11,7 @@
   overflow: auto;
   padding: 10px;
   background: var(--browser-background);
+  font-size: 13px;
 
   &__scroll {
     width: 100%;
@@ -28,5 +29,6 @@
     display: grid;
     grid-template-columns: min-content auto;
     width: 100%;
+    font-size: inherit;
   }
 }

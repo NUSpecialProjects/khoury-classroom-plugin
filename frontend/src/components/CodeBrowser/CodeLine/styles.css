@@ -60,21 +60,46 @@
   }
 
   &__comments {
-    padding: 20px;
-    width: 100%;
     grid-column: span 2;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    margin: 0.75em 0;
+    font-size: 13px;
+  }
+
+  &__commentWrapper {
+    padding: 12px 20px;
+    width: 100%;
     border: 1px solid var(--comment-border);
     background: var(--comment-background);
     border-radius: 4px;
-    margin: 0.75em 0;
     font-family: var(--primary-font);
   }
 
   &__comment {
-    width: 100%;
-    display: table-row;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+
+    &Points {
+      color: white;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 500;
+      flex-shrink: 0;
+
+      &--positive {
+        background: var(--green);
+      }
+      &--negative {
+        background: var(--red);
+      }
+      &--neutral {
+        background: var(--comment-border);
+      }
+    }
   }
 
   &__newCommentForm {
@@ -103,13 +128,15 @@
     .CodeLine__newCommentPoints {
       display: flex;
       align-items: center;
+      position: relative;
+      height: 40px;
 
       label {
         margin-right: 10px;
       }
       input {
-        width: 60px;
         height: 100%;
+        width: 60px;
         text-align: center;
         -webkit-appearance: textfield;
         -moz-appearance: textfield;
