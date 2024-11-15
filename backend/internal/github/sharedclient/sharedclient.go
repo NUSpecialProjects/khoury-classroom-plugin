@@ -45,7 +45,7 @@ func (api *CommonAPI) ListCommits(ctx context.Context, owner string, repo string
 	return commits, err
 }
 
-func (api *CommonAPI) GetBranchHead(ctx context.Context, owner string, repo string, branchName string) (*github.Reference, error) {
+func (api *CommonAPI) getBranchHead(ctx context.Context, owner, repo, branchName string) (*github.Reference, error) {
 	endpoint := fmt.Sprintf("/repos/%s/%s/git/refs/heads/%s", owner, repo, branchName)
 
 	// Create a new GET request
@@ -68,7 +68,7 @@ func (api *CommonAPI) CreateBranch(ctx context.Context, owner, repo, baseBranch,
 	endpoint := fmt.Sprintf("/repos/%s/%s/git/refs", owner, repo)
 
 	// Get the SHA of the base branch
-	baseBranchRef, err := api.GetBranchHead(context.Background(), owner, repo, baseBranch)
+	baseBranchRef, err := api.getBranchHead(context.Background(), owner, repo, baseBranch)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching base branch ref: %v", err)
 	}

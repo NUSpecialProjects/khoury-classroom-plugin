@@ -1,7 +1,6 @@
 package assignments
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -63,27 +62,23 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		// Store assignment in DB
 		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
-			fmt.Println(err)
-			return errs.InternalServerError()
+			return err
 		}
 
 		// Get classroom and assignment template
 		classroom, err := s.store.GetClassroomByID(c.Context(), createdAssignment.ClassroomID)
 		if err != nil {
-			fmt.Println(err)
-			return errs.InternalServerError()
+			return err
 		}
 		template, err := s.store.GetAssignmentTemplateByID(c.Context(), createdAssignment.TemplateID)
 		if err != nil {
-			fmt.Println(err)
-			return errs.InternalServerError()
+			return err
 		}
 
 		// Create base repository using assignment template
 		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
 		err = s.appClient.CreateBaseAssignmentRepo(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
-			fmt.Println(err)
 			return errs.InternalServerError()
 		}
 
