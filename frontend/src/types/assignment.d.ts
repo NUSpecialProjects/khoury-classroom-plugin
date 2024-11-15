@@ -20,7 +20,6 @@ interface IAssignmentToken {
   created_at: string;
 }
 
-interface IAssignmentAcceptResponse {
-  message: string;
-  assignment: IAssignmentOutline;
+interface IAssignmentAcceptResponse extends ITokenUseResponse {
+  repo_url: string;
 }
