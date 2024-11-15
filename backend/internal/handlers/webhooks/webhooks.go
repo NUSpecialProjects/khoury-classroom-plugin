@@ -72,7 +72,7 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If app bot triggered the initial commit, initialize the base repository
-	if isInitialCommit && (pushEvent.Pusher == nil && *pushEvent.Pusher.Name == "khoury-classroom[bot]") {
+	if isInitialCommit && pushEvent.Pusher != nil && *pushEvent.Pusher.Name == "khoury-classroom[bot]" {
 		err = s.baseRepoInitialization(c, pushEvent)
 		if err != nil {
 			return err
