@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./styles.css";
-import { useNavigate } from "react-router-dom";
 import OrganizationDropdown from "@/components/Dropdown/Organization";
 import Panel from "@/components/Panel";
 import Button from "@/components/Button";
@@ -14,7 +13,6 @@ const OrganizationSelection: React.FC = () => {
   const [orgsWithoutApp, setOrgsWithoutApp] = useState<IOrganization[]>([]);
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
   const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -65,9 +63,7 @@ const OrganizationSelection: React.FC = () => {
             orgsWithApp.some((org) => org.login === selectedOrg.login) && (
               <Button
                 variant="primary"
-                onClick={() =>
-                  navigate(`/app/classroom/select?org_id=${selectedOrg.id}`)
-                }
+                href={`/app/classroom/select?org_id=${selectedOrg.id}`}
               >
                 View Classrooms for {selectedOrg.login}
               </Button>

@@ -36,7 +36,7 @@ export const getOrganizationTemplates = async (
   orgName: string,
   itemsPerPage: string = "",
   pageNum: string = ""
-): Promise<IRepositoryResponse> => {
+): Promise<ITemplatesResponse> => {
   const url = new URL(`${base_url}/orgs/org/${orgName}/templates`);
   url.searchParams.append("items_per_page", itemsPerPage);
   url.searchParams.append("page_num", pageNum);
@@ -53,5 +53,5 @@ export const getOrganizationTemplates = async (
     throw new Error("Network response was not ok");
   }
 
-  return response.json() as Promise<IRepositoryResponse>;
+  return response.json() as Promise<ITemplatesResponse>;
 };

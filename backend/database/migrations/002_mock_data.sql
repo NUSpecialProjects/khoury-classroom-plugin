@@ -27,7 +27,8 @@ VALUES
 (9, 'Dennis', 'Ritchie', 'dritchie', 112233),
 (10, 'Ken', 'Thompson', 'kthompson', 445566),
 (11, 'Cam', 'Plume', 'CamPlume1', 116120547),
-(12, 'Nick', 'Tietje', 'ntietje1', 124538220);
+(12, 'Nick', 'Tietje', 'ntietje1', 124538220),
+(13, 'Seby', 'Tremblay', 'sebytremblay', 91509344);
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
@@ -49,19 +50,21 @@ VALUES
 (8, 9, 'STUDENT', NOW()),
 (5, 10, 'TA', NOW());
 
--- Insert into assignment_template
-INSERT INTO assignment_template (template_repo_owner, template_repo_id, template_repo_name, created_at)
+
+-- Insert into assignment_templates
+INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_repo_name)
 VALUES
-('kennysmith', 1000, 'Running and Chocolate Tracker App', NOW()),
-('gracehopper', 1001, 'Compiler Design', NOW()),
-('linustorvalds', 1002, 'Linux Kernel Module', NOW()),
-('alanturing', 1003, 'Encryption Algorithms', NOW()),
-('adalovelace', 1004, 'Mobile App for Runners', NOW()),
-('mhamilton', 1005, 'AI Chatbot', NOW()),
-('timbl', 1006, 'Website Development', NOW()),
-('bliskov', 1007, 'Cloud Deployment', NOW()),
-('dritchie', 1008, 'Cybersecurity Analysis', NOW()),
-('kthompson', 1009, 'Software Design Patterns', NOW());
+('kennysmith', 1000, NOW(), 'Template 1'),
+('gracehopper', 1001, NOW(), 'Template 2'),
+('linustorvalds', 1002, NOW(), 'Tempalte 3'),
+('alanturing', 1003, NOW(), 'Template 4'),
+('adalovelace', 1004, NOW(), 'Template 5'),
+('mhamilton', 1005, NOW(), 'Template 6'),
+('timbl', 1006, NOW(), 'Template 7'),
+('bliskov', 1007, NOW(), 'Template 8'),
+('dritchie', 1008, NOW(), 'Template 9'),
+('kthompson', 1009, NOW(), 'Template 10');
+
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)

@@ -55,12 +55,14 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 
 func (s *AssignmentService) createAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// Parse request body
 		var assignmentData models.AssignmentOutline
 		error := c.BodyParser(&assignmentData)
 		if error != nil {
-			return errs.InvalidRequestBody(models.AssignmentOutline{})
+			return errs.InvalidRequestBody(assignmentData)
 		}
 
+		// Store assignment in DB
 		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
 			return errs.InternalServerError()
@@ -81,7 +83,7 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 			return errs.InvalidRequestBody(models.AssignmentOutline{})
 		}
 
-		//Retrieve user client
+		// Retrieve user client
 		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
 			return errs.AuthenticationError()
@@ -93,18 +95,18 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		//Insert into DB
+		// Insert into DB
 		forkName := generateForkName(assignment.SourceRepoName, user.Login)
 		studentwork := createMockStudentWork(forkName, assignment.AssignmentName, int(assignment.AssignmentID))
 		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
 		}
 
 		// Generate Fork via GH User
 		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
 		}
 
 		c.Status(http.StatusOK)
@@ -257,36 +259,6 @@ func createMockStudentWork(repo string, assName string, assID int) models.Studen
 		GradesPublishedTimestamp: &gradesPublishedTimestamp,
 		WorkState:                "SUBMITTED",
 		CreatedAt:                time.Now(),
-	}
-}
-
-func (s *AssignmentService) createAssignmentTemplate() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		var assignmentData models.AssignmentTemplate
-
-		error := c.BodyParser(&assignmentData)
-		if error != nil {
-			return errs.InvalidRequestBody(assignmentData)
-		}
-
-		// Check if the template already exists
-		exists, err := s.store.AssignmentTemplateExists(c.Context(), assignmentData.TemplateID)
-		if err != nil {
-			return errs.InternalServerError()
-		}
-		if exists {
-			return c.Status(http.StatusOK).JSON("Template already exists")
-		}
-
-		// Create the template if it does not exist
-		createdTemplate, err := s.store.CreateAssignmentTemplate(c.Context(), assignmentData)
-		if err != nil {
-			return err
-		}
-
-		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"created_template": createdTemplate,
-		})
 	}
 }
 

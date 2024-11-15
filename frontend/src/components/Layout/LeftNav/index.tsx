@@ -1,6 +1,7 @@
 import { FaTachometerAlt } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
 import { MdFactCheck, MdEditDocument } from "react-icons/md";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import Button from "../../Button";
 import { useContext } from "react";
@@ -11,12 +12,10 @@ const LeftNav: React.FC = () => {
     { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
     { name: "Grading", dest: "/app/grading", Icon: MdFactCheck },
     { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
-    { name: "Settings", dest: "/app/settings", Icon: MdEditDocument },
+    { name: "Settings", dest: "/app/settings", Icon: FaGear },
   ];
 
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-
-  const navigate = useNavigate();
 
   return (
     <div className="LeftNav">
@@ -71,12 +70,6 @@ const LeftNav: React.FC = () => {
           />
         </svg>
       </div>
-      <div className="LeftNav__headerWrapper">
-        <h3 className="LeftNav__classNameHeader">
-          {selectedClassroom?.org_name}
-        </h3>
-        <div className="LeftNav__orgNameHeader">{selectedClassroom?.name}</div>
-      </div>
       <div className="LeftNav__navBar">
         {navItems.map((item, index) => (
           <NavLink
@@ -94,14 +87,7 @@ const LeftNav: React.FC = () => {
         ))}
       </div>
       <div className="LeftNav__buttonWrapper">
-        <Button
-          onClick={() => {
-            navigate(
-              `/app/classroom/select?org_id=${selectedClassroom?.org_id}`
-            );
-          }}
-          variant="primary"
-        >
+        <Button href={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`} variant="primary">
           View all classrooms
         </Button>
       </div>

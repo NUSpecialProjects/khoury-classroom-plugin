@@ -1,19 +1,19 @@
 import React from 'react';
-import RepositoryDropdown from "@/components/Dropdown/Repository";
+import TemplateRepoDropdown from "@/components/Dropdown/Repository";
 
 interface StarterCodeDetailsProps extends IStepComponentProps<IAssignmentFormData> {
-  repositories: IRepository[];
+  templateRepos: ITemplateRepo[];
   isLoading: boolean;
 }
 
-const StarterCodeDetails: React.FC<StarterCodeDetailsProps> = ({ data, onChange, repositories, isLoading }) => {
+const StarterCodeDetails: React.FC<StarterCodeDetailsProps> = ({ data, onChange, templateRepos, isLoading }) => {
   return (
     <div>
       <h2>Starter Code Repository</h2>
       <div>
-        <RepositoryDropdown
-          repositories={repositories}
-          onChange={(selectedTemplate: IRepository) => {
+        <TemplateRepoDropdown
+          repositories={templateRepos}
+          onChange={(selectedTemplate: ITemplateRepo) => {
             onChange({ templateRepo: selectedTemplate });
           }}
           loading={isLoading}

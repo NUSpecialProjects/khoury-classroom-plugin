@@ -6,13 +6,13 @@ import { useNavigate } from "react-router-dom";
 import MultiStepForm from '@/components/MultiStepForm';
 import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
-import { createAssignment, createAssignmentTemplate } from "@/api/assignments";
+import { createAssignment } from "@/api/assignments";
 
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const orgName = selectedClassroom?.org_name;
 
-  const [templates, setTemplates] = useState<IRepository[]>([]);
+  const [templateRepos, setTemplateRepos] = useState<ITemplateRepo[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
 
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const CreateAssignment: React.FC = () => {
         // TODO: Implement dynamic pagination in template dropdown
         getOrganizationTemplates(orgName, "100", "1")
           .then((response) => {
-            setTemplates(response.template_repos);
+            setTemplateRepos(response.templates);
           })
           .catch((_: unknown) => {
             // do nothing
@@ -46,7 +46,7 @@ const CreateAssignment: React.FC = () => {
             component: (props: IStepComponentProps<IAssignmentFormData>) => (
                 <StarterCodeDetails
                     {...props}
-                    repositories={templates}
+                    templateRepos={templateRepos}
                     isLoading={loadingTemplates}
                 />
             )
@@ -61,11 +61,13 @@ const CreateAssignment: React.FC = () => {
         templateRepo: null
     };
 
-    const handleSubmit = async (data: IAssignmentFormData) => {
-        await createAssignmentTemplate(data.classroomId, data.templateRepo!);
-        await createAssignment(data.templateRepo!.id, data);
+    const handleSubmit = async (data: IAssignmentFormData): Promise<boolean> => {
+        if (!data?.templateRepo?.template_repo_id) return false;
+
+        await createAssignment(data.templateRepo.template_repo_id, data);
 
         navigate('/app/dashboard');
+        return true;
     }
 
     return (

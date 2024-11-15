@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS classroom_membership (
     UNIQUE (user_id, classroom_id)
 );
 
-CREATE TABLE IF NOT EXISTS assignment_template (
+CREATE TABLE IF NOT EXISTS assignment_templates (
     template_repo_id INTEGER PRIMARY KEY,
     template_repo_owner VARCHAR(255) NOT NULL,
     template_repo_name VARCHAR(255) NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     main_due_date TIMESTAMP,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
-    FOREIGN KEY (template_id) REFERENCES assignment_template(template_repo_id)
+    FOREIGN KEY (template_id) REFERENCES assignment_templates(template_repo_id)
 );
 
 CREATE TABLE IF NOT EXISTS assignment_outline_tokens (
