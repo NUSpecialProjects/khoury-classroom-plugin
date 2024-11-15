@@ -1,4 +1,6 @@
 import React, { useCallback } from 'react';
+import Input from '@/components/Input';
+import './styles.css';
 
 const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({ data, onChange }) => {
   const handleCheckboxChange = (target: HTMLInputElement) => {
@@ -31,34 +33,34 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
   );
 
   return (
-    <form className="assignment-details">
-      <h2>Assignment Details</h2>
+    <form className="AssignmentDetails">
+      <h2 className="AssignmentDetails__header">Assignment Basics</h2>
 
-      <div className="form-group">
-        <label htmlFor="assignmentName">Assignment Name:</label>
-        <input
-          id="assignmentName"
-          type="text"
+      <div className="AssignmentDetails__formGroup">
+        <Input
+          label="Assignment Name"
           name="assignmentName"
+          id="assignmentName"
+          placeholder="Database Design Project"
           value={data.assignmentName}
           onChange={handleInputChange}
           required
-        />
+          caption="Student assignments will have the prefix, e.g. database-design-project"></Input>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="mainDueDate">Due Date:</label>
-        <input
-          id="mainDueDate"
+      <div className="AssignmentDetails__formGroup">
+        <Input
+          label="Due Date"
           type="date"
           name="mainDueDate"
+          id="mainDueDate"
           value={data.mainDueDate ? data.mainDueDate.toISOString().split('T')[0] : ''}
           onChange={handleInputChange}
           required
-        />
+          caption="Optional; if left blank the assignment will not have a deadline"></Input>
       </div>
 
-      <div className="form-group checkbox-group">
+      <div className="AssignmentDetails__checkboxGroup">
         <input
           id="groupAssignment"
           type="checkbox"
