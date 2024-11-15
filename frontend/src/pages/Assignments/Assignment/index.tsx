@@ -84,9 +84,8 @@ const Assignment: React.FC = () => {
       }
     };
 
-    if (assignment) {
-      generateInviteLink();
-    }
+
+    generateInviteLink();
   }, [assignment]);
 
   return (
