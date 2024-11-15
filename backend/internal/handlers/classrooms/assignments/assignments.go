@@ -2,6 +2,7 @@ package assignments
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -196,8 +197,19 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		templateRepoName := assignmentWithTemplate.Template.TemplateRepoName
 		templateRepoOwner := assignmentWithTemplate.Template.TemplateRepoOwner
 
-		//Insert into DB
+		// Generate fork name
 		forkName := generateForkName(templateRepoName, user.Login)
+
+		// Check if fork already exists
+		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
+		if studentWorkRepo != nil { // Fork already exists, early return
+			return c.Status(http.StatusOK).JSON(fiber.Map{
+				"message":  "Assignment already accepted",
+				"repo_url": studentWorkRepo.HTMLURL,
+			})
+		}
+
+		// Insert into DB
 		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
 		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
 		if err != nil {
@@ -210,9 +222,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
+		// Instead of getting the repository immediately, construct the expected URL
+		expectedRepoURL := fmt.Sprintf("https://github.com/%s/%s", classroom.OrgName, forkName)
+
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"message":    "Assignment accepted",
-			"assignment": assignment,
+			"message":  "Assignment accepted - it may take a few minutes to create the repository",
+			"repo_url": expectedRepoURL,
 		})
 	}
 }

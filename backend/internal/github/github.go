@@ -79,5 +79,9 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// Create a new pull request review
 	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
+	// Get the details of a user
 	GetUser(ctx context.Context, userName string) (*github.User, error)
+
+	// Get the details of a repository
+	GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error)
 }

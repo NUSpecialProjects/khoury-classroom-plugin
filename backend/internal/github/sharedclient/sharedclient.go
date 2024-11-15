@@ -154,3 +154,8 @@ func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.Use
 	user, _, err := api.Client.Users.Get(ctx, userName)
 	return user, err
 }
+
+func (api *CommonAPI) GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error) {
+	repo, _, err := api.Client.Repositories.Get(ctx, owner, repoName)
+	return repo, err
+}
