@@ -14,9 +14,10 @@ const SubPageHeader: React.FC<ISubPageHeader> = ({ pageTitle, chevronLink, child
                     </Link>
                     {pageTitle}
                 </div>
-                <div className="SubPageHeader__rightSideContents">
-                    {children}
-                </div>
+                {children &&
+                    <div className="SubPageHeader__rightSideContents">
+                        {children}
+                    </div>}
             </h1>
         </div>
     )
