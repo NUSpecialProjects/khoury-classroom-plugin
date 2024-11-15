@@ -6,7 +6,7 @@ interface IStepComponentProps<T> {
     data: T;
     onChange: (newData: Partial<T>) => void;
 }
-  
+
 interface IStep<T> {
     title: string;
     component: React.ComponentType<IStepComponentProps<T>>;
@@ -14,7 +14,7 @@ interface IStep<T> {
 
 interface IMultiStepFormProps<T> {
     steps: IStep<T>[];
-    submitFunc: (data: T) => void;
+    submitFunc: (data: T) => Promise<boolean>;
     initialData: T;
 }
 
@@ -27,5 +27,5 @@ interface IAssignmentFormData {
     classroomId: number
     groupAssignment: boolean
     mainDueDate: Date | null
-    templateRepo: IRepository | null
+    templateRepo: ITemplateRepo | null
 }
