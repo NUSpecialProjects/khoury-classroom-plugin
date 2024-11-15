@@ -92,7 +92,10 @@ const Assignment: React.FC = () => {
     <div className="Assignment">
       {assignment && (
         <>
-          <SubPageHeader pageTitle={assignment.name} chevronLink={"/app/dashboard"}>
+          <SubPageHeader
+            pageTitle={assignment.name}
+            chevronLink={"/app/dashboard"}
+          >
             <div className="Assignment__dates">
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Released on:"}</div>
@@ -110,13 +113,13 @@ const Assignment: React.FC = () => {
           </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View in Github Classroom
             </Button>
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View Starter Code
             </Button>
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View Rubric
             </Button>
           </div>

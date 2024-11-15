@@ -1,6 +1,10 @@
-import { useState, useCallback, ReactElement } from 'react';
+import { useState, useCallback, ReactElement } from "react";
 
-const MultiStepForm = <T,>({ steps, submitFunc, initialData }: IMultiStepFormProps<T>): ReactElement => {
+const MultiStepForm = <T,>({
+  steps,
+  submitFunc,
+  initialData,
+}: IMultiStepFormProps<T>): ReactElement => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [formData, setFormData] = useState<T>(initialData);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +29,8 @@ const MultiStepForm = <T,>({ steps, submitFunc, initialData }: IMultiStepFormPro
 
       // Clear errors on form change
       setError(null);
-    }, []
+    },
+    []
   );
   const handleSubmit = useCallback(async () => {
     const success = await submitFunc(formData);
@@ -47,18 +52,33 @@ const MultiStepForm = <T,>({ steps, submitFunc, initialData }: IMultiStepFormPro
       {error && <div className="form-error">{error}</div>}
 
       <div className="form-navigation">
-        {!isFirstStep && (
-          <button type="button" onClick={handlePrevious} className="btn btn-secondary">
-            Previous
-          </button>
-        )}
+        {
+          // todo: replace these with button component
+          !isFirstStep && (
+            <button
+              type="button"
+              onClick={handlePrevious}
+              className="btn btn-secondary"
+            >
+              Previous
+            </button>
+          )
+        }
         {!isLastStep && (
-          <button type="button" onClick={handleNext} className="btn btn-primary">
+          <button
+            type="button"
+            onClick={handleNext}
+            className="btn btn-primary"
+          >
             Next
           </button>
         )}
         {isLastStep && (
-          <button type="button" onClick={handleSubmit} className="btn btn-success">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="btn btn-success"
+          >
             Submit
           </button>
         )}
