@@ -79,7 +79,7 @@ const Assignment: React.FC = () => {
         const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
         const url = `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
         setInviteLink(url);
-      } catch (error) {
+      } catch (_) {
         setLinkError("Failed to generate assignment invite link");
       }
     };
