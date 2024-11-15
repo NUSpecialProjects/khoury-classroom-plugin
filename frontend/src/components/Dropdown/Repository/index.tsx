@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import '../styles.css';
 
 interface ITemplateRepoDropdownProps {
     repositories: ITemplateRepo[];

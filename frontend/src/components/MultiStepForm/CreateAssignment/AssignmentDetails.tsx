@@ -33,10 +33,10 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
   );
 
   return (
-    <form className="AssignmentDetails">
-      <h2 className="AssignmentDetails__header">Assignment Basics</h2>
+    <form className="CreateAssignmentForms">
+      <h2 className="CreateAssignmentForms__header">Assignment Basics</h2>
 
-      <div className="AssignmentDetails__formGroup">
+      <div className="CreateAssignmentForms__formGroup">
         <Input
           label="Assignment Name"
           name="assignmentName"
@@ -48,7 +48,7 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
           caption="Student assignments will have the prefix, e.g. database-design-project"></Input>
       </div>
 
-      <div className="AssignmentDetails__formGroup">
+      <div className="CreateAssignmentForms__formGroup">
         <Input
           label="Due Date"
           type="date"
@@ -60,7 +60,7 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
           caption="Optional; if left blank the assignment will not have a deadline"></Input>
       </div>
 
-      <div className="AssignmentDetails__checkboxGroup">
+      <div className="CreateAssignmentForms__checkboxGroup">
         <input
           id="groupAssignment"
           type="checkbox"
