@@ -1,8 +1,11 @@
 package webhooks
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/go-github/github"
@@ -13,7 +16,7 @@ func (s *WebHookService) WebhookHandler(c *fiber.Ctx) error {
 		"pull_request":                s.PR,
 		"pull_request_review_comment": s.PRComment,
 		"pull_request_review_thread":  s.PRThread,
-		"push":                        s.RepositoryCreation,
+		"push":                        s.PushEvent,
 	}
 	event := c.Get("X-GitHub-Event", "")
 
@@ -46,28 +49,58 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 	return c.SendStatus(200)
 }
 
-func (s *WebHookService) RepositoryCreation(c *fiber.Ctx) error {
-	fmt.Println("Repository creation webhook event")
+func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
+	// Extract the 'payload' form value
+	payload := c.FormValue("payload", "")
+	if payload == "" {
+		return errs.BadRequest(errors.New("missing payload"))
+	}
 
-	// Parse the payload
+	// Unmarshal the JSON payload into the PushEvent struct
 	var pushEvent github.PushEvent
-	err := c.BodyParser(&pushEvent)
+	err := json.Unmarshal([]byte(payload), &pushEvent)
 	if err != nil {
+		return errs.BadRequest(errors.New("invalid JSON payload"))
+	}
+
+	// Check if this is first commit in a repository
+	isInitialCommit, err := s.isInitialCommit(pushEvent)
+	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
-	// If this is not a base repository, ignore the event
-	if !s.isInitialCommit(pushEvent) || *pushEvent.Pusher.Name != "khoury-classroom[bot]" {
-		fmt.Println("Not a repository creation")
-		return nil
+	// If app bot triggered the initial commit, initialize the base repository
+	if isInitialCommit && (pushEvent.Pusher == nil && *pushEvent.Pusher.Name == "khoury-classroom[bot]") {
+		err = s.baseRepoInitialization(c, pushEvent)
+		if err != nil {
+			return err
+		}
 	}
 
-	fmt.Println("Repository created!")
+	return nil
+}
+
+func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.PushEvent) error {
+	// Create development branch
+	_, err := s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
+		*pushEvent.Repo.Name,
+		*pushEvent.Repo.MasterBranch,
+		"dev")
+	if err != nil {
+		fmt.Println(err)
+		return errs.InternalServerError()
+	}
 
 	return c.SendStatus(200)
 }
 
-func (s *WebHookService) isInitialCommit(pushEvent github.PushEvent) bool {
-	return pushEvent.BaseRef == nil && *pushEvent.Created &&
+func (s *WebHookService) isInitialCommit(pushEvent github.PushEvent) (bool, error) {
+	if pushEvent.BaseRef == nil || pushEvent.Created == nil || pushEvent.GetBefore() == "" {
+		return false, errs.BadRequest(errors.New("malformatted push event"))
+	}
+
+	isInitialCommit := pushEvent.BaseRef == nil && *pushEvent.Created &&
 		pushEvent.GetBefore() == "0000000000000000000000000000000000000000"
+	return isInitialCommit, nil
 }
