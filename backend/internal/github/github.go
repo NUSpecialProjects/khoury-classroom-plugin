@@ -64,9 +64,6 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// List the commits in a repository
 	ListCommits(ctx context.Context, owner string, repo string, opts *github.CommitsListOptions) ([]*github.RepositoryCommit, error)
 
-	// Get the details of a branch
-	GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error)
-
 	// Create a new branch in a repository
 	CreateBranch(ctx context.Context, owner, repo, baseBranch, newBranchName string) (*github.Reference, error)
 

@@ -46,11 +46,6 @@ func (api *CommonAPI) ListCommits(ctx context.Context, owner string, repo string
 	return commits, err
 }
 
-func (api *CommonAPI) GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error) {
-	branch, _, err := api.Client.Repositories.GetBranch(ctx, ownerName, repoName, branchName)
-	return branch, err
-}
-
 func (api *CommonAPI) getBranchHead(ctx context.Context, owner, repo, branchName string) (*github.Reference, error) {
 	endpoint := fmt.Sprintf("/repos/%s/%s/git/refs/heads/%s", owner, repo, branchName)
 
