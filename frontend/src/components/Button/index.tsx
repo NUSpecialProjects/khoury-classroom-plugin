@@ -6,11 +6,12 @@ interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string;
   variant?: "primary" | "secondary";
   size?: "default" | "small";
+  newTab?: boolean;
 }
 
-const ButtonWrapper: React.FC<IButtonProps> = ({ children, href }) => {
+const ButtonWrapper: React.FC<IButtonProps> = ({ children, href, newTab }) => {
   return href ? (
-    <Link to={href} target="_blank">
+    <Link to={href} target={newTab ? "_blank" : "_self"}>
       {children}
     </Link>
   ) : (
@@ -23,13 +24,14 @@ const Button: React.FC<IButtonProps> = ({
   href,
   onClick,
   variant = "primary",
-  size = "default"
+  size = "default",
+  newTab = false,
 }) => {
   const className = `Button--${variant}${size === "small" ? ` ${size}` : ""}`;
 
   return (
-    <ButtonWrapper href={href}>
-      <button className={className} onClick={onClick} >
+    <ButtonWrapper href={href} newTab={newTab}>
+      <button className={className} onClick={onClick}>
         {children}
       </button>
     </ButtonWrapper>
