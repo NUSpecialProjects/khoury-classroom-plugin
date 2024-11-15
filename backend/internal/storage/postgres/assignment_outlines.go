@@ -90,7 +90,7 @@ func (db *DB) GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assig
 		ao.id, ao.template_id, ao.created_at, ao.released_at, ao.name, ao.classroom_id, ao.group_assignment, ao.main_due_date,
 		at.template_repo_owner, at.template_repo_id, at.template_repo_name, at.created_at
 	FROM assignment_outlines ao
-	JOIN assignment_template at ON ao.template_id = at.template_repo_id
+	JOIN assignment_templates at ON ao.template_id = at.template_repo_id
 	WHERE ao.id = $1`, assignmentID).Scan(
 		&result.ID,
 		&result.TemplateID,
