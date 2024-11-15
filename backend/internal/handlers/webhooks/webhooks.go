@@ -3,7 +3,6 @@ package webhooks
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
@@ -50,8 +49,6 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 }
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
-	fmt.Println("Push event webhook")
-
 	// Extract the 'payload' form value
 	payload := c.FormValue("payload")
 	if payload == "" {
