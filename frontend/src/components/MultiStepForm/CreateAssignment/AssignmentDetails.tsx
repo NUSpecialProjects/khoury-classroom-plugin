@@ -5,16 +5,14 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
     onChange({ [target.name]: target.checked });
   };
   const handleDateChange = (target: HTMLInputElement) => {
-    const newDate = target.value ? new Date(target.value) : null;
-    onChange({ [target.name]: newDate });
+    onChange({ [target.name]: target.value ? new Date(target.value) : null });
   };
-  const handleTextChange = (target: HTMLInputElement) => {
-    const newName = target.value;
-    onChange({ [target.name]: newName });
+  const handleTextChange = (target: HTMLInputElement | HTMLTextAreaElement) => {
+    onChange({ [target.name]: target.value });
   };
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { type } = e.target;
       const target = e.target as HTMLInputElement;
 

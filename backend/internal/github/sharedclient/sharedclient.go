@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
@@ -70,7 +71,7 @@ func (api *CommonAPI) CreateBranch(ctx context.Context, owner, repo, baseBranch,
 	// Get the SHA of the base branch
 	baseBranchRef, err := api.getBranchHead(context.Background(), owner, repo, baseBranch)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching base branch ref: %v", err)
+		return nil, errs.InternalServerError()
 	}
 
 	// Create a new POST request
@@ -79,14 +80,14 @@ func (api *CommonAPI) CreateBranch(ctx context.Context, owner, repo, baseBranch,
 		"sha": baseBranchRef.Object.GetSHA(),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, errs.InternalServerError()
 	}
 
 	// Make the API call
 	var branch github.Reference
 	_, err = api.Client.Do(ctx, req, &branch)
 	if err != nil {
-		return nil, fmt.Errorf("error creating branch: %v", err)
+		return nil, errs.InternalServerError()
 	}
 
 	return &branch, nil

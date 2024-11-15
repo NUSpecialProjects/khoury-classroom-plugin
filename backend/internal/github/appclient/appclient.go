@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
@@ -179,14 +180,14 @@ func (api *AppAPI) CreateBaseAssignmentRepo(ctx context.Context, orgName, templa
 		"owner": orgName,
 	})
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return errs.InternalServerError()
 	}
 
 	// Execute the request
 	var repo *models.Repository
 	_, err = api.Client.Do(ctx, req, &repo)
 	if err != nil {
-		return fmt.Errorf("error creating repository: %v", err)
+		return errs.InternalServerError()
 	}
 
 	return nil

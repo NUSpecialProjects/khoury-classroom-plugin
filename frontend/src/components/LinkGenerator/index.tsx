@@ -16,6 +16,7 @@ const LinkGenerator: React.FC<CreateTokenProps> = ({
   const [duration, setDuration] = useState<number | undefined>(10080); // Default to 7 days
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
+
   const expirationOptions = [
     { label: "1 hour", value: 60 },
     { label: "6 hours", value: 360 },
