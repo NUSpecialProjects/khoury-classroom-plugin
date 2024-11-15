@@ -55,7 +55,7 @@ type AssignmentOutline interface {
 	GetAssignmentsInClassroom(ctx context.Context, classroomID int64) ([]models.AssignmentOutline, error)
 	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
-}å
+}
 
 type AssignmentTemplate interface {
 	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)

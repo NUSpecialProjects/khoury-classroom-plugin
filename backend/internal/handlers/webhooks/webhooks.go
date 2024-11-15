@@ -50,8 +50,10 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 }
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
+	fmt.Println("Push event webhook")
+
 	// Extract the 'payload' form value
-	payload := c.FormValue("payload", "")
+	payload := c.FormValue("payload")
 	if payload == "" {
 		return errs.BadRequest(errors.New("missing payload"))
 	}
@@ -66,7 +68,6 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	// Check if this is first commit in a repository
 	isInitialCommit, err := s.isInitialCommit(pushEvent)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -82,13 +83,16 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 }
 
 func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.PushEvent) error {
+	if pushEvent.Repo == nil || pushEvent.Repo.Organization == nil || pushEvent.Repo.Name == nil || pushEvent.Repo.MasterBranch == nil {
+		return errs.BadRequest(errors.New("invalid repository data"))
+	}
+
 	// Create development branch
 	_, err := s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
 		*pushEvent.Repo.Name,
 		*pushEvent.Repo.MasterBranch,
 		"dev")
 	if err != nil {
-		fmt.Println(err)
 		return errs.InternalServerError()
 	}
 
@@ -96,11 +100,6 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 }
 
 func (s *WebHookService) isInitialCommit(pushEvent github.PushEvent) (bool, error) {
-	if pushEvent.BaseRef == nil || pushEvent.Created == nil || pushEvent.GetBefore() == "" {
-		return false, errs.BadRequest(errors.New("malformatted push event"))
-	}
-
-	isInitialCommit := pushEvent.BaseRef == nil && *pushEvent.Created &&
-		pushEvent.GetBefore() == "0000000000000000000000000000000000000000"
+	isInitialCommit := pushEvent.BaseRef == nil && *pushEvent.Created && pushEvent.GetBefore() == "0000000000000000000000000000000000000000"
 	return isInitialCommit, nil
 }
