@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
@@ -45,30 +46,51 @@ func (api *CommonAPI) ListCommits(ctx context.Context, owner string, repo string
 	return commits, err
 }
 
-func (api *CommonAPI) GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error) {
-	branch, _, err := api.Client.Repositories.GetBranch(ctx, ownerName, repoName, branchName)
+func (api *CommonAPI) getBranchHead(ctx context.Context, owner, repo, branchName string) (*github.Reference, error) {
+	endpoint := fmt.Sprintf("/repos/%s/%s/git/refs/heads/%s", owner, repo, branchName)
 
-	return branch, err
+	// Create a new GET request
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Response container for branch
+	var branchRef github.Reference
+	_, err = api.Client.Do(ctx, req, &branchRef)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching branch: %v", err)
+	}
+
+	return &branchRef, nil
 }
 
-func (api *CommonAPI) CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error {
-	baseRef, _, err := api.Client.Git.GetRef(ctx, owner, repo, "refs/heads/"+baseBranch)
+func (api *CommonAPI) CreateBranch(ctx context.Context, owner, repo, baseBranch, newBranchName string) (*github.Reference, error) {
+	endpoint := fmt.Sprintf("/repos/%s/%s/git/refs", owner, repo)
+
+	// Get the SHA of the base branch
+	baseBranchRef, err := api.getBranchHead(context.Background(), owner, repo, baseBranch)
 	if err != nil {
-		return fmt.Errorf("error getting base branch reference: %v", err)
+		return nil, errs.InternalServerError()
 	}
 
-	newRef := &github.Reference{
-		Ref: github.String("refs/heads/" + newBranchName), // New Branch Name
-		Object: &github.GitObject{ // Base branch
-			SHA: baseRef.Object.SHA,
-		},
+	// Create a new POST request
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]string{
+		"ref": fmt.Sprintf("refs/heads/%s", newBranchName),
+		"sha": baseBranchRef.Object.GetSHA(),
+	})
+	if err != nil {
+		return nil, errs.InternalServerError()
 	}
 
-	_, _, err = api.Client.Git.CreateRef(ctx, owner, repo, newRef)
+	// Make the API call
+	var branch github.Reference
+	_, err = api.Client.Do(ctx, req, &branch)
 	if err != nil {
-		return fmt.Errorf("error creating new branch: %v", err)
+		return nil, errs.InternalServerError()
 	}
-	return nil
+
+	return &branch, nil
 }
 
 func (api *CommonAPI) GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error) {

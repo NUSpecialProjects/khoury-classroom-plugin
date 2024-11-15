@@ -62,6 +62,23 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		// Store assignment in DB
 		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
+			return err
+		}
+
+		// Get classroom and assignment template
+		classroom, err := s.store.GetClassroomByID(c.Context(), createdAssignment.ClassroomID)
+		if err != nil {
+			return err
+		}
+		template, err := s.store.GetAssignmentTemplateByID(c.Context(), createdAssignment.TemplateID)
+		if err != nil {
+			return err
+		}
+
+		// Create base repository using assignment template
+		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
+		err = s.appClient.CreateBaseAssignmentRepo(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
+		if err != nil {
 			return errs.InternalServerError()
 		}
 
