@@ -1,6 +1,3 @@
-// ... imports remain the same ...
-
-import EmptyDataBanner from "@/components/EmptyDataBanner";
 import useUrlParameter from "@/hooks/useUrlParameter";
 import { useEffect, useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -52,10 +49,10 @@ export interface TokenHandlerConfig<T extends ITokenUseResponse> {
     };
   
     return (
-        <EmptyDataBanner>
-            <ClipLoader size={50} color={"#123abc"} loading={loading} />
-            <p>{message}</p>
-        </EmptyDataBanner>
+        <>
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
+          <p>{message}</p>
+        </>
     );
   };
   
