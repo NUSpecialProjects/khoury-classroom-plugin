@@ -18,9 +18,6 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService, params *t
 	// Create an assignment
 	assignmentRouter.Post("/", service.createAssignment())
 
-	// Accept an assignment
-	assignmentRouter.Post("/accept", service.acceptAssignment())
-
 	// Update an assignment
 	assignmentRouter.Put("/assignment/:assignment_id", service.updateAssignment())
 

@@ -172,7 +172,69 @@ func (api *CommonAPI) GetUserOrgs(ctx context.Context) ([]models.Organization, e
 	return orgs, nil
 }
 
+func (api *CommonAPI) GetUserOrgMembership(ctx context.Context, orgName string, userName string) (*github.Membership, error) {
+	membership, _, err := api.Client.Organizations.GetOrgMembership(ctx, userName, orgName)
+	return membership, err
+}
+
 func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.User, error) {
 	user, _, err := api.Client.Users.Get(ctx, userName)
 	return user, err
+}
+
+func (api *CommonAPI) InviteUserToOrganization(ctx context.Context, orgName string, userID int64) error {
+	body := map[string]interface{}{
+		"invitee_id": userID,
+		"role":       "direct_member",
+	}
+
+	// Create a new request
+	req, err := api.Client.NewRequest("POST", fmt.Sprintf("/orgs/%s/invitations", orgName), body)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return fmt.Errorf("error inviting user to organization: %v", err)
+	}
+
+	return nil
+}
+
+func (api *CommonAPI) SetUserMembershipInOrg(ctx context.Context, orgName string, userName string, role string) error {
+	body := map[string]interface{}{
+		"role": role,
+	}
+
+	// Create a new request
+	req, err := api.Client.NewRequest("PUT", fmt.Sprintf("/orgs/%s/memberships/%s", orgName, userName), body)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return fmt.Errorf("error inviting user to organization: %v", err)
+	}
+
+	return nil
+
+}
+
+func (api *CommonAPI) CancelOrgInvitation(ctx context.Context, orgName string, userName string) error {
+	endpoint := fmt.Sprintf("/orgs/%s/invitations/%s", orgName, userName)
+	req, err := api.Client.NewRequest("DELETE", endpoint, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return fmt.Errorf("error canceling org invitation: %v", err)
+	}
+
+	return nil
 }

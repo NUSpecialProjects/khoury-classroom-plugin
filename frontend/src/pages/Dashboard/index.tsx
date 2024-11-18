@@ -15,7 +15,7 @@ import Button from "@/components/Button";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { classroomUser, loading: loadingCurrentClassroomUser } =
+  const { classroomUser, error: classroomUserError, loading: loadingCurrentClassroomUser } =
     useClassroomUser(selectedClassroom?.id);
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
@@ -42,6 +42,13 @@ const Dashboard: React.FC = () => {
     }
   }, [selectedClassroom]);
 
+  useEffect(() => {
+    if (!loadingCurrentClassroomUser && (classroomUserError || !classroomUser)) {
+      console.log("Attempted to view a classroom without access. Redirecting to classroom select.")
+      navigate(`/app/classroom/select?org_id=${selectedClassroom?.org_id}`);
+    }
+  }, [loadingCurrentClassroomUser, classroomUserError, classroomUser, selectedClassroom?.org_id, navigate]);
+
   const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     if (group === "Professor") {
       navigate("/app/professors", { state: { users } });
@@ -60,94 +67,93 @@ const Dashboard: React.FC = () => {
         <>
           {loadingCurrentClassroomUser ? (
             <p>Loading...</p>
-          ) : classroomUser ? (
-            <p>Viewing as a {classroomUser.classroom_role}</p>
           ) : (
-            <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
-          )}
-          <BreadcrumbPageHeader pageTitle={selectedClassroom?.org_name} breadcrumbItems={[selectedClassroom?.name]}></BreadcrumbPageHeader>
+            <>
+              <BreadcrumbPageHeader pageTitle={selectedClassroom?.org_name} breadcrumbItems={[selectedClassroom?.name]}></BreadcrumbPageHeader>
 
-          <div className="Dashboard__classroomDetailsWrapper">
-            <UserGroupCard
-              label="Students"
-              givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "STUDENT"
-              )}
-              onClick={() =>
-                handleUserGroupClick(
-                  "Student",
-                  classroomUsersList.filter(
+              <div className="Dashboard__classroomDetailsWrapper">
+                <UserGroupCard
+                  label="Students"
+                  givenUsersList={classroomUsersList.filter(
                     (user) => user.classroom_role === "STUDENT"
-                  )
-                )
-              }
-            />
+                  )}
+                  onClick={() =>
+                    handleUserGroupClick(
+                      "Student",
+                      classroomUsersList.filter(
+                        (user) => user.classroom_role === "STUDENT"
+                      )
+                    )
+                  }
+                />
 
-            <UserGroupCard
-              label="TAs"
-              givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "TA"
-              )}
-              onClick={() =>
-                handleUserGroupClick(
-                  "TA",
-                  classroomUsersList.filter(
+                <UserGroupCard
+                  label="TAs"
+                  givenUsersList={classroomUsersList.filter(
                     (user) => user.classroom_role === "TA"
-                  )
-                )
-              }
-            />
+                  )}
+                  onClick={() =>
+                    handleUserGroupClick(
+                      "TA",
+                      classroomUsersList.filter(
+                        (user) => user.classroom_role === "TA"
+                      )
+                    )
+                  }
+                />
 
-            <UserGroupCard
-              label="Professors"
-              givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "PROFESSOR"
-              )}
-              onClick={() =>
-                handleUserGroupClick(
-                  "Professor",
-                  classroomUsersList.filter(
+                <UserGroupCard
+                  label="Professors"
+                  givenUsersList={classroomUsersList.filter(
                     (user) => user.classroom_role === "PROFESSOR"
-                  )
-                )
-              }
-            />
-          </div>
-
-          <div className="Dashboard__assignmentsWrapper">
-            <div className="Dashboard__assignmentsHeader">
-              <h2 style={{ marginBottom: 0 }}>Assignments</h2>
-              <div className="Dashboard__createAssignmentButton">
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={() => (navigate(`/app/assignments/create?org_name=${selectedClassroom?.org_name}`))}>
-                  <MdAdd/> Create Assignment
-                </Button>
+                  )}
+                  onClick={() =>
+                    handleUserGroupClick(
+                      "Professor",
+                      classroomUsersList.filter(
+                        (user) => user.classroom_role === "PROFESSOR"
+                      )
+                    )
+                  }
+                />
               </div>
-            </div>
-            <Table cols={2}>
-              <TableRow style={{ borderTop: "none" }}>
-                <TableCell>Assignment Name</TableCell>
-                <TableCell>Created Date</TableCell>
-              </TableRow>
-              {assignments.map((assignment, i: number) => (
-                <TableRow key={i} className="Assignment__submission">
-                  <TableCell>
-                    {" "}
-                    <Link
-                      to={`/app/assignments/${assignment.id}`}
-                      state={{ assignment }}
-                      className="Dashboard__assignmentLink"
-                    >
-                      {assignment.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{formatDate(assignment.created_at)}</TableCell>
-                </TableRow>
-              ))}
-            </Table>
-          </div>
+
+              <div className="Dashboard__assignmentsWrapper">
+                <div className="Dashboard__assignmentsHeader">
+                  <h2 style={{ marginBottom: 0 }}>Assignments</h2>
+                  <div className="Dashboard__createAssignmentButton">
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      onClick={() => (navigate(`/app/assignments/create?org_name=${selectedClassroom?.org_name}`))}>
+                      <MdAdd/> Create Assignment
+                    </Button>
+                  </div>
+                </div>
+                <Table cols={2}>
+                  <TableRow style={{ borderTop: "none" }}>
+                    <TableCell>Assignment Name</TableCell>
+                    <TableCell>Created Date</TableCell>
+                  </TableRow>
+                  {assignments.map((assignment, i: number) => (
+                    <TableRow key={i} className="Assignment__submission">
+                      <TableCell>
+                        {" "}
+                        <Link
+                          to={`/app/assignments/${assignment.id}`}
+                          state={{ assignment }}
+                          className="Dashboard__assignmentLink"
+                        >
+                          {assignment.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{formatDate(assignment.created_at)}</TableCell>
+                    </TableRow>
+                  ))}
+                </Table>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

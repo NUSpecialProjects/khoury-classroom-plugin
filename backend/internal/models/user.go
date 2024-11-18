@@ -1,8 +1,36 @@
 package models
 
-type UserWithRole struct {
+import "fmt"
+
+type ClassroomUser struct {
 	User
-	Role ClassroomRole `json:"classroom_role"`
+	ClassroomID int64         `json:"classroom_id"`
+	Role        ClassroomRole `json:"classroom_role"`
+	Status      UserStatus    `json:"status"`
+}
+
+type UserStatus string
+
+const (
+	UserStatusNotInOrg   UserStatus = "NOT_IN_ORG"
+	UserStatusRequested  UserStatus = "REQUESTED"
+	UserStatusOrgInvited UserStatus = "ORG_INVITED"
+	UserStatusActive     UserStatus = "ACTIVE"
+)
+
+func NewUserStatus(status string) (UserStatus, error) {
+	switch status {
+	case "NOT_IN_ORG":
+		return UserStatusNotInOrg, nil
+	case "REQUESTED":
+		return UserStatusRequested, nil
+	case "ORG_INVITED":
+		return UserStatusOrgInvited, nil
+	case "ACTIVE":
+		return UserStatusActive, nil
+	default:
+		return "", fmt.Errorf("invalid user status: %s", status)
+	}
 }
 
 type User struct {
@@ -24,8 +52,14 @@ type GitHubUser struct {
 }
 
 func (githubUser GitHubUser) ToUser() User {
+	// Handle case where Name is nil by using Login as FirstName
+	firstName := githubUser.Login
+	if githubUser.Name != nil {
+		firstName = *githubUser.Name
+	}
+
 	return User{
-		FirstName:      *githubUser.Name,
+		FirstName:      firstName,
 		GithubUsername: githubUser.Login,
 		GithubUserID:   githubUser.ID,
 	}

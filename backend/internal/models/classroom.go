@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -20,6 +21,14 @@ const (
 	Student   ClassroomRole = "STUDENT"
 )
 
+func NewClassroomRole(role string) (ClassroomRole, error) {
+	cr := ClassroomRole(role)
+	if !cr.IsValid() {
+		return "", fmt.Errorf("invalid classroom role: %s", role)
+	}
+	return cr, nil
+}
+
 func (cr ClassroomRole) Compare(other ClassroomRole) int16 {
 	roleRank := map[ClassroomRole]int16{
 		Professor: 3,
@@ -30,13 +39,17 @@ func (cr ClassroomRole) Compare(other ClassroomRole) int16 {
 	return roleRank[cr] - roleRank[other]
 }
 
+func (cr ClassroomRole) IsValid() bool {
+	return cr == Professor || cr == TA || cr == Student
+}
+
 type ClassroomToken struct {
 	ClassroomID   int64         `json:"classroom_id"`
-	ClassroomRole ClassroomRole `json:"classroom_role"`
+	ClassroomRole ClassroomRole `json:"classroom_role" validate:"required,classroomrole"`
 	BaseToken
 }
 
 type ClassroomRoleRequestBody struct {
-	ClassroomRole string `json:"classroom_role"`
+	ClassroomRole string `json:"classroom_role" validate:"required,classroomrole"`
 	Duration      *int   `json:"duration,omitempty"` // Duration is optional
 }

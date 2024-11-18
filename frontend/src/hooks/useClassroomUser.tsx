@@ -13,8 +13,13 @@ export function useClassroomUser(classroomId?: number) {
       if (classroomId) {
         await getCurrentClassroomUser(classroomId)
           .then((user) => {
-            setClassroomUser(user);
-            setError(null);
+            if (user.classroom_id === classroomId) {
+              setClassroomUser(user);
+              setError(null);
+            } else {
+              setError(new Error("User is not in the specified classroom"));
+              setClassroomUser(null);
+            }
           })
           .catch((err) => {
             setError(err);

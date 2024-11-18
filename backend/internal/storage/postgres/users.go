@@ -50,3 +50,20 @@ func (db *DB) GetUserByGitHubID(ctx context.Context, githubUserID int64) (models
 
 	return user, nil
 }
+
+func (db *DB) GetUserByID(ctx context.Context, userID int64) (models.User, error) {
+	var user models.User
+	err := db.connPool.QueryRow(ctx, `SELECT id, first_name, last_name, github_username, github_user_id FROM users WHERE id = $1`, userID).Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.GithubUsername,
+		&user.GithubUserID,
+	)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}

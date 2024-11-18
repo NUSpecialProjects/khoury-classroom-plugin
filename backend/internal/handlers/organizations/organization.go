@@ -105,7 +105,22 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		classrooms, err := service.store.GetClassroomsInOrg(c.Context(), orgID)
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
+		if err != nil {
+			return errs.GithubClientError(err)
+		}
+
+		currentGitHubUser, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		user, err := service.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ID)
+		if err != nil {
+			return errs.NewDBError(err)
+		}
+
+		classrooms, err := service.store.GetUserClassroomsInOrg(c.Context(), orgID, *user.ID)
 		if err != nil {
 			return err
 		}
