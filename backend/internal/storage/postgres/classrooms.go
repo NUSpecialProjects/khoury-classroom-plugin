@@ -218,13 +218,12 @@ func (db *DB) GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID in
 
 func (db *DB) CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error) {
 	err := db.connPool.QueryRow(ctx, `
-	INSERT INTO classroom_tokens (classroom_id, classroom_role, token, created_at, expires_at)
-	VALUES ($1, $2, $3, $4, $5)
+	INSERT INTO classroom_tokens (classroom_id, classroom_role, token, expires_at)
+	VALUES ($1, $2, $3, $4)
 	RETURNING classroom_id, classroom_role, token, created_at, expires_at`,
 		tokenData.ClassroomID,
 		tokenData.ClassroomRole,
 		tokenData.Token,
-		tokenData.CreatedAt,
 		tokenData.ExpiresAt,
 	).Scan(
 		&tokenData.ClassroomID,
