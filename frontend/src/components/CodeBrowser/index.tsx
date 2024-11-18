@@ -106,8 +106,8 @@ const CodeBrowser: React.FC<ICodeBrowser> = ({
     if (file.diff) {
       memo = Array(lines.length).fill(0);
       for (const diff of file.diff) {
-        memo[diff.Start - 1]++;
-        memo[diff.End - 1]--;
+        memo[diff.start - 1]++;
+        memo[diff.end - 1]--;
       }
     }
 

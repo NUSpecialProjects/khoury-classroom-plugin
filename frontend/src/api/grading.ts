@@ -1,19 +1,14 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-export const createPRComment = async (
+export const createPRReview = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,
-  comments: IGradingCommentMap
+  feedback: IGradingFeedbackMap
 ) => {
-  console.log(comments);
-  const comments1D: IGradingComment[] = [];
-  for (const pathComments of Object.values(comments)) {
-    for (const lineComments of Object.values(pathComments)) {
-      for (const comment of Object.values(lineComments)) {
-        comments1D.push(comment);
-      }
-    }
+  const feedback1D: IGradingFeedback[] = [];
+  for (const fb of Object.values(feedback)) {
+    feedback1D.push(fb);
   }
 
   const response = await fetch(
@@ -26,7 +21,7 @@ export const createPRComment = async (
       },
       body: JSON.stringify({
         body: "",
-        comments: comments1D,
+        comments: feedback1D,
       }),
     }
   );

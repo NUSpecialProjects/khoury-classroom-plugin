@@ -16,7 +16,7 @@ SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 -- Create users (Kenny and others)
 INSERT INTO users (id, first_name, last_name, github_username, github_user_id)
 VALUES
-(1, 'Kenny', 'Smith', 'kennysmith', 123456),
+(1, 'Kenny', 'Chen', 'kennybc', 54950614),
 (2, 'Grace', 'Hopper', 'gracehopper', 789012),
 (3, 'Alan', 'Turing', 'alanturing', 345678),
 (4, 'Ada', 'Lovelace', 'adalovelace', 901234),
@@ -113,7 +113,7 @@ VALUES
 (8, 8, 'linustorvalds/cloud-deployment', '2023-09-01 23:59:59', 17, 40, 35, '2023-08-30 20:00:00', '2023-09-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
 (9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 18, 48, 45, '2023-09-29 21:00:00', '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
 (10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 19, 38, 35, '2023-10-31 20:00:00', '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
-(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 1, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
+(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 3, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
 (12, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', NULL, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
 SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
 
@@ -137,25 +137,25 @@ VALUES
 (4, 12, NOW());
 
 -- Insert into feedback_comment
-INSERT INTO feedback_comment (id, student_work_id, rubric_item_id, grader_gh_user_id, created_at)
+INSERT INTO feedback_comment (id, student_work_id, rubric_item_id, ta_user_id, created_at)
 VALUES
-(1, 1, 1, 789012, NOW()),
-(2, 1, 2, 789012, NOW()),
-(3, 1, 3, 789012, NOW()),
-(4, 2, 4, 789012, NOW()),
-(5, 2, 5, 789012, NOW()),
-(6, 3, 6, 789012, NOW()),
-(7, 3, 7, 789012, NOW()),
-(8, 4, 8, 789012, NOW()),
-(9, 4, 9, 789012, NOW()),
-(10, 5, 10, 789012, NOW()),
-(11, 5, 11, 789012, NOW()),
-(12, 6, 12, 789012, NOW()),
-(13, 7, 13, 789012, NOW()),
-(14, 7, 14, 789012, NOW()),
-(15, 8, 15, 789012, NOW()),
-(16, 9, 16, 789012, NOW()),
-(17, 10, 17, 789012, NOW());
+(1, 1, 1, 1, NOW()),
+(2, 1, 2, 1, NOW()),
+(3, 1, 3, 1, NOW()),
+(4, 2, 4, 1, NOW()),
+(5, 2, 5, 1, NOW()),
+(6, 3, 6, 1, NOW()),
+(7, 3, 7, 1, NOW()),
+(8, 4, 8, 1, NOW()),
+(9, 4, 9, 1, NOW()),
+(10, 5, 10, 1, NOW()),
+(11, 5, 11, 1, NOW()),
+(12, 6, 12, 1, NOW()),
+(13, 7, 13, 1, NOW()),
+(14, 7, 14, 1, NOW()),
+(15, 8, 15, 1, NOW()),
+(16, 9, 16, 1, NOW()),
+(17, 10, 17, 1, NOW());
 SELECT setval('feedback_comment_id_seq', (SELECT MAX(id) FROM feedback_comment));
 
 -- Insert into regrade_requests

@@ -88,7 +88,7 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 		// Retrieve current session
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return errs.GithubAPIError(err)
+			return errs.AuthenticationError()
 		}
 
 		//Insert into DB

@@ -8,12 +8,19 @@ import (
 
 type Storage interface {
 	Close(context.Context)
+	FeedbackComment
 	Works
 	Test
 	Session
 	Classroom
 	User
 	AssignmentOutline
+}
+
+type FeedbackComment interface {
+	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentWithPoints, error)
+	CreateNewFeedbackComment(ctx context.Context, TAUserID int, studentWorkID int, comment models.PRReviewCommentWithPoints) error
+	AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error
 }
 
 type Works interface {

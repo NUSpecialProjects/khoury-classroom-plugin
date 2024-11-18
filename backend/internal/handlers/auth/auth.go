@@ -56,7 +56,7 @@ func (service *AuthService) Login() fiber.Handler {
 
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return errs.InternalServerError()
+			return errs.AuthenticationError()
 		}
 
 		//TODO: move creating the user in our DB here rather than on joining a classroom?

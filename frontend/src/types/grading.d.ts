@@ -1,10 +1,10 @@
 /********************
  * Grading page types
  ********************/
-interface IGradingCommentMap {
-  [path: string]: { [line: number]: { [commentID: number]: IGradingComment } };
+interface IGradingFeedbackMap {
+  [commentID: number]: IGradingFeedback;
 }
-interface IGradingComment {
+interface IGradingFeedback {
   path: string;
   line: number;
   body: string;
@@ -15,15 +15,15 @@ interface IGradingComment {
  * GitHub response object types
  ******************************/
 interface IGitDiff {
-  Start: number;
-  End: number;
+  start: number;
+  end: number;
 }
 interface IGitTreeNode {
-  Status: {
-    Status: string;
-    Diff: IGitDiff[] | null;
+  status: {
+    status: string;
+    diff: IGitDiff[] | null;
   };
-  Entry: {
+  entry: {
     type: string;
     path: string;
     sha: string;

@@ -12,7 +12,7 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
     childNodes: {},
   };
   tree1D.forEach((node) => {
-    const fullPath = node.Entry.path.split("/");
+    const fullPath = node.entry.path.split("/");
     let level: IFileTreeNode = root;
     treeDepth = Math.max(treeDepth, fullPath.length);
 
@@ -21,21 +21,21 @@ export const buildTree = (tree1D: IGitTreeNode[]) => {
       path += "/" + seg;
       if (!(seg in level.childNodes)) {
         level.childNodes[seg] = {
-          type: i === fullPath.length - 1 ? node.Entry.type : "tree",
-          sha: i === fullPath.length - 1 ? node.Entry.sha : "",
+          type: i === fullPath.length - 1 ? node.entry.type : "tree",
+          sha: i === fullPath.length - 1 ? node.entry.sha : "",
           name: seg,
           path: path.substring(1),
-          diff: i === fullPath.length - 1 ? node.Status.Diff : null,
-          status: node.Status.Status,
+          diff: i === fullPath.length - 1 ? node.status.diff : null,
+          status: node.status.status,
           childNodes: {},
         };
       } else if (
-        node.Status.Status !== "unmodified" &&
-        node.Status.Status !== "renamed"
+        node.status.status !== "unmodified" &&
+        node.status.status !== "renamed"
       ) {
         if (level.childNodes[seg].status == "unmodified") {
-          level.childNodes[seg].status = node.Status.Status;
-        } else if (level.childNodes[seg].status !== node.Status.Status) {
+          level.childNodes[seg].status = node.status.status;
+        } else if (level.childNodes[seg].status !== node.status.status) {
           level.childNodes[seg].status = "modified";
         }
       }

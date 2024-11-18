@@ -8,7 +8,6 @@ import CodeBrowser from "@/components/CodeBrowser";
 import { GraderContext, GraderProvider } from "@/contexts/grader";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getPaginatedStudentWork } from "@/api/student_works";
-import { createPRComment } from "@/api/grading";
 
 import "./styles.css";
 
@@ -22,47 +21,14 @@ const GraderWrapper: React.FC = () => {
 };
 
 const Grader: React.FC = () => {
-  const navigate = useNavigate();
-
-  const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { assignmentID, studentWorkID, comments } = useContext(GraderContext);
-
-  const [studentWork, setStudentWork] = useState<IPaginatedStudentWork | null>(
-    null
-  );
-  const [currentFile, setCurrentFile] = useState<IFileTreeNode | null>(null);
-
-  // fetch requested student assignment
-  useEffect(() => {
-    // reset states
-    setCurrentFile(null);
-    setStudentWork(null);
-
-    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
-
-    getPaginatedStudentWork(
-      selectedClassroom.id,
-      Number(assignmentID),
-      Number(studentWorkID)
-    )
-      .then((resp) => {
-        setStudentWork(resp);
-      })
-      .catch((err: unknown) => {
-        console.log(err);
-        navigate("/404", { replace: true });
-      });
-  }, [studentWorkID]);
-
-  const submitComments = () => {
-    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
-    createPRComment(
-      selectedClassroom.id,
-      Number(assignmentID),
-      Number(studentWorkID),
-      comments
-    );
-  };
+  const {
+    assignmentID,
+    studentWorkID,
+    studentWork,
+    selectedFile,
+    setSelectedFile,
+    postFeedback,
+  } = useContext(GraderContext);
 
   return (
     studentWork && (
@@ -111,14 +77,14 @@ const Grader: React.FC = () => {
         <div className="Grader__body">
           <FileTree
             className="Grader__files"
-            selectFileCallback={setCurrentFile}
+            selectFileCallback={setSelectedFile}
           />
           <CodeBrowser
             assignmentID={assignmentID}
             studentWorkID={studentWorkID}
-            file={currentFile}
+            file={selectedFile}
           />
-          <button onClick={submitComments}>POST COMMENTS</button>
+          <button onClick={postFeedback}>POST COMMENTS</button>
         </div>
       </div>
     )

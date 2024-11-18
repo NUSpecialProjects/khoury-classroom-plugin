@@ -68,27 +68,63 @@
     font-size: 13px;
   }
 
-  &__commentWrapper {
+  &__comment {
     padding: 12px 20px;
     width: 100%;
     border: 1px solid var(--comment-border);
     background: var(--comment-background);
     border-radius: 4px;
     font-family: var(--primary-font);
-  }
-
-  &__comment {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
+    flex-direction: column;
+    gap: 12px;
+    color: rgb(163, 163, 163);
+
+    &Head {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      align-items: center;
+      font-weight: 500;
+      color: rgb(223, 223, 223);
+      font-size: 14px;
+
+      img {
+        width: 26px;
+        height: 26px;
+        border-radius: 100%;
+      }
+    }
+
+    &Body {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 14px;
+    }
+
+    &Pending {
+      --pending-color: rgb(255, 175, 46);
+      display: flex;
+      width: fit-content;
+      flex-direction: row;
+      color: var(--pending-color);
+      padding: 1px 14px;
+      border-radius: 100vw;
+      font-weight: 400;
+      border: 2px solid var(--pending-color);
+      font-size: 11px;
+    }
 
     &Points {
+      display: flex;
+      width: fit-content;
+      flex-direction: row;
+      gap: 5px;
       color: white;
       padding: 3px 8px;
       border-radius: 3px;
       font-weight: 500;
-      flex-shrink: 0;
 
       &--positive {
         background: var(--green);

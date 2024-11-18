@@ -67,17 +67,19 @@ export const FileTree: React.FC<IFileTree> = ({
         <div className="ResizeHandle" style={{ zIndex: treeDepth * 2 + 1 }} />
       }
     >
-      <div className="FileTree__head">Files</div>
-      <SimpleBar className="FileTree__body">
-        {root &&
-          sortTreeNode(root).map((node) =>
-            renderTree(node, 0, treeDepth, selectedFile, (n) => {
-              setSelectedFile(n.path);
-              selectFileCallback(n);
-            })
-          )}
-        {children}
-      </SimpleBar>
+      <>
+        <div className="FileTree__head">Files</div>
+        <SimpleBar className="FileTree__body">
+          {root &&
+            sortTreeNode(root).map((node) =>
+              renderTree(node, 0, treeDepth, selectedFile, (n) => {
+                setSelectedFile(n.path);
+                selectFileCallback(n);
+              })
+            )}
+          {children}
+        </SimpleBar>
+      </>
     </ResizableBox>
   );
 };

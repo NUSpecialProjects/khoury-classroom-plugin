@@ -6,9 +6,9 @@ type PRReview struct {
 }
 
 type PRReviewComment struct {
-	Path string `json:"path"`
-	Line int    `json:"line"`
-	Body string `json:"body"`
+	Path *string `json:"path"`
+	Line *int    `json:"line"`
+	Body string  `json:"body"`
 }
 
 type PRReviewCommentWithPoints struct {

@@ -5,8 +5,40 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 
 import "./styles.css";
 import Button from "@/components/Button";
+import { AuthContext } from "@/contexts/auth";
 
-interface ICodeLine extends React.HTMLProps<HTMLDivElement> {
+interface ICodeFeedback {
+  fb: IGradingFeedback;
+  pending?: boolean;
+}
+
+const CodeFeedback: React.FC<ICodeFeedback> = ({ fb, pending = false }) => {
+  const { currentUser } = useContext(AuthContext);
+
+  return (
+    <div className="CodeLine__comment">
+      <div className="CodeLine__commentHead">
+        <img src={currentUser?.avatar_url} alt="new" />
+        {currentUser?.name}
+        {pending && <div className="CodeLine__commentPending">Pending</div>}
+      </div>
+      <div className="CodeLine__commentBody">
+        <div
+          className={`CodeLine__commentPoints CodeLine__commentPoints--${fb.points > 0 ? "positive" : fb.points < 0 ? "negative" : "neutral"}`}
+        >
+          {fb.points == 0
+            ? "Comment"
+            : fb.points > 0
+              ? `+${fb.points}`
+              : fb.points}
+        </div>
+        {fb.body}
+      </div>
+    </div>
+  );
+};
+
+interface ICodeLine {
   path: string;
   line: number;
   isDiff: boolean;
@@ -15,9 +47,11 @@ interface ICodeLine extends React.HTMLProps<HTMLDivElement> {
 
 const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { assignmentID, studentWorkID, comments, addComment } =
+  const { assignmentID, studentWorkID, feedback, stagedFeedback, addFeedback } =
     useContext(GraderContext);
   const [editing, setEditing] = useState(false);
+  const [feedbackExists, setFeedbackExists] = useState(false);
+  const [stagedFeedbackExists, setStagedFeedbackExists] = useState(false);
 
   const points = useRef<HTMLInputElement>(null);
 
@@ -25,28 +59,45 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     setEditing(false);
   }, [path]);
 
+  useEffect(() => {
+    setFeedbackExists(
+      feedback &&
+        Object.values(feedback).some(
+          (fb) => fb.path === path && fb.line === line
+        )
+    );
+  }, [feedback]);
+
+  useEffect(() => {
+    setStagedFeedbackExists(
+      stagedFeedback &&
+        Object.values(stagedFeedback).some(
+          (fb) => fb.path === path && fb.line === line
+        )
+    );
+  }, [stagedFeedback]);
+
   const adjustPoints = (x: number) => {
     if (!points.current) return;
     const pts = points.current.value;
     points.current.value = (parseInt(pts, 10) + x).toString();
   };
 
-  const saveComment = (e: React.FormEvent) => {
+  const handleAddFeedback = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedClassroom || !assignmentID || !studentWorkID) return;
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
-    const comment: IGradingComment = {
+    const fb: IGradingFeedback = {
       path,
       line: Number(data.get("line")),
       body: String(data.get("comment")).trim(),
       points: Number(data.get("points")),
     };
-    if (comment.points == 0 && comment.body == "") return;
-    if (comment.body == "")
-      comment.body = "No comment left for this point adjustment.";
-    addComment(comment);
+    if (fb.points == 0 && fb.body == "") return;
+    if (fb.body == "") fb.body = "No comment left for this point adjustment.";
+    addFeedback(fb);
     setEditing(false);
     form.reset();
   };
@@ -72,40 +123,28 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
           dangerouslySetInnerHTML={{ __html: code }}
         ></div>
       </div>
-      {(editing || comments[path]?.[line]) && (
+      {(editing || feedbackExists || stagedFeedbackExists) && (
         <div className="CodeLine__comments">
           {/************ Display any existing comments *************/}
-          {comments[path]?.[line] &&
-            Object.entries(comments[path][line]).map(([i, comment]) => {
-              const pointSign =
-                comment.points > 0
-                  ? "positive"
-                  : comment.points < 0
-                    ? "negative"
-                    : "neutral";
-              return (
-                <div
-                  className="CodeLine__commentWrapper CodeLine__comment"
-                  key={Number(i)}
-                >
-                  <div
-                    className={`CodeLine__commentPoints CodeLine__commentPoints--${pointSign}`}
-                  >
-                    {comment.points == 0
-                      ? "Comment"
-                      : comment.points > 0
-                        ? `+${comment.points}`
-                        : comment.points}
-                  </div>
-                  {comment.body}
-                </div>
-              );
-            })}
+          {feedbackExists &&
+            Object.entries(feedback).map(
+              ([i, fb]: [string, IGradingFeedback]) =>
+                fb.path == path &&
+                fb.line == line && <CodeFeedback fb={fb} key={Number(i)} />
+            )}
+
+          {stagedFeedbackExists &&
+            Object.entries(stagedFeedback).map(([i, fb]) => (
+              <CodeFeedback fb={fb} key={Number(i)} pending />
+            ))}
 
           {/************ Display form to create new comment *************/}
           {editing && (
-            <div className="CodeLine__commentWrapper">
-              <form className="CodeLine__newCommentForm" onSubmit={saveComment}>
+            <div className="CodeLine__comment">
+              <form
+                className="CodeLine__newCommentForm"
+                onSubmit={handleAddFeedback}
+              >
                 <input readOnly hidden type="number" name="line" value={line} />
 
                 <div className="CodeLine__newCommentPoints">
@@ -141,7 +180,8 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
                 <div className="CodeLine__newCommentButtons">
                   <Button
                     className="CodeLine__newCommentCancel"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       setEditing(false);
                     }}
                   >
