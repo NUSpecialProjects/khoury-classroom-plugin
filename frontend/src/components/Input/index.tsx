@@ -27,7 +27,9 @@ const Input: React.FC<IInputProps> = ({
                 {...props}
                 className="Input">
             </input>
+            { caption && 
             <p className="Input__caption">{caption}</p>
+            }
         </div>
     );
 };

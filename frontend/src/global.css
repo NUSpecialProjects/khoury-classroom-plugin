@@ -97,27 +97,64 @@ a {
 .simplebar-wrapper {
   flex-grow: 1;
 }
+
 .simplebar-offset {
   display: flex;
 }
+
 .simplebar-content-wrapper {
   display: flex;
   flex-grow: 1;
 }
+
 .simplebar-content {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   width: 100%;
 }
+
 .simplebar-scrollbar:before {
   background-color: var(--brand-lighter);
   transition-delay: 1.5s;
   cursor: pointer !important;
 }
+
 .simplebar-scrollbar.simplebar-visible:before {
   opacity: 0.7;
 }
+
 .simplebar-dragging .simplebar-scrollbar:before {
   opacity: 1;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  border-radius: 5px;
+  background-color: var(--page-background);
+  border-color: var(--brand);
+  border-width: 1px;
+  border-style: var(--border-style);
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  background-color: var(--page-background);
+  border-color: var(--brand);
+  border-width: 1px;
+  border-style: var(--border-style);
+}
+
+input[type="checkbox"]:checked::before {
+  align-content: center;
+  content: ' ✔';
+  color: var(--primary-text-white);
+  background-color: var(--brand);
 }

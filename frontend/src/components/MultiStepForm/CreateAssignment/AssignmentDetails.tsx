@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import Input from '@/components/Input';
+import Checkbox from '@/components/Checkbox';
 import './styles.css';
 
 const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({ data, onChange }) => {
@@ -61,14 +62,13 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
       </div>
 
       <div className="CreateAssignmentForms__checkboxGroup">
-        <input
+        <Checkbox
           id="groupAssignment"
-          type="checkbox"
           name="groupAssignment"
+          label="Group Assignment"
           checked={data.groupAssignment}
           onChange={handleInputChange}
-        />
-        <label htmlFor="groupAssignment">Group Assignment</label>
+          caption="If left unchecked the assignment will be an individual submission for each student"></Checkbox>
       </div>
     </form>
   );
