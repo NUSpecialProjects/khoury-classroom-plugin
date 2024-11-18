@@ -67,12 +67,9 @@ func (service *AuthService) Login() fiber.Handler {
 		} else { // user is in our DB
 			userIsInDB = true
 		}
-
 		// Add the user to the database if they don't exist already
 		if !userIsInDB {
-			userToCreate := currentGitHubUser.ToUser()
-			userToCreate, err = service.store.CreateUser(c.Context(), userToCreate)
-
+			_, err = service.store.CreateUser(c.Context(), currentGitHubUser.ToUser())
 			if err != nil {
 				return errs.InternalServerError()
 			}
