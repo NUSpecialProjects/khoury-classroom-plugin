@@ -9,9 +9,9 @@ import (
 )
 
 // gets all feedback comments on a student work
-func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentWithPoints, error) {
-	query := `SELECT student_work_id, rubric_item_id, ta_user_id, file_path, file_line, fc.created_at, assignment_outline_id, point_value, explanation
-	FROM feedback_comment fc JOIN rubric_items ri ON  fc.rubric_item_id = ri.id WHERE student_work_id = $1`
+func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error) {
+	query := `SELECT student_work_id, rubric_item_id, github_username, file_path, file_line, fc.created_at, assignment_outline_id, point_value, explanation
+	FROM feedback_comment fc JOIN rubric_items ri ON fc.rubric_item_id = ri.id JOIN users u ON fc.ta_user_id = u.id WHERE student_work_id = $1`
 
 	rows, err := db.connPool.Query(ctx, query, studentWorkID)
 
@@ -29,15 +29,16 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 
 	fmt.Println(rawFeedback)
 
-	var formattedFeedback []models.PRReviewCommentWithPoints
+	var formattedFeedback []models.PRReviewCommentResponse
 	for _, feedback := range rawFeedback {
-		formattedFeedback = append(formattedFeedback, models.PRReviewCommentWithPoints{
+		formattedFeedback = append(formattedFeedback, models.PRReviewCommentResponse{
 			PRReviewComment: models.PRReviewComment{
 				Path: feedback.FilePath,
 				Line: feedback.FileLine,
 				Body: feedback.Explanation,
 			},
-			Points: feedback.PointValue,
+			Points:     feedback.PointValue,
+			TAUsername: feedback.TAUsername,
 		})
 	}
 
@@ -45,7 +46,7 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 }
 
 // create a new comment (ad-hoc: also create a rubric item simultaneously)
-func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int, studentWorkID int, comment models.PRReviewCommentWithPoints) error {
+func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int, studentWorkID int, comment models.PRReviewCommentResponse) error {
 	_, err := db.connPool.Exec(ctx,
 		`WITH ri AS
 			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)

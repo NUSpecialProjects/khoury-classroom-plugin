@@ -1,14 +1,15 @@
 /********************
  * Grading page types
  ********************/
-interface IGradingFeedbackMap {
-  [commentID: number]: IGradingFeedback;
+interface IGraderFeedbackMap {
+  [commentID: number]: IGraderFeedback;
 }
-interface IGradingFeedback {
+interface IGraderFeedback {
   path: string;
   line: number;
   body: string;
   points: number;
+  ta_username?: string;
 }
 
 /******************************

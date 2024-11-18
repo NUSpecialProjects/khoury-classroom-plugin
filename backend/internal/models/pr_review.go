@@ -1,8 +1,8 @@
 package models
 
-type PRReview struct {
-	Body     string                      `json:"body"`
-	Comments []PRReviewCommentWithPoints `json:"comments"`
+type PRReviewRequest struct {
+	Body     string                    `json:"body"`
+	Comments []PRReviewCommentResponse `json:"comments"`
 }
 
 type PRReviewComment struct {
@@ -11,7 +11,8 @@ type PRReviewComment struct {
 	Body string  `json:"body"`
 }
 
-type PRReviewCommentWithPoints struct {
+type PRReviewCommentResponse struct {
 	PRReviewComment
-	Points int `json:"points"`
+	Points     int    `json:"points"`
+	TAUsername string `json:"ta_username"`
 }

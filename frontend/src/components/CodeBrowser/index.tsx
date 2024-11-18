@@ -8,7 +8,7 @@ import {
   ext2langLoader,
   dependencies,
 } from "@/utils/prism-lang-loader";
-import { getFileBlob } from "@/api/grading";
+import { getFileBlob } from "@/api/grader";
 import CodeLine from "./CodeLine";
 
 import "@/assets/prism-vs-dark.css";

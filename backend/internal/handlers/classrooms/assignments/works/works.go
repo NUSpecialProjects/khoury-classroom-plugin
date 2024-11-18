@@ -79,7 +79,7 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 			return errs.AuthenticationError()
 		}
 
-		var requestBody models.PRReview
+		var requestBody models.PRReviewRequest
 		if err := c.BodyParser(&requestBody); err != nil {
 			return errs.InvalidRequestBody(requestBody)
 		}

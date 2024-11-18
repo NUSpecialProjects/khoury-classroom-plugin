@@ -8,7 +8,7 @@ import Button from "@/components/Button";
 import { AuthContext } from "@/contexts/auth";
 
 interface ICodeFeedback {
-  fb: IGradingFeedback;
+  fb: IGraderFeedback;
   pending?: boolean;
 }
 
@@ -19,7 +19,7 @@ const CodeFeedback: React.FC<ICodeFeedback> = ({ fb, pending = false }) => {
     <div className="CodeLine__comment">
       <div className="CodeLine__commentHead">
         <img src={currentUser?.avatar_url} alt="new" />
-        {currentUser?.name}
+        {fb.ta_username}
         {pending && <div className="CodeLine__commentPending">Pending</div>}
       </div>
       <div className="CodeLine__commentBody">
@@ -47,6 +47,7 @@ interface ICodeLine {
 
 const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const { currentUser } = useContext(AuthContext);
   const { assignmentID, studentWorkID, feedback, stagedFeedback, addFeedback } =
     useContext(GraderContext);
   const [editing, setEditing] = useState(false);
@@ -66,7 +67,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
           (fb) => fb.path === path && fb.line === line
         )
     );
-  }, [feedback]);
+  }, [path, feedback]);
 
   useEffect(() => {
     setStagedFeedbackExists(
@@ -75,7 +76,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
           (fb) => fb.path === path && fb.line === line
         )
     );
-  }, [stagedFeedback]);
+  }, [path, stagedFeedback]);
 
   const adjustPoints = (x: number) => {
     if (!points.current) return;
@@ -85,15 +86,17 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
 
   const handleAddFeedback = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentUser || !selectedClassroom || !assignmentID || !studentWorkID)
+      return;
 
-    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
-    const fb: IGradingFeedback = {
+    const fb: IGraderFeedback = {
       path,
       line: Number(data.get("line")),
       body: String(data.get("comment")).trim(),
       points: Number(data.get("points")),
+      ta_username: currentUser.login,
     };
     if (fb.points == 0 && fb.body == "") return;
     if (fb.body == "") fb.body = "No comment left for this point adjustment.";
@@ -128,15 +131,19 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
           {/************ Display any existing comments *************/}
           {feedbackExists &&
             Object.entries(feedback).map(
-              ([i, fb]: [string, IGradingFeedback]) =>
+              ([i, fb]: [string, IGraderFeedback]) =>
                 fb.path == path &&
                 fb.line == line && <CodeFeedback fb={fb} key={Number(i)} />
             )}
 
           {stagedFeedbackExists &&
-            Object.entries(stagedFeedback).map(([i, fb]) => (
-              <CodeFeedback fb={fb} key={Number(i)} pending />
-            ))}
+            Object.entries(stagedFeedback).map(
+              ([i, fb]) =>
+                fb.path == path &&
+                fb.line == line && (
+                  <CodeFeedback fb={fb} key={Number(i)} pending />
+                )
+            )}
 
           {/************ Display form to create new comment *************/}
           {editing && (

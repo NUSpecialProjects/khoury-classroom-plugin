@@ -4,7 +4,7 @@ import { ResizableBox } from "react-resizable";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { GraderContext } from "@/contexts/grader";
-import { getFileTree } from "@/api/grading";
+import { getFileTree } from "@/api/grader";
 import { buildTree, renderTree, sortTreeNode } from "./funcs";
 
 import "./styles.css";

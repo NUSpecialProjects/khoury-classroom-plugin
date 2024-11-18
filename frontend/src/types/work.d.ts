@@ -28,5 +28,5 @@ interface IStudentWorkResponses {
 
 interface IPaginatedStudentWorkResponse {
   student_work: IPaginatedStudentWork;
-  feedback: IGradingFeedback[];
+  feedback: IGraderFeedback[];
 }

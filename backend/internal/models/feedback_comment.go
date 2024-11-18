@@ -6,7 +6,7 @@ type FeedbackComment struct {
 	AssignmentOutlineID *int      `json:"assignment_outline_id"`
 	StudentWorkID       int       `json:"student_work_id"`
 	RubricItemID        int       `json:"rubric_item_id"`
-	TAUserID            int       `json:"ta_user_id"`
+	TAUsername          string    `json:"github_username" db:"github_username"`
 	PointValue          int       `json:"point_value"`
 	Explanation         string    `json:"explanation"`
 	FilePath            *string   `json:"file_path"`

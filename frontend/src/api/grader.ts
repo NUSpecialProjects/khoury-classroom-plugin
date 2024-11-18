@@ -4,9 +4,9 @@ export const createPRReview = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,
-  feedback: IGradingFeedbackMap
+  feedback: IGraderFeedbackMap
 ) => {
-  const feedback1D: IGradingFeedback[] = [];
+  const feedback1D: IGraderFeedback[] = [];
   for (const fb of Object.values(feedback)) {
     feedback1D.push(fb);
   }
