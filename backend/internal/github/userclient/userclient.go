@@ -21,7 +21,6 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	token, err := oAuthCfg.Exchange(context.Background(), code)
 	if err != nil {
-		fmt.Println("Error exchanging code for token", err)
 		return nil, err
 	}
 
@@ -105,23 +104,20 @@ func (api *UserAPI) GetOrg(ctx context.Context, orgName string) (*models.Organiz
 // 	return ""
 // }
 
-
-
-
 func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destName string) error {
 
 	endpoint := fmt.Sprintf("/repos/%s/%s/forks", owner, repo)
 
 	// Define the payload struct for the request body
 	type ForkRequestBody struct {
-		Org string `json:"organization"`
-		DestName  string `json:"name"`
+		Org      string `json:"organization"`
+		DestName string `json:"name"`
 	}
 
 	// Create an instance of the payload with the necessary data
 	payload := ForkRequestBody{
-		Org: org,
-		DestName:  destName,
+		Org:      org,
+		DestName: destName,
 	}
 
 	//Initialize post request
@@ -137,5 +133,5 @@ func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destNa
 		return err
 	}
 
-	return  nil
+	return nil
 }

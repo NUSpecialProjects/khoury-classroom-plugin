@@ -4,6 +4,20 @@ import (
 	"time"
 )
 
+type AssignmentToken struct {
+	AssignmentID int64 `json:"assignment_id"`
+	BaseToken
+}
+
+type AssignmentTokenRequestBody struct {
+	Duration *int `json:"duration,omitempty"` // Duration is optional
+}
+
+type AssignmentOutlineWithTemplate struct {
+	AssignmentOutline
+	Template AssignmentTemplate `json:"template"`
+}
+
 type AssignmentOutline struct {
 	ID              int32      `json:"id,omitempty"`
 	TemplateID      int64      `json:"template_id"`

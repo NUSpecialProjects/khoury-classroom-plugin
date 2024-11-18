@@ -1,5 +1,57 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
+
+
+export async function postAssignmentToken(
+  classroomID: number,
+  assignmentID: number,
+  duration?: number // Duration is optional
+): Promise<IAssignmentToken> {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/token`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        duration: duration,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const resp: IAssignmentToken = await response.json();
+  return resp;
+}
+
+export async function useAssignmentToken(
+  token: string
+): Promise<IAssignmentAcceptResponse> {
+  const response = await fetch( // the classroom id doesn't matter here
+    `${base_url}/classrooms/classroom/${0}/assignments/token/${token}`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const resp: IAssignmentAcceptResponse = await response.json();
+  return resp;
+}
+
+
 export const getAssignments = async (
   classroomId: number
 ): Promise<IAssignmentOutline[]> => {
