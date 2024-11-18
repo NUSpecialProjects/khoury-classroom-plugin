@@ -28,7 +28,8 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand-highlight: rgba(132, 135, 139, 20%);
 
   /* Gradients */
-  --brand-gradient: linear-gradient(180deg, #f3f5fc 0%, #ced6e6 100%);
+  --brand-gradient: linear-gradient(180deg, #f3f5fc 0%, #d4dff4 120%);
+  --brand-gradient-light: linear-gradient(180deg, #f4f6fb 0%, #eceffb 100%);
   --brand-gradient-bright: linear-gradient(160deg, #255ac5 0%, #5f8be3 100%);
   --brand-gradient-dark: linear-gradient(160deg, #0f3072 0%, #7996cf 100%);
 

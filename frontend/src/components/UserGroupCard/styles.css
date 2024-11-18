@@ -6,6 +6,7 @@
   background-color: var(--panels-background);
   display: flex;
   justify-content: space-between;
+  color: var(--primary-text);
 
   &__icon {
     width: 50px;
@@ -29,7 +30,6 @@
     font-size: var(--font-size-m);
     font-weight: 500;
     margin: 0;
-    color: var(--primary-text);
     padding-bottom: 10px;
   }
 
@@ -43,11 +43,14 @@
     font-size: var(--font-size-xl);
     font-weight: normal;
     margin-top: 10px;
-    color: var(--primary-text);
   }
 
   &__detailsWrapper {
     display: flex;
     justify-content: space-between;
   }
+}
+
+.UserGroupCard:hover {
+  background: var(--brand-gradient-light);
 }
