@@ -1,7 +1,12 @@
 import { sendOrganizationInvitesToRequestedUsers, sendOrganizationInviteToUser, revokeOrganizationInvite, removeUserFromClassroom } from "@/api/classrooms";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { ClassroomRole, ClassroomUserStatus } from "@/types/users";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
+import SubPageHeader from "@/components/PageHeader/SubPageHeader";
+import { Table, TableCell, TableRow } from "@/components/Table";
+import EmptyDataBanner from "@/components/EmptyDataBanner";
+import './styles.css';
+import Button from "@/components/Button";
 
 interface GenericRolePageProps {
   role_label: string;
@@ -16,16 +21,18 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
 }: GenericRolePageProps) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
-  const [requestedUsers, setRequestedUsers] = useState<IClassroomUser[]>(userList.filter(user => user.status === ClassroomUserStatus.REQUESTED));
-  const [invitedUsers, setInvitedUsers] = useState<IClassroomUser[]>(userList.filter(user => user.status === ClassroomUserStatus.ORG_INVITED));
-  const [activeUsers, setActiveUsers] = useState<IClassroomUser[]>(userList.filter(user => user.status === ClassroomUserStatus.ACTIVE));
+  const removeUserFromList = (userId: number) => {
+    userList = userList.filter(user => user.id !== userId);
+  };
+
+  const addUserToList = (user: IClassroomUser) => {
+    userList = [...userList, user];
+  };
 
   const handleInviteAll = async () => {
     await sendOrganizationInvitesToRequestedUsers(selectedClassroom!.id, role_type)
       .then((data: IClassroomInvitedUsersListResponse) => {
-        const { invited_users, requested_users } = data;
-        setInvitedUsers(invited_users);
-        setRequestedUsers(requested_users);
+        userList = [...data.invited_users, ...data.requested_users];
       })
       .catch((error) => {
         console.error("Error inviting all users:", error);
@@ -35,9 +42,8 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   const handleInviteUser = async (userId: number) => {
     await sendOrganizationInviteToUser(selectedClassroom!.id, role_type, userId)
       .then((data: IClassroomUserResponse) => {
-        const { user } = data;
-        setInvitedUsers([...invitedUsers, user]);
-        setRequestedUsers(requestedUsers.filter(user => user.id !== userId));
+        removeUserFromList(userId);
+        addUserToList(data.user);
       })
       .catch((error) => {
         console.error("Error inviting user:", error);
@@ -46,8 +52,8 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
 
   const handleRevokeInvite = async (userId: number) => {
     await revokeOrganizationInvite(selectedClassroom!.id, userId)
-      .then(() => {
-        setInvitedUsers(invitedUsers.filter(user => user.id !== userId));
+      .then((_) => {
+        removeUserFromList(userId);
       })
       .catch((error) => {
         console.error("Error revoking invite:", error);
@@ -57,68 +63,58 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   const handleRemoveUser = async (userId: number) => {
     await removeUserFromClassroom(selectedClassroom!.id, userId)
       .then(() => {
-        setActiveUsers(activeUsers.filter(user => user.id !== userId));
+        removeUserFromList(userId);
       })
       .catch((error) => {
         console.error("Error removing user:", error);
       });
   };
 
+  const getActionButton = (user: IClassroomUser) => {
+    switch (user.status) {
+      case ClassroomUserStatus.ACTIVE:
+        return <Button size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
+      case ClassroomUserStatus.ORG_INVITED:
+        return <Button size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
+      case ClassroomUserStatus.REQUESTED:
+        return <Button size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div>
-      <h1>{role_label}s in {selectedClassroom?.org_name} - {selectedClassroom?.name}</h1>
-      <div>
-        <h2>Active Users</h2>
-        <ul>
-          {activeUsers.length > 0 ? (
-            activeUsers.map((user) => (
-              <li key={user.id}>
-                {user.first_name} {user.last_name}
-                <button onClick={() => handleRemoveUser(user.id)}>Remove User</button>
-              </li>
-            ))
-          ) : (
-            <li>No active users</li>
-          )}
-        </ul>
-      </div>
-
-      <div>
-        <h2>Invited Users</h2>
-        <ul>
-          {invitedUsers.length > 0 ? (
-            invitedUsers.map((user) => (
-              <li key={user.id}>
-                {user.first_name} {user.last_name}
-                <button onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</button>
-              </li>
-            ))
-          ) : (
-            <li>No invited users</li>
-          )}
-        </ul>
-      </div>
-
-
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h2>Requested Users</h2>
+      <SubPageHeader pageTitle={role_label + `s`} chevronLink="/app/dashboard/"></SubPageHeader>
+      
+      {userList.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
+        <div className="Users__inviteAllWrapper">
           <button onClick={handleInviteAll}>Invite All Requested Users</button>
         </div>
-        <ul>
-          {requestedUsers.length > 0 ? (
-            requestedUsers.map((user) => (
-              <li key={user.id}>
-                {user.first_name} {user.last_name}
-                <button onClick={() => handleInviteUser(user.id)}>Invite User</button>
-              </li>
+      )}
+
+      <div className="Users__tableWrapper">
+        <Table cols={3}>
+          <TableRow style={{ borderTop: "none" }}>
+            <TableCell>{role_label} Name</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+          {userList.length > 0 ? (
+            userList.map((user, i) => (
+              <TableRow key={i}>
+                <TableCell>{user.first_name} {user.last_name}</TableCell>
+                <TableCell>{user.status}</TableCell>
+                <TableCell>{getActionButton(user)}</TableCell>
+              </TableRow>
             ))
           ) : (
-            <li>No requested users</li>
+            <EmptyDataBanner>
+              <p>There are currently no {role_label}s in this classroom.</p>
+            </EmptyDataBanner>
           )}
-        </ul>
+        </Table>
       </div>
-
     </div>
   );
 };

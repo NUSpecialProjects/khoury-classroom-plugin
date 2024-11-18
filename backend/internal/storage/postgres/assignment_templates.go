@@ -18,7 +18,7 @@ func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (b
 }
 
 func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error) {
-	err := db.connPool.QueryRow(ctx, `INSERT INTO assignment_templates (template_repo_owner, template_name, template_repo_id)
+	err := db.connPool.QueryRow(ctx, `INSERT INTO assignment_templates (template_repo_owner, template_repo_name, template_repo_id)
 			VALUES ($1, $2, $3)
 			RETURNING *`,
 		assignmentTemplateData.TemplateRepoOwner,

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -74,20 +73,17 @@ func Protected(secret string) fiber.Handler {
 func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserClient) (github.GitHubUserClient, error) {
 	userID, ok := c.Locals("userID").(int64)
 	if !ok {
-		fmt.Println("FAILED TO GET USERID")
 		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
 	}
 
 	session, err := store.GetSession(c.Context(), userID)
 	if err != nil {
-		fmt.Println("FAILED TO GET SESSION", err)
 		return nil, err
 	}
 
 	client, err := userclient.NewFromSession(userCfg.OAuthConfig(), &session)
 
 	if err != nil {
-		fmt.Println("FAILED TO CREATE CLIENT", err)
 		return nil, err
 	}
 

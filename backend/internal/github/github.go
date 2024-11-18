@@ -81,6 +81,7 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// Create a new pull request review
 	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
+	// Get the details of a user
 	GetUser(ctx context.Context, userName string) (*github.User, error)
 
 	// Get the membership of a user to an organization (404 if not a member or invited)
@@ -92,4 +93,6 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	SetUserMembershipInOrg(ctx context.Context, orgName string, userName string, role string) error
 
 	CancelOrgInvitation(ctx context.Context, orgName string, userName string) error
+	// Get the details of a repository
+	GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error)
 }

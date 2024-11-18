@@ -63,7 +63,14 @@ export default function App(): React.JSX.Element {
                 />
               </Route>
 
-              <Route path="token/apply" element={<Pages.RoleApply />} />
+              <Route
+                path="token/classroom/join"
+                element={<Pages.JoinClassroom />}
+              />
+              <Route
+                  path="token/assignment/accept"
+                  element={<Pages.AcceptAssignment />}
+                />
 
               {/******* CLASS SELECTED: INNER APP *******/}
               <Route path="" element={<Layout />}>

@@ -6,11 +6,9 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { ClassroomRole } from "@/types/users";
 
 const ProfessorListPage: React.FC = () => {
-  const { selectedClassroom: selectedClassroom } = useContext(
-    SelectedClassroomContext
-  );
   const location = useLocation();
   const state = location.state as { users: IClassroomUser[] };
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
   const role_type: ClassroomRole = ClassroomRole.PROFESSOR;
   const role_label: string = "Professor";
   return (

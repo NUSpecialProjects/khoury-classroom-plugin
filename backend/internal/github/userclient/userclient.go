@@ -21,7 +21,6 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	token, err := oAuthCfg.Exchange(context.Background(), code)
 	if err != nil {
-		fmt.Println("Error exchanging code for token", err)
 		return nil, err
 	}
 

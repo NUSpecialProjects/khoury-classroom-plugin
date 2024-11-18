@@ -238,3 +238,8 @@ func (api *CommonAPI) CancelOrgInvitation(ctx context.Context, orgName string, u
 
 	return nil
 }
+
+func (api *CommonAPI) GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error) {
+	repo, _, err := api.Client.Repositories.Get(ctx, owner, repoName)
+	return repo, err
+}

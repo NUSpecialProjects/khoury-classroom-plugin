@@ -55,8 +55,9 @@ VALUES
 (11, 11, 'STUDENT', NOW(), 'ACTIVE'),
 (12, 11, 'STUDENT', NOW(), 'ACTIVE');
 
+
 -- Insert into assignment_templates
-INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_name)
+INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_repo_name)
 VALUES
 ('kennysmith', 1000, NOW(), 'Template 1'),
 ('gracehopper', 1001, NOW(), 'Template 2'),
@@ -68,6 +69,7 @@ VALUES
 ('bliskov', 1007, NOW(), 'Template 8'),
 ('dritchie', 1008, NOW(), 'Template 9'),
 ('kthompson', 1009, NOW(), 'Template 10');
+
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
