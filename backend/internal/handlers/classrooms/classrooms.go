@@ -2,7 +2,6 @@ package classrooms
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -231,8 +230,7 @@ func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 			ClassroomID:   classroomID,
 			ClassroomRole: classroomRole,
 			BaseToken: models.BaseToken{
-				Token:     token,
-				CreatedAt: time.Now(),
+				Token: token,
 			},
 		}
 
@@ -256,13 +254,11 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client:", err)
 			return errs.AuthenticationError()
 		}
 
 		currentGitHubUser, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			log.Default().Println("Error getting current GitHub user:", err)
 			return errs.AuthenticationError()
 		}
 
@@ -274,7 +270,6 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		// Go get the token from the DB
 		classroomToken, err := s.store.GetClassroomToken(c.Context(), token)
 		if err != nil {
-			log.Default().Println("Error getting classroom token:", err)
 			return errs.AuthenticationError()
 		}
 
@@ -286,13 +281,11 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		// Get the classroom from the DB
 		classroom, err := s.store.GetClassroomByID(c.Context(), classroomToken.ClassroomID)
 		if err != nil {
-			log.Default().Println("Error getting classroom:", err)
 			return errs.InternalServerError()
 		}
 
 		user, err := s.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ToUser().GithubUserID)
 		if err != nil {
-			log.Default().Println("Error getting user:", err)
 			return errs.InternalServerError()
 		}
 
@@ -305,7 +298,6 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 				// Upgrade the user's role in the classroom
 				classroomUser, err = s.store.ModifyUserRole(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), *classroomUser.ID)
 				if err != nil {
-					log.Default().Println("Error modifying user role:", err)
 					return errs.InternalServerError()
 				}
 			} else if roleComparison >= 0 {
@@ -315,7 +307,6 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		} else { // user is not in the classroom, add them with the token's role
 			classroomUser, err = s.store.AddUserToClassroom(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), models.UserStatusRequested, *user.ID)
 			if err != nil {
-				log.Default().Println("Error adding user to classroom:", err)
 				return errs.InternalServerError()
 			}
 		}
@@ -323,14 +314,12 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		// Invite the user to the organization
 		classroomUser, err = s.inviteUserToOrganization(c.Context(), s.githubappclient, classroom.OrgName, classroomToken.ClassroomID, classroomToken.ClassroomRole, user)
 		if err != nil {
-			log.Default().Println("Error inviting user to organization:", err)
 			return errs.InternalServerError()
 		}
 
 		// Accept the pending invitation to the organization
 		err = s.acceptOrgInvitation(c.Context(), client, classroom.OrgName, classroomToken.ClassroomID, user)
 		if err != nil {
-			log.Default().Println("Error accepting org invitation:", err)
 			return errs.InternalServerError()
 		}
 
@@ -346,31 +335,26 @@ func (s *ClassroomService) getCurrentClassroomUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
-			log.Default().Println("Error getting client:", err)
 			return errs.AuthenticationError()
 		}
 
 		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 		if err != nil {
-			log.Default().Println("Error parsing classroom ID:", err)
 			return errs.BadRequest(err)
 		}
 
 		githubUser, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			log.Default().Println("Error getting current GitHub user:", err)
 			return errs.AuthenticationError()
 		}
 
 		user, err := s.store.GetUserByGitHubID(c.Context(), githubUser.ID)
 		if err != nil {
-			log.Default().Println("Error getting user:", err)
 			return errs.AuthenticationError()
 		}
 
 		classroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
 		if err != nil {
-			log.Default().Println("Error getting classroom:", err)
 			return errs.InternalServerError()
 		}
 
@@ -379,13 +363,12 @@ func (s *ClassroomService) getCurrentClassroomUser() fiber.Handler {
 			if err == errs.UserNotFoundInClassroomError() {
 				// User not found in classroom, return null
 				return c.Status(http.StatusOK).JSON(fiber.Map{"user": nil})
+			} else {
+				return errs.InternalServerError()
 			}
-			log.Default().Println("Error updating user status:", err)
-			return errs.InternalServerError()
 		}
 
 		if classroomUser.Status == models.UserStatusNotInOrg {
-			log.Default().Println("User is not in the organization")
 			return errs.InconsistentOrgMembershipError()
 		}
 
@@ -398,7 +381,6 @@ func (s *ClassroomService) updateUserStatus(ctx context.Context, client github.G
 	//TODO: check if user has declined the invite
 	classroomUser, err := s.store.GetUserInClassroom(ctx, classroom.ID, *user.ID)
 	if err != nil {
-		log.Default().Println("USER ISN't IN CLASSROOM")
 		return models.ClassroomUser{}, errs.UserNotFoundInClassroomError()
 	}
 
