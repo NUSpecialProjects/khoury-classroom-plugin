@@ -22,29 +22,24 @@ export interface TokenHandlerConfig<T extends ITokenUseResponse> {
   
     useEffect(() => {
       if (inputToken && !success) {
-        console.log("Input token:", inputToken);
         handleUseToken();
       }
     }, [inputToken]);
   
     const handleUseToken = async () => {
-        console.log("Handling use token");
       setLoading(true);
       setMessage(loadingMessage);
       await useTokenFunction(inputToken)
         .then((response) => {
-          console.log("Successfully used token");
           setMessage(successMessage(response));
           setSuccess(true);
           successCallback(response);
         })
         .catch((error) => {
-          console.log("Error using token: " + error);
           setMessage("Error using token: " + error);
         })
         .finally(() => {
           setLoading(false);
-          console.log("Loading set to false");
         });
     };
   
