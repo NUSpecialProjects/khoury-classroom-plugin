@@ -35,3 +35,18 @@ func (db *DB) CreateAssignmentTemplate(ctx context.Context, assignmentTemplateDa
 
 	return assignmentTemplateData, nil
 }
+
+func (db *DB) GetAssignmentTemplateByID(ctx context.Context, templateID int64) (models.AssignmentTemplate, error) {
+	var assignmentTemplate models.AssignmentTemplate
+	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_templates WHERE template_repo_id = $1", templateID).Scan(
+		&assignmentTemplate.TemplateID,
+		&assignmentTemplate.TemplateRepoOwner,
+		&assignmentTemplate.TemplateRepoName,
+		&assignmentTemplate.CreatedAt,
+	)
+	if err != nil {
+		return models.AssignmentTemplate{}, errs.NewDBError(err)
+	}
+
+	return assignmentTemplate, nil
+}

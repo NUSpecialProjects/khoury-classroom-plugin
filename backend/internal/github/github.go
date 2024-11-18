@@ -30,6 +30,9 @@ type GitHubAppClient interface { // All methods in the APP client
 
 	// Add a repository permission to a user
 	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
+
+	// Create instance of template repository
+	CreateBaseAssignmentRepo(ctx context.Context, orgName, templateRepoName, newRepoName string) error
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
@@ -61,11 +64,8 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// List the commits in a repository
 	ListCommits(ctx context.Context, owner string, repo string, opts *github.CommitsListOptions) ([]*github.RepositoryCommit, error)
 
-	// Get the details of a branch
-	GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error)
-
 	// Create a new branch in a repository
-	CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error
+	CreateBranch(ctx context.Context, owner, repo, baseBranch, newBranchName string) (*github.Reference, error)
 
 	// Get the details of a pull request
 	GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error)

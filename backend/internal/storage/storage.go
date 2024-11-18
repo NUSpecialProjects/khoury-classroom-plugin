@@ -64,4 +64,5 @@ type AssignmentOutline interface {
 type AssignmentTemplate interface {
 	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
 	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
+	GetAssignmentTemplateByID(ctx context.Context, templateID int64) (models.AssignmentTemplate, error)
 }
