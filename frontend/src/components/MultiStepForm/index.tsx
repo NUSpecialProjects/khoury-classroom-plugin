@@ -1,10 +1,12 @@
 import { useState, useCallback, ReactElement } from "react";
 import Button from "../Button";
+import { useNavigate } from "react-router-dom";
 import './styles.css';
 
 const MultiStepForm = <T,>({
   steps,
   submitFunc,
+  cancelLink,
   initialData,
 }: IMultiStepFormProps<T>): ReactElement => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -15,11 +17,12 @@ const MultiStepForm = <T,>({
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === totalSteps - 1;
 
-  // const handleCancel = 
-
   const handleNext = useCallback(() => {
     setCurrentStepIndex((prev) => Math.min(prev + 1, totalSteps - 1));
   }, [totalSteps]);
+
+  const navigate = useNavigate();
+  const handleCancel = () => navigate(cancelLink);
 
   const handlePrevious = useCallback(() => {
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
@@ -61,7 +64,7 @@ const MultiStepForm = <T,>({
       <div className="MultiStepForm__formNavigationButtonsWrapper">
         {
           isFirstStep && (
-            <Button variant="secondary">
+            <Button onClick={handleCancel} variant="secondary">
               Cancel
             </Button>
           )

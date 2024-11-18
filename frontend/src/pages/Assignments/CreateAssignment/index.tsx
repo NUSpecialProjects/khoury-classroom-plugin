@@ -80,6 +80,7 @@ const CreateAssignment: React.FC = () => {
       <MultiStepForm
         steps={steps}
         submitFunc={handleSubmit}
+        cancelLink="/app/dashboard"
         initialData={initialData}
       />
     </div>
