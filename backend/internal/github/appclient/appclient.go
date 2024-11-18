@@ -172,7 +172,7 @@ func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string,
 	return nil
 }
 
-func (api *AppAPI) CreateBaseAssignmentRepo(ctx context.Context, orgName, templateRepoName, newRepoName string) error {
+func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) error {
 	// Construct the request
 	endpoint := fmt.Sprintf("/repos/%s/%s/generate", orgName, templateRepoName)
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{

@@ -32,7 +32,7 @@ type GitHubAppClient interface { // All methods in the APP client
 	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
 
 	// Create instance of template repository
-	CreateBaseAssignmentRepo(ctx context.Context, orgName, templateRepoName, newRepoName string) error
+	CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) error
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
@@ -79,5 +79,12 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// Create a new pull request review
 	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
+	// Gets a user's metadata
 	GetUser(ctx context.Context, userName string) (*github.User, error)
+
+	// Updates a team's permissions within a repository
+	UpdateTeamRepoPermissions(ctx context.Context, org, teamSlug, owner, repo, permission string) error
+
+	// Remove repository from team
+	RemoveRepoFromTeam(ctx context.Context, org, teamSlug, owner, repo string) error
 }
