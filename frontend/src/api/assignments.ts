@@ -44,60 +44,32 @@ export const getAssignmentIndirectNav = async (
   return data
 };
 
-export const createAssignmentTemplate = async (
-  classroomId: number,
-  assignment: IRepository
-): Promise<IRepository> => {
+export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
   const result = await fetch(
-    `${base_url}/classrooms/classroom/${classroomId}/assignments/template`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
     {
-      method: "PUT",
+      method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        template_repo_id: assignment.id,
-        template_repo_owner: assignment.owner,
-      })
+        org_name: orgName,
+        repo_name: repoName,
+        assignment_name: assignmentName,
+        assignment_id: 1,
+        org_id: 182810684
+      }),
     }
   );
 
   if (!result.ok) {
-    throw new Error("Network response was not ok");
+    throw new Error(result.statusText);
   }
-
-  const data = (await result.json())
-
-  return data.assignment_template as IRepository
-};
-
-export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
-  const result = await fetch(
-      `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          org_name: orgName,
-          repo_name: repoName,
-          assignment_name: assignmentName,
-          assignment_id: 1,
-          org_id: 182810684
-        }),
-      }
-    );
-
-    if (!result.ok) {
-      throw new Error(result.statusText);
-    }
 };
 
 export const createAssignment = async (
-  templateId: number,
+  templateRepoID: number,
   assignment: IAssignmentFormData
 ): Promise<IAssignmentFormData> => {
   const result = await fetch(
@@ -109,7 +81,7 @@ export const createAssignment = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        template_id: templateId,
+        template_id: templateRepoID,
         name: assignment.assignmentName,
         classroom_id: assignment.classroomId,
         group_assignment: assignment.groupAssignment,

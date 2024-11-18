@@ -5,9 +5,10 @@ import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
-import { FaChevronLeft } from "react-icons/fa6";
+import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { getAssignmentIndirectNav } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
+import { formatDate } from "@/utils/date";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -69,52 +70,62 @@ const Assignment: React.FC = () => {
     <div className="Assignment">
       {assignment && (
         <>
-          <div className="Assignment__head">
-            <div className="Assignment__title">
-              <FaChevronLeft />
-              <h2>{assignment.name}</h2>
-            </div>
+          <SubPageHeader
+            pageTitle={assignment.name}
+            chevronLink={"/app/dashboard"}
+          >
             <div className="Assignment__dates">
-              <span>
-                Due Date:{" "}
-                {assignment.main_due_date
-                  ? assignment.main_due_date.toString()
+              <div className="Assignment__date">
+                <div className="Assignment__date--title"> {"Released on:"}</div>
+                {assignment.created_at
+                  ? formatDate(new Date(assignment.created_at))
                   : "N/A"}
-              </span>
+              </div>
+              <div className="Assignment__date">
+                <div className="Assignment__date--title"> {"Due Date:"}</div>
+                {assignment.main_due_date
+                  ? formatDate(new Date(assignment.main_due_date))
+                  : "N/A"}
+              </div>
             </div>
-          </div>
+          </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View in Github Classroom
             </Button>
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View Starter Code
             </Button>
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View Rubric
             </Button>
           </div>
 
-          <h2>Metrics</h2>
-          <div>Metrics go here</div>
-          <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
-          <Table cols={3}>
-            <TableRow style={{ borderTop: "none" }}>
-              <TableCell>Student Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Last Commit</TableCell>
-            </TableRow>
-            {studentWorks &&
-              studentWorks.length > 0 &&
-              studentWorks.map((sa, i) => (
-                <TableRow key={i} className="Assignment__submission">
-                  <TableCell>{sa.contributors.join(", ")}</TableCell>
-                  <TableCell>Passing</TableCell>
-                  <TableCell>12 Sep, 11:34pm</TableCell>
-                </TableRow>
-              ))}
-          </Table>
+          <div className="Assignment__subSectionWrapper">
+            <h2>Metrics</h2>
+            <p>Metrics go here</p>
+          </div>
+
+          <div className="Assignment__subSectionWrapper">
+            <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
+            <Table cols={3}>
+              <TableRow style={{ borderTop: "none" }}>
+                <TableCell>Student Name</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Last Commit</TableCell>
+              </TableRow>
+              {studentWorks &&
+                studentWorks.length > 0 &&
+                studentWorks.map((sa, i) => (
+                  <TableRow key={i} className="Assignment__submission">
+                    <TableCell>{sa.contributors.join(", ")}</TableCell>
+                    <TableCell>Passing</TableCell>
+                    <TableCell>12 Sep, 11:34pm</TableCell>
+                  </TableRow>
+                ))}
+            </Table>
+          </div>
         </>
       )}
     </div>

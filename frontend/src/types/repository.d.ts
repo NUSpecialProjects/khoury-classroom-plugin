@@ -9,7 +9,3 @@ interface IRepository {
   is_template: boolean;
   archived: boolean;
 }
-
-interface IRepositoryResponse {
-  template_repos: IRepository[];
-}
