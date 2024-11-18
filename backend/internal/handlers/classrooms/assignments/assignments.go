@@ -80,7 +80,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 
 		// Create base repository using assignment template
 		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
-		err = s.appClient.CreateBaseAssignmentRepo(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
+		err = s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -88,6 +88,54 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"created_assignment": createdAssignment,
 		})
+	}
+}
+
+func (s *AssignmentService) acceptAssignment() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Check + parse FE request
+		var assignment models.AssignmentAcceptRequest
+		err := c.BodyParser(&assignment)
+		if err != nil {
+			return errs.InvalidRequestBody(models.AssignmentOutline{})
+		}
+
+		// Retrieve user client
+		client, err := middleware.GetClient(c, s.store, s.userCfg)
+		if err != nil {
+			return errs.AuthenticationError()
+		}
+
+		// Retrieve current session
+		user, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		// Insert into DB
+		forkName := generateForkName(assignment.SourceRepoName, user.Login)
+		studentwork := createMockStudentWork(forkName, assignment.AssignmentName, int(assignment.AssignmentID))
+		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
+		if err != nil {
+			return err
+		}
+
+		// Generate Fork via GH User
+		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
+		if err != nil {
+			return err
+		}
+
+		// Remove student team's access to forked repo
+		// TODO: dynamically find student team name (KHO-177)
+		studentTeamName := "student_team_test"
+		err = client.RemoveRepoFromTeam(c.Context(), assignment.OrgName, studentTeamName, assignment.OrgName, forkName)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		c.Status(http.StatusOK)
+		return nil
 	}
 }
 
