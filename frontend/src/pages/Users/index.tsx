@@ -66,7 +66,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
 
   return (
     <div>
-      <h1>{role_label}s in {selectedClassroom?.org_name}</h1>
+      <h1>{role_label}s in {selectedClassroom?.org_name} - {selectedClassroom?.name}</h1>
       <div>
         <h2>Active Users</h2>
         <ul>
