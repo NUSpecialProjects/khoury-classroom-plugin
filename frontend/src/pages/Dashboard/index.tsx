@@ -65,7 +65,10 @@ const Dashboard: React.FC = () => {
           ) : (
             <p>{`Viewing classroom you aren't in!! (Eventually, this should be impossible)`}</p>
           )}
-          <BreadcrumbPageHeader pageTitle={selectedClassroom?.org_name} breadcrumbItems={[selectedClassroom?.name]}></BreadcrumbPageHeader>
+          <BreadcrumbPageHeader
+            pageTitle={selectedClassroom?.org_name}
+            breadcrumbItems={[selectedClassroom?.name]}
+          ></BreadcrumbPageHeader>
 
           <div className="Dashboard__classroomDetailsWrapper">
             <UserGroupCard
@@ -121,8 +124,9 @@ const Dashboard: React.FC = () => {
                 <Button
                   variant="secondary"
                   size="small"
-                  onClick={() => (navigate(`/app/assignments/create?org_name=${selectedClassroom?.org_name}`))}>
-                  <MdAdd/> Create Assignment
+                  href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
+                >
+                  <MdAdd /> Create Assignment
                 </Button>
               </div>
             </div>

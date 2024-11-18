@@ -1,13 +1,11 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useContext } from "react";
+import { useParams, Link } from "react-router-dom";
 
 import FileTree from "@/components/FileTree";
 import Button from "@/components/Button";
 import CodeBrowser from "@/components/CodeBrowser";
 import { GraderContext, GraderProvider } from "@/contexts/grader";
-import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { getPaginatedStudentWork } from "@/api/student_works";
 
 import "./styles.css";
 
@@ -51,24 +49,22 @@ const Grader: React.FC = () => {
             <div>
               <div className="Grader__navButtons">
                 {studentWork.previous_student_work_id && (
-                  <Link
-                    to={`/app/grading/assignment/${assignmentID}/student/${studentWork.previous_student_work_id}`}
+                  <Button
+                    variant="secondary"
+                    href={`/app/grading/assignment/${assignmentID}/student/${studentWork.previous_student_work_id}`}
                   >
-                    <Button variant="secondary">
-                      <FaChevronLeft />
-                      Previous
-                    </Button>
-                  </Link>
+                    <FaChevronLeft />
+                    Previous
+                  </Button>
                 )}
                 {studentWork.next_student_work_id && (
-                  <Link
-                    to={`/app/grading/assignment/${assignmentID}/student/${studentWork.next_student_work_id}`}
+                  <Button
+                    variant="secondary"
+                    href={`/app/grading/assignment/${assignmentID}/student/${studentWork.next_student_work_id}`}
                   >
-                    <Button variant="secondary">
-                      Next
-                      <FaChevronRight />
-                    </Button>
-                  </Link>
+                    Next
+                    <FaChevronRight />
+                  </Button>
                 )}
               </div>
             </div>

@@ -29,11 +29,9 @@
       background: var(--secondary-button-hover-background);
     }
   }
-}
 
-/* For smaller buttons */
-.small {
-  font-size: var(--font-size-xs);
-  height: 40px;
-  padding: 12px 30px;
+  &--small {
+    font-size: var(--font-size-xs);
+    padding: 12px 30px;
+  }
 }

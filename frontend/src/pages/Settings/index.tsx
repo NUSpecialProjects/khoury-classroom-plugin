@@ -10,26 +10,27 @@ const Settings: React.FC = () => {
 
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
-
   const stubAssignmentAcceptEntry = () => {
     // Call the function with the required arguments
-    if (selectedClassroom != null){
-      acceptAssignment("NUSpecialProjects", "practicum-take-home", selectedClassroom.id, "practicum-take-home");
+    if (selectedClassroom != null) {
+      acceptAssignment(
+        "NUSpecialProjects",
+        "practicum-take-home",
+        selectedClassroom.id,
+        "practicum-take-home"
+      );
+    } else {
+      console.log("Context Error");
     }
-    else {
-      console.log("Context Error")
-    }
-
   };
-
-
-
 
   return (
     <div>
       <PageHeader pageTitle="Settings"></PageHeader>
-      <Button variant="primary" onClick={logout}>Logout</Button>
-      <Button variant="secondary" onClick={stubAssignmentAcceptEntry}>Accept Example Assignment</Button>
+      <Button onClick={logout}>Logout</Button>
+      <Button variant="secondary" onClick={stubAssignmentAcceptEntry}>
+        Accept Example Assignment
+      </Button>
     </div>
   );
 };
