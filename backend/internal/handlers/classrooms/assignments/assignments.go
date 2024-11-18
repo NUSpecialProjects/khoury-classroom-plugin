@@ -80,7 +80,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 
 		// Create base repository using assignment template
 		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
-		err = s.appClient.CreateBaseAssignmentRepo(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
+		err = s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -124,6 +124,14 @@ func (s *AssignmentService) acceptAssignment() fiber.Handler {
 		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
 		if err != nil {
 			return err
+		}
+
+		// Remove student team's access to forked repo
+		// TODO: dynamically find student team name (KHO-177)
+		studentTeamName := "student_team_test"
+		err = client.RemoveRepoFromTeam(c.Context(), assignment.OrgName, studentTeamName, assignment.OrgName, forkName)
+		if err != nil {
+			return errs.GithubAPIError(err)
 		}
 
 		c.Status(http.StatusOK)

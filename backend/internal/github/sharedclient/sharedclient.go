@@ -181,3 +181,41 @@ func (api *CommonAPI) GetRepository(ctx context.Context, owner string, repoName 
 	repo, _, err := api.Client.Repositories.Get(ctx, owner, repoName)
 	return repo, err
 }
+
+func (api *CommonAPI) UpdateTeamRepoPermissions(ctx context.Context, org, teamSlug, owner, repo, permission string) error {
+	endpoint := fmt.Sprintf("/orgs/%s/teams/%s/repos/%s/%s", org, teamSlug, owner, repo)
+
+	// Create a new PUT request
+	req, err := api.Client.NewRequest("PUT", endpoint, map[string]string{
+		"permission": permission,
+	})
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	return nil
+}
+
+func (api *CommonAPI) RemoveRepoFromTeam(ctx context.Context, org, teamSlug, owner, repo string) error {
+	endpoint := fmt.Sprintf("/orgs/%s/teams/%s/repos/%s/%s", org, teamSlug, owner, repo)
+
+	// Create a new DELETE request
+	req, err := api.Client.NewRequest("DELETE", endpoint, nil)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	return nil
+}
