@@ -153,8 +153,7 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 		tokenData := models.AssignmentToken{
 			AssignmentID: assignmentID,
 			BaseToken: models.BaseToken{
-				Token:     token,
-				CreatedAt: time.Now(),
+				Token: token,
 			},
 		}
 

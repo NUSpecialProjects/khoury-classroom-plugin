@@ -10,12 +10,11 @@ import (
 
 func (db *DB) CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error) {
 	err := db.connPool.QueryRow(ctx, `
-	INSERT INTO assignment_outline_tokens (assignment_outline_id, token, created_at, expires_at)
-	VALUES ($1, $2, $3, $4)
+	INSERT INTO assignment_outline_tokens (assignment_outline_id, token, expires_at)
+	VALUES ($1, $2, $3)
 	RETURNING assignment_outline_id, token, created_at, expires_at`,
 		tokenData.AssignmentID,
 		tokenData.Token,
-		tokenData.CreatedAt,
 		tokenData.ExpiresAt,
 	).Scan(
 		&tokenData.AssignmentID,
