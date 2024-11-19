@@ -1,7 +1,6 @@
 package rubrics
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -55,7 +54,6 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 
 		fullRubric, err := s.store.GetFullRubric(c.Context(), rubricID)
 		if err != nil {
-			fmt.Println("fuck")
 			return errs.InternalServerError()
 		}
 
