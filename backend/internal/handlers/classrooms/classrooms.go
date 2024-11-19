@@ -304,6 +304,11 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 				// User's current role is higher than token role, therefore do nothing and return an error
 				return errs.InvalidRoleOperation()
 			}
+		} else if classroomUser.Status == models.UserStatusNotInOrg { // user previously denied their invite, but has clicked their link, so modify their role
+			classroomUser, err = s.store.ModifyUserRole(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), *classroomUser.ID)
+			if err != nil {
+				return errs.InternalServerError()
+			}
 		} else { // user is not in the classroom, add them with the token's role
 			classroomUser, err = s.store.AddUserToClassroom(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), models.UserStatusRequested, *user.ID)
 			if err != nil {
@@ -409,11 +414,6 @@ func (s *ClassroomService) updateUserStatus(ctx context.Context, client github.G
 // Sends invites to all users in the classroom who are in the requested state
 func (s *ClassroomService) sendOrganizationInvitesToRequestedUsers() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := middleware.GetClient(c, s.store, s.userCfg)
-		if err != nil {
-			return errs.AuthenticationError()
-		}
-
 		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
@@ -443,7 +443,7 @@ func (s *ClassroomService) sendOrganizationInvitesToRequestedUsers() fiber.Handl
 			}
 			//TODO: these are many content generating requests to the GitHub API, maybe need to delay between them
 			// use the current user's client to invite the user to the organization
-			modifiedClassroomUser, err := s.inviteUserToOrganization(c.Context(), client, classroom.OrgName, classroomID, classroomRole, classroomUser.User)
+			modifiedClassroomUser, err := s.inviteUserToOrganization(c.Context(), s.githubappclient, classroom.OrgName, classroomID, classroomRole, classroomUser.User)
 			if err != nil { // we failed to invite the user, but this is not a critical failure.
 				stillRequestedUsers = append(stillRequestedUsers, classroomUser)
 			} else {
@@ -462,11 +462,6 @@ func (s *ClassroomService) sendOrganizationInvitesToRequestedUsers() fiber.Handl
 // Sends an invite to a user to join the organization
 func (s *ClassroomService) sendOrganizationInviteToUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		client, err := middleware.GetClient(c, s.store, s.userCfg)
-		if err != nil {
-			return errs.AuthenticationError()
-		}
-
 		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
@@ -493,7 +488,7 @@ func (s *ClassroomService) sendOrganizationInviteToUser() fiber.Handler {
 		}
 
 		// use the current user's client to invite the user to the organization
-		invitee, err = s.inviteUserToOrganization(c.Context(), client, classroom.OrgName, classroomID, classroomRole, invitee.User)
+		invitee, err = s.inviteUserToOrganization(c.Context(), s.githubappclient, classroom.OrgName, classroomID, classroomRole, invitee.User)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -540,11 +535,6 @@ func (s *ClassroomService) revokeOrganizationInvite() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		client, err := middleware.GetClient(c, s.store, s.userCfg)
-		if err != nil {
-			return errs.AuthenticationError()
-		}
-
 		err = s.store.RemoveUserFromClassroom(c.Context(), classroomID, userID)
 		if err != nil {
 			return errs.InternalServerError()
@@ -560,7 +550,7 @@ func (s *ClassroomService) revokeOrganizationInvite() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		err = client.CancelOrgInvitation(c.Context(), classroom.OrgName, classroomUser.GithubUsername)
+		err = s.githubappclient.CancelOrgInvitation(c.Context(), classroom.OrgName, classroomUser.GithubUsername)
 		if err != nil {
 			return errs.InternalServerError()
 		}

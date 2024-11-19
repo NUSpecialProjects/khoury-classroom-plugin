@@ -1,12 +1,14 @@
-import { sendOrganizationInvitesToRequestedUsers, sendOrganizationInviteToUser, revokeOrganizationInvite, removeUserFromClassroom } from "@/api/classrooms";
+import { sendOrganizationInvitesToRequestedUsers, sendOrganizationInviteToUser, revokeOrganizationInvite, removeUserFromClassroom, postClassroomToken } from "@/api/classrooms";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { ClassroomRole, ClassroomUserStatus } from "@/types/users";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import './styles.css';
 import Button from "@/components/Button";
+import CopyLink from "@/components/CopyLink";
+import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 
 interface GenericRolePageProps {
   role_label: string;
@@ -17,25 +19,50 @@ interface GenericRolePageProps {
 const GenericRolePage: React.FC<GenericRolePageProps> = ({
   role_label,
   role_type,
-  userList,
+  userList: initialUserList,
 }: GenericRolePageProps) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const [link, setLink] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const [users, setUsers] = useState<IClassroomUser[]>(initialUserList);
+  const { classroomUsers } = useClassroomUsersList(selectedClassroom?.id);
+
+  useEffect(() => {
+    const handleCreateToken = async () => {
+      if (!selectedClassroom) {
+        return;
+      }
+      await postClassroomToken(selectedClassroom.id, role_type)
+        .then((data: ITokenResponse) => {
+          const url = `${base_url}/app/token/classroom/join?token=${data.token}`;
+          setLink(url);
+        })
+        .catch((_) => {
+          setError("Failed to generate invite URL. Please try again.");
+        });
+    };
+
+    if (selectedClassroom) {
+      handleCreateToken();
+    }
+  }, [selectedClassroom])
 
   const removeUserFromList = (userId: number) => {
-    userList = userList.filter(user => user.id !== userId);
+    setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
   };
 
   const addUserToList = (user: IClassroomUser) => {
-    userList = [...userList, user];
+    setUsers(prevUsers => [...prevUsers, user]);
   };
 
   const handleInviteAll = async () => {
     await sendOrganizationInvitesToRequestedUsers(selectedClassroom!.id, role_type)
       .then((data: IClassroomInvitedUsersListResponse) => {
-        userList = [...data.invited_users, ...data.requested_users];
+        setUsers([...data.invited_users, ...data.requested_users]);
       })
-      .catch((error) => {
-        console.error("Error inviting all users:", error);
+      .catch((_) => {
+        setError("Failed to invite all users. Please try again.");
       });
   };
 
@@ -45,8 +72,8 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
         removeUserFromList(userId);
         addUserToList(data.user);
       })
-      .catch((error) => {
-        console.error("Error inviting user:", error);
+      .catch((_) => {
+        setError("Failed to invite user. Please try again.");
       });
   };
 
@@ -55,8 +82,8 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
       .then((_) => {
         removeUserFromList(userId);
       })
-      .catch((error) => {
-        console.error("Error revoking invite:", error);
+      .catch((_) => {
+        setError("Failed to revoke invite. Please try again.");
       });
   };
 
@@ -65,9 +92,14 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
       .then(() => {
         removeUserFromList(userId);
       })
-      .catch((error) => {
-        console.error("Error removing user:", error);
+      .catch((_) => {
+        setError("Failed to remove user. Please try again.");
       });
+  };
+
+  const handleRefresh = () => {
+    const filteredUsers = classroomUsers.filter(user => user.classroom_role === role_type);
+    setUsers(filteredUsers);
   };
 
   const getActionButton = (user: IClassroomUser) => {
@@ -86,34 +118,49 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   return (
     <div>
       <SubPageHeader pageTitle={role_label + `s`} chevronLink="/app/dashboard/"></SubPageHeader>
-      
-      {userList.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
-        <div className="Users__inviteAllWrapper">
-          <button onClick={handleInviteAll}>Invite All Requested Users</button>
+
+      <div className="Users__inviteLinkWrapper">
+        <div>
+          <h2>Invite {role_label + `s`}</h2>
+          <p>Share this link to invite and add students to {selectedClassroom?.name}.</p>
+          {(role_type === ClassroomRole.PROFESSOR || role_type === ClassroomRole.TA) &&
+            <p>Warning: This will make them an admin of the organization.</p>}
+          {error && <p className="error">{error}</p>}
         </div>
-      )}
+        <CopyLink link={link} name="invite-tas"></CopyLink>
+
+        {users.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
+          <div className="Users__inviteAllWrapper">
+            <Button onClick={handleInviteAll}>Invite All Requested Users</Button>
+          </div>
+        )}
+        <div>
+          <Button onClick={handleRefresh}>Refresh</Button>
+        </div>
+      </div>
+    
 
       <div className="Users__tableWrapper">
-        <Table cols={3}>
-          <TableRow style={{ borderTop: "none" }}>
-            <TableCell>{role_label} Name</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-          {userList.length > 0 ? (
-            userList.map((user, i) => (
+        {users.length > 0 ? (
+          <Table cols={3}>
+            <TableRow style={{ borderTop: "none" }}>
+              <TableCell>{role_label} Name</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+            {users.map((user, i) => (
               <TableRow key={i}>
                 <TableCell>{user.first_name} {user.last_name}</TableCell>
                 <TableCell>{user.status}</TableCell>
                 <TableCell>{getActionButton(user)}</TableCell>
               </TableRow>
-            ))
-          ) : (
-            <EmptyDataBanner>
-              <p>There are currently no {role_label}s in this classroom.</p>
-            </EmptyDataBanner>
-          )}
-        </Table>
+            ))}
+          </Table>
+        ) : (
+          <EmptyDataBanner>
+            <p>There are currently no {role_label}s in this classroom.</p>
+          </EmptyDataBanner>
+        )}
       </div>
     </div>
   );
