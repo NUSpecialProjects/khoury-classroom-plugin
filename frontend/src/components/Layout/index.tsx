@@ -1,5 +1,7 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useContext } from "react";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
@@ -17,14 +19,14 @@ const Layout: React.FC = () => {
         <LeftNav />
       </div>
 
-      <div className="Layout__right">
+      <SimpleBar className="Layout__right">
         <div className="Layout__top">
           <TopNav />
         </div>
         <div className="Layout__content">
           <Outlet />
         </div>
-      </div>
+      </SimpleBar>
     </div>
   ) : (
     <Navigate to="/app/organization/select" />

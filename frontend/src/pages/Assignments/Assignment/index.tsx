@@ -5,9 +5,11 @@ import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
-import { FaChevronLeft } from "react-icons/fa6";
-import { getAssignmentIndirectNav } from "@/api/assignments";
+import SubPageHeader from "@/components/PageHeader/SubPageHeader";
+import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
+import { formatDate } from "@/utils/date";
+import CopyLink from "@/components/CopyLink";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -15,6 +17,9 @@ const Assignment: React.FC = () => {
   const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
+  const [inviteLink, setInviteLink] = useState<string>("");
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -65,56 +70,88 @@ const Assignment: React.FC = () => {
     }
   }, [selectedClassroom]);
 
+  useEffect(() => {
+    const generateInviteLink = async () => {
+      if (!assignment) return;
+      
+      try {
+        if (!selectedClassroom) return;
+        const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
+        const url = `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
+        setInviteLink(url);
+      } catch (_) {
+        setLinkError("Failed to generate assignment invite link");
+      }
+    };
+
+
+    generateInviteLink();
+  }, [assignment]);
+
   return (
     <div className="Assignment">
       {assignment && (
         <>
-          <div className="Assignment__head">
-            <div className="Assignment__title">
-              <FaChevronLeft />
-              <h2>{assignment.name}</h2>
-            </div>
+          <SubPageHeader
+            pageTitle={assignment.name}
+            chevronLink={"/app/dashboard"}
+          >
             <div className="Assignment__dates">
-              <span>
-                Due Date:{" "}
-                {assignment.main_due_data
-                  ? assignment.main_due_data.toString()
+              <div className="Assignment__date">
+                <div className="Assignment__date--title"> {"Released on:"}</div>
+                {assignment.created_at
+                  ? formatDate(new Date(assignment.created_at))
                   : "N/A"}
-              </span>
+              </div>
+              <div className="Assignment__date">
+                <div className="Assignment__date--title"> {"Due Date:"}</div>
+                {assignment.main_due_date
+                  ? formatDate(new Date(assignment.main_due_date))
+                  : "N/A"}
+              </div>
             </div>
-          </div>
+          </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View in Github Classroom
             </Button>
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View Starter Code
             </Button>
-            <Button href="" variant="secondary">
+            <Button href="" variant="secondary" newTab>
               View Rubric
             </Button>
           </div>
 
-          <h2>Metrics</h2>
-          <div>Metrics go here</div>
-          <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
-          <Table cols={3}>
-            <TableRow style={{ borderTop: "none" }}>
-              <TableCell>Student Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Last Commit</TableCell>
-            </TableRow>
-            {studentWorks &&
-              studentWorks.length > 0 &&
-              studentWorks.map((sa, i) => (
-                <TableRow key={i} className="Assignment__submission">
-                  <TableCell>{sa.contributors.join(", ")}</TableCell>
-                  <TableCell>Passing</TableCell>
-                  <TableCell>12 Sep, 11:34pm</TableCell>
-                </TableRow>
-              ))}
-          </Table>
+          <h2>Assignment Link</h2>
+          <CopyLink link={inviteLink} name="invite-assignment" />
+          {linkError && <p className="error">{linkError}</p>}
+
+          <div className="Assignment__subSectionWrapper">
+            <h2>Metrics</h2>
+            <p>Metrics go here</p>
+          </div>
+
+          <div className="Assignment__subSectionWrapper">
+            <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
+            <Table cols={3}>
+              <TableRow style={{ borderTop: "none" }}>
+                <TableCell>Student Name</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Last Commit</TableCell>
+              </TableRow>
+              {studentWorks &&
+                studentWorks.length > 0 &&
+                studentWorks.map((sa, i) => (
+                  <TableRow key={i} className="Assignment__submission">
+                    <TableCell>{sa.contributors.join(", ")}</TableCell>
+                    <TableCell>Passing</TableCell>
+                    <TableCell>12 Sep, 11:34pm</TableCell>
+                  </TableRow>
+                ))}
+            </Table>
+          </div>
         </>
       )}
     </div>

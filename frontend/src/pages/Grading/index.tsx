@@ -12,6 +12,7 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
+import PageHeader from "@/components/PageHeader";
 
 import "./styles.css";
 
@@ -98,7 +99,7 @@ const Grading: React.FC = () => {
 
   return (
     <div className="Grading">
-      <h2 style={{ marginBottom: 0 }}>Assignments</h2>
+      <PageHeader pageTitle="Assignments"></PageHeader>
       <Table cols={4} primaryCol={1} className="AssignmentsTable">
         <TableRow style={{ borderTop: "none" }}>
           <TableCell></TableCell>
@@ -110,7 +111,7 @@ const Grading: React.FC = () => {
           <GradingAssignmentRow key={i} assignmentId={i + 1}>
             <TableCell>{assignment.name}</TableCell>
             <TableCell>{formatDate(assignment.created_at)}</TableCell>
-            <TableCell>{formatDate(assignment.main_due_data)}</TableCell>
+            <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
           </GradingAssignmentRow>
         ))}
       </Table>
