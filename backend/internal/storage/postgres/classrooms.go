@@ -28,7 +28,6 @@ func (db *DB) CreateClassroom(ctx context.Context, classroomData models.Classroo
 }
 
 func (db *DB) UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error) {
-
 	err := db.connPool.QueryRow(ctx, "UPDATE classrooms SET name = $1, org_id = $2, org_name = $3 WHERE id = $4 RETURNING *",
 		classroomData.Name,
 		classroomData.OrgID,

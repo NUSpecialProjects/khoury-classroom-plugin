@@ -16,7 +16,7 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService) fiber.Rou
 	// Create an assignment
 	assignmentRouter.Post("/", service.createAssignment())
 
-	// Update an assignment
+	// Update an assignment rubric
 	assignmentRouter.Put("/assignment/:assignment_id/rubric", service.updateAssignmentRubric())
 
 	// Generate a token to accept this assignment

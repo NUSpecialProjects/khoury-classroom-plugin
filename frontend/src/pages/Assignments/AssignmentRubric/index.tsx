@@ -3,7 +3,7 @@ import { FaChevronLeft } from "react-icons/fa6";
 import { Link, useLocation } from "react-router-dom";
 
 import "./styles.css";
-import { getAssignmentRubric } from "@/api/assignments";
+import { getRubric } from "@/api/rubrics";
 import Button from "@/components/Button";
 
 const AssignmentRubric: React.FC = () => {
@@ -17,8 +17,9 @@ const AssignmentRubric: React.FC = () => {
     if (assignment && assignment.rubric_id) {
       (async () => {
         try {
-          const rubric = await getAssignmentRubric(assignment.rubric_id)
+          const rubric = await getRubric(assignment.rubric_id)
           if (rubric !== null && rubricData !== undefined) {
+            console.log("rubric:", rubric)
             setRubricData(rubric)
           }
         } catch (error) {
@@ -26,11 +27,7 @@ const AssignmentRubric: React.FC = () => {
         }
       })();
     }
-
-
   });
-
-
 
   return (
     <div className="AssignmentRubric">

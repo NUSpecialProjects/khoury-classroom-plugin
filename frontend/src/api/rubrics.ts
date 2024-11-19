@@ -23,3 +23,26 @@ export const createRubric = async (
     return data
   
   };
+
+
+export const getRubric = async (
+  rubricID: number
+): Promise<IFullRubric> => {
+  const result = await fetch(`${base_url}/rubrics/rubric/${rubricID}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!result.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  const data: IFullRubric = (await result.json() as IFullRubricResponse).full_rubric 
+
+  console.log(data)
+  return data
+
+};

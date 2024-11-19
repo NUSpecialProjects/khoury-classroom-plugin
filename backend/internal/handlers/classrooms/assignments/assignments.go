@@ -1,6 +1,7 @@
 package assignments
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -69,9 +70,25 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 // Updates an existing assignment.
 func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
-	}
+	    assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		var rubricID int64
+		error := c.BodyParser(&rubricID)
+		if error != nil {
+			return errs.BadRequest(error)
+		}
+        fmt.Println(rubricID)
+
+		updatedAssignment, err := s.store.UpdateAssignmentRubric(c.Context(), rubricID, assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{"assignment": updatedAssignment})
+    }
 }
 
 // Generates a token to accept an assignment.

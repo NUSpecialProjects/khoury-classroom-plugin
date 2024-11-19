@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -58,4 +59,27 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentData models.Assign
 	}
 
 	return assignmentData, nil
+}
+
+func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error) {
+    var updatedAssignmentData models.AssignmentOutline
+    fmt.Println(rubricID)
+    err := db.connPool.QueryRow(ctx, "UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 RETURNING *",
+		rubricID, assignmentID).Scan(
+        &updatedAssignmentData.ID,
+		&updatedAssignmentData.TemplateID,
+		&updatedAssignmentData.CreatedAt,
+		&updatedAssignmentData.ReleasedAt,
+		&updatedAssignmentData.Name,
+        &updatedAssignmentData.ClassroomID,
+        &updatedAssignmentData.RubricID,
+        &updatedAssignmentData.GroupAssignment,
+        &updatedAssignmentData.MainDueDate)
+
+	if err != nil {
+		return models.AssignmentOutline{}, errs.NewDBError(err)
+	}
+
+    fmt.Println(updatedAssignmentData.RubricID)
+	return updatedAssignmentData, nil
 }

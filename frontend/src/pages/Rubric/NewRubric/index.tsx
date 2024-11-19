@@ -41,25 +41,23 @@ const NewRubric: React.FC = () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
             const rubricItems = (rubricItemData.map(item => ({ ...item, id: null })));
 
-            const rubricData: IRubric = {
-                id: null,
-                name: rubricName,
-                org_id: selectedClassroom.org_id,
-                classroom_id: selectedClassroom.id,
-                reusable: true,
-                created_at: null
-            }
-
             const fullRubric: IFullRubric = {
-                rubric: rubricData,
+                rubric: {
+                    id: null,
+                    name: rubricName,
+                    org_id: selectedClassroom.org_id,
+                    classroom_id: selectedClassroom.id,
+                    reusable: true,
+                    created_at: null
+                },
                 rubric_items: rubricItems
-            }
+            }     
             await createRubric(fullRubric)
-                .then((response) => {
-                    console.log("Rubric created successfully:", response);
+                .then((createdRubric) => {
                     setRubricEdited(false)
                     if (assignment !== null && assignment !== undefined) {
-                        setAssignmentRubric(fullRubric.rubric.id!)
+                        console.log(createdRubric.rubric.id!)
+                        setAssignmentRubric(createdRubric.rubric.id!, selectedClassroom.id, assignment.id)
                     }
                 })
                 .catch((error) => {
