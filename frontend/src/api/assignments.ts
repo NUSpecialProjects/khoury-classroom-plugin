@@ -79,7 +79,7 @@ export const getAssignmentIndirectNav = async (
   classroomID: number,
   assignmentID: number
 ): Promise<IAssignmentOutline> => {
-  const result = await fetch(`${base_url}/classrooms/classroom/${classroomid}/assignments/assignment/${assignmentID}`, {
+  const result = await fetch(`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}`, {
     method: 'GET',
     credentials: 'include',
     headers: {
