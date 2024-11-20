@@ -70,7 +70,6 @@ type AssignmentTemplate interface {
 
 type Rubric interface {
 	CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error)
-	GetFullRubric(ctx context.Context, rubricID int64) (models.FullRubric, error)
 	GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error)
 	AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
 	GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error)

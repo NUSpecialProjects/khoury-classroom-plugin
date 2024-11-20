@@ -6,16 +6,6 @@ CREATE TABLE IF NOT EXISTS classrooms (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-
--- TODO: Impose length on tokens
-CREATE TABLE IF NOT EXISTS classroom_tokens (
-    token VARCHAR(255) PRIMARY KEY, 
-    expires_at TIMESTAMP NOT NULL,
-    classroom_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
-);
-
 DO $$ BEGIN
     CREATE TYPE USER_ROLE AS 
     ENUM('PROFESSOR', 'TA', 'STUDENT');

@@ -52,14 +52,19 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		fullRubric, err := s.store.GetFullRubric(c.Context(), rubricID)
-		if err != nil {
-			return errs.InternalServerError()
-		}
+        rubric, err := s.store.GetRubric(c.Context(), rubricID)
+        if err != nil {
+           return errs.NewDBError(err)
+        }
+
+        rubricItems, err := s.store.GetRubricItems(c.Context(), rubricID)
+        if err != nil {
+            return errs.InternalServerError()
+        }
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"rubric":       fullRubric.Rubric,
-			"rubric_items": fullRubric.RubricItems,
+			"rubric":       rubric,
+			"rubric_items": rubricItems,
 		})
 
 	}
