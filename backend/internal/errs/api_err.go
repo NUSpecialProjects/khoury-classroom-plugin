@@ -94,6 +94,10 @@ func UserNotFoundInClassroomError() APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("user is not in the classroom"))
 }
 
+func AssignmentNotAcceptedError() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("student has not accepted this assignment yet"))
+}
+
 /* Post Requests Only */
 func InvalidRequestBody(expected interface{}) APIError {
 	fieldAcc := make([]string, 0, 10)

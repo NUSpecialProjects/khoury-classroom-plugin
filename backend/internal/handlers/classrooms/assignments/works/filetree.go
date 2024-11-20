@@ -14,11 +14,8 @@ func (s *WorkService) GetFileTree() fiber.Handler {
 		if err != nil {
 			return err
 		}
-		if work.RepoName == nil || work.SubmittedPRNumber == nil {
-			return errs.BadRequest(errors.New("work has not been submitted for grading yet"))
-		}
 
-		tree, err := s.githubappclient.GetFileTree(work.OrgName, *work.RepoName, *work.SubmittedPRNumber)
+		tree, err := s.githubappclient.GetFileTree(work.OrgName, work.RepoName)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
@@ -35,15 +32,12 @@ func (s *WorkService) GetFileBlob() fiber.Handler {
 		if err != nil {
 			return err
 		}
-		if work.RepoName == nil || work.SubmittedPRNumber == nil {
-			return errs.BadRequest(errors.New("work has not been submitted for grading yet"))
-		}
 
 		if c.Params("sha") == "" {
 			return errs.BadRequest(errors.New("missing blob SHA"))
 		}
 
-		content, err := s.githubappclient.GetFileBlob(work.OrgName, *work.RepoName, c.Params("sha"))
+		content, err := s.githubappclient.GetFileBlob(work.OrgName, work.RepoName, c.Params("sha"))
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
