@@ -38,9 +38,8 @@ export const FileTree: React.FC<IFileTree> = ({
       .then((resp) => {
         setGitTree(resp);
       })
-      .catch((err: unknown) => {
+      .catch((_: unknown) => {
         setGitTree([]);
-        console.log(err);
       });
   }, []);
 

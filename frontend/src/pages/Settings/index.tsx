@@ -11,17 +11,15 @@ const Settings: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   const stubAssignmentAcceptEntry = () => {
+    if (!selectedClassroom) return;
+
     // Call the function with the required arguments
-    if (selectedClassroom != null) {
-      acceptAssignment(
-        "NUSpecialProjects",
-        "practicum-take-home",
-        selectedClassroom.id,
-        "practicum-take-home"
-      );
-    } else {
-      console.log("Context Error");
-    }
+    acceptAssignment(
+      "NUSpecialProjects",
+      "practicum-take-home",
+      selectedClassroom.id,
+      "practicum-take-home"
+    );
   };
 
   return (

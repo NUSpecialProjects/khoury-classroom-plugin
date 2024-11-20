@@ -69,8 +69,7 @@ export const GraderProvider: React.FC<{
         setFeedback(resp.feedback);
         setStagedFeedback({});
       })
-      .catch((err: unknown) => {
-        console.log(err);
+      .catch((_: unknown) => {
         navigate("/404", { replace: true });
       });
   }, [studentWorkID]);

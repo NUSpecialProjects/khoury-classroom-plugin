@@ -27,8 +27,6 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 		return nil, err
 	}
 
-	fmt.Println(rawFeedback)
-
 	var formattedFeedback []models.PRReviewCommentResponse
 	for _, feedback := range rawFeedback {
 		formattedFeedback = append(formattedFeedback, models.PRReviewCommentResponse{
