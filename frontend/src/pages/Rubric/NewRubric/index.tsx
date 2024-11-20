@@ -9,7 +9,11 @@ import { createRubric } from "@/api/rubrics";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { setAssignmentRubric } from "@/api/assignments";
 
-const NewRubric: React.FC = () => {
+interface NewRubricProps {
+    rubricData?: IFullRubric; // Accept rubricData as a prop
+}
+
+const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
     const location = useLocation();
     const [assignment, setAssignment] = useState<IAssignmentOutline>()
     const { selectedClassroom } = useContext(SelectedClassroomContext)
@@ -94,11 +98,16 @@ const NewRubric: React.FC = () => {
     useEffect(() => {
         if (location.state !== null && location.state !== undefined) {
             setAssignment(location.state.assignment)
-            console.log(assignment?.name)
         }
 
         if (assignment !== null && assignment !== undefined) {
-            setRubricName(`${assignment.name} Rubric`)
+            if (rubricData !== null && rubricData !== undefined) {
+                setRubricName(rubricData.rubric.name)
+                setRubricItemData(rubricData.rubric_items)
+                console.log("Rubric Items: ", rubricData.rubric_items)
+            } else {
+                setRubricName(`${assignment.name} Rubric`)
+            }
         } else {
             setRubricName("New Rubric")
         }
@@ -106,6 +115,8 @@ const NewRubric: React.FC = () => {
         if (rubricItemData.length === 0) {
             addNewItem()
         }
+
+        console.log(rubricItemData)
     }, []);
 
 

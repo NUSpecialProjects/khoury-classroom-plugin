@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.css";
 
 interface IRubricItemProps {
@@ -65,6 +65,11 @@ const RubricItem: React.FC<IRubricItemProps> = ({
             setSelection(FeedbackType.Neutral)
         }
     };
+
+
+    useEffect(() => {
+        if 
+    }, [])
 
 
     return (

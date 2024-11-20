@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import "./styles.css";
 import { getRubric } from "@/api/rubrics";
 import Button from "@/components/Button";
+import NewRubric from "@/pages/Rubric/NewRubric";
 
 const AssignmentRubric: React.FC = () => {
   const location = useLocation();
@@ -53,15 +54,10 @@ const AssignmentRubric: React.FC = () => {
             </div>
           </div>
 
-
-          <div className="AssignmentRubric__title"> RUBRIC </div>
-
           {rubricData ? (
             <div>
-              <div>{rubricData.rubric.name}</div>
-
+              <NewRubric rubricData={rubricData}/>
             </div>
-            
 
           ) : (
 
