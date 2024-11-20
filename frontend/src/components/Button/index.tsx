@@ -31,7 +31,7 @@ const Button: React.FC<IButtonProps> = ({
   return (
     <ButtonWrapper href={href}>
       <button
-        className={`Button Button--${variant} Button--${size} ${className}`}
+        className={`Button Button--${variant} Button--${size} ${className ?? ""}`}
         {...props}
       >
         {children}

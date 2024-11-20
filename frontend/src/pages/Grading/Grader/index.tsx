@@ -2,12 +2,13 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 
-import FileTree from "@/components/FileTree";
+import FileTree from "@/components/CodeBrowser/FileTree";
 import Button from "@/components/Button";
 import CodeBrowser from "@/components/CodeBrowser";
 import { GraderContext, GraderProvider } from "@/contexts/grader";
 
 import "./styles.css";
+import RubricTree from "@/components/CodeBrowser/RubricTree";
 
 const GraderWrapper: React.FC = () => {
   const { assignmentID, studentWorkID } = useParams();
@@ -80,6 +81,7 @@ const Grader: React.FC = () => {
             studentWorkID={studentWorkID}
             file={selectedFile}
           />
+          <RubricTree />
           <button onClick={postFeedback}>POST COMMENTS</button>
         </div>
       </div>
