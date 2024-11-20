@@ -15,7 +15,7 @@ type GitHubAppClient interface { // All methods in the APP client
 	// Get the installations of the github app
 	ListInstallations(ctx context.Context) ([]*github.Installation, error)
 
-	GetFileTree(owner string, repo string, pullNumber int) ([]models.FileTreeNode, error)
+	GetFileTree(owner string, repo string) ([]models.FileTreeNode, error)
 	GetFileBlob(owner string, repo string, sha string) ([]byte, error)
 
 	// Create a new team in an organization
@@ -79,7 +79,7 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error)
 
 	// Create a new pull request review
-	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
+	CreatePRReview(ctx context.Context, owner string, repo string, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
 	// Get the details of a user
 	GetUser(ctx context.Context, userName string) (*github.User, error)
