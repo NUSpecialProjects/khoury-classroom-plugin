@@ -1,12 +1,12 @@
 # database/lambda.tf
 
 resource "aws_lambda_function" "drop_db_function" {
-  filename         = "./database/func.zip"
+  filename         = "./database/func/drop_db.zip"
   function_name    = "drop_db"
   role             = aws_iam_role.lambda_execution_role.arn
-  handler          = "func/drop_db.lambda_handler"
+  handler          = "drop_db.lambda_handler"
   runtime          = "python3.9"
-  source_code_hash = filebase64sha256("./database/func.zip")
+  source_code_hash = filebase64sha256("./database/func/drop_db.zip")
   architectures    = ["arm64"]
   layers           = ["arn:aws:lambda:us-east-2:898466741470:layer:psycopg2-py39:1"]
   timeout          = 30
