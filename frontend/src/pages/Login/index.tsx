@@ -8,6 +8,7 @@ import { AuthContext } from "@/contexts/auth";
 import { FaGithub } from "react-icons/fa6";
 
 import Button from "@/components/Button";
+import ClipLoader from "react-spinners/ClipLoader";
 
 enum LoginStatus {
   LOADING = "LOADING",
@@ -30,23 +31,24 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(errorFromQuery);
   const [callbackURL, setCallbackURL] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchCallbackURL = async () => {
     setStatus(LoginStatus.LOADING);
     setError(null);
-    const fetchCallbackURL = async () => {
-      try {
-        const url = await getCallbackURL();
-        if (!url) {
-          throw new Error("Callback URL is empty");
-        }
-        setCallbackURL(url);
-        setStatus(LoginStatus.READY);
-        setError(null);
-      } catch (_) {
-        setStatus(LoginStatus.LOGIN_ERRORED);
-        setError("Error occurred while communicating with the server");
+    try {
+      const url = await getCallbackURL();
+      if (!url) {
+        throw new Error("Callback URL is empty");
       }
-    };
+      setCallbackURL(url);
+      setStatus(LoginStatus.READY);
+      setError(null);
+    } catch (_) {
+      setStatus(LoginStatus.LOGIN_ERRORED);
+      setError("Error occurred while communicating with the server");
+    }
+  };
+
+  useEffect(() => {
     fetchCallbackURL();
   }, []);
 
@@ -117,26 +119,23 @@ const Login: React.FC = () => {
 
       <div>
         {callbackURL && status !== LoginStatus.LOADING && (
-          <a href={callbackURL} target="_self">
-            <Button variant="secondary">
-              <FaGithub className="LandingPage__icon" /> Log in with GitHub
-            </Button>
-          </a>
+          <Button variant="secondary" href={callbackURL}>
+            <FaGithub className="LandingPage__icon" /> Log in with GitHub
+          </Button>
         )}
 
         {status === LoginStatus.LOADING && (
-          <div className="LoadingMessage">Loading...</div>
+          <ClipLoader size={50} color={"#123abc"} loading={true} />
         )}
 
         {error && (
-          <>
-            <a className="SignInLink" href={"/"}>
+          <div className="LandingPage__error-container">
+            <Button variant="secondary" onClick={() => fetchCallbackURL()}>
               Refresh
-            </a>
+            </Button>
             <ErrorMessage message={error} />
-          </>
+            </div>
         )}
-        {error && <ErrorMessage message={error} />}
       </div>
     </div>
   );
