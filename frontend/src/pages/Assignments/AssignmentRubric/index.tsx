@@ -18,16 +18,20 @@ const AssignmentRubric: React.FC = () => {
       (async () => {
         try {
           const rubric = await getRubric(assignment.rubric_id)
-          if (rubric !== null && rubricData !== undefined) {
-            console.log("rubric:", rubric)
+          if (rubric !== null) {
             setRubricData(rubric)
+            console.log(rubricData)
           }
         } catch (error) {
           console.error("Could not get rubric: ", error)
         }
+
       })();
     }
-  });
+
+    
+  }, []);
+
 
   return (
     <div className="AssignmentRubric">
@@ -52,9 +56,13 @@ const AssignmentRubric: React.FC = () => {
 
           <div className="AssignmentRubric__title"> RUBRIC </div>
 
-
           {rubricData ? (
-            <div>Your rubric content goes here</div>
+            <div>
+              <div>{rubricData.rubric.name}</div>
+
+            </div>
+            
+
           ) : (
 
             <div className="AssignmentRubric__noRubric">

@@ -54,7 +54,7 @@ export const setAssignmentRubric = async (
   rubric_id: number,
   classroomID: number,
   assignmentID: number,
-): Promise<IFullRubric> => {
+): Promise<IAssignmentOutline> => {
   const response = await fetch(
     `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/rubric`,
     {
@@ -66,11 +66,13 @@ export const setAssignmentRubric = async (
       body: JSON.stringify(rubric_id),
     }
   );
+  
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
 
-  const data: IFullRubric = (await response.json() as IFullRubric) 
+  const data: IAssignmentOutline = (await response.json() as IAssignmentOutlineResponse).assignment_outline 
+  console.log(data)
 
   return data
 

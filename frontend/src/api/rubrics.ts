@@ -44,5 +44,4 @@ export const getRubric = async (
 
   console.log(data)
   return data
-
 };

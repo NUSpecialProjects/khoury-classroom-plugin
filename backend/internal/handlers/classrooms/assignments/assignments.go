@@ -87,7 +87,7 @@ func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		return c.Status(http.StatusOK).JSON(fiber.Map{"assignment": updatedAssignment})
+		return c.Status(http.StatusOK).JSON(fiber.Map{"assignment_outline": updatedAssignment})
     }
 }
 

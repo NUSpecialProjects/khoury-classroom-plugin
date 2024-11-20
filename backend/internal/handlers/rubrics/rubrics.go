@@ -60,9 +60,8 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"rubric":       fullRubric.Rubric,
-			"rubric_items": fullRubric.RubricItems,
-		})
+            "full_rubric" : fullRubric,
+        })
 
 	}
 }

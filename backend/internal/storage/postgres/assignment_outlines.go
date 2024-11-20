@@ -21,13 +21,14 @@ func (db *DB) GetAssignmentsInClassroom(ctx context.Context, classroomID int64) 
 func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error) {
 	var assignmentOutline models.AssignmentOutline
 	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_outlines WHERE id = $1", assignmentID).Scan(
-		&assignmentOutline.ID,
+        &assignmentOutline.ID,
 		&assignmentOutline.TemplateID,
 		&assignmentOutline.CreatedAt,
 		&assignmentOutline.ReleasedAt,
 		&assignmentOutline.Name,
-		&assignmentOutline.ClassroomID,
-		&assignmentOutline.GroupAssignment,
+        &assignmentOutline.ClassroomID,
+        &assignmentOutline.RubricID,
+        &assignmentOutline.GroupAssignment,
         &assignmentOutline.MainDueDate,
 	)
 	if err != nil {
@@ -80,6 +81,5 @@ func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assign
 		return models.AssignmentOutline{}, errs.NewDBError(err)
 	}
 
-    fmt.Println(updatedAssignmentData.RubricID)
 	return updatedAssignmentData, nil
 }
