@@ -47,7 +47,7 @@ func (s *WorkService) getWorkByID() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		return c.Status(200).JSON(fiber.Map{
+		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"student_work": work,
 			"feedback":     feedback,
 		})
