@@ -84,11 +84,18 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.BadRequest(errors.New("invalid repository data"))
 	}
 
-	// Create development branch
+	// Create necessary repo branches
 	_, err := s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
 		*pushEvent.Repo.Name,
 		*pushEvent.Repo.MasterBranch,
-		"dev")
+		"development")
+	if err != nil {
+		return errs.InternalServerError()
+	}
+	_, err = s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
+		*pushEvent.Repo.Name,
+		*pushEvent.Repo.MasterBranch,
+		"feedback")
 	if err != nil {
 		return errs.InternalServerError()
 	}
