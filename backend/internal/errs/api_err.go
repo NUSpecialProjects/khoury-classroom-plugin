@@ -86,6 +86,14 @@ func AuthenticationError() APIError {
 	return NewAPIError(http.StatusForbidden, fmt.Errorf("please authenticate properly"))
 }
 
+func InconsistentOrgMembershipError() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("user status is inconsistent with org membership, were they removed from the GitHub organization?"))
+}
+
+func UserNotFoundInClassroomError() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("user is not in the classroom"))
+}
+
 /* Post Requests Only */
 func InvalidRequestBody(expected interface{}) APIError {
 	fieldAcc := make([]string, 0, 10)

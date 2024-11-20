@@ -7,16 +7,18 @@
   flex-grow: 1;
 
   &__left {
-    height: auto;
-    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    width: fit-content;
+    overflow-y: hidden;
   }
 
   &__right {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     height: 100vh;
     overflow: auto;
-    width: 100%;
   }
 
   &__content {

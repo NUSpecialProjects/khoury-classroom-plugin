@@ -20,18 +20,20 @@ const ButtonWrapper: React.FC<IButtonProps> = ({ children, href, newTab }) => {
 };
 
 const Button: React.FC<IButtonProps> = ({
+  className,
   children,
   href,
-  onClick,
   variant = "primary",
   size = "default",
   newTab = false,
+  ...props
 }) => {
-  const className = `Button--${variant}${size === "small" ? ` ${size}` : ""}`;
-
   return (
-    <ButtonWrapper href={href} newTab={newTab}>
-      <button className={className} onClick={onClick}>
+    <ButtonWrapper href={href}>
+      <button
+        className={`Button Button--${variant} Button--${size} ${className}`}
+        {...props}
+      >
         {children}
       </button>
     </ButtonWrapper>

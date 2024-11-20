@@ -42,7 +42,7 @@ const OrganizationSelection: React.FC = () => {
         setSelectedOrg(orgDetails);
       })
       .catch((_) => {
-        // do nothing 
+        // do nothing
       });
   };
 
@@ -70,7 +70,7 @@ const OrganizationSelection: React.FC = () => {
             )}
           {selectedOrg &&
             orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
-              <Button variant="primary" href={selectedOrg.html_url}>
+              <Button href={selectedOrg.html_url}>
                 Install GitGrader for {selectedOrg.login}
               </Button>
             )}
