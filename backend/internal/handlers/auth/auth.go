@@ -54,21 +54,47 @@ func (service *AuthService) Login() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		user, err := client.GetCurrentUser(c.Context())
+		currentGitHubUser, err := client.GetCurrentUser(c.Context())
 		if err != nil {
 			return errs.AuthenticationError()
 		}
 
-		//TODO: move creating the user in our DB here rather than on joining a classroom?
+		// Check if user is in our DB
+		userIsInDB := false
+		_, err = service.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ID)
+		if err != nil { // user isn't in our DB
+			userIsInDB = false
+		} else { // user is in our DB
+			userIsInDB = true
+		}
+
+		// Add the user to the database if they don't exist already
+		if !userIsInDB {
+			user := models.User{
+				GithubUsername: currentGitHubUser.Login,
+				GithubUserID:   currentGitHubUser.ID,
+			}
+
+			if currentGitHubUser.Name != nil {
+				user.FirstName = *currentGitHubUser.Name
+			} else {
+				user.FirstName = currentGitHubUser.Login
+			}
+
+			_, err = service.store.CreateUser(c.Context(), user)
+			if err != nil {
+				return errs.InternalServerError()
+			}
+		}
 
 		// Convert user.ID to string
-		userID := strconv.FormatInt(user.ID, 10)
+		userID := strconv.FormatInt(currentGitHubUser.ID, 10)
 
 		timeToExp := 24 * time.Hour
 		expirationTime := time.Now().Add(timeToExp)
 
 		err = service.store.CreateSession(c.Context(), models.Session{
-			GitHubUserID: user.ID,
+			GitHubUserID: currentGitHubUser.ID,
 			AccessToken:  client.Token.AccessToken,
 			TokenType:    client.Token.TokenType,
 			RefreshToken: client.Token.RefreshToken,

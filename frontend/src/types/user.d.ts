@@ -18,11 +18,20 @@ interface IClassroomUser {
   last_name: string;
   github_username: string;
   github_user_id: number;
+  classroom_id: number;
   classroom_role: ClassroomRole;
+  status: ClassroomUserStatus;
 }
 
-enum ClassroomRole {
-  PROFESSOR = "PROFESSOR",
-  TA = "TA",
-  STUDENT = "STUDENT",
+interface IClassroomUserResponse {
+  message: string;
+  user: IClassroomUser;
 }
+
+interface IClassroomInvitedUsersListResponse {
+  message: string;
+  invited_users: IClassroomUser[];
+  requested_users: IClassroomUser[];
+}
+
+

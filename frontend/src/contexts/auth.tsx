@@ -1,5 +1,6 @@
-import { logout as logoutApi } from "@/api/auth";
 import { useState, createContext, useLayoutEffect, useContext } from "react";
+
+import { logout as logoutApi } from "@/api/auth";
 import { SelectedClassroomContext } from "./selectedClassroom";
 import { fetchCurrentUser } from "@/api/users";
 
@@ -27,9 +28,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useLayoutEffect(() => {
     fetchCurrentUser()
-      .then((user) => {
-        setIsLoggedIn(true);
-        setCurrentUser(user);
+      .then((user: IGitHubUser | null) => {
+        if (user) {
+          setIsLoggedIn(true);
+          setCurrentUser(user);
+        } else {
+          setIsLoggedIn(false);
+        }
       })
       .catch((_: unknown) => {
         setIsLoggedIn(false);
