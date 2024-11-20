@@ -67,13 +67,20 @@ func (service *AuthService) Login() fiber.Handler {
 		} else { // user is in our DB
 			userIsInDB = true
 		}
+
 		// Add the user to the database if they don't exist already
 		if !userIsInDB {
 			user := models.User{
-				FirstName:      *currentGitHubUser.Name,
 				GithubUsername: currentGitHubUser.Login,
 				GithubUserID:   currentGitHubUser.ID,
 			}
+
+			if currentGitHubUser.Name != nil {
+				user.FirstName = *currentGitHubUser.Name
+			} else {
+				user.FirstName = currentGitHubUser.Login
+			}
+
 			_, err = service.store.CreateUser(c.Context(), user)
 			if err != nil {
 				return errs.InternalServerError()
