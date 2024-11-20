@@ -109,24 +109,6 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.InternalServerError()
 	}
 
-	// Give the student team read access to the repository
-	// TODO: dynamically find student team name (KHO-177)
-	teamName := "student_team_test"
-	err = s.githubappclient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, teamName,
-		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
-	if err != nil {
-		return errs.InternalServerError()
-	}
-
-	// Give the student team read access to the repository
-	// TODO: dynamically find student team name (KHO-177)
-	teamName := "student_team_test"
-	err = s.githubappclient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, teamName,
-		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
-	if err != nil {
-		return errs.InternalServerError()
-	}
-
 	return c.SendStatus(200)
 }
 
