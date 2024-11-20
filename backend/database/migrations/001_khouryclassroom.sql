@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS rubric_items (
 
 DO $$ BEGIN
     CREATE TYPE WORK_STATE AS 
-    ENUM('IN_PROGRESS','SUBMITTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
+    ENUM('ACCEPTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
 EXCEPTION 
     WHEN duplicate_object THEN null;
 END $$;
@@ -109,10 +109,8 @@ CREATE TABLE IF NOT EXISTS student_works (
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255),
     unique_due_date TIMESTAMP,
-    submitted_pr_number INTEGER,
     manual_feedback_score INTEGER,
     auto_grader_score INTEGER,
-    submission_timestamp TIMESTAMP,
     grades_published_timestamp TIMESTAMP,
     work_state WORK_STATE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),

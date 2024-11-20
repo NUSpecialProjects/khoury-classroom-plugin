@@ -1,7 +1,6 @@
 package works
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -61,9 +60,6 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		if err != nil {
 			return err
 		}
-		if work.RepoName == nil || work.SubmittedPRNumber == nil {
-			return errs.BadRequest(errors.New("work has not been submitted for grading yet"))
-		}
 
 		// get TA user id
 		userClient, err := middleware.GetClient(c, s.store, s.userCfg)
@@ -106,7 +102,7 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		}
 
 		// create PR review via github API
-		review, err := userClient.CreatePRReview(c.Context(), work.OrgName, *work.RepoName, *work.SubmittedPRNumber, requestBody.Body, comments)
+		review, err := userClient.CreatePRReview(c.Context(), work.OrgName, work.RepoName, requestBody.Body, comments)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}

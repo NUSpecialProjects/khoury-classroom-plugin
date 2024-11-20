@@ -123,8 +123,9 @@ func (api *CommonAPI) CreatePullRequest(ctx context.Context, owner string, repo 
 	return pr, nil
 }
 
-func (api *CommonAPI) CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error) {
-	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews", owner, repo, pullNumber)
+func (api *CommonAPI) CreatePRReview(ctx context.Context, owner string, repo string, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error) {
+	// hardcode PR number to 1 since we auto create the PR on fork
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews", owner, repo, 1)
 
 	// Create a new POST request
 	requestBody := map[string]interface{}{
