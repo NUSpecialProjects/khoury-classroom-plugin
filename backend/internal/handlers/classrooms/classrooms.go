@@ -284,7 +284,7 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		user, err := s.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ToUser().GithubUserID)
+		user, err := s.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ID)
 		if err != nil {
 			return errs.InternalServerError()
 		}

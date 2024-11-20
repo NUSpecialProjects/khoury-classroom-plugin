@@ -50,17 +50,3 @@ type GitHubUser struct {
 	Name      *string `json:"name"`
 	Email     *string `json:"email"`
 }
-
-func (githubUser GitHubUser) ToUser() User {
-	// Handle case where Name is nil by using Login as FirstName
-	firstName := githubUser.Login
-	if githubUser.Name != nil {
-		firstName = *githubUser.Name
-	}
-
-	return User{
-		FirstName:      firstName,
-		GithubUsername: githubUser.Login,
-		GithubUserID:   githubUser.ID,
-	}
-}
