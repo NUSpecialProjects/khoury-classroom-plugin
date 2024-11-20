@@ -12,3 +12,14 @@ interface IAssignmentOutline {
 interface IAssignmentOutlineResponse {
   assignment_outline: IAssignmentOutline;
 }
+
+interface IAssignmentToken {
+  assignment_id: number;
+  token: string;
+  expires_at: string | null;
+  created_at: string;
+}
+
+interface IAssignmentAcceptResponse extends ITokenUseResponse {
+  repo_url: string;
+}

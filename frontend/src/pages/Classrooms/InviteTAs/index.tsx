@@ -21,7 +21,7 @@ const InviteTAs: React.FC = () => {
       }
       await postClassroomToken(selectedClassroom.id, "TA")
         .then((data: ITokenResponse) => {
-          const url = `${base_url}/app/token/apply?token=${data.token}`;
+          const url = `${base_url}/app/token/classroom/join?token=${data.token}`;
           setLink(url);
         })
         .catch((_) => {
