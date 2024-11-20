@@ -86,7 +86,7 @@ const Dashboard: React.FC = () => {
               <BreadcrumbPageHeader
                 pageTitle={selectedClassroom?.org_name}
                 breadcrumbItems={[selectedClassroom?.name]}
-              ></BreadcrumbPageHeader>
+              />
 
               <div className="Dashboard__classroomDetailsWrapper">
                 <UserGroupCard
