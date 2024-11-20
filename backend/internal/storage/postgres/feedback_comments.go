@@ -44,7 +44,7 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 }
 
 // create a new comment (ad-hoc: also create a rubric item simultaneously)
-func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int, studentWorkID int, comment models.PRReviewCommentResponse) error {
+func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
 	_, err := db.connPool.Exec(ctx,
 		`WITH ri AS
 			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)

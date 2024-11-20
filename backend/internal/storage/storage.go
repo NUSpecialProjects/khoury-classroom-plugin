@@ -20,7 +20,7 @@ type Storage interface {
 
 type FeedbackComment interface {
 	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error)
-	CreateNewFeedbackComment(ctx context.Context, TAUserID int, studentWorkID int, comment models.PRReviewCommentResponse) error
+	CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
 	AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error
 }
 

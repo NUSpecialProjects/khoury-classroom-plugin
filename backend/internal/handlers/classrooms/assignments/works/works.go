@@ -28,7 +28,7 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 		if err != nil {
 			return err
 		}
-		return c.Status(200).JSON(fiber.Map{
+		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"student_works": works,
 		})
 	}
@@ -70,11 +70,11 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		if err != nil {
 			return errs.AuthenticationError()
 		}
-		TAGHUser, err := userClient.GetCurrentUser(c.Context())
+		taGHUser, err := userClient.GetCurrentUser(c.Context())
 		if err != nil {
 			return errs.AuthenticationError()
 		}
-		TAUser, err := s.store.GetUserByGitHubID(c.Context(), TAGHUser.ID)
+		taUser, err := s.store.GetUserByGitHubID(c.Context(), taGHUser.ID)
 		if err != nil {
 			return errs.AuthenticationError()
 		}
@@ -88,7 +88,7 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		var comments []models.PRReviewComment
 		for _, comment := range requestBody.Comments {
 			// insert into DB
-			err := s.store.CreateNewFeedbackComment(c.Context(), int(*TAUser.ID), work.ID, comment)
+			err := s.store.CreateNewFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
 			if err != nil {
 				return errs.InternalServerError()
 			}
