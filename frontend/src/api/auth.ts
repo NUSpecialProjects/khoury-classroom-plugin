@@ -12,7 +12,6 @@ export const getCallbackURL = async (): Promise<string> => {
   return data.url;
 };
 
-
 export const sendCode = async (code: string): Promise<void> => {
   const response = await fetch(`${base_url}/login`, {
     method: "POST",
@@ -25,7 +24,7 @@ export const sendCode = async (code: string): Promise<void> => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || 'An error occurred during login');
+    throw new Error(errorData.message || "An error occurred during login");
   }
 
   return;
@@ -39,7 +38,7 @@ export const logout = async (): Promise<void> => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || 'An error occurred during logout');
+    throw new Error(errorData.message || "An error occurred during logout");
   }
 
   return;

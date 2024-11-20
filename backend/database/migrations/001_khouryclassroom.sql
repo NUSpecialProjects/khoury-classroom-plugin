@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS assignment_tokens (
 
 CREATE TABLE IF NOT EXISTS rubric_items (
     id SERIAL PRIMARY KEY,
-    assignment_outline_id INTEGER NOT NULL,
+    assignment_outline_id INTEGER,
     point_value INTEGER NOT NULL,
     explanation VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
@@ -131,10 +131,17 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     id SERIAL PRIMARY KEY,
     student_work_id INTEGER NOT NULL,
     rubric_item_id INTEGER NOT NULL,
-    grader_gh_user_id INTEGER NOT NULL,
+    ta_user_id INTEGER NOT NULL,
+    file_path VARCHAR(255),
+    file_line INTEGER,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (student_work_id) REFERENCES student_works(id),
-    FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id)
+    FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id),
+    FOREIGN KEY (ta_user_id) REFERENCES users(id),
+    -- if file path exists, enforce that file line also exists.
+    -- cannot comment on an entire file (for now), only lines and entire work
+    CONSTRAINT if_file_path_then_file_line
+        CHECK (NOT (file_path IS NOT NULL AND file_line IS NULL))
 );
 
 

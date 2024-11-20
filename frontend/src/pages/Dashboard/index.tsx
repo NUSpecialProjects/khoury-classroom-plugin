@@ -15,8 +15,11 @@ import Button from "@/components/Button";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { classroomUser, error: classroomUserError, loading: loadingCurrentClassroomUser } =
-    useClassroomUser(selectedClassroom?.id);
+  const {
+    classroomUser,
+    error: classroomUserError,
+    loading: loadingCurrentClassroomUser,
+  } = useClassroomUser(selectedClassroom?.id);
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
   );
@@ -43,11 +46,22 @@ const Dashboard: React.FC = () => {
   }, [selectedClassroom]);
 
   useEffect(() => {
-    if (!loadingCurrentClassroomUser && (classroomUserError || !classroomUser)) {
-      console.log("Attempted to view a classroom without access. Redirecting to classroom select.")
+    if (
+      !loadingCurrentClassroomUser &&
+      (classroomUserError || !classroomUser)
+    ) {
+      console.log(
+        "Attempted to view a classroom without access. Redirecting to classroom select."
+      );
       navigate(`/app/organization/select`);
     }
-  }, [loadingCurrentClassroomUser, classroomUserError, classroomUser, selectedClassroom?.org_id, navigate]);
+  }, [
+    loadingCurrentClassroomUser,
+    classroomUserError,
+    classroomUser,
+    selectedClassroom?.org_id,
+    navigate,
+  ]);
 
   const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     if (group === "Professor") {
@@ -69,7 +83,10 @@ const Dashboard: React.FC = () => {
             <p>Loading...</p>
           ) : (
             <>
-              <BreadcrumbPageHeader pageTitle={selectedClassroom?.org_name} breadcrumbItems={[selectedClassroom?.name]}></BreadcrumbPageHeader>
+              <BreadcrumbPageHeader
+                pageTitle={selectedClassroom?.org_name}
+                breadcrumbItems={[selectedClassroom?.name]}
+              />
 
               <div className="Dashboard__classroomDetailsWrapper">
                 <UserGroupCard

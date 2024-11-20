@@ -56,7 +56,7 @@ func (service *AuthService) Login() fiber.Handler {
 
 		currentGitHubUser, err := client.GetCurrentUser(c.Context())
 		if err != nil {
-			return errs.InternalServerError()
+			return errs.AuthenticationError()
 		}
 
 		// Check if user is in our DB

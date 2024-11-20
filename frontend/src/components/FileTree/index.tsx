@@ -1,24 +1,47 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import { ResizableBox } from "react-resizable";
 
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+import { GraderContext } from "@/contexts/grader";
+import { getFileTree } from "@/api/grader";
 import { buildTree, renderTree, sortTreeNode } from "./funcs";
 
 import "./styles.css";
+import SimpleBar from "simplebar-react";
 
 /****************
  * TREE COMPONENT
  ****************/
 export const FileTree: React.FC<IFileTree> = ({
-  gitTree,
   selectFileCallback,
   children,
   className,
-  ...props
 }) => {
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const { assignmentID, studentWorkID } = useContext(GraderContext);
+
+  const [gitTree, setGitTree] = useState<IGitTreeNode[]>([]);
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [root, setRoot] = useState<IFileTreeNode | null>(null);
   const [treeDepth, setTreeDepth] = useState(0);
+
+  // fetch git tree from student assignment repo
+  useEffect(() => {
+    if (!selectedClassroom || !assignmentID || !studentWorkID) return;
+
+    getFileTree(
+      selectedClassroom.id,
+      Number(assignmentID),
+      Number(studentWorkID)
+    )
+      .then((resp) => {
+        setGitTree(resp);
+      })
+      .catch((_: unknown) => {
+        setGitTree([]);
+      });
+  }, []);
 
   useEffect(() => {
     if (gitTree.length == 0) {
@@ -45,7 +68,7 @@ export const FileTree: React.FC<IFileTree> = ({
     >
       <>
         <div className="FileTree__head">Files</div>
-        <div className="FileTree__body" {...props}>
+        <SimpleBar className="FileTree__body">
           {root &&
             sortTreeNode(root).map((node) =>
               renderTree(node, 0, treeDepth, selectedFile, (n) => {
@@ -54,7 +77,7 @@ export const FileTree: React.FC<IFileTree> = ({
               })
             )}
           {children}
-        </div>
+        </SimpleBar>
       </>
     </ResizableBox>
   );

@@ -60,7 +60,7 @@ func (api *UserAPI) GetCurrentUser(ctx context.Context) (models.GitHubUser, erro
 	// Make the API call
 	_, err = api.Client.Do(ctx, req, &user)
 	if err != nil {
-		return user, fmt.Errorf("error fetching classrooms: %v", err)
+		return user, fmt.Errorf("error fetching current user: %v", err)
 	}
 	return user, nil
 }

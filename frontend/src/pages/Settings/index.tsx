@@ -9,7 +9,9 @@ const Settings: React.FC = () => {
   return (
     <div>
       <PageHeader pageTitle="Settings"></PageHeader>
-      <Button variant="primary" onClick={logout}>Logout</Button>
+      <Button variant="primary" onClick={logout}>
+        Logout
+      </Button>
     </div>
   );
 };

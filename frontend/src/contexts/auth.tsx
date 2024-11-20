@@ -1,15 +1,18 @@
-import { logout as logoutApi } from "@/api/auth";
-import { fetchCurrentUser } from "@/api/users";
 import { useState, createContext, useLayoutEffect, useContext } from "react";
+
+import { logout as logoutApi } from "@/api/auth";
 import { SelectedClassroomContext } from "./selectedClassroom";
+import { fetchCurrentUser } from "@/api/users";
 
 interface IAuthContext {
+  currentUser: IGitHubUser | null;
   isLoggedIn: boolean;
   login: () => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({
+  currentUser: null,
   isLoggedIn: false,
   login: () => {},
   logout: () => {},
@@ -18,6 +21,7 @@ export const AuthContext = createContext<IAuthContext>({
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [currentUser, setCurrentUser] = useState<IGitHubUser | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const { setSelectedClassroom } = useContext(SelectedClassroomContext);
@@ -27,12 +31,14 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       .then((user: IGitHubUser | null) => {
         if (user) {
           setIsLoggedIn(true);
+          setCurrentUser(user);
         } else {
           setIsLoggedIn(false);
         }
       })
       .catch((_: unknown) => {
         setIsLoggedIn(false);
+        setCurrentUser(null);
       })
       .finally(() => {
         setLoading(false);
@@ -49,8 +55,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setSelectedClassroom(null);
         setIsLoggedIn(false);
       })
-      .catch((_: Error) => {
-      });
+      .catch((_: Error) => {});
   };
 
   if (loading) {
@@ -58,7 +63,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
