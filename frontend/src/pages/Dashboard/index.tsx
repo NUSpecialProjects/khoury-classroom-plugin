@@ -125,8 +125,9 @@ const Dashboard: React.FC = () => {
                     <Button
                       variant="secondary"
                       size="small"
-                      onClick={() => (navigate(`/app/assignments/create?org_name=${selectedClassroom?.org_name}`))}>
-                      <MdAdd/> Create Assignment
+                      href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
+                    >
+                      <MdAdd /> Create Assignment
                     </Button>
                   </div>
                 </div>

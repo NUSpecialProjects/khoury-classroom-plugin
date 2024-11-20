@@ -94,7 +94,6 @@ export default function App(): React.JSX.Element {
                 />
                 <Route path="settings" element={<Pages.Settings />} />
                 <Route path="dashboard" element={<Pages.Dashboard />} />
-                <Route path="dashboard" element={<Pages.Dashboard />} />
               </Route>
             </Route>
 
