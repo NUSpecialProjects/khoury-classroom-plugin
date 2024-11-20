@@ -3,36 +3,35 @@ import Button from "@/components/Button";
 import CopyLink from "@/components/CopyLink";
 import { useState, useContext, useEffect } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { useNavigate } from "react-router-dom";
 import { postClassroomToken } from "@/api/classrooms";
 
 import "../styles.css";
 
 const InviteStudents: React.FC = () => {
-const navigate = useNavigate();
-const { selectedClassroom } = useContext(SelectedClassroomContext);
-const [link, setLink] = useState<string>("");
-const [error, setError] = useState<string | null>(null);
+    const { selectedClassroom } = useContext(SelectedClassroomContext);
+    const [link, setLink] = useState<string>("");
+    const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+    const [error, setError] = useState<string | null>(null);
 
-useEffect(() => {
-    const handleCreateToken = async () => {
-        if (!selectedClassroom) {
-            return;
+    useEffect(() => {
+        const handleCreateToken = async () => {
+            if (!selectedClassroom) {
+                return;
+            }
+            await postClassroomToken(selectedClassroom.id, "STUDENT")
+                .then((data: ITokenResponse) => {
+                    const url = `${base_url}/app/token/classroom/join?token=${data.token}`;
+                    setLink(url);
+                })
+                .catch((_) => {
+                    setError("Failed to generate invite URL. Please try again.");
+                });
+        };
+
+        if (selectedClassroom) {
+            handleCreateToken();
         }
-        await postClassroomToken(selectedClassroom.id, "STUDENT")
-            .then((data: ITokenResponse) => {
-                const url = "http://localhost:3000/app/token/apply?token=" + data.token;
-                setLink(url);
-            })
-            .catch((_) => {
-                setError("Failed to generate invite URL. Please try again.");
-            });
-    };
-
-    if (selectedClassroom) {
-        handleCreateToken();
-    }
-}, [selectedClassroom])
+    }, [selectedClassroom])
 
     return (
         <Panel title="Add Students" logo={true}>
@@ -46,7 +45,7 @@ useEffect(() => {
                     {error && <p className="error">{error}</p>}
                 </div>
                 <div className="ButtonWrapper">
-                    <Button variant="primary" onClick={() => navigate("/app/classroom/success")}>Continue</Button>
+                    <Button variant="primary" href="/app/classroom/success">Continue</Button>
                 </div>
             </div>
         </Panel>

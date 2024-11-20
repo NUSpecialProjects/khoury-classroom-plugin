@@ -25,8 +25,8 @@ func New(params types.Params) *fiber.App {
 
 	useMiddlewares(app)
 
-	//Add Route Groupings here: TODO
-	hello.Routes(app, params)
+    // Route Groupings
+    hello.Routes(app, params)
 	auth.Routes(app, params)
 	organizations.Routes(app, params)
 	classrooms.Routes(app, params)

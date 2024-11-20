@@ -60,7 +60,7 @@ const Login: React.FC = () => {
   }, [errorFromQuery, navigate, queryParams]);
 
   return isLoggedIn ? (
-    <Navigate to="/app/dashboard" />
+    <Navigate to="/app/dashboard" replace={true} />
   ) : (
     <div className="LandingPage">
       <div className="LogoBar">

@@ -5,12 +5,13 @@ import Assignments from "./Assignments";
 import Assignment from "./Assignments/Assignment";
 import CreateAssignment from "./Assignments/CreateAssignment";
 import AssignmentRubric from "./Assignments/AssignmentRubric";
+import AcceptAssignment from "./Token/Apply/Assignment";
 import Grading from "./Grading";
 import Grader from "./Grading/Grader";
 import NewRubric from "./Rubric/NewRubric";
 import Callback from "./Callback";
 import Login from "./Login";
-import RoleApply from "./Role/Apply";
+import JoinClassroom from "./Token/Apply/Classroom";
 import StudentListPage from "./Users/Student";
 import TAListPage from "./Users/TeachingAssistant";
 import ProfessorListPage from "./Users/Professor";
@@ -29,12 +30,13 @@ export {
   Assignment,
   CreateAssignment,
   AssignmentRubric,
+  AcceptAssignment,
   Grading,
   Grader,
   NewRubric,
   Callback,
   Login,
-  RoleApply,
+  JoinClassroom,
   StudentListPage,
   TAListPage,
   ProfessorListPage,

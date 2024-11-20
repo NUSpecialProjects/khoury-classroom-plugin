@@ -15,11 +15,13 @@ type Storage interface {
 	User
 	AssignmentOutline
 	Rubric
+	AssignmentTemplate
 }
 
 type Works interface {
 	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
 	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
+	CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error
 }
 
 type Test interface {
@@ -55,11 +57,19 @@ type AssignmentOutline interface {
 	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
     UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error)
+	GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assignmentID int64) (models.AssignmentOutlineWithTemplate, error)
+	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
+	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
+}
+
+type AssignmentTemplate interface {
+	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
+	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
+	GetAssignmentTemplateByID(ctx context.Context, templateID int64) (models.AssignmentTemplate, error)
 }
 
 type Rubric interface {
 	CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error)
-	GetFullRubric(ctx context.Context, rubricID int64) (models.FullRubric, error)
 	GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error)
 	AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
 	GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error)

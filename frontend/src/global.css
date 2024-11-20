@@ -28,7 +28,8 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
   --brand-highlight: rgba(132, 135, 139, 20%);
 
   /* Gradients */
-  --brand-gradient: linear-gradient(180deg, #f3f5fc 0%, #ced6e6 100%);
+  --brand-gradient: linear-gradient(180deg, #f3f5fc 0%, #d4dff4 120%);
+  --brand-gradient-light: linear-gradient(180deg, #f4f6fb 0%, #eceffb 100%);
   --brand-gradient-bright: linear-gradient(160deg, #255ac5 0%, #5f8be3 100%);
   --brand-gradient-dark: linear-gradient(160deg, #0f3072 0%, #7996cf 100%);
 
@@ -52,6 +53,7 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
 
   /* BORDERS */
   --border-color: #e5e5e5;
+  --dark-border-color: #d4d4d4;
   --border-style: solid;
   --border-width: 1px;
   --button-border-color: #d4d4d4;
@@ -92,13 +94,31 @@ a {
   color: inherit;
 }
 
-.primary-border {
-  border-width: 2px;
-  border-style: solid;
-  border-color: var(--border-neutral);
+/* Custom scroll bar flex properties and styling */
+.simplebar-wrapper {
+  flex-grow: 1;
 }
-
-.add-row {
-  color: var(--brand);
+.simplebar-offset {
+  display: flex;
 }
-
+.simplebar-content-wrapper {
+  display: flex;
+  flex-grow: 1;
+}
+.simplebar-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+.simplebar-scrollbar:before {
+  background-color: var(--brand-lighter);
+  transition-delay: 1.5s;
+  cursor: pointer !important;
+}
+.simplebar-scrollbar.simplebar-visible:before {
+  opacity: 0.7;
+}
+.simplebar-dragging .simplebar-scrollbar:before {
+  opacity: 1;
+}

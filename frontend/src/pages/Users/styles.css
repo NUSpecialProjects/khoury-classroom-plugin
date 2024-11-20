@@ -1,9 +1,17 @@
-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: var(--panels-darker-background);
-  background-image: url("../UserGroupCard/octocat.png");
-  background-size: cover;
-  background-position: center;
+.Users {
+  &__tableWrapper {
+    padding-bottom: 20px;
+  }
+
+  &__inviteLinkWrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 30px;
+  }
+}
+
+.CopyLink {
+  max-width: none;
 }

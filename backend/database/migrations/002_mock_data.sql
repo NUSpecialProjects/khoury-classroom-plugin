@@ -25,7 +25,10 @@ VALUES
 (7, 'Tim', 'Berners-Lee', 'timbl', 890123),
 (8, 'Barbara', 'Liskov', 'bliskov', 678901),
 (9, 'Dennis', 'Ritchie', 'dritchie', 112233),
-(10, 'Ken', 'Thompson', 'kthompson', 445566);
+(10, 'Ken', 'Thompson', 'kthompson', 445566),
+(11, 'Cam', 'Plume', 'CamPlume1', 116120547),
+(12, 'Nick', 'Tietje', 'ntietje1', 124538220),
+(13, 'Seby', 'Tremblay', 'sebytremblay', 91509344);
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
@@ -47,48 +50,33 @@ VALUES
 (8, 9, 'STUDENT', NOW()),
 (5, 10, 'TA', NOW());
 
--- Insert into assignment_template
-INSERT INTO assignment_template (id, template_repo_owner, template_repo_id, created_at)
-VALUES
-(1, 'kennysmith', '1000', NOW()),
-(2, 'gracehopper', '1001', NOW()),
-(3, 'linustorvalds', '1002', NOW()),
-(4, 'alanturing', '1003', NOW()),
-(5, 'adalovelace', '1004', NOW()),
-(6, 'mhamilton', '1005', NOW()),
-(7, 'timbl', '1006', NOW()),
-(8, 'bliskov', '1007', NOW()),
-(9, 'dritchie', '1008', NOW()),
-(10, 'kthompson', '1009', NOW());
-SELECT setval('assignment_template_id_seq', (SELECT MAX(id) FROM assignment_template));
 
--- Insert into assignment_outlines
-INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
+-- Insert into assignment_templates
+INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_repo_name)
 VALUES
-(1, 1, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, FALSE),
-(2, 2, NOW(), '2023-02-01 09:00:00', 'Compiler Design', 1, TRUE),
-(3, 3, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 2, FALSE),
-(4, 4, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 2, TRUE),
-(5, 5, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 3, FALSE),
-(6, 6, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 4, TRUE),
-(7, 7, NOW(), '2023-07-01 09:00:00', 'Website Development', 5, FALSE),
-(8, 8, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, TRUE),
-(9, 9, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
-(10, 10, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
-SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
+('kennysmith', 1000, NOW(), 'Template 1'),
+('gracehopper', 1001, NOW(), 'Template 2'),
+('linustorvalds', 1002, NOW(), 'Tempalte 3'),
+('alanturing', 1003, NOW(), 'Template 4'),
+('adalovelace', 1004, NOW(), 'Template 5'),
+('mhamilton', 1005, NOW(), 'Template 6'),
+('timbl', 1006, NOW(), 'Template 7'),
+('bliskov', 1007, NOW(), 'Template 8'),
+('dritchie', 1008, NOW(), 'Template 9'),
+('kthompson', 1009, NOW(), 'Template 10');
 
 -- Insert into rubrics
-INSERT INTO rubrics (name, org_id, classroom_id, reusable) VALUES 
-('Introduction to Programming Rubric', 1, 1, true),
-('Data Structures Project Rubric', 1, 1, false),
-('Algorithms Midterm Rubric', 2, 1, false),
-('Database Design Project Rubric', 2, 1, true),
-('Machine Learning Final Rubric', 3, 2, false),
-('Operating Systems Lab Rubric', 3, 2, true),
-('Web Development Assignment Rubric', 4, 2, false),
-('Network Security Exam Rubric', 4, 1, false),
-('Software Engineering Project Rubric', 5, 2, true),
-('Artificial Intelligence Assignment Rubric', 5, 2, true);
+INSERT INTO rubrics (id, name, org_id, classroom_id, reusable) VALUES 
+(1, 'Introduction to Programming Rubric', 1, 1, true),
+(2, 'Data Structures Project Rubric', 1, 1, false),
+(3, 'Algorithms Midterm Rubric', 2, 1, false),
+(4, 'Database Design Project Rubric', 2, 1, true),
+(5, 'Machine Learning Final Rubric', 3, 2, false),
+(6, 'Operating Systems Lab Rubric', 3, 2, true),
+(7, 'Web Development Assignment Rubric', 4, 2, false),
+(8, 'Network Security Exam Rubric', 4, 1, false),
+(9, 'Software Engineering Project Rubric', 5, 2, true),
+(10, 'Artificial Intelligence Assignment Rubric', 5, 2, true);
 
 -- Insert into rubric_items
 INSERT INTO rubric_items (id, rubric_id, point_value, explanation, created_at)
@@ -111,6 +99,21 @@ VALUES
 (16, 9, 25, 'Identified security vulnerabilities', NOW()),
 (17, 10, 20, 'Implemented design patterns correctly', NOW());
 SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
+
+-- Insert into assignment_outlines
+INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, rubric_id, classroom_id, group_assignment)
+VALUES
+(1, 1001, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, 1, FALSE),
+(2, 1002, NOW(), '2023-02-01 09:00:00', 'Compiler Design', NULL, 1, TRUE),
+(3, 1003, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 3, 2, FALSE),
+(4, 1004, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 3, 2, TRUE),
+(5, 1005, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 4, 3, FALSE),
+(6, 1006, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 5, 4, TRUE),
+(7, 1007, NOW(), '2023-07-01 09:00:00', 'Website Development', NULL, 5, FALSE),
+(8, 1008, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, 6, TRUE),
+(9, 1009, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 9, 7, FALSE),
+(10, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', NULL, 8, TRUE);
+SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
 
 -- Insert into student_works
 INSERT INTO student_works (id, assignment_outline_id, repo_name, unique_due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)

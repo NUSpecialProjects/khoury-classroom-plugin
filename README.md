@@ -54,6 +54,7 @@ Create a second .env file in the frontend root directory:
 
 ```
 VITE_PUBLIC_API_DOMAIN=<Your backend url>
+VITE_PUBLIC_FRONTEND_DOMAIN=<Your frontend url>
 VITE_GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
 ```
 

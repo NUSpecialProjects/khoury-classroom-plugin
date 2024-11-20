@@ -46,24 +46,6 @@ func (db *DB) AddItemToRubric(ctx context.Context, rubricItemData models.RubricI
 }
 
 
-func (db *DB) GetFullRubric(ctx context.Context, rubricID int64) (models.FullRubric, error) {
-    rubric, err := db.GetRubric(ctx, rubricID)
-    if err != nil {
-        return models.FullRubric{}, errs.NewDBError(err)
-    }
-
-    rubricItems, err := db.GetRubricItems(ctx, rubricID)
-    if err != nil {
-        return models.FullRubric{}, errs.NewDBError(err)
-    }
-
-    var fullRubric models.FullRubric
-    fullRubric.Rubric = rubric
-    fullRubric.RubricItems = rubricItems
-
-    return fullRubric, nil
-}
-
 func (db *DB) GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error) {
     var rubric models.Rubric
     err := db.connPool.QueryRow(ctx, "SELECT * FROM rubrics WHERE id = $1", rubricID).Scan(

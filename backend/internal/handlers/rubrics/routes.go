@@ -1,16 +1,23 @@
 package rubrics
 
 import (
+	"github.com/CamPlume1/khoury-classroom/internal/middleware"
 	"github.com/CamPlume1/khoury-classroom/internal/types"
 	"github.com/gofiber/fiber/v2"
 )
 
-
 func Routes(router fiber.Router, params types.Params) {
-	service := newRubricService(params.Store)
-    route := router.Group("/rubrics")
+	service := newRubricService(params.Store, &params.UserCfg)
 
-    route.Post("/rubric", service.CreateRubric())
+	RubricRoutes(router, service)
+}
 
-    route.Get("/rubric/:rubric_id", service.GetRubricByID())
+func RubricRoutes(router fiber.Router, service *RubricService) fiber.Router {
+
+	route := router.Group("/rubrics").Use(middleware.Protected(service.userCfg.JWTSecret))
+
+	route.Post("/rubric", service.CreateRubric())
+	route.Get("/rubric/:rubric_id", service.GetRubricByID())
+
+	return route
 }

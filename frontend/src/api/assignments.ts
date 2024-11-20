@@ -1,5 +1,57 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
+
+
+export async function postAssignmentToken(
+  classroomID: number,
+  assignmentID: number,
+  duration?: number // Duration is optional
+): Promise<IAssignmentToken> {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/token`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        duration: duration,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const resp: IAssignmentToken = await response.json();
+  return resp;
+}
+
+export async function useAssignmentToken(
+  token: string
+): Promise<IAssignmentAcceptResponse> {
+  const response = await fetch( // the classroom id doesn't matter here
+    `${base_url}/classrooms/classroom/${0}/assignments/token/${token}`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const resp: IAssignmentAcceptResponse = await response.json();
+  return resp;
+}
+
+
 export const getAssignments = async (
   classroomId: number
 ): Promise<IAssignmentOutline[]> => {
@@ -27,14 +79,66 @@ export const getAssignmentIndirectNav = async (
   classroomID: number,
   assignmentID: number
 ): Promise<IAssignmentOutline> => {
+  const result = await fetch(`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!result.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data: IAssignmentOutline = (await result.json() as IAssignmentOutlineResponse).assignment_outline
+
+  return data
+};
+
+export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
   const result = await fetch(
-    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
     {
-      method: "GET",
+      method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        org_name: orgName,
+        repo_name: repoName,
+        assignment_name: assignmentName,
+        assignment_id: 1,
+        org_id: 182810684
+      }),
+    }
+  );
+
+  if (!result.ok) {
+    throw new Error(result.statusText);
+  }
+};
+
+export const createAssignment = async (
+  templateRepoID: number,
+  assignment: IAssignmentFormData
+): Promise<IAssignmentFormData> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${assignment.classroomId}/assignments`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        template_id: templateRepoID,
+        name: assignment.assignmentName,
+        classroom_id: assignment.classroomId,
+        group_assignment: assignment.groupAssignment,
+        main_due_date: assignment.mainDueDate,
+      })
     }
   );
 
@@ -42,11 +146,9 @@ export const getAssignmentIndirectNav = async (
     throw new Error("Network response was not ok");
   }
 
-  const data: IAssignmentOutline = (
-    (await result.json()) as IAssignmentOutlineResponse
-  ).assignment_outline;
+  const data = (await result.json())
 
-  return data;
+  return data.assignment_outline as IAssignmentFormData
 };
 
 

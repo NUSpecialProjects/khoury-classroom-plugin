@@ -1,0 +1,20 @@
+.BreadcrumbPageHeader {
+    &__pageTitle {
+        padding-bottom: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-bottom-color: var(--border-color);
+        border-bottom-style: var(--border-style);
+        border-bottom-width: var(--border-width);
+        color: var(--brand);
+    }
+
+    &__item {
+        color: var(--brand);
+    }
+
+    &__lastItem {
+        color: var(--primary-text);
+    }
+}
