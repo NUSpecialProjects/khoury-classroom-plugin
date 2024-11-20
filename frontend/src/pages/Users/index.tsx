@@ -1,4 +1,4 @@
-import { sendOrganizationInvitesToRequestedUsers, sendOrganizationInviteToUser, revokeOrganizationInvite, removeUserFromClassroom, postClassroomToken } from "@/api/classrooms";
+import { sendOrganizationInvitesToRequestedUsers, sendOrganizationInviteToUser, revokeOrganizationInvite, removeUserFromClassroom, postClassroomToken, getClassroomUsers } from "@/api/classrooms";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { ClassroomRole, ClassroomUserStatus } from "@/types/users";
 import React, { useContext, useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import EmptyDataBanner from "@/components/EmptyDataBanner";
 import './styles.css';
 import Button from "@/components/Button";
 import CopyLink from "@/components/CopyLink";
-import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 interface GenericRolePageProps {
   role_label: string;
@@ -22,31 +22,11 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   userList: initialUserList,
 }: GenericRolePageProps) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  const { classroomUser: currentClassroomUser } = useClassroomUser(selectedClassroom?.id);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
   const [link, setLink] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<IClassroomUser[]>(initialUserList);
-  const { classroomUsers } = useClassroomUsersList(selectedClassroom?.id);
-
-  useEffect(() => {
-    const handleCreateToken = async () => {
-      if (!selectedClassroom) {
-        return;
-      }
-      await postClassroomToken(selectedClassroom.id, role_type)
-        .then((data: ITokenResponse) => {
-          const url = `${base_url}/app/token/classroom/join?token=${data.token}`;
-          setLink(url);
-        })
-        .catch((_) => {
-          setError("Failed to generate invite URL. Please try again.");
-        });
-    };
-
-    if (selectedClassroom) {
-      handleCreateToken();
-    }
-  }, [selectedClassroom])
 
   const removeUserFromList = (userId: number) => {
     setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
@@ -88,6 +68,10 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   };
 
   const handleRemoveUser = async (userId: number) => {
+    if (userId === currentClassroomUser?.id) {
+      setError("You cannot remove yourself from the classroom.");
+      return;
+    }
     await removeUserFromClassroom(selectedClassroom!.id, userId)
       .then(() => {
         removeUserFromList(userId);
@@ -98,8 +82,22 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   };
 
   const handleRefresh = () => {
-    const filteredUsers = classroomUsers.filter(user => user.classroom_role === role_type);
-    setUsers(filteredUsers);
+    const fetchClassroomUsers = async () => {
+      if (selectedClassroom) {
+        await getClassroomUsers(selectedClassroom.id)
+          .then((users) => {
+            setUsers(users.filter((user: IClassroomUser) => user.classroom_role === role_type));
+            setError(null);
+          })
+          .catch((_) => {
+            setError("Failed to update classroom users");
+          })
+      } else {
+        setError(null);
+      }
+    };
+
+    fetchClassroomUsers();
   };
 
   const getActionButton = (user: IClassroomUser) => {
@@ -114,6 +112,30 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
         return null;
     }
   };
+
+  useEffect(() => {
+    handleRefresh();
+  }, []);
+
+  useEffect(() => {
+    const handleCreateToken = async () => {
+      if (!selectedClassroom) {
+        return;
+      }
+      await postClassroomToken(selectedClassroom.id, role_type)
+        .then((data: ITokenResponse) => {
+          const url = `${base_url}/app/token/classroom/join?token=${data.token}`;
+          setLink(url);
+        })
+        .catch((_) => {
+          setError("Failed to generate invite URL. Please try again.");
+        });
+    };
+
+    if (selectedClassroom) {
+      handleCreateToken();
+    }
+  }, [selectedClassroom])
 
   return (
     <div>
@@ -134,9 +156,6 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
             <Button onClick={handleInviteAll}>Invite All Requested Users</Button>
           </div>
         )}
-        <div>
-          <Button onClick={handleRefresh}>Refresh</Button>
-        </div>
       </div>
     
 
