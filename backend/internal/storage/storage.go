@@ -15,6 +15,7 @@ type Storage interface {
 	Classroom
 	User
 	AssignmentOutline
+	Rubric
 	AssignmentTemplate
 }
 
@@ -76,4 +77,11 @@ type AssignmentTemplate interface {
 	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
 	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
 	GetAssignmentTemplateByID(ctx context.Context, templateID int64) (models.AssignmentTemplate, error)
+}
+
+type Rubric interface {
+	CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error)
+	GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error)
+	AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
+	GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error)
 }

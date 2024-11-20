@@ -70,24 +70,21 @@ VALUES
 ('dritchie', 1008, NOW(), 'Template 9'),
 ('kthompson', 1009, NOW(), 'Template 10');
 
-
--- Insert into assignment_outlines
-INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
-VALUES
-(1, 1001, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, FALSE),
-(2, 1002, NOW(), '2023-02-01 09:00:00', 'Compiler Design', 1, TRUE),
-(3, 1003, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 2, FALSE),
-(4, 1004, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 2, TRUE),
-(5, 1005, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 3, FALSE),
-(6, 1006, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 4, TRUE),
-(7, 1007, NOW(), '2023-07-01 09:00:00', 'Website Development', 5, FALSE),
-(8, 1008, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, TRUE),
-(9, 1009, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
-(10, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
-SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
+-- Insert into rubrics
+INSERT INTO rubrics (id, name, org_id, classroom_id, reusable) VALUES 
+(1, 'Introduction to Programming Rubric', 1, 1, true),
+(2, 'Data Structures Project Rubric', 1, 1, false),
+(3, 'Algorithms Midterm Rubric', 2, 1, false),
+(4, 'Database Design Project Rubric', 2, 1, true),
+(5, 'Machine Learning Final Rubric', 3, 2, false),
+(6, 'Operating Systems Lab Rubric', 3, 2, true),
+(7, 'Web Development Assignment Rubric', 4, 2, false),
+(8, 'Network Security Exam Rubric', 4, 1, false),
+(9, 'Software Engineering Project Rubric', 5, 2, true),
+(10, 'Artificial Intelligence Assignment Rubric', 5, 2, true);
 
 -- Insert into rubric_items
-INSERT INTO rubric_items (id, assignment_outline_id, point_value, explanation, created_at)
+INSERT INTO rubric_items (id, rubric_id, point_value, explanation, created_at)
 VALUES
 (1, 1, 10, 'Tracks running distances accurately', NOW()),
 (2, 1, 10, 'Records chocolate consumption correctly', NOW()),
@@ -108,21 +105,36 @@ VALUES
 (17, 10, 20, 'Implemented design patterns correctly', NOW());
 SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
 
--- Insert into student_works
-INSERT INTO student_works (id, assignment_outline_id, repo_name, unique_due_date, submitted_pr_number, manual_feedback_score, auto_grader_score, submission_timestamp, grades_published_timestamp, work_state, created_at)
+-- Insert into assignment_outlines
+INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, rubric_id, classroom_id, group_assignment)
 VALUES
-(1, 1, 'khoury-classroom-plugin', '2023-02-01 23:59:59', 96, 28, 20, '2023-01-31 20:00:00', '2023-02-05 10:00:00', 'GRADE_PUBLISHED', NOW()),
-(2, 2, 'kennysmith/compiler-design', '2023-03-01 23:59:59', 11, 25, 22, '2023-02-28 18:00:00', '2023-03-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
-(3, 3, 'alanturing/linux-module', '2023-04-01 23:59:59', 12, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
-(4, 4, 'adalovelace/encryption-algorithms', '2023-05-01 23:59:59', 13, 45, 40, '2023-04-29 19:00:00', '2023-05-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
-(5, 5, 'mhamilton/mobile-app', '2023-06-01 23:59:59', 14, 18, 15, '2023-05-31 21:00:00', '2023-06-05 18:00:00', 'GRADE_PUBLISHED', NOW()),
-(6, 6, 'kennysmith/ai-chatbot', '2023-07-01 23:59:59', 15, 50, 45, '2023-06-30 20:00:00', '2023-07-05 20:00:00', 'GRADE_PUBLISHED', NOW()),
-(7, 7, 'bliskov/website-dev', '2023-08-01 23:59:59', 16, 28, 25, '2023-07-31 23:00:00', '2023-08-05 22:00:00', 'GRADE_PUBLISHED', NOW()),
-(8, 8, 'linustorvalds/cloud-deployment', '2023-09-01 23:59:59', 17, 40, 35, '2023-08-30 20:00:00', '2023-09-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
-(9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 18, 48, 45, '2023-09-29 21:00:00', '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
-(10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 19, 38, 35, '2023-10-31 20:00:00', '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
-(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 3, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
-(12, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', NULL, 40, 35, '2023-03-30 22:00:00', '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
+(1, 1001, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, 1, FALSE),
+(2, 1002, NOW(), '2023-02-01 09:00:00', 'Compiler Design', NULL, 1, TRUE),
+(3, 1003, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 3, 2, FALSE),
+(4, 1004, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 3, 2, TRUE),
+(5, 1005, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 4, 3, FALSE),
+(6, 1006, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 5, 4, TRUE),
+(7, 1007, NOW(), '2023-07-01 09:00:00', 'Website Development', NULL, 5, FALSE),
+(8, 1008, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, 6, TRUE),
+(9, 1009, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 9, 7, FALSE),
+(10, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', NULL, 8, TRUE);
+SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
+
+-- Insert into student_works
+INSERT INTO student_works (id, assignment_outline_id, repo_name, unique_due_date, manual_feedback_score, auto_grader_score, grades_published_timestamp, work_state, created_at)
+VALUES
+(1, 1, 'khoury-classroom-plugin', '2023-02-01 23:59:59', 28, 20, '2023-02-05 10:00:00', 'GRADE_PUBLISHED', NOW()),
+(2, 2, 'kennysmith/compiler-design', '2023-03-01 23:59:59', 25, 22, '2023-03-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
+(3, 3, 'alanturing/linux-module', '2023-04-01 23:59:59', 40, 35, '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
+(4, 4, 'adalovelace/encryption-algorithms', '2023-05-01 23:59:59', 45, 40, '2023-05-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
+(5, 5, 'mhamilton/mobile-app', '2023-06-01 23:59:59', 18, 15, '2023-06-05 18:00:00', 'GRADE_PUBLISHED', NOW()),
+(6, 6, 'kennysmith/ai-chatbot', '2023-07-01 23:59:59', 50, 45, '2023-07-05 20:00:00', 'GRADE_PUBLISHED', NOW()),
+(7, 7, 'bliskov/website-dev', '2023-08-01 23:59:59', 28, 25, '2023-08-05 22:00:00', 'GRADE_PUBLISHED', NOW()),
+(8, 8, 'linustorvalds/cloud-deployment', '2023-09-01 23:59:59', 40, 35, '2023-09-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
+(9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 48, 45, '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
+(10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 38, 35, '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
+(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 40, 35, '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
+(12, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 40, 35, '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
 SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
 
 -- Insert into work_contributors+
@@ -176,3 +188,4 @@ VALUES
 (5, 13, 'REGRADE_REQUESTED', 'I improved the website responsiveness.', NOW()),
 (6, 16, 'REGRADE_REQUESTED', 'Found additional vulnerabilities, please review.', NOW());
 SELECT setval('regrade_requests_id_seq', (SELECT MAX(id) FROM regrade_requests));
+

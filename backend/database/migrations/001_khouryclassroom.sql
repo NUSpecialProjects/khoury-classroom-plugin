@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS classrooms (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
-
 DO $$ BEGIN
     CREATE TYPE USER_ROLE AS 
     ENUM('PROFESSOR', 'TA', 'STUDENT');
@@ -58,6 +57,25 @@ CREATE TABLE IF NOT EXISTS assignment_templates (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS rubrics (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    org_id INTEGER NOT NULL,
+    classroom_id INTEGER NOT NULL,
+    reusable BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+);
+
+CREATE TABLE IF NOT EXISTS rubric_items (
+    id SERIAL PRIMARY KEY,
+    rubric_id INTEGER,
+    point_value INTEGER NOT NULL,
+    explanation VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
+);
+
 CREATE TABLE IF NOT EXISTS assignment_outlines (
     id SERIAL PRIMARY KEY,
     template_id INTEGER NOT NULL,
@@ -65,6 +83,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     released_at TIMESTAMP,
     name VARCHAR(255) NOT NULL,
     classroom_id INTEGER NOT NULL,
+    rubric_id INTEGER,
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     main_due_date TIMESTAMP,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
@@ -88,18 +107,9 @@ CREATE TABLE IF NOT EXISTS assignment_tokens (
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
-CREATE TABLE IF NOT EXISTS rubric_items (
-    id SERIAL PRIMARY KEY,
-    assignment_outline_id INTEGER,
-    point_value INTEGER NOT NULL,
-    explanation VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
-);
-
 DO $$ BEGIN
     CREATE TYPE WORK_STATE AS 
-    ENUM('IN_PROGRESS','SUBMITTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
+    ENUM('ACCEPTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
 EXCEPTION 
     WHEN duplicate_object THEN null;
 END $$;
@@ -109,10 +119,8 @@ CREATE TABLE IF NOT EXISTS student_works (
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255),
     unique_due_date TIMESTAMP,
-    submitted_pr_number INTEGER,
     manual_feedback_score INTEGER,
     auto_grader_score INTEGER,
-    submission_timestamp TIMESTAMP,
     grades_published_timestamp TIMESTAMP,
     work_state WORK_STATE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),

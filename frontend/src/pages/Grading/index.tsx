@@ -114,7 +114,7 @@ const Grading: React.FC = () => {
           <TableCell>Due Date</TableCell>
         </TableRow>
         {assignments.map((assignment, i: number) => (
-          <GradingAssignmentRow key={i} assignmentId={i + 1}>
+          <GradingAssignmentRow key={i} assignmentId={assignment.id}>
             <TableCell>{assignment.name}</TableCell>
             <TableCell>{formatDate(assignment.created_at)}</TableCell>
             <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
