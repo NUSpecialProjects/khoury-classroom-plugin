@@ -139,7 +139,6 @@ const Dashboard: React.FC = () => {
                   {assignments.map((assignment, i: number) => (
                     <TableRow key={i} className="Assignment__submission">
                       <TableCell>
-                        {" "}
                         <Link
                           to={`/app/assignments/${assignment.id}`}
                           state={{ assignment }}
