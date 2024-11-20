@@ -56,7 +56,7 @@ const AssignmentRubric: React.FC = () => {
 
           {rubricData ? (
             <div>
-              <NewRubric rubricData={rubricData}/>
+              <NewRubric givenRubricData={rubricData}/>
             </div>
 
           ) : (

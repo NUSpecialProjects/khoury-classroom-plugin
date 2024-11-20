@@ -73,4 +73,5 @@ type Rubric interface {
 	GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error)
 	AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
 	GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error)
+    UpdateRubric(ctx context.Context, rubricID int64, rubricData models.FullRubric) (models.FullRubric, error)
 }

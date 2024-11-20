@@ -69,3 +69,33 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 
 	}
 }
+
+func (s *RubricService) UpdateRubric() fiber.Handler {
+    return func(c *fiber.Ctx) error {
+		rubricID, err := strconv.ParseInt(c.Params("rubric_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+        var newRubricData models.FullRubric
+        error := c.BodyParser(&newRubricData)
+        if error != nil {
+            return errs.InvalidRequestBody(models.FullRubric{})
+        }
+
+        updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData)
+        if err != nil {
+            return errs.InternalServerError()
+        }
+
+        return c.Status(http.StatusOK).JSON(fiber.Map{"updatedRubric" : updatedRubric})
+
+
+
+
+
+
+    }
+}
+
+

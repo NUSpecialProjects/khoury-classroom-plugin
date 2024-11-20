@@ -71,3 +71,7 @@ func (db *DB) GetRubricItems(ctx context.Context, rubricID int64) ([]models.Rubr
     defer rows.Close()
     return pgx.CollectRows(rows, pgx.RowToStructByName[models.RubricItem])
 }
+
+func (db *DB) UpdateRubric(ctx context.Context, rubricID int64, rubridData models.FullRubric) (models.FullRubric, error) {
+    rows.
+}
