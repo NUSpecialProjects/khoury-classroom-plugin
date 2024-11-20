@@ -2,15 +2,16 @@
 INSERT INTO classrooms (id, name, org_id, org_name, created_at)
 VALUES
 (1, 'Kennys Coding Classroom', 182810684, 'NUSpecialProjects', NOW()),
-(2, 'Advanced Running Analytics', 182810684, 'RunTechOrg', NOW()),
-(3, 'Chocolate Lovers Unite', 182810684, 'ChocoOrg', NOW()),
-(4, 'Data Structures and Algorithms', 182810684, 'CodeMasters', NOW()),
-(5, 'Mobile App Development', 182810684, 'AppDevs', NOW()),
-(6, 'AI and Machine Learning', 182810684, 'AIMLGroup', NOW()),
+(2, 'Advanced Running Analytics', 182810684, 'NUSpecialProjects', NOW()),
+(3, 'Chocolate Lovers Unite', 182810684, 'NUSpecialProjects', NOW()),
+(4, 'Data Structures and Algorithms', 182810684, 'NUSpecialProjects', NOW()),
+(5, 'Mobile App Development', 182810684, 'NUSpecialProjects', NOW()),
+(6, 'AI and Machine Learning', 182810684, 'NUSpecialProjects', NOW()),
 (7, 'Web Development Bootcamp', 98771, 'WebCoders', NOW()),
 (8, 'Cloud Computing', 98772, 'CloudExperts', NOW()),
 (9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW()),
-(10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW());
+(10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW()),
+(11, 'Khoury Coding Bootcamp', 182810684, 'NUSpecialProjects', NOW());
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Create users (Kenny and others)
@@ -26,29 +27,33 @@ VALUES
 (8, 'Barbara', 'Liskov', 'bliskov', 678901),
 (9, 'Dennis', 'Ritchie', 'dritchie', 112233),
 (10, 'Ken', 'Thompson', 'kthompson', 445566),
-(11, 'Cam', 'Plume', 'CamPlume1', 116120547),
-(12, 'Nick', 'Tietje', 'ntietje1', 124538220),
-(13, 'Seby', 'Tremblay', 'sebytremblay', 91509344);
+(11, 'Alex', 'Angione', 'alexangione419', 111721125),
+(12, 'Nick', 'Tietje2', 'NickTietje', 183017928),
+(13, 'Seby', 'Tremblay', 'sebytremblay', 91509344),
+(14, 'Cam', 'Plume', 'CamPlume1', 116120547);
+
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
-INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at)
+INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at, status)
 VALUES
-(1, 1, 'STUDENT', NOW()),
-(2, 1, 'PROFESSOR', NOW()),
-(3, 1, 'STUDENT', NOW()),
-(4, 2, 'STUDENT', NOW()),
-(5, 2, 'TA', NOW()),
-(6, 3, 'STUDENT', NOW()),
-(7, 3, 'PROFESSOR', NOW()),
-(8, 4, 'STUDENT', NOW()),
-(9, 4, 'PROFESSOR', NOW()),
-(10, 5, 'TA', NOW()),
-(1, 6, 'STUDENT', NOW()),
-(3, 7, 'STUDENT', NOW()),
-(6, 8, 'STUDENT', NOW()),
-(8, 9, 'STUDENT', NOW()),
-(5, 10, 'TA', NOW());
+(1, 1, 'STUDENT', NOW(), 'ACTIVE'),
+(2, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
+(3, 1, 'STUDENT', NOW(), 'ACTIVE'),
+(4, 2, 'STUDENT', NOW(), 'ACTIVE'),
+(5, 2, 'TA', NOW(), 'ACTIVE'),
+(6, 3, 'STUDENT', NOW(), 'ACTIVE'),
+(7, 3, 'PROFESSOR', NOW(), 'ACTIVE'),
+(8, 4, 'STUDENT', NOW(), 'ACTIVE'),
+(9, 4, 'PROFESSOR', NOW(), 'ACTIVE'),
+(10, 5, 'TA', NOW(), 'ACTIVE'),
+(1, 6, 'STUDENT', NOW(), 'ACTIVE'),
+(3, 7, 'STUDENT', NOW(), 'ACTIVE'),
+(6, 8, 'STUDENT', NOW(), 'ACTIVE'),
+(8, 9, 'STUDENT', NOW(), 'ACTIVE'),
+(5, 10, 'TA', NOW(), 'ACTIVE'),
+(11, 11, 'STUDENT', NOW(), 'ACTIVE'),
+(12, 11, 'STUDENT', NOW(), 'ACTIVE');
 
 
 -- Insert into assignment_templates

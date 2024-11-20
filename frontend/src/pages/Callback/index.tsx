@@ -1,5 +1,5 @@
 import { AuthContext } from "@/contexts/auth";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import "./styles.css";
@@ -10,6 +10,7 @@ const Callback: React.FC = () => {
   const code = searchParams.get("code");
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  const hasRun = useRef(false);
 
   const handleSuccessfulLogin = () => {
     const redirectUrl = localStorage.getItem("redirectAfterLogin");
@@ -23,6 +24,9 @@ const Callback: React.FC = () => {
   };
 
   useEffect(() => {
+    if (hasRun.current) return; // prevent multiple executions
+    hasRun.current = true;
+
     //if code, good, else, route to home
     if (code) {
       sendCode(code)
@@ -36,12 +40,11 @@ const Callback: React.FC = () => {
             `/?error=${encodeURIComponent(err.message)}`,
             { replace: true }
           );
-          return;
         });
     } else {
-      navigate("/");
+      navigate("/", { replace: true });
     }
-  });
+  }, []);
 
   return (
     <div className="callback-container">

@@ -14,12 +14,20 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
+DO $$ BEGIN
+    CREATE TYPE USER_STATUS AS 
+    ENUM('NOT_IN_ORG','REQUESTED', 'ORG_INVITED', 'ACTIVE'); -- intentionally don't have a "NONE" status, as any user in our DB should at least have requested to join the org
+EXCEPTION 
+    WHEN duplicate_object THEN null;
+END $$;
+
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(255), --TODO: this should be not null eventually
     last_name VARCHAR(255), --TODO: this should be not null eventually
     github_username VARCHAR(255) NOT NULL, 
-    github_user_id INTEGER NOT NULL
+    github_user_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- TODO: Impose length on tokens
@@ -37,6 +45,7 @@ CREATE TABLE IF NOT EXISTS classroom_membership (
     classroom_id INTEGER NOT NULL,
     classroom_role USER_ROLE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    status USER_STATUS NOT NULL, -- represents whether the user has "requested" to join the org, been invited to the org, or is in the org
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
     UNIQUE (user_id, classroom_id)

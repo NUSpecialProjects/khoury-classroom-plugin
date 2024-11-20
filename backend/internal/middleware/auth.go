@@ -7,6 +7,7 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
+	"github.com/CamPlume1/khoury-classroom/internal/github"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
 	"github.com/CamPlume1/khoury-classroom/internal/storage"
 	"github.com/gofiber/fiber/v2"
@@ -69,7 +70,7 @@ func Protected(secret string) fiber.Handler {
 }
 
 /* Warning: Usage of Protected Middleware is a prerequisite to the use of this function */
-func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserClient) (*userclient.UserAPI, error) {
+func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserClient) (github.GitHubUserClient, error) {
 	userID, ok := c.Locals("userID").(int64)
 	if !ok {
 		return nil, errs.NewAPIError(500, errors.New("failed to retrieve userID from context"))
