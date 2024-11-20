@@ -8,6 +8,7 @@ import (
 
 type Storage interface {
 	Close(context.Context)
+	FeedbackComment
 	Works
 	Test
 	Session
@@ -16,6 +17,12 @@ type Storage interface {
 	AssignmentOutline
 	Rubric
 	AssignmentTemplate
+}
+
+type FeedbackComment interface {
+	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error)
+	CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
+	AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error
 }
 
 type Works interface {
@@ -38,11 +45,14 @@ type Classroom interface {
 	CreateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
 	UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error)
 	GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error)
-	AddUserToClassroom(ctx context.Context, classroomID int64, classroomRole string, userID int64) (int64, error)
-	ModifyUserRole(ctx context.Context, classroomID int64, classroomRole string, userID int64) error
-	GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.UserWithRole, error)
-	GetUserInClassroom(ctx context.Context, classroomID int64, userID int64) (models.UserWithRole, error)
+	AddUserToClassroom(ctx context.Context, classroomID int64, classroomRole string, classroomStatus models.UserStatus, userID int64) (models.ClassroomUser, error)
+	RemoveUserFromClassroom(ctx context.Context, classroomID int64, userID int64) error
+	ModifyUserRole(ctx context.Context, classroomID int64, classroomRole string, userID int64) (models.ClassroomUser, error)
+	ModifyUserStatus(ctx context.Context, classroomID int64, status models.UserStatus, userID int64) (models.ClassroomUser, error)
+	GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.ClassroomUser, error)
+	GetUserInClassroom(ctx context.Context, classroomID int64, userID int64) (models.ClassroomUser, error)
 	GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error)
+	GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.Classroom, error)
 	CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error)
 	GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error)
 }
@@ -50,6 +60,7 @@ type Classroom interface {
 type User interface {
 	CreateUser(ctx context.Context, userToCreate models.User) (models.User, error)
 	GetUserByGitHubID(ctx context.Context, githubUserID int64) (models.User, error)
+	GetUserByID(ctx context.Context, userID int64) (models.User, error)
 }
 
 type AssignmentOutline interface {
