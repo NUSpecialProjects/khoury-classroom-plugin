@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!loadingCurrentClassroomUser && (classroomUserError || !classroomUser)) {
       console.log("Attempted to view a classroom without access. Redirecting to classroom select.")
-      navigate(`/app/classroom/select?org_id=${selectedClassroom?.org_id}`);
+      navigate(`/app/organization/select`);
     }
   }, [loadingCurrentClassroomUser, classroomUserError, classroomUser, selectedClassroom?.org_id, navigate]);
 
