@@ -45,3 +45,29 @@ export const getRubric = async (
   console.log(data)
   return data
 };
+
+
+export const updateRurbic = async (
+  rubricID: number, 
+  rubric: IFullRubric
+): Promise<IFullRubric> => {
+  const response = await fetch(
+    `${base_url}/rubrics/rubric/${rubricID}`,
+    {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(rubric),
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data: IFullRubric = (await response.json() as IFullRubric) 
+  console.log(data)
+  return data
+
+};

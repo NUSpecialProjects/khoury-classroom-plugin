@@ -10,10 +10,10 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { setAssignmentRubric } from "@/api/assignments";
 
 interface NewRubricProps {
-    rubricData?: IFullRubric; // Accept rubricData as a prop
+    givenRubricData?: IFullRubric; // Accept rubricData as a prop
 }
 
-const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
+const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
     const location = useLocation();
     const [assignment, setAssignment] = useState<IAssignmentOutline>()
     const { selectedClassroom } = useContext(SelectedClassroomContext)
@@ -33,6 +33,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
 
 
     //data for the rubric
+    const [rubricData, setRubricData] = useState<IFullRubric>()
     const [rubricItemData, setRubricItemData] = useState<IRubricItem[]>([])
     const [rubricName, setRubricName] = useState<string>("")
 
@@ -55,18 +56,35 @@ const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
                     created_at: null
                 },
                 rubric_items: rubricItems
-            }     
-            await createRubric(fullRubric)
+            }
+
+            if (rubricData) {
+                await updateRubric(rubricData.rubric.id, fullRubric)
+                .then((updatedRubric) => {
+                    setRubricEdited(false)
+                    setRubricData(updatedRubric)
+                    if (assignment !== null && assignment !== undefined) {
+                        setAssignmentRubric(updatedRubric.rubric.id!, selectedClassroom.id, assignment.id)
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error creating rubric:", error);
+                });
+
+            } else {
+                await createRubric(fullRubric)
                 .then((createdRubric) => {
                     setRubricEdited(false)
+                    setRubricData(createdRubric)
                     if (assignment !== null && assignment !== undefined) {
-                        console.log(createdRubric.rubric.id!)
                         setAssignmentRubric(createdRubric.rubric.id!, selectedClassroom.id, assignment.id)
                     }
                 })
                 .catch((error) => {
                     console.error("Error creating rubric:", error);
                 });
+            }
+
         }
 
     };
@@ -101,10 +119,11 @@ const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
         }
 
         if (assignment !== null && assignment !== undefined) {
-            if (rubricData !== null && rubricData !== undefined) {
-                setRubricName(rubricData.rubric.name)
-                setRubricItemData(rubricData.rubric_items)
-                console.log("Rubric Items: ", rubricData.rubric_items)
+            if (givenRubricData) {
+                setRubricData(givenRubricData)
+                setRubricName(givenRubricData.rubric.name)
+                setRubricItemData(givenRubricData.rubric_items)
+                console.log("Rubric Items: ", givenRubricData.rubric_items)
             } else {
                 setRubricName(`${assignment.name} Rubric`)
             }
@@ -116,18 +135,19 @@ const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
             addNewItem()
         }
 
-        console.log(rubricItemData)
-    }, []);
+        console.log("rubric Item data", rubricItemData)
+    }, [location.state, rubricData]);
 
 
 
     return (
         <div className="NewRubric__body">
-            <div className="NewRubric__title">
-                {assignment !== null && assignment !== undefined ? `${assignment.name} > ` : ""}
-                {rubricEdited ? "New Rubric *" : "New Rubric"}
-            </div>
-
+            {!rubricData &&
+                <div className="NewRubric__title">
+                    {assignment !== null && assignment !== undefined ? `${assignment.name} > ` : ""}
+                    {rubricEdited ? "New Rubric *" : "New Rubric"}
+                </div>
+            }
 
             <Input
                 label="Rubric name"
@@ -146,7 +166,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ rubricData }) => {
                         key={item.id}
                         name={item.explanation}
                         points={Math.abs(item.point_value).toString()}
-                        deduction={item.point_value > 0}
+                        deduction={item.point_value ? item.point_value > 0 : undefined}
                         onChange={(newItem) => handleItemChange(item.id ? item.id : 0, newItem)}
                     />
                 ))

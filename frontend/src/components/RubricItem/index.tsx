@@ -4,7 +4,7 @@ import "./styles.css";
 interface IRubricItemProps {
     name: string;
     points: string;
-    deduction: boolean;
+    deduction?: boolean;
     onChange: (updatedFields: Partial<{ explanation: string; point_value: number; deduction: boolean }>) => void;
 }
 
@@ -14,25 +14,17 @@ enum FeedbackType {
     Neutral = "N"
 }
 
-const RubricItem: React.FC<IRubricItemProps> = ({
-    name,
-    points,
-    deduction, 
-    onChange,
-}) => {
-
+const RubricItem: React.FC<IRubricItemProps> = ({ name, points, deduction, onChange,}) => {
     const [selection, setSelection] = useState<FeedbackType>(FeedbackType.Neutral);
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange({ explanation: e.target.value });
     };
 
 
+ 
     const updatePointsBasedOnDeduction = (pointValue: number, feedbackType: FeedbackType) => {
         if (!isNaN(pointValue)) {
-            console.log("point value pre update, ", pointValue)
-            console.log("feedback type ", feedbackType)
             const adjustedValue = feedbackType === FeedbackType.Deduction ? -1*Math.abs(pointValue) : Math.abs(pointValue)
-            console.log("adjuasted value pre update, ", adjustedValue)
             onChange({ point_value: adjustedValue });
         }
     }
@@ -45,19 +37,15 @@ const RubricItem: React.FC<IRubricItemProps> = ({
 
 
     const makeAddition = () => {
-        console.log("made addutuin")
-
         if(selection !== FeedbackType.Addition) {
             setSelection(FeedbackType.Addition);
             updatePointsBasedOnDeduction(parseInt(points,10), FeedbackType.Addition)
-
         } else {
             setSelection(FeedbackType.Neutral)
         }
     };
 
     const makeDeduction = () => {
-        console.log("made deduciton")
         if(selection !== FeedbackType.Deduction) {
             setSelection(FeedbackType.Deduction);
             updatePointsBasedOnDeduction(parseInt(points,10), FeedbackType.Deduction)
@@ -67,8 +55,17 @@ const RubricItem: React.FC<IRubricItemProps> = ({
     };
 
 
+    // on startup
     useEffect(() => {
-        if 
+        if (deduction !== null || deduction !== undefined) {
+            setSelection(FeedbackType.Neutral)
+        } else {
+            if (deduction) {
+                setSelection(FeedbackType.Deduction)
+            } else {
+                setSelection(FeedbackType.Addition)
+            }
+        } 
     }, [])
 
 
