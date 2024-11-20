@@ -70,24 +70,21 @@ VALUES
 ('dritchie', 1008, NOW(), 'Template 9'),
 ('kthompson', 1009, NOW(), 'Template 10');
 
-
--- Insert into assignment_outlines
-INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, classroom_id, group_assignment)
-VALUES
-(1, 1001, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, FALSE),
-(2, 1002, NOW(), '2023-02-01 09:00:00', 'Compiler Design', 1, TRUE),
-(3, 1003, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 2, FALSE),
-(4, 1004, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 2, TRUE),
-(5, 1005, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 3, FALSE),
-(6, 1006, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 4, TRUE),
-(7, 1007, NOW(), '2023-07-01 09:00:00', 'Website Development', 5, FALSE),
-(8, 1008, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, TRUE),
-(9, 1009, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 7, FALSE),
-(10, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', 8, TRUE);
-SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
+-- Insert into rubrics
+INSERT INTO rubrics (id, name, org_id, classroom_id, reusable) VALUES 
+(1, 'Introduction to Programming Rubric', 1, 1, true),
+(2, 'Data Structures Project Rubric', 1, 1, false),
+(3, 'Algorithms Midterm Rubric', 2, 1, false),
+(4, 'Database Design Project Rubric', 2, 1, true),
+(5, 'Machine Learning Final Rubric', 3, 2, false),
+(6, 'Operating Systems Lab Rubric', 3, 2, true),
+(7, 'Web Development Assignment Rubric', 4, 2, false),
+(8, 'Network Security Exam Rubric', 4, 1, false),
+(9, 'Software Engineering Project Rubric', 5, 2, true),
+(10, 'Artificial Intelligence Assignment Rubric', 5, 2, true);
 
 -- Insert into rubric_items
-INSERT INTO rubric_items (id, assignment_outline_id, point_value, explanation, created_at)
+INSERT INTO rubric_items (id, rubric_id, point_value, explanation, created_at)
 VALUES
 (1, 1, 10, 'Tracks running distances accurately', NOW()),
 (2, 1, 10, 'Records chocolate consumption correctly', NOW()),
@@ -107,6 +104,21 @@ VALUES
 (16, 9, 25, 'Identified security vulnerabilities', NOW()),
 (17, 10, 20, 'Implemented design patterns correctly', NOW());
 SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
+
+-- Insert into assignment_outlines
+INSERT INTO assignment_outlines (id, template_id, created_at, released_at, name, rubric_id, classroom_id, group_assignment)
+VALUES
+(1, 1001, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, 1, FALSE),
+(2, 1002, NOW(), '2023-02-01 09:00:00', 'Compiler Design', NULL, 1, TRUE),
+(3, 1003, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 3, 2, FALSE),
+(4, 1004, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 3, 2, TRUE),
+(5, 1005, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 4, 3, FALSE),
+(6, 1006, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 5, 4, TRUE),
+(7, 1007, NOW(), '2023-07-01 09:00:00', 'Website Development', NULL, 5, FALSE),
+(8, 1008, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, 6, TRUE),
+(9, 1009, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 9, 7, FALSE),
+(10, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', NULL, 8, TRUE);
+SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
 
 -- Insert into student_works
 INSERT INTO student_works (id, assignment_outline_id, repo_name, unique_due_date, manual_feedback_score, auto_grader_score, grades_published_timestamp, work_state, created_at)
@@ -176,3 +188,4 @@ VALUES
 (5, 13, 'REGRADE_REQUESTED', 'I improved the website responsiveness.', NOW()),
 (6, 16, 'REGRADE_REQUESTED', 'Found additional vulnerabilities, please review.', NOW());
 SELECT setval('regrade_requests_id_seq', (SELECT MAX(id) FROM regrade_requests));
+
