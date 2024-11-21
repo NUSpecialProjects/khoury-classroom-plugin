@@ -22,8 +22,6 @@ func OrgRoutes(router fiber.Router, service *OrganizationService) fiber.Router {
 
 	orgRouter.Get("/org/:org_id/classrooms", service.GetClassroomsInOrg())
 
-	orgRouter.Get("/org/:org_id/classrooms", service.GetClassroomsInOrg())
-
 	// Get the organizations the authenticated user is part of that have the app installed
 	orgRouter.Get("/installations", service.GetInstalledOrgs())
 
