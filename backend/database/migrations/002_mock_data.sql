@@ -53,9 +53,9 @@ VALUES
 (8, 9, 'STUDENT', NOW(), 'ACTIVE'),
 (5, 10, 'TA', NOW(), 'ACTIVE'),
 (11, 11, 'STUDENT', NOW(), 'ACTIVE'),
-(12, 11, 'STUDENT', NOW(), 'ACTIVE');
+(12, 11, 'STUDENT', NOW(), 'ACTIVE'),
 (11, 1, 'TA', NOW(), 'ACTIVE'),
-(12, 1, 'TA', NOW(), 'ACTIVE');
+(12, 1, 'TA', NOW(), 'ACTIVE'),
 (13, 1, 'TA', NOW(), 'ACTIVE'),
 (14, 1, 'TA', NOW(), 'ACTIVE');
 
