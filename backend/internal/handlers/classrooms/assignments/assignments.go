@@ -76,9 +76,11 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
 		baseRepo, err := s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Error creating base repo: ", err)
 			return errs.InternalServerError()
 		}
+
+		// Store base repository in DB
 		err = s.store.CreateBaseRepo(c.Context(), *baseRepo)
 		if err != nil {
 			fmt.Println("Error creating base repo")
@@ -184,6 +186,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		forkName := generateForkName(assignment.Name, user.Login)
 		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
 		if studentWorkRepo != nil {
+			// Ensure student team is removed
+			err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, forkName)
+			if err != nil {
+				return errs.GithubAPIError(err)
+			}
+
 			return c.Status(http.StatusOK).JSON(fiber.Map{
 				"message":  "Assignment already accepted",
 				"repo_url": studentWorkRepo.HTMLURL,
@@ -200,10 +208,25 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
+		// Check if a fork exists
+		initialDelay := 1 * time.Second
+		maxDelay := 30 * time.Second
+		for {
+			studentWorkRepo, _ = client.GetRepository(c.Context(), classroom.OrgName, forkName)
+			if studentWorkRepo != nil {
+				break
+			}
+
+			if initialDelay > maxDelay {
+				return errs.GithubAPIError(errors.New("Fork unsuccessful, please try again later."))
+			}
+
+			time.Sleep(initialDelay)
+			initialDelay *= 2
+		}
+
 		// Remove student team's access to forked repo
-		// TODO: dynamically find student team name (KHO-177)
-		studentTeamName := "student_team_test"
-		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, studentTeamName, classroom.OrgName, forkName)
+		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, forkName)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
@@ -218,7 +241,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Instead of getting the repository immediately, construct the expected URL
 		expectedRepoURL := fmt.Sprintf("https://github.com/%s/%s", classroom.OrgName, forkName)
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"message":  "Assignment accepted - it may take a few minutes to create the repository",
+			"message":  "Assignment Accepted!",
 			"repo_url": expectedRepoURL,
 		})
 	}

@@ -85,14 +85,14 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	}
 
 	// Create necessary repo branches
-	_, err := s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
+	_, err := s.appClient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
 		*pushEvent.Repo.Name,
 		*pushEvent.Repo.MasterBranch,
 		"development")
 	if err != nil {
 		return errs.InternalServerError()
 	}
-	_, err = s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
+	_, err = s.appClient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
 		*pushEvent.Repo.Name,
 		*pushEvent.Repo.MasterBranch,
 		"feedback")
@@ -100,10 +100,18 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.InternalServerError()
 	}
 
+	// Find the associated assignment and classroom
+	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
+	if err != nil {
+		return errs.InternalServerError()
+	}
+	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
+	if err != nil {
+		return errs.InternalServerError()
+	}
+
 	// Give the student team read access to the repository
-	// TODO: dynamically find student team name (KHO-177)
-	teamName := "student_team_test"
-	err = s.githubappclient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, teamName,
+	err = s.appClient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, *classroom.StudentTeamName,
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
 		return errs.InternalServerError()

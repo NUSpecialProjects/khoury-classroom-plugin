@@ -275,10 +275,16 @@ func (api *CommonAPI) RemoveRepoFromTeam(ctx context.Context, org, teamSlug, own
 	}
 
 	// Make the API call
-	_, err = api.Client.Do(ctx, req, nil)
+	response, err := api.Client.Do(ctx, req, nil)
 	if err != nil {
 		return errs.GithubAPIError(err)
 	}
+	fmt.Println("Remove team response: ", response)
 
 	return nil
+}
+
+func (api *CommonAPI) RepositoryExists(ctx context.Context, owner, repo string) bool {
+	_, err := api.GetRepository(ctx, owner, repo)
+	return err == nil
 }

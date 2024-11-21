@@ -95,10 +95,12 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 }
 
 func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error) {
+	teamPrivacy := "closed"
 	team := &github.NewTeam{
 		Name:        teamName,
 		Description: description,
 		Maintainers: maintainers,
+		Privacy:     &teamPrivacy,
 	}
 
 	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)

@@ -121,3 +121,25 @@ func (db *DB) AttachBaseRepoToAssignment(ctx context.Context, assignmentID int32
 
 	return nil
 }
+
+func (db *DB) GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error) {
+	var assignmentOutline models.AssignmentOutline
+	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_outlines WHERE base_repo_id = $1", baseRepoID).Scan(
+		&assignmentOutline.ID,
+		&assignmentOutline.TemplateID,
+		&assignmentOutline.BaseRepoID,
+		&assignmentOutline.CreatedAt,
+		&assignmentOutline.ReleasedAt,
+		&assignmentOutline.Name,
+		&assignmentOutline.ClassroomID,
+		&assignmentOutline.RubricID,
+		&assignmentOutline.GroupAssignment,
+		&assignmentOutline.MainDueDate,
+	)
+
+	if err != nil {
+		return assignmentOutline, errs.NewDBError(err)
+	}
+
+	return assignmentOutline, nil
+}

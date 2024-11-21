@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS rubric_items (
 CREATE TABLE IF NOT EXISTS assignment_outlines (
     id SERIAL PRIMARY KEY,
     template_id INTEGER,
-    base_repo_id INTEGER,
+    base_repo_id INTEGER UNIQUE,
     created_at TIMESTAMP DEFAULT NOW(),
     released_at TIMESTAMP,
     name VARCHAR(255) NOT NULL,

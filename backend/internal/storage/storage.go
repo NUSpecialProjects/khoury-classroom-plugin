@@ -68,6 +68,7 @@ type User interface {
 type AssignmentOutline interface {
 	GetAssignmentsInClassroom(ctx context.Context, classroomID int64) ([]models.AssignmentOutline, error)
 	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
+	GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (int32, error)
 	AttachBaseRepoToAssignment(ctx context.Context, assignmentID int32, baseRepoID int64) error
 
