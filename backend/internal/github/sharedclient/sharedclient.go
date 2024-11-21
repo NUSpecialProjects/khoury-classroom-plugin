@@ -283,8 +283,3 @@ func (api *CommonAPI) RemoveRepoFromTeam(ctx context.Context, org, teamSlug, own
 
 	return nil
 }
-
-func (api *CommonAPI) RepositoryExists(ctx context.Context, owner, repo string) bool {
-	_, err := api.GetRepository(ctx, owner, repo)
-	return err == nil
-}

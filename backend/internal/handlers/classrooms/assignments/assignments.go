@@ -72,22 +72,18 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			return err
 		}
 
-		// Create base repository using assignment template
+		// Create base repository and store locally
 		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
 		baseRepo, err := s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
-			fmt.Println("Error creating base repo: ", err)
-			return errs.InternalServerError()
+			return err
 		}
-
-		// Store base repository in DB
 		err = s.store.CreateBaseRepo(c.Context(), *baseRepo)
 		if err != nil {
-			fmt.Println("Error creating base repo")
 			return err
 		}
 
-		// Store assignment in DB
+		// Store assignment locally
 		createdAssignmentID, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
 			return err
@@ -155,14 +151,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Get assignment using the token
 		assignment, err := s.store.GetAssignmentByToken(c.Context(), token)
 		if err != nil {
-			fmt.Println("Error getting assignment by token")
 			return err
 		}
 
 		// Get assignment base repository
 		baseRepo, err := s.store.GetBaseRepoByID(c.Context(), assignment.BaseRepoID)
 		if err != nil {
-			fmt.Println("Error getting base repo by ID")
 			return err
 		}
 
@@ -208,7 +202,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		// Check if a fork exists
+		// Wait to perform actions on the fork until it is finished initializing
 		initialDelay := 1 * time.Second
 		maxDelay := 30 * time.Second
 		for {
@@ -218,7 +212,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			}
 
 			if initialDelay > maxDelay {
-				return errs.GithubAPIError(errors.New("Fork unsuccessful, please try again later."))
+				return errs.GithubAPIError(errors.New("fork unsuccessful, please try again later"))
 			}
 
 			time.Sleep(initialDelay)
@@ -234,7 +228,6 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Insert into DB
 		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, "ACCEPTED", *assignment.MainDueDate)
 		if err != nil {
-			fmt.Println("Error creating student work")
 			return err
 		}
 

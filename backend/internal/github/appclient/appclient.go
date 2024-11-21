@@ -3,7 +3,6 @@ package appclient
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -95,12 +94,10 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 }
 
 func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error) {
-	teamPrivacy := "closed"
 	team := &github.NewTeam{
 		Name:        teamName,
 		Description: description,
 		Maintainers: maintainers,
-		Privacy:     &teamPrivacy,
 	}
 
 	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
@@ -147,15 +144,15 @@ func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string,
 }
 
 func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) (*models.AssignmentBaseRepo, error) {
-	// Construct the request
 	endpoint := fmt.Sprintf("/repos/%s/%s/generate", orgName, templateRepoName)
+
+	// Construct the request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
 		"name":    newRepoName,
 		"owner":   orgName,
 		"private": true,
 	})
 	if err != nil {
-		fmt.Println(err)
 		return nil, errs.GithubAPIError(err)
 	}
 
@@ -163,7 +160,6 @@ func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, template
 	var repo *models.Repository
 	_, err = api.Client.Do(ctx, req, &repo)
 	if err != nil {
-		fmt.Println(err)
 		return nil, errs.GithubAPIError(err)
 	}
 
@@ -171,6 +167,5 @@ func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, template
 		BaseRepoOwner: orgName,
 		BaseRepoName:  newRepoName,
 		BaseID:        repo.ID,
-		CreatedAt:     time.Now(),
 	}, nil
 }

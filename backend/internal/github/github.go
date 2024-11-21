@@ -101,7 +101,4 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 
 	// Remove repository from team
 	RemoveRepoFromTeam(ctx context.Context, org, teamSlug, owner, repo string) error
-
-	// Check if a repository exists
-	RepoExists(ctx context.Context, owner, repo string) bool
 }
