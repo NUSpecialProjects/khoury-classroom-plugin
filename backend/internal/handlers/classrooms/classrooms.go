@@ -583,7 +583,7 @@ func (s *ClassroomService) revokeOrganizationInvite() fiber.Handler {
 	}
 }
 
-// Invites a user to the organization (delegates based on the role supplied)
+// Helper function to invite a user to the organization (delegates based on the role supplied)
 func (s *ClassroomService) inviteUserToOrganization(ctx context.Context, client github.GitHubBaseClient, classroom models.Classroom, classroomRole models.ClassroomRole, user models.User) (models.ClassroomUser, error) {
 	var classroomUser models.ClassroomUser
 	var err error
@@ -610,7 +610,7 @@ func (s *ClassroomService) inviteUserToOrganization(ctx context.Context, client 
 	return classroomUser, nil
 }
 
-// Invites a member to the organization
+// Helper function to invite a student to the organization (adds them to the student team as well on acceptance)
 func (s *ClassroomService) inviteMemberToOrganization(context context.Context, client github.GitHubBaseClient, teamID int64, classroomID int64, invitee models.User) (models.ClassroomUser, error) {
 	err := client.AddTeamMember(context, teamID, invitee.GithubUsername, nil)
 	if err != nil {
@@ -624,7 +624,7 @@ func (s *ClassroomService) inviteMemberToOrganization(context context.Context, c
 	return classroomUser, nil
 }
 
-// Invites an admin to the organization
+// Helper function to invite an admin to the organization
 func (s *ClassroomService) inviteAdminToOrganization(context context.Context, client github.GitHubBaseClient, orgName string, classroomID int64, invitee models.User) (models.ClassroomUser, error) {
 	err := client.SetUserMembershipInOrg(context, orgName, invitee.GithubUsername, "admin")
 	if err != nil {
@@ -637,7 +637,7 @@ func (s *ClassroomService) inviteAdminToOrganization(context context.Context, cl
 	return classroomUser, nil
 }
 
-// Accepts a pending invitation to an organization (Assumes there is a pending invitation)
+// Helper function to accept a pending invitation to an organization (Assumes there is a pending invitation)
 func (s *ClassroomService) acceptOrgInvitation(context context.Context, userClient github.GitHubUserClient, orgName string, classroomID int64, invitee models.User) error {
 	// user has a pending invitation, accept it
 	err := userClient.AcceptOrgInvitation(context, orgName)
@@ -652,6 +652,7 @@ func (s *ClassroomService) acceptOrgInvitation(context context.Context, userClie
 	return nil
 }
 
+// Helper function to check if the user has at least the role specified
 func (s *ClassroomService) requireAtLeastRole(c *fiber.Ctx, classroomID int64, role models.ClassroomRole) (models.ClassroomUser, error) {
 	_, _, user, err := middleware.GetClientAndUser(c, s.store, s.userCfg)
 	if err != nil {
