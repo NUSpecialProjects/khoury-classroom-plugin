@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -9,6 +10,7 @@ import (
 )
 
 func (db *DB) CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error) {
+    fmt.Println("rubric id ", rubricData.ID)
     err := db.connPool.QueryRow(ctx, "INSERT INTO rubrics (name, org_id, classroom_id, reusable) VALUES ($1, $2, $3, $4) RETURNING *",
         rubricData.Name,
         rubricData.OrgID,
@@ -72,6 +74,44 @@ func (db *DB) GetRubricItems(ctx context.Context, rubricID int64) ([]models.Rubr
     return pgx.CollectRows(rows, pgx.RowToStructByName[models.RubricItem])
 }
 
-func (db *DB) UpdateRubric(ctx context.Context, rubricID int64, rubridData models.FullRubric) (models.FullRubric, error) {
-    rows.
+func (db *DB) UpdateRubric(ctx context.Context, rubricID int64, rubricData models.Rubric) (models.Rubric, error) {
+    var updatedRubric models.Rubric
+    err := db.connPool.QueryRow(ctx, `UPDATE rubrics SET name = $1, org_id = $2, classroom_id = $3,
+        reusable = $4, created_at = $5 WHERE id = $6`,
+        rubricData.Name,
+        rubricData.OrgID,
+        rubricData.ClassroomID,
+        rubricData.Reusable,
+        rubricData.CreatedAt,
+        rubricData.ID).Scan(
+        &updatedRubric.ID,
+        &updatedRubric.Name,
+        &updatedRubric.ClassroomID,
+        &updatedRubric.Reusable,
+        &updatedRubric.CreatedAt)
+    if err != nil {
+        return models.Rubric{}, errs.NewDBError(err)
+    }
+    return updatedRubric, nil
 }
+
+func (db *DB) UpdateRubricItem(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error) {
+    var updatedItem models.RubricItem
+    err := db.connPool.QueryRow(ctx, `UPDATE rubric_items SET rubric_id = $1, point_value = $2, explanation = $3, created_at = $4 WHERE id = $5`,
+        rubricItemData.RubricID,
+        rubricItemData.PointValue,
+        rubricItemData.Explanation,
+        rubricItemData.CreatedAt,
+        rubricItemData.ID).Scan(
+        &updatedItem.ID,
+        &updatedItem.RubricID,
+        &updatedItem.PointValue,
+        &updatedItem.Explanation,
+        &updatedItem.CreatedAt)
+    if err != nil {
+        return models.RubricItem{}, errs.NewDBError(err)
+    }
+    return updatedItem, nil
+}
+
+

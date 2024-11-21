@@ -47,7 +47,7 @@ export const getRubric = async (
 };
 
 
-export const updateRurbic = async (
+export const updateRubric = async (
   rubricID: number, 
   rubric: IFullRubric
 ): Promise<IFullRubric> => {

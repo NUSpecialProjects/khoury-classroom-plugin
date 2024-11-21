@@ -119,18 +119,12 @@ const Assignment: React.FC = () => {
             <Button href="" variant="secondary" newTab>
               View Starter Code
             </Button>
-<<<<<<< HEAD
             <Link to={`/app/assignments/${assignment.id}/rubric`} state={{ assignment }}>
               <Button href="" variant="secondary">
                 View Rubric
               </Button>
             </Link>
 
-=======
-            <Button href="" variant="secondary" newTab>
-              View Rubric
-            </Button>
->>>>>>> feature/rubric-backend
           </div>
 
           <h2>Assignment Link</h2>

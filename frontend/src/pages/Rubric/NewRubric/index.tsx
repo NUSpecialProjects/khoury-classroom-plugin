@@ -5,7 +5,7 @@ import "./styles.css";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import RubricItem from "@/components/RubricItem";
-import { createRubric } from "@/api/rubrics";
+import { createRubric, updateRubric } from "@/api/rubrics";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { setAssignmentRubric } from "@/api/assignments";
 
@@ -59,7 +59,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
             }
 
             if (rubricData) {
-                await updateRubric(rubricData.rubric.id, fullRubric)
+                await updateRubric(rubricData.rubric.id!, fullRubric)
                 .then((updatedRubric) => {
                     setRubricEdited(false)
                     setRubricData(updatedRubric)
@@ -72,6 +72,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
                 });
 
             } else {
+                console.log(fullRubric)
                 await createRubric(fullRubric)
                 .then((createdRubric) => {
                     setRubricEdited(false)
@@ -143,7 +144,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
     return (
         <div className="NewRubric__body">
             {!rubricData &&
-                <div className="NewRubric__title">
+                <div className="NewRubric__title">  
                     {assignment !== null && assignment !== undefined ? `${assignment.name} > ` : ""}
                     {rubricEdited ? "New Rubric *" : "New Rubric"}
                 </div>

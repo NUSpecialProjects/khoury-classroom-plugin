@@ -83,19 +83,23 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
             return errs.InvalidRequestBody(models.FullRubric{})
         }
 
-        updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData)
+        updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData.Rubric)
         if err != nil {
             return errs.InternalServerError()
         }
 
-        return c.Status(http.StatusOK).JSON(fiber.Map{"updatedRubric" : updatedRubric})
+        var updatedItems []models.RubricItem
+        for _, item := range newRubricData.RubricItems {
+            updatedItem, err := s.store.UpdateRubricItem(c.Context(), item)
+            if err != nil {
+                return errs.InternalServerError()
+            }
+            updatedItems = append(updatedItems, updatedItem)
+        }
 
-
-
-
-
-
+        return c.Status(http.StatusOK).JSON(fiber.Map{
+            "updatedRubric" : updatedRubric,
+            "updatedRubricItems" : updatedItems,
+        })
     }
 }
-
-
