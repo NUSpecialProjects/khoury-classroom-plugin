@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { SelectedClassroomContext } from "./selectedClassroom";
 import { getPaginatedStudentWork } from "@/api/student_works";
 import { createPRReview } from "@/api/grader";
+import { getAssignmentRubric } from "@/api/assignments";
 
 interface IGraderContext {
   assignmentID: string | undefined;
@@ -12,6 +13,7 @@ interface IGraderContext {
   selectedFile: IFileTreeNode | null;
   feedback: IGraderFeedbackMap;
   stagedFeedback: IGraderFeedbackMap;
+  rubric: IFullRubric | null;
   setSelectedFile: React.Dispatch<React.SetStateAction<IFileTreeNode | null>>;
   addFeedback: (feedback: IGraderFeedback) => number;
   editFeedback: (feedbackID: number, feedback: IGraderFeedback) => void;
@@ -27,6 +29,7 @@ export const GraderContext: React.Context<IGraderContext> =
     selectedFile: null,
     feedback: {},
     stagedFeedback: {},
+    rubric: null,
     setSelectedFile: () => {},
     addFeedback: () => 0,
     editFeedback: () => {},
@@ -48,8 +51,24 @@ export const GraderProvider: React.FC<{
     null
   );
   const [selectedFile, setSelectedFile] = useState<IFileTreeNode | null>(null);
+  const [rubric, setRubric] = useState<IFullRubric | null>(null);
 
   const navigate = useNavigate();
+
+  // fetch rubric from requested assignment
+  useEffect(() => {
+    // reset states
+    setRubric(null);
+
+    if (!selectedClassroom || !assignmentID) return;
+
+    getAssignmentRubric(selectedClassroom.id, Number(assignmentID)).then(
+      (resp) => {
+        setRubric(resp);
+        console.log(resp);
+      }
+    );
+  }, [studentWorkID]);
 
   // fetch requested student assignment
   useEffect(() => {
@@ -125,6 +144,7 @@ export const GraderProvider: React.FC<{
         selectedFile,
         feedback,
         stagedFeedback,
+        rubric,
         setSelectedFile,
         addFeedback,
         editFeedback,
