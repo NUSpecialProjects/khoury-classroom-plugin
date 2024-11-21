@@ -111,3 +111,13 @@ func (db *DB) UpdateRubricItem(ctx context.Context, rubricItemData models.Rubric
     }
     return updatedItem, nil
 }
+
+func (db *DB) GetRubricsInClassroom(ctx context.Context, classroomID int64) ([]models.Rubric, error) {
+    rows, err := db.connPool.Query(ctx, "SELECT * FROM rubrics WHERE classroom_id = $1", classroomID)
+    if err != nil {
+        return nil, errs.NewDBError(err)
+    }
+
+    defer rows.Close()
+    return pgx.CollectRows(rows, pgx.RowToStructByName[models.Rubric])
+}

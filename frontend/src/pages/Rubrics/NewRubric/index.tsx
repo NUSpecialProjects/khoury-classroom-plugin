@@ -113,18 +113,18 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData, assignment }) =>
     // on startup, store an assignment if we have one 
     // Also make sure there is atleast one editable rubric item already on the screen
     useEffect(() => {
-        if (assignment !== null && assignment !== undefined) {
+        console.log("assignment", assignment)
+        console.log("given rubric", givenRubricData)
+        if (assignment) {
+            setRubricName(`${assignment.name} Rubric`)
+            console.log("this happend right")
             if (givenRubricData) {
                 console.log("recieved data in NewRurbic ", givenRubricData)
                 setRubricData(givenRubricData)
                 setRubricName(givenRubricData.rubric.name)
                 setRubricItemData(givenRubricData.rubric_items)
-                console.log("Rubric Items: ", givenRubricData.rubric_items)
-            } else {
-                setRubricName(`${assignment.name} Rubric`)
-            }
+            } 
         } else {
-            console.log("WHERE IS TEH DAMN ASSIGNMENT")
             setRubricName("New Rubric")
         }
 
@@ -132,7 +132,6 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData, assignment }) =>
             addNewItem()
         }
 
-        console.log("rubric Item data", rubricItemData)
     }, [assignment, givenRubricData, rubricItemData]);
 
 

@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import "./styles.css";
 import { getRubric } from "@/api/rubrics";
 import Button from "@/components/Button";
-import NewRubric from "@/pages/Rubric/NewRubric";
+import NewRubric from "@/pages/Rubrics/NewRubric";
 
 const AssignmentRubric: React.FC = () => {
   const location = useLocation();
@@ -14,6 +14,7 @@ const AssignmentRubric: React.FC = () => {
   const [rubricData, setRubricData] = useState<IFullRubric>()
 
   useEffect(() => {
+    console.log("use effecting")
     if (assignment && assignment.rubric_id) {
       (async () => {
         try {
@@ -21,6 +22,8 @@ const AssignmentRubric: React.FC = () => {
           if (rubric !== null) {
             console.log("Assignment rubric retrieved rubric data, ", rubric)
             setRubricData(rubric)
+          } else {
+            console.log("no rubric data found from this assignment")
           }
 
         } catch (error) {
@@ -31,7 +34,7 @@ const AssignmentRubric: React.FC = () => {
     }
 
     
-  }, []);
+  }, [assignment]);
 
 
   return (

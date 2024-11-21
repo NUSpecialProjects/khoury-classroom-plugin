@@ -11,7 +11,7 @@ const LeftNav: React.FC = () => {
   const navItems = [
     { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
     { name: "Grading", dest: "/app/grading", Icon: MdFactCheck },
-    { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
+    { name: "Rubrics", dest: "/app/rubrics", Icon: MdEditDocument },
     { name: "Settings", dest: "/app/settings", Icon: FaGear },
   ];
 

@@ -179,6 +179,35 @@ func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 		return c.Status(http.StatusOK).JSON(fiber.Map{"users": updatedUsersInClassroom})
 	}
 }
+func (s *ClassroomService) getRubricsInClassroom() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		rubrics, err := s.store.GetRubricsInClassroom(c.Context(), classroomID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+        var fullRubrics []models.FullRubric
+        for _, rubric := range rubrics {
+            var fullRubric models.FullRubric
+            fullRubric.Rubric = rubric
+
+            items, err := s.store.GetRubricItems(c.Context(), rubric.ID)
+            if err != nil {
+                return errs.InternalServerError()
+            }
+            fullRubric.RubricItems = items
+
+            fullRubrics = append(fullRubrics, fullRubric)
+        }
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{"full_rubrics": fullRubrics})
+	}
+}
 
 // Removes a user from a classroom.
 func (s *ClassroomService) removeUserFromClassroom() fiber.Handler {
