@@ -8,8 +8,8 @@ interface StarterCodeDetailsProps extends IStepComponentProps<IAssignmentFormDat
 
 const StarterCodeDetails: React.FC<StarterCodeDetailsProps> = ({ data, onChange, templateRepos, isLoading }) => {
   return (
-    <div>
-      <h2>Starter Code Repository</h2>
+    <div className="CreateAssignmentForms">
+      <h2 className="CreateAssignmentForms__header">Starter Code Repository</h2>
       <div>
         <TemplateRepoDropdown
           repositories={templateRepos}

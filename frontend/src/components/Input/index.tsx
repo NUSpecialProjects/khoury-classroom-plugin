@@ -1,16 +1,18 @@
 import React from "react";
 import "./styles.css";
 
-interface IInputProps extends React.InputHTMLAttributes<HTMLInputElement>{
+interface IInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label: string;
     name: string;
     placeholder?: string;
+    caption?: string;
 }
 
 const Input: React.FC<IInputProps> = ({
     label,
     name,
     placeholder,
+    caption,
     ...props
 }) => {
     return (
@@ -23,7 +25,11 @@ const Input: React.FC<IInputProps> = ({
                 name={name}
                 placeholder={placeholder}
                 {...props}
-                className="Input"></input>
+                className="Input">
+            </input>
+            { caption && 
+            <p className="Input__caption">{caption}</p>
+            }
         </div>
     );
 };

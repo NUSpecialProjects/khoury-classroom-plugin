@@ -1,8 +1,12 @@
 import { useState, useCallback, ReactElement } from "react";
+import Button from "../Button";
+import { useNavigate } from "react-router-dom";
+import './styles.css';
 
 const MultiStepForm = <T,>({
   steps,
   submitFunc,
+  cancelLink,
   initialData,
 }: IMultiStepFormProps<T>): ReactElement => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -16,9 +20,14 @@ const MultiStepForm = <T,>({
   const handleNext = useCallback(() => {
     setCurrentStepIndex((prev) => Math.min(prev + 1, totalSteps - 1));
   }, [totalSteps]);
+
+  const navigate = useNavigate();
+  const handleCancel = () => navigate(cancelLink);
+
   const handlePrevious = useCallback(() => {
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   }, []);
+
   const handleDataChange = useCallback(
     // Update form data
     (newData: Partial<T>) => {
@@ -32,6 +41,7 @@ const MultiStepForm = <T,>({
     },
     []
   );
+
   const handleSubmit = useCallback(async () => {
     const success = await submitFunc(formData);
     if (success) {
@@ -44,43 +54,37 @@ const MultiStepForm = <T,>({
   const CurrentStepComponent = steps[currentStepIndex].component;
 
   return (
-    <div className="multi-step-form">
-      <div className="form-step">
+    <div className="MultiStepForm">
+      <div className="MultiStepForm__formStep">
         <CurrentStepComponent data={formData} onChange={handleDataChange} />
       </div>
 
-      {error && <div className="form-error">{error}</div>}
+      {error && <p>{error}</p>}
 
-      <div className="form-navigation">
+      <div className="MultiStepForm__formNavigationButtonsWrapper">
         {
-          // todo: replace these with button component
+          isFirstStep && (
+            <Button onClick={handleCancel} variant="secondary">
+              Cancel
+            </Button>
+          )
+        }
+        {
           !isFirstStep && (
-            <button
-              type="button"
-              onClick={handlePrevious}
-              className="btn btn-secondary"
-            >
+            <Button onClick={handlePrevious} variant="secondary">
               Previous
-            </button>
+            </Button>
           )
         }
         {!isLastStep && (
-          <button
-            type="button"
-            onClick={handleNext}
-            className="btn btn-primary"
-          >
-            Next
-          </button>
+          <Button onClick={handleNext} variant="primary">
+            Continue
+          </Button>
         )}
         {isLastStep && (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="btn btn-success"
-          >
-            Submit
-          </button>
+          <Button onClick={handleSubmit} variant="primary">
+            Finish
+          </Button>
         )}
       </div>
     </div>

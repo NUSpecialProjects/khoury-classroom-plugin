@@ -15,6 +15,7 @@ interface IStep<T> {
 interface IMultiStepFormProps<T> {
     steps: IStep<T>[];
     submitFunc: (data: T) => Promise<boolean>;
+    cancelLink: string;
     initialData: T;
 }
 
