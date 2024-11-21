@@ -1,0 +1,18 @@
+.CreateAssignment {
+    padding: 60px;
+    margin: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: var(--page-background);
+    border-style: var(--border-style);
+    border-width: var(--border-width);
+    border-color: var(--dark-border-color);
+    border-radius: 5px;
+
+    &__header {
+        border-bottom-color: var(--border-color);
+        border-bottom-style: var(--border-style);
+        border-bottom-width: var(--border-width);
+    }
+}

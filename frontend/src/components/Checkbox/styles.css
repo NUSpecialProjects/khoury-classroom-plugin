@@ -1,0 +1,23 @@
+.Checkbox {
+    &__checkWrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    &__wrapper {
+        display: flex;
+        padding: 10px;
+        flex-direction: column;
+        flex: 1;
+        justify-content: center;
+    }
+
+    &__label {
+        padding-left: 10px;
+    }
+
+    &__caption {
+        color: var(--caption-text);
+        font-size: var(--font-size-xs);
+    }
+}

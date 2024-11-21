@@ -10,8 +10,11 @@ import (
 
 // gets all feedback comments on a student work
 func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error) {
-	query := `SELECT student_work_id, rubric_item_id, github_username, file_path, file_line, fc.created_at, assignment_outline_id, point_value, explanation
-	FROM feedback_comment fc JOIN rubric_items ri ON fc.rubric_item_id = ri.id JOIN users u ON fc.ta_user_id = u.id WHERE student_work_id = $1`
+	query := `SELECT student_work_id, rubric_item_id, github_username, file_path, file_line, fc.created_at, point_value, explanation
+	FROM feedback_comment fc
+	JOIN rubric_items ri ON fc.rubric_item_id = ri.id
+	JOIN users u ON fc.ta_user_id = u.id 
+	WHERE student_work_id = $1`
 
 	rows, err := db.connPool.Query(ctx, query, studentWorkID)
 
