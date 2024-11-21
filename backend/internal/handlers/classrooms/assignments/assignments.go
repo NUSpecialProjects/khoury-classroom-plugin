@@ -244,3 +244,36 @@ func (s *AssignmentService) updateAssignment() fiber.Handler {
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
+
+func (s *AssignmentService) getAssignmentRubric() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		assignment, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		if assignment.RubricID == nil {
+			return c.Status(http.StatusOK).JSON(models.FullRubric{})
+		}
+
+		rubric, err := s.store.GetRubric(c.Context(), *assignment.RubricID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		rubricItems, err := s.store.GetRubricItems(c.Context(), rubric.ID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(models.FullRubric{
+			Rubric:      rubric,
+			RubricItems: rubricItems,
+		})
+	}
+}
