@@ -93,9 +93,11 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
+func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error) {
 	team := &github.NewTeam{
-		Name: teamName,
+		Name:        teamName,
+		Description: description,
+		Maintainers: maintainers,
 	}
 
 	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
