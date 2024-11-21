@@ -29,4 +29,10 @@
   &__option {
     font-size: var(--font-size-s);
   }
+
+  &__caption {
+    padding-top: 10px;
+    color: var(--caption-text);
+    font-size: var(--font-size-xs);
+}
 }

@@ -8,6 +8,8 @@ import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/Assig
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
 import { createAssignment } from "@/api/assignments";
 
+import './styles.css'
+
 const CreateAssignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const orgName = selectedClassroom?.org_name;
@@ -39,47 +41,50 @@ const CreateAssignment: React.FC = () => {
     fetchTemplates(orgName);
   }, [orgName]);
 
-    const steps: IStep<IAssignmentFormData>[] = [
-        { title: 'Assignment Details', component: AssignmentDetails },
-        {
-            title: 'Starter Code Repository',
-            component: (props: IStepComponentProps<IAssignmentFormData>) => (
-                <StarterCodeDetails
-                    {...props}
-                    templateRepos={templateRepos}
-                    isLoading={loadingTemplates}
-                />
-            )
-        },
-    ];
+  const steps: IStep<IAssignmentFormData>[] = [
+    { title: 'Assignment Details', component: AssignmentDetails },
+    {
+      title: 'Starter Code Repository',
+      component: (props: IStepComponentProps<IAssignmentFormData>) => (
+        <StarterCodeDetails
+          {...props}
+          templateRepos={templateRepos}
+          isLoading={loadingTemplates}
+        />
+      )
+    },
+  ];
 
-    const initialData: IAssignmentFormData = {
-        assignmentName: '',
-        classroomId: selectedClassroom?.id || -1,
-        groupAssignment: false,
-        mainDueDate: null,
-        templateRepo: null
-    };
+  const initialData: IAssignmentFormData = {
+    assignmentName: '',
+    classroomId: selectedClassroom?.id || -1,
+    groupAssignment: false,
+    mainDueDate: null,
+    templateRepo: null
+  };
 
-    const handleSubmit = async (data: IAssignmentFormData): Promise<boolean> => {
-        if (!data?.templateRepo?.template_repo_id) return false;
+  const handleSubmit = async (data: IAssignmentFormData): Promise<boolean> => {
+    if (!data?.templateRepo?.template_repo_id) return false;
 
-        await createAssignment(data.templateRepo.template_repo_id, data);
+    await createAssignment(data.templateRepo.template_repo_id, data);
 
-        navigate('/app/dashboard');
-        return true;
-    }
+    navigate('/app/dashboard');
+    return true;
+  }
 
-    return (
-        <div>
-            <h1>Create Assignment</h1>
-            <MultiStepForm
-                steps={steps}
-                submitFunc={handleSubmit}
-                initialData={initialData}
-            />
-        </div>
-    );
+  return (
+    <div className="CreateAssignment">
+      <div className="CreateAssignment__header">
+        <h1>Create Assignment</h1>
+      </div>
+      <MultiStepForm
+        steps={steps}
+        submitFunc={handleSubmit}
+        cancelLink="/app/dashboard"
+        initialData={initialData}
+      />
+    </div>
+  );
 };
 
 export default CreateAssignment;

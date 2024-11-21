@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import '../styles.css';
 
 interface ITemplateRepoDropdownProps {
     repositories: ITemplateRepo[];
@@ -49,15 +50,22 @@ const TemplateRepoDropdown: React.FC<ITemplateRepoDropdownProps> = ({
     };
 
     return (
-        <select
-            value={selectedRepo?.template_repo_id ?? ''}
-            onChange={handleChange}
-        >
-            <option value="" disabled>
-                {PLACEHOLDER_OPTION}
-            </option>
-            {renderOptions()}
-        </select>
+        <div className="Dropdown__wrapper">
+            <label className="Dropdown__label" htmlFor="organization">
+                Pick a template repository to use as the starter code
+            </label>
+            <select
+                className="Dropdown"
+                value={selectedRepo?.template_repo_id ?? ''}
+                onChange={handleChange}
+            >
+                <option className="Dropdown__option" value="" disabled>
+                    {PLACEHOLDER_OPTION}
+                </option>
+                {renderOptions()}
+            </select>
+            <div className='Dropdown__caption'>The template repository <b>must</b> be owned by the organization you are in</div>
+        </div>
     );
 };
 
