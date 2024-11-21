@@ -37,7 +37,7 @@ SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 -- Insert into classroom_membership
 INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at, status)
 VALUES
-(1, 1, 'STUDENT', NOW(), 'ACTIVE'),
+(1, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
 (2, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
 (3, 1, 'STUDENT', NOW(), 'ACTIVE'),
 (4, 2, 'STUDENT', NOW(), 'ACTIVE'),
@@ -54,6 +54,10 @@ VALUES
 (5, 10, 'TA', NOW(), 'ACTIVE'),
 (11, 11, 'STUDENT', NOW(), 'ACTIVE'),
 (12, 11, 'STUDENT', NOW(), 'ACTIVE');
+(11, 1, 'TA', NOW(), 'ACTIVE'),
+(12, 1, 'TA', NOW(), 'ACTIVE');
+(13, 1, 'TA', NOW(), 'ACTIVE'),
+(14, 1, 'TA', NOW(), 'ACTIVE');
 
 
 -- Insert into assignment_templates
@@ -82,6 +86,7 @@ INSERT INTO rubrics (id, name, org_id, classroom_id, reusable) VALUES
 (8, 'Network Security Exam Rubric', 4, 1, false),
 (9, 'Software Engineering Project Rubric', 5, 2, true),
 (10, 'Artificial Intelligence Assignment Rubric', 5, 2, true);
+SELECT setval('rubrics_id_seq', (SELECT MAX(id) FROM rubrics));
 
 -- Insert into rubric_items
 INSERT INTO rubric_items (id, rubric_id, point_value, explanation, created_at)
