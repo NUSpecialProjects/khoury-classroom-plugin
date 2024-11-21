@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -136,13 +137,12 @@ WHERE student_work_id = $3
 	return formatted[0], nil
 }
 
-func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error {
-
+func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState string, dueDate time.Time) (int, error) {
 	//Get internal ID of inserting user
 	var userID int
-	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, GHUserID).Scan(&userID)
+	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, gitHubUserID).Scan(&userID)
 	if err != nil {
-		return fmt.Errorf("user %d does not exist in database", userID)
+		return -1, fmt.Errorf("user %d does not exist in database", userID)
 	}
 
 	// TODO: Make a single transaction once we institute atomicity infrastructure
@@ -151,22 +151,16 @@ func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, G
 		`INSERT INTO student_works (assignment_outline_id,
     		repo_name,
     		unique_due_date,
-    		manual_feedback_score,
-    		auto_grader_score,
-    		grades_published_timestamp,
     		work_state)
-        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-		work.AssignmentOutlineID,
-		work.RepoName,
-		work.UniqueDueDate,
-		work.ManualFeedbackScore,
-		work.AutoGraderScore,
-		work.GradesPublishedTimestamp,
-		work.WorkState,
+        VALUES ($1, $2, $3, $4) RETURNING id`,
+		assignmentOutlineID,
+		repoName,
+		dueDate,
+		workState,
 	).Scan(&studentWorkID)
 
 	if err != nil {
-		return fmt.Errorf("error inserting student works")
+		return -1, fmt.Errorf("error inserting student works")
 	}
 
 	// Insert forking user as work contributor
@@ -176,8 +170,8 @@ func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, G
 		studentWorkID,
 	)
 	if err != nil {
-		return fmt.Errorf("error inserting work contributors")
+		return -1, fmt.Errorf("error inserting work contributors")
 	}
-	return nil
 
+	return studentWorkID, nil
 }

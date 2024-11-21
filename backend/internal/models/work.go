@@ -16,6 +16,7 @@ type StudentWork struct {
 	WorkState                string     `json:"work_state" db:"work_state"`
 	CreatedAt                time.Time  `json:"created_at" db:"created_at"`
 }
+
 type StudentWorkPagination struct {
 	PreviousStudentWorkID *int `json:"previous_student_work_id" db:"previous_student_work_id"`
 	NextStudentWorkID     *int `json:"next_student_work_id" db:"next_student_work_id"`

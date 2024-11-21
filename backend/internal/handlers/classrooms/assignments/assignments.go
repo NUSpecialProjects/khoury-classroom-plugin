@@ -62,80 +62,42 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			return errs.InvalidRequestBody(assignmentData)
 		}
 
-		// Store assignment in DB
-		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
-		if err != nil {
-			return err
-		}
-
 		// Get classroom and assignment template
-		classroom, err := s.store.GetClassroomByID(c.Context(), createdAssignment.ClassroomID)
+		classroom, err := s.store.GetClassroomByID(c.Context(), assignmentData.ClassroomID)
 		if err != nil {
 			return err
 		}
-		template, err := s.store.GetAssignmentTemplateByID(c.Context(), createdAssignment.TemplateID)
+		template, err := s.store.GetAssignmentTemplateByID(c.Context(), assignmentData.TemplateID)
 		if err != nil {
 			return err
 		}
 
 		// Create base repository using assignment template
 		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
-		err = s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
+		baseRepo, err := s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
+			fmt.Println(err)
 			return errs.InternalServerError()
+		}
+		err = s.store.CreateBaseRepo(c.Context(), *baseRepo)
+		if err != nil {
+			fmt.Println("Error creating base repo")
+			return err
+		}
+
+		// Store assignment in DB
+		createdAssignmentID, err := s.store.CreateAssignment(c.Context(), assignmentData)
+		if err != nil {
+			return err
+		}
+		err = s.store.AttachBaseRepoToAssignment(c.Context(), createdAssignmentID, baseRepo.BaseID)
+		if err != nil {
+			return err
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"created_assignment": createdAssignment,
+			"created_assignment_id": createdAssignmentID,
 		})
-	}
-}
-
-func (s *AssignmentService) acceptAssignment() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Check + parse FE request
-		var assignment models.AssignmentAcceptRequest
-		err := c.BodyParser(&assignment)
-		if err != nil {
-			return errs.InvalidRequestBody(models.AssignmentOutline{})
-		}
-
-		// Retrieve user client
-		client, err := middleware.GetClient(c, s.store, s.userCfg)
-		if err != nil {
-			return errs.AuthenticationError()
-		}
-
-		// Retrieve current session
-		user, err := client.GetCurrentUser(c.Context())
-		if err != nil {
-			return errs.GithubAPIError(err)
-		}
-
-		// Insert into DB
-		forkName := generateForkName(assignment.SourceRepoName, user.Login)
-		studentwork := createMockStudentWork(forkName, assignment.AssignmentName, int(assignment.AssignmentID))
-		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
-		if err != nil {
-			return err
-		}
-
-		// Generate Fork via GH User
-		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
-		if err != nil {
-			return err
-		}
-
-		// Remove student team's access to forked repo
-		// TODO: dynamically find student team name (KHO-177)
-		studentTeamName := "student_team_test"
-		err = client.RemoveRepoFromTeam(c.Context(), assignment.OrgName, studentTeamName, assignment.OrgName, forkName)
-		if err != nil {
-			return errs.GithubAPIError(err)
-		}
-
-		c.Status(http.StatusOK)
-		return nil
 	}
 }
 
@@ -191,22 +153,22 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Get assignment using the token
 		assignment, err := s.store.GetAssignmentByToken(c.Context(), token)
 		if err != nil {
-			return errs.InternalServerError()
+			fmt.Println("Error getting assignment by token")
+			return err
 		}
 
-		// Get assignment with additional template information
-		assignmentWithTemplate, err := s.store.GetAssignmentWithTemplateByAssignmentID(c.Context(), int64(assignment.ID))
+		// Get assignment base repository
+		baseRepo, err := s.store.GetBaseRepoByID(c.Context(), assignment.BaseRepoID)
 		if err != nil {
-			return errs.InternalServerError()
+			fmt.Println("Error getting base repo by ID")
+			return err
 		}
 
-		//Retrieve user client
+		// Retrieve user client and session
 		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
 			return errs.AuthenticationError()
 		}
-
-		// Retrieve current session
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
 			return errs.GithubAPIError(err)
@@ -218,37 +180,43 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		templateRepoName := assignmentWithTemplate.Template.TemplateRepoName
-		templateRepoOwner := assignmentWithTemplate.Template.TemplateRepoOwner
-
-		// Generate fork name
-		forkName := generateForkName(templateRepoName, user.Login)
-
 		// Check if fork already exists
+		forkName := generateForkName(assignment.Name, user.Login)
 		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
-		if studentWorkRepo != nil { // Fork already exists, early return
+		if studentWorkRepo != nil {
 			return c.Status(http.StatusOK).JSON(fiber.Map{
 				"message":  "Assignment already accepted",
 				"repo_url": studentWorkRepo.HTMLURL,
 			})
 		}
 
-		// Generate Fork
-		err = client.ForkRepository(c.Context(), templateRepoOwner, classroom.OrgName, templateRepoName, forkName)
+		// Otherwise generate fork
+		err = client.ForkRepository(c.Context(),
+			baseRepo.BaseRepoOwner,
+			classroom.OrgName,
+			baseRepo.BaseRepoName,
+			forkName)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		// Remove student team's access to forked repo
+		// TODO: dynamically find student team name (KHO-177)
+		studentTeamName := "student_team_test"
+		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, studentTeamName, classroom.OrgName, forkName)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
 
 		// Insert into DB
-		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
-		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
+		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, "ACCEPTED", *assignment.MainDueDate)
 		if err != nil {
-			return errs.InternalServerError()
+			fmt.Println("Error creating student work")
+			return err
 		}
 
 		// Instead of getting the repository immediately, construct the expected URL
 		expectedRepoURL := fmt.Sprintf("https://github.com/%s/%s", classroom.OrgName, forkName)
-
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"message":  "Assignment accepted - it may take a few minutes to create the repository",
 			"repo_url": expectedRepoURL,
@@ -260,29 +228,6 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 // TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
 func generateForkName(sourceName, userName string) string {
 	return sourceName + "-" + strings.ReplaceAll(userName, " ", "")
-}
-
-// TODO: Integrate with actual assignment information when infrastructure is available
-func createMockStudentWork(repo string, assName string, assID int) models.StudentWork {
-	assignmentName := assName
-	repoName := repo
-	manualFeedbackScore := 85
-	autoGraderScore := 90
-	uniqueDueDate := time.Now().AddDate(0, 0, 7)             // Due in 7 days MOCK
-	gradesPublishedTimestamp := time.Now().AddDate(0, 0, -1) // Grades published yesterday MOCK
-	return models.StudentWork{
-		ID:                       1,
-		ClassroomID:              101,
-		AssignmentName:           &assignmentName,
-		AssignmentOutlineID:      assID,
-		RepoName:                 repoName,
-		UniqueDueDate:            &uniqueDueDate,
-		ManualFeedbackScore:      &manualFeedbackScore,
-		AutoGraderScore:          &autoGraderScore,
-		GradesPublishedTimestamp: &gradesPublishedTimestamp,
-		WorkState:                "ACCEPTED",
-		CreatedAt:                time.Now(),
-	}
 }
 
 // Updates an existing assignment.

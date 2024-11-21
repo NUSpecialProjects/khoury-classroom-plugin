@@ -40,6 +40,7 @@ func (db *DB) GetAssignmentByToken(ctx context.Context, token string) (models.As
 	WHERE aot.token = $1`, token).Scan(
 		&assignmentOutline.ID,
 		&assignmentOutline.TemplateID,
+		&assignmentOutline.BaseRepoID,
 		&assignmentOutline.CreatedAt,
 		&assignmentOutline.ReleasedAt,
 		&assignmentOutline.Name,
@@ -69,6 +70,7 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_outlines WHERE id = $1", assignmentID).Scan(
 		&assignmentOutline.ID,
 		&assignmentOutline.TemplateID,
+		&assignmentOutline.BaseRepoID,
 		&assignmentOutline.CreatedAt,
 		&assignmentOutline.ReleasedAt,
 		&assignmentOutline.Name,
@@ -84,62 +86,38 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 	return assignmentOutline, nil
 }
 
-func (db *DB) GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assignmentID int64) (models.AssignmentOutlineWithTemplate, error) {
-	var result models.AssignmentOutlineWithTemplate
-	err := db.connPool.QueryRow(ctx, `
-	SELECT 
-		ao.id, ao.template_id, ao.created_at, ao.released_at, ao.name, ao.classroom_id, ao.rubric_id, ao.group_assignment, ao.main_due_date,
-		at.template_repo_owner, at.template_repo_id, at.template_repo_name, at.created_at
-	FROM assignment_outlines ao
-	JOIN assignment_templates at ON ao.template_id = at.template_repo_id
-	WHERE ao.id = $1`, assignmentID).Scan(
-		&result.ID,
-		&result.TemplateID,
-		&result.CreatedAt,
-		&result.ReleasedAt,
-		&result.Name,
-		&result.ClassroomID,
-		&result.RubricID,
-		&result.GroupAssignment,
-		&result.MainDueDate,
-		&result.Template.TemplateRepoOwner,
-		&result.Template.TemplateID,
-		&result.Template.TemplateRepoName,
-		&result.Template.CreatedAt,
-	)
-	if err != nil {
-		return models.AssignmentOutlineWithTemplate{}, errs.NewDBError(err)
-	}
-
-	return result, nil
-}
-
-func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutline) (models.AssignmentOutline, error) {
-	var assignmentData models.AssignmentOutline
+func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutline) (int32, error) {
+	var assignmentOutlineID int32
 
 	err := db.connPool.QueryRow(ctx, `
 		INSERT INTO assignment_outlines (template_id, name, classroom_id, group_assignment, main_due_date)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date
+		RETURNING id
 	`,
 		assignmentRequestData.TemplateID,
 		assignmentRequestData.Name,
 		assignmentRequestData.ClassroomID,
 		assignmentRequestData.GroupAssignment,
 		assignmentRequestData.MainDueDate,
-	).Scan(&assignmentData.ID,
-		&assignmentData.TemplateID,
-		&assignmentData.CreatedAt,
-		&assignmentData.ReleasedAt,
-		&assignmentData.Name,
-		&assignmentData.ClassroomID,
-		&assignmentData.RubricID,
-		&assignmentData.GroupAssignment,
-		&assignmentData.MainDueDate)
+	).Scan(&assignmentOutlineID)
 
 	if err != nil {
-		return models.AssignmentOutline{}, errs.NewDBError(err)
+		return assignmentOutlineID, errs.NewDBError(err)
 	}
 
-	return assignmentData, nil
+	return assignmentOutlineID, nil
+}
+
+func (db *DB) AttachBaseRepoToAssignment(ctx context.Context, assignmentID int32, baseRepoID int64) error {
+	_, err := db.connPool.Exec(ctx, `
+		UPDATE assignment_outlines
+		SET base_repo_id = $1
+		WHERE id = $2
+	`, baseRepoID, assignmentID)
+
+	if err != nil {
+		return errs.NewDBError(err)
+	}
+
+	return nil
 }

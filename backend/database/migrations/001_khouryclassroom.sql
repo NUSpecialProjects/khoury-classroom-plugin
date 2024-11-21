@@ -58,6 +58,13 @@ CREATE TABLE IF NOT EXISTS assignment_templates (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS assignment_base_repos (
+    base_repo_id INTEGER PRIMARY KEY,
+    base_repo_owner VARCHAR(255) NOT NULL,
+    base_repo_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS rubrics (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -79,7 +86,8 @@ CREATE TABLE IF NOT EXISTS rubric_items (
 
 CREATE TABLE IF NOT EXISTS assignment_outlines (
     id SERIAL PRIMARY KEY,
-    template_id INTEGER NOT NULL,
+    template_id INTEGER,
+    base_repo_id INTEGER,
     created_at TIMESTAMP DEFAULT NOW(),
     released_at TIMESTAMP,
     name VARCHAR(255) NOT NULL,
@@ -88,7 +96,8 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     main_due_date TIMESTAMP,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
-    FOREIGN KEY (template_id) REFERENCES assignment_templates(template_repo_id)
+    FOREIGN KEY (template_id) REFERENCES assignment_templates(template_repo_id),
+    FOREIGN KEY (base_repo_id) REFERENCES assignment_base_repos(base_repo_id)
 );
 
 CREATE TABLE IF NOT EXISTS assignment_outline_tokens (

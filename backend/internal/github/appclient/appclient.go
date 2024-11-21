@@ -3,6 +3,7 @@ package appclient
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -143,7 +144,7 @@ func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string,
 	return nil
 }
 
-func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) error {
+func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) (*models.AssignmentBaseRepo, error) {
 	// Construct the request
 	endpoint := fmt.Sprintf("/repos/%s/%s/generate", orgName, templateRepoName)
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
@@ -152,15 +153,22 @@ func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, template
 		"private": true,
 	})
 	if err != nil {
-		return errs.InternalServerError()
+		fmt.Println(err)
+		return nil, errs.GithubAPIError(err)
 	}
 
 	// Execute the request
 	var repo *models.Repository
 	_, err = api.Client.Do(ctx, req, &repo)
 	if err != nil {
-		return errs.InternalServerError()
+		fmt.Println(err)
+		return nil, errs.GithubAPIError(err)
 	}
 
-	return nil
+	return &models.AssignmentBaseRepo{
+		BaseRepoOwner: orgName,
+		BaseRepoName:  newRepoName,
+		BaseID:        repo.ID,
+		CreatedAt:     time.Now(),
+	}, nil
 }
