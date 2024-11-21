@@ -9,9 +9,9 @@ import (
 )
 
 func Routes(app *fiber.App, params types.Params) {
-	classroomService := newClassroomService(params.Store, &params.UserCfg)
+	classroomService := newClassroomService(params.Store, params.GitHubApp, &params.UserCfg)
 	assignmentService := assignments.NewAssignmentService(params.Store, &params.UserCfg, params.GitHubApp)
-	workService := works.NewWorkService(params.Store, params.GitHubApp)
+	workService := works.NewWorkService(params.Store, &params.UserCfg, params.GitHubApp)
 
 	// Create the base router
 	baseRouter := app.Group("")
@@ -50,17 +50,29 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 	// Get the users of this classroom
 	classroomRouter.Get("/classroom/:classroom_id/students", service.getClassroomUsers())
 
+	// Send org invites to all requested users
+	classroomRouter.Put("/classroom/:classroom_id/invite/role/:classroom_role", service.sendOrganizationInvitesToRequestedUsers())
+
+	// Send org invites to a specific user
+	classroomRouter.Put("/classroom/:classroom_id/invite/role/:classroom_role/user/:user_id", service.sendOrganizationInviteToUser())
+
+	// Deny a requested user
+	classroomRouter.Put("/classroom/:classroom_id/deny/user/:user_id", service.denyRequestedUser())
+
+	// Revoke an invite to a user
+	classroomRouter.Put("/classroom/:classroom_id/revoke/user/:user_id", service.revokeOrganizationInvite())
+
 	// Remove a user from a classroom
 	classroomRouter.Delete("/classroom/:classroom_id/students/:user_id", service.removeUserFromClassroom())
 
 	// Generate a token to join this classroom
 	classroomRouter.Post("/classroom/:classroom_id/token", service.generateClassroomToken())
 
-	// Use a token to join a classroom
+	// Use a token to request to join a classroom
 	classroomRouter.Post("/classroom/token/:token", service.useClassroomToken())
 
 	// Get the current authenticated user + their role in the classroom
-	classroomRouter.Get("/classroom/:classroom_id/user", service.GetCurrentClassroomUser())
+	classroomRouter.Get("/classroom/:classroom_id/user", service.getCurrentClassroomUser())
 
 	return classroomRouter
 }

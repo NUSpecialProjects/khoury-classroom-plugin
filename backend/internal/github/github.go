@@ -3,7 +3,6 @@ package github
 import (
 	"context"
 
-	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
@@ -16,7 +15,7 @@ type GitHubAppClient interface { // All methods in the APP client
 	// Get the installations of the github app
 	ListInstallations(ctx context.Context) ([]*github.Installation, error)
 
-	GetFileTree(owner string, repo string, pullNumber int) ([]models.FileTreeNode, error)
+	GetFileTree(owner string, repo string) ([]models.FileTreeNode, error)
 	GetFileBlob(owner string, repo string, sha string) ([]byte, error)
 
 	// Create a new team in an organization
@@ -39,7 +38,7 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	GitHubBaseClient
 
 	// Get the details of an organization
-	GetOrg(ctx context.Context, orgName string) (*github.Organization, error)
+	GetOrg(ctx context.Context, orgName string) (*models.Organization, error)
 
 	// Get the current authenticated user
 	GetCurrentUser(ctx context.Context) (models.GitHubUser, error)
@@ -47,8 +46,11 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	// Get the organizations the authenticated user is part of
 	GetUserOrgs(ctx context.Context) ([]models.Organization, error)
 
-	// Callback for the OAUTH flow
-	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
+	// Accept an invitation to an organization
+	AcceptOrgInvitation(ctx context.Context, orgName string) error
+
+	// Get the membership of the authenticated user to an organization (404 if not a member or invited)
+	GetCurrUserOrgMembership(ctx context.Context, orgName string) (*github.Membership, error)
 
 	ForkRepository(ctx context.Context, org, owner, repo, destName string) error
 }
@@ -77,11 +79,20 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error)
 
 	// Create a new pull request review
-	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
+	CreatePRReview(ctx context.Context, owner string, repo string, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
 	// Get the details of a user
 	GetUser(ctx context.Context, userName string) (*github.User, error)
 
+	// Get the membership of a user to an organization (404 if not a member or invited)
+	GetUserOrgMembership(ctx context.Context, orgName string, userName string) (*github.Membership, error)
+
+	// Invite a user to an organization
+	InviteUserToOrganization(ctx context.Context, orgName string, userID int64) error
+
+	SetUserMembershipInOrg(ctx context.Context, orgName string, userName string, role string) error
+
+	CancelOrgInvitation(ctx context.Context, orgName string, userName string) error
 	// Get the details of a repository
 	GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error)
 }

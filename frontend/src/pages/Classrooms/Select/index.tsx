@@ -20,21 +20,24 @@ const ClassroomSelection: React.FC = () => {
 
   useEffect(() => {
     const fetchClassrooms = async () => {
-      if (!orgID) {
-        return;
-      }
-      setLoading(true);
-      try {
-        const org_id = parseInt(orgID);
-        const data: IClassroomListResponse = await getClassroomsInOrg(org_id);
-        if (data.classrooms) {
-          //TODO: this is broken
-          setClassrooms(data.classrooms);
+      if (!loading && !orgID) {
+        navigate("/app/organization/select");
+      } else {
+        setLoading(true);
+        try {
+          const org_id = parseInt(orgID);
+          if (!isNaN(org_id)) {
+            const data: IClassroomListResponse = await getClassroomsInOrg(org_id);
+            if (data.classrooms) {
+              //TODO: this is broken
+              setClassrooms(data.classrooms);
+            }
+          }
+        } catch (_) { 
+          // do nothing
+        } finally {
+          setLoading(false);
         }
-      } catch (_) {
-        // do nothing
-      } finally {
-        setLoading(false);
       }
     };
 

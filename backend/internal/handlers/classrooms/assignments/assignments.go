@@ -91,46 +91,6 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 	}
 }
 
-func (s *AssignmentService) acceptAssignment() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Check + parse FE request
-		var assignment models.AssignmentAcceptRequest
-		err := c.BodyParser(&assignment)
-		if err != nil {
-			return errs.InvalidRequestBody(models.AssignmentOutline{})
-		}
-
-		// Retrieve user client
-		client, err := middleware.GetClient(c, s.store, s.userCfg)
-		if err != nil {
-			return errs.AuthenticationError()
-		}
-
-		// Retrieve current session
-		user, err := client.GetCurrentUser(c.Context())
-		if err != nil {
-			return errs.GithubAPIError(err)
-		}
-
-		// Insert into DB
-		forkName := generateForkName(assignment.SourceRepoName, user.Login)
-		studentwork := createMockStudentWork(forkName, assignment.AssignmentName, int(assignment.AssignmentID))
-		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
-		if err != nil {
-			return err
-		}
-
-		// Generate Fork via GH User
-		err = client.ForkRepository(c.Context(), assignment.OrgName, assignment.OrgName, assignment.SourceRepoName, forkName)
-		if err != nil {
-			return err
-		}
-
-		c.Status(http.StatusOK)
-		return nil
-	}
-}
-
 // Generates a token to accept an assignment.
 func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -225,17 +185,17 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			})
 		}
 
+		// Generate Fork
+		err = client.ForkRepository(c.Context(), templateRepoOwner, classroom.OrgName, templateRepoName, forkName)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
 		// Insert into DB
 		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
 		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
 		if err != nil {
 			return errs.InternalServerError()
-		}
-
-		// Generate Fork
-		err = client.ForkRepository(c.Context(), templateRepoOwner, classroom.OrgName, templateRepoName, forkName)
-		if err != nil {
-			return errs.GithubAPIError(err)
 		}
 
 		// Instead of getting the repository immediately, construct the expected URL
@@ -249,6 +209,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 }
 
 // TODO: Choose naming pattern once we have a full assignment flow. Stub for now
+// TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
 func generateForkName(sourceName, userName string) string {
 	return sourceName + "-" + strings.ReplaceAll(userName, " ", "")
 }
@@ -257,25 +218,21 @@ func generateForkName(sourceName, userName string) string {
 func createMockStudentWork(repo string, assName string, assID int) models.StudentWork {
 	assignmentName := assName
 	repoName := repo
-	submittedPRNumber := 42
 	manualFeedbackScore := 85
 	autoGraderScore := 90
 	uniqueDueDate := time.Now().AddDate(0, 0, 7)             // Due in 7 days MOCK
-	submissionTimestamp := time.Now().AddDate(0, 0, -1)      // Submitted yesterday MOCK
 	gradesPublishedTimestamp := time.Now().AddDate(0, 0, -1) // Grades published yesterday MOCK
 	return models.StudentWork{
 		ID:                       1,
 		ClassroomID:              101,
 		AssignmentName:           &assignmentName,
 		AssignmentOutlineID:      assID,
-		RepoName:                 &repoName,
+		RepoName:                 repoName,
 		UniqueDueDate:            &uniqueDueDate,
-		SubmittedPRNumber:        &submittedPRNumber,
 		ManualFeedbackScore:      &manualFeedbackScore,
 		AutoGraderScore:          &autoGraderScore,
-		SubmissionTimestamp:      &submissionTimestamp,
 		GradesPublishedTimestamp: &gradesPublishedTimestamp,
-		WorkState:                "SUBMITTED",
+		WorkState:                "ACCEPTED",
 		CreatedAt:                time.Now(),
 	}
 }

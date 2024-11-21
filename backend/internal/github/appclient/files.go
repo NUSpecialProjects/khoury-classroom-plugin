@@ -56,18 +56,16 @@ func atoi(s string) int {
 	return n
 }
 
-func (api *AppAPI) GetFileTree(owner string, repo string, pullNumber int) ([]models.FileTreeNode, error) {
-	// Get the specified pull request
-	pr, _, err := api.Client.PullRequests.Get(context.Background(), owner, repo, pullNumber)
+func (api *AppAPI) GetFileTree(owner string, repo string) ([]models.FileTreeNode, error) {
+	// Get the reference to the branch
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
 	if err != nil {
 		return nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
-	if pr.Head.SHA == nil {
-		return nil, fmt.Errorf("error fetching PR branch head: %v", err)
-	}
 
-	// Get the latest commit in the PR
-	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, *pr.Head.SHA)
+	// Get the commit from the ref
+	commitSHA := ref.Object.GetSHA()
+	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSHA)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching commit: %v", err)
 	}
@@ -80,7 +78,8 @@ func (api *AppAPI) GetFileTree(owner string, repo string, pullNumber int) ([]mod
 	}
 
 	// Get the touched files from the PR
-	touched, _, err := api.Client.PullRequests.ListFiles(context.Background(), owner, repo, pullNumber, nil)
+	// hardcode PR number to 1 since we auto create the PR on fork
+	touched, _, err := api.Client.PullRequests.ListFiles(context.Background(), owner, repo, 1, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching touched files: %v", err)
 	}

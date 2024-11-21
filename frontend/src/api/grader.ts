@@ -1,11 +1,16 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-export const createPRComment = async (
+export const createPRReview = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,
-  comments: IGradingComment[]
+  feedback: IGraderFeedbackMap
 ) => {
+  const feedback1D: IGraderFeedback[] = [];
+  for (const fb of Object.values(feedback)) {
+    feedback1D.push(fb);
+  }
+
   const response = await fetch(
     `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/grade`,
     {
@@ -16,7 +21,7 @@ export const createPRComment = async (
       },
       body: JSON.stringify({
         body: "",
-        comments,
+        comments: feedback1D,
       }),
     }
   );
@@ -51,10 +56,10 @@ export const getFileBlob = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,
-  node: IFileTreeNode
-): Promise<IGraderFile> => {
+  sha: string
+): Promise<string> => {
   const response = await fetch(
-    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/blob/${node.sha}`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/blob/${sha}`,
     {
       method: "GET",
       credentials: "include",
@@ -66,7 +71,6 @@ export const getFileBlob = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const content = await response.text();
-  const file: IGraderFile = { content, name: node.name };
-  return file;
+
+  return await response.text();
 };

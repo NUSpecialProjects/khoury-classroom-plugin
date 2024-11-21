@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -10,7 +9,6 @@ import (
 )
 
 func (db *DB) CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error) {
-    fmt.Println("rubric id ", rubricData.ID)
     err := db.connPool.QueryRow(ctx, "INSERT INTO rubrics (name, org_id, classroom_id, reusable) VALUES ($1, $2, $3, $4) RETURNING *",
         rubricData.Name,
         rubricData.OrgID,
@@ -113,5 +111,3 @@ func (db *DB) UpdateRubricItem(ctx context.Context, rubricItemData models.Rubric
     }
     return updatedItem, nil
 }
-
-
