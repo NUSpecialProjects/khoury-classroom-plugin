@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS classrooms (
     name VARCHAR(255) NOT NULL,
     org_id INTEGER NOT NULL,
     org_name VARCHAR(255) NOT NULL,
+    student_team_name VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW()
 );
 

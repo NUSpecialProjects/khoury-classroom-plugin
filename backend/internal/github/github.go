@@ -19,7 +19,7 @@ type GitHubAppClient interface { // All methods in the APP client
 	GetFileBlob(owner string, repo string, sha string) ([]byte, error)
 
 	// Create a new team in an organization
-	CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error)
+	CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error)
 
 	// Add a user to a team
 	AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error
