@@ -40,9 +40,7 @@ export const getRubric = async (
     throw new Error('Network response was not ok');
   }
 
-  const data: IFullRubric = (await result.json() as IFullRubricResponse).full_rubric 
-
-  console.log(data)
+  const data: IFullRubric = (await result.json() as IFullRubric) 
   return data
 };
 
@@ -67,7 +65,5 @@ export const updateRubric = async (
   }
 
   const data: IFullRubric = (await response.json() as IFullRubric) 
-  console.log(data)
   return data
-
 };

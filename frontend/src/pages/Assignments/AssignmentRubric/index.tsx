@@ -14,17 +14,16 @@ const AssignmentRubric: React.FC = () => {
   const [rubricData, setRubricData] = useState<IFullRubric>()
 
   useEffect(() => {
-
     if (assignment && assignment.rubric_id) {
       (async () => {
         try {
           const rubric = await getRubric(assignment.rubric_id)
           if (rubric !== null) {
             setRubricData(rubric)
-            console.log(rubricData)
           }
+
         } catch (error) {
-          console.error("Could not get rubric: ", error)
+          //do nothing
         }
 
       })();

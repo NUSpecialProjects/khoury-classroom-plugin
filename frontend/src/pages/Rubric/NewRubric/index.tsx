@@ -18,7 +18,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
     const [assignment, setAssignment] = useState<IAssignmentOutline>()
     const { selectedClassroom } = useContext(SelectedClassroomContext)
 
-    // front end only id for each rubric item, kept rack of using a counter
+    // front end only id for each rubric item, kept track of using a counter
     const [itemCount, setitemCount] = useState(0);
     const incrementCount = () => setitemCount(itemCount + 1);
 
@@ -31,7 +31,6 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
         created_at: null
     }
 
-
     //data for the rubric
     const [rubricData, setRubricData] = useState<IFullRubric>()
     const [rubricItemData, setRubricItemData] = useState<IRubricItem[]>([])
@@ -42,7 +41,6 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
 
     // saving the rubric, creates a rubric in the backend
     const saveRubric = async () => {
-
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
             const rubricItems = (rubricItemData.map(item => ({ ...item, id: null })));
 
@@ -57,8 +55,10 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
                 },
                 rubric_items: rubricItems
             }
-
+            
+            // update existing rubric
             if (rubricData) {
+                console.log("updating")
                 await updateRubric(rubricData.rubric.id!, fullRubric)
                 .then((updatedRubric) => {
                     setRubricEdited(false)
@@ -71,7 +71,9 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
                     console.error("Error creating rubric:", error);
                 });
 
+            // create new rubric
             } else {
+                console.log("creating")
                 console.log(fullRubric)
                 await createRubric(fullRubric)
                 .then((createdRubric) => {
@@ -85,9 +87,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
                     console.error("Error creating rubric:", error);
                 });
             }
-
         }
-
     };
 
     // handles when any rubric item is updated
