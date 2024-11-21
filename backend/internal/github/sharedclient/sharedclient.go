@@ -244,3 +244,34 @@ func (api *CommonAPI) GetRepository(ctx context.Context, owner string, repoName 
 	repo, _, err := api.Client.Repositories.Get(ctx, owner, repoName)
 	return repo, err
 }
+
+func (api *CommonAPI) GetTeam(ctx context.Context, teamID int64) (*github.Team, error) {
+	team, _, err := api.Client.Teams.GetTeam(ctx, teamID)
+	return team, err
+}
+
+func (api *CommonAPI) GetTeamByName(ctx context.Context, orgName string, teamName string) (*github.Team, error) {
+	endpoint := fmt.Sprintf("/orgs/%s/teams/%s", orgName, teamName)
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	var team github.Team
+	_, err = api.Client.Do(ctx, req, &team)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching team: %v", err)
+	}
+
+	return &team, nil
+}
+
+// Adds a user to a team (this also will invite the user to the organization if they are not already a member)
+func (api *CommonAPI) AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error {
+	_, _, err := api.Client.Teams.AddTeamMembership(ctx, teamID, userName, opt)
+	if err != nil {
+		return fmt.Errorf("error adding member to team: %v", err)
+	}
+
+	return nil
+}
