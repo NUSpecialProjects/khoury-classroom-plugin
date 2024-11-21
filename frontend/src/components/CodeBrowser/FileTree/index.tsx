@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
+import SimpleBar from "simplebar-react";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { GraderContext } from "@/contexts/grader";
@@ -51,16 +52,19 @@ export const FileTree: React.FC<IFileTree> = ({ selectFileCallback }) => {
   }, [gitTree]);
 
   return (
-    <ResizablePanel panelName="Files" border="right" zIndex={treeDepth * 2}>
-      <>
-        {root &&
-          sortTreeNode(root).map((node) =>
-            renderTree(node, 0, treeDepth, selectedFile, (n) => {
-              setSelectedFile(n.path);
-              selectFileCallback(n);
-            })
-          )}
-      </>
+    <ResizablePanel border="right" zIndex={treeDepth * 2}>
+      <div className="FileTree__head">Files</div>
+      <SimpleBar className="FileTree__body scrollable">
+        <>
+          {root &&
+            sortTreeNode(root).map((node) =>
+              renderTree(node, 0, treeDepth, selectedFile, (n) => {
+                setSelectedFile(n.path);
+                selectFileCallback(n);
+              })
+            )}
+        </>
+      </SimpleBar>
     </ResizablePanel>
   );
 };

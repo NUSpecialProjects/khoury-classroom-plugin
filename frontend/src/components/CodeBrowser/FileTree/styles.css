@@ -1,3 +1,13 @@
+.FileTree {
+  &__head {
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px;
+    font-weight: 300;
+    overflow: hidden;
+  }
+}
+
 .FileTreeDirectory {
   position: relative;
   color: #d4d4d4;

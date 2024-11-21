@@ -1,0 +1,36 @@
+.RubricTree {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+
+  &__head {
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px;
+    font-weight: 300;
+    overflow: hidden;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  &__item {
+    color: #d4d4d4;
+  }
+
+  &__foot {
+    padding: 0 10px;
+
+    .Button {
+      width: 100%;
+      padding: 14px;
+      overflow: hidden;
+    }
+  }
+}

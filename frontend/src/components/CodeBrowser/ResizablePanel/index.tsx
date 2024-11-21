@@ -1,11 +1,11 @@
 import { ResizableBox, ResizeHandle } from "react-resizable";
-import SimpleBar from "simplebar-react";
+import { useState } from "react";
 
 import "./styles.css";
 
 interface ITreePanel extends React.HTMLProps<HTMLDivElement> {
-  panelName: string;
   border: "left" | "right" | "both";
+  hideable?: boolean;
   zIndex?: number;
 }
 
@@ -18,22 +18,27 @@ const border2dir = {
 const ResizablePanel: React.FC<ITreePanel> = ({
   children,
   className,
-  panelName,
   border,
+  hideable = false,
   zIndex = 0,
 }) => {
+  const [largeStep, setLargeStep] = useState(false);
+
   return (
     <ResizableBox
-      className={`TreePanel ${className ?? ""}`}
+      className={`TreePanel ${largeStep ? "TreePanel--largeStep" : ""}${className ?? ""}`}
       width={230}
       height={Infinity}
       resizeHandles={border2dir[border] as ResizeHandle[]}
       style={{ zIndex }}
+      minConstraints={[20, 0]}
+      draggableOpts={hideable && largeStep ? { grid: [211, 0] } : undefined}
+      onResize={(_, { size }) => {
+        console.log(size.width);
+        setLargeStep(size.width < 230);
+      }}
     >
-      <>
-        <div className="TreePanel__head">{panelName}</div>
-        <SimpleBar className="TreePanel__body">{children}</SimpleBar>
-      </>
+      <>{children}</>
     </ResizableBox>
   );
 };

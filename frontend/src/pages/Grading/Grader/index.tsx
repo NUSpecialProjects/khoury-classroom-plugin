@@ -26,7 +26,6 @@ const Grader: React.FC = () => {
     studentWork,
     selectedFile,
     setSelectedFile,
-    postFeedback,
   } = useContext(GraderContext);
 
   return (
@@ -82,7 +81,6 @@ const Grader: React.FC = () => {
             file={selectedFile}
           />
           <RubricTree />
-          <button onClick={postFeedback}>POST COMMENTS</button>
         </div>
       </div>
     )
