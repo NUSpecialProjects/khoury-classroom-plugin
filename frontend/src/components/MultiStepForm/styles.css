@@ -1,0 +1,9 @@
+.MultiStepForm {
+    &__formNavigationButtonsWrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        width: fit-content;
+        padding-top: 20px;
+    }
+}
