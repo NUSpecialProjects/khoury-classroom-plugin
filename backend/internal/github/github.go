@@ -101,4 +101,10 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 
 	// Add a user to a team
 	AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error
+
+	// Remove a user from a team
+	RemoveTeamMember(ctx context.Context, orgName string, teamID int64, userName string) error
+
+	// Get the members of a team
+	GetTeamMembers(ctx context.Context, teamID int64) ([]*github.User, error)
 }

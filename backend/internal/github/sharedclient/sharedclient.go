@@ -275,3 +275,13 @@ func (api *CommonAPI) AddTeamMember(ctx context.Context, teamID int64, userName 
 
 	return nil
 }
+
+func (api *CommonAPI) RemoveTeamMember(ctx context.Context, orgName string, teamID int64, userName string) error {
+	_, err := api.Client.Teams.RemoveTeamMembership(ctx, teamID, userName)
+	return err
+}
+
+func (api *CommonAPI) GetTeamMembers(ctx context.Context, teamID int64) ([]*github.User, error) {
+	members, _, err := api.Client.Teams.ListTeamMembers(ctx, teamID, nil)
+	return members, err
+}
