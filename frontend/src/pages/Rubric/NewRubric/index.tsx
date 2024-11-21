@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 
 import "./styles.css";
 import Button from "@/components/Button";
@@ -11,11 +10,10 @@ import { setAssignmentRubric } from "@/api/assignments";
 
 interface NewRubricProps {
     givenRubricData?: IFullRubric; // Accept rubricData as a prop
+    assignment?: IAssignmentOutline;
 }
 
-const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
-    const location = useLocation();
-    const [assignment, setAssignment] = useState<IAssignmentOutline>()
+const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData, assignment }) => {
     const { selectedClassroom } = useContext(SelectedClassroomContext)
 
     // front end only id for each rubric item, kept track of using a counter
@@ -115,12 +113,9 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
     // on startup, store an assignment if we have one 
     // Also make sure there is atleast one editable rubric item already on the screen
     useEffect(() => {
-        if (location.state !== null && location.state !== undefined) {
-            setAssignment(location.state.assignment)
-        }
-
         if (assignment !== null && assignment !== undefined) {
             if (givenRubricData) {
+                console.log("recieved data in NewRurbic ", givenRubricData)
                 setRubricData(givenRubricData)
                 setRubricName(givenRubricData.rubric.name)
                 setRubricItemData(givenRubricData.rubric_items)
@@ -129,6 +124,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
                 setRubricName(`${assignment.name} Rubric`)
             }
         } else {
+            console.log("WHERE IS TEH DAMN ASSIGNMENT")
             setRubricName("New Rubric")
         }
 
@@ -137,7 +133,7 @@ const NewRubric: React.FC<NewRubricProps> = ({ givenRubricData }) => {
         }
 
         console.log("rubric Item data", rubricItemData)
-    }, [location.state, rubricData]);
+    }, [assignment, givenRubricData, rubricItemData]);
 
 
 

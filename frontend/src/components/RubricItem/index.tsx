@@ -57,6 +57,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, deduction, onCha
 
     // on startup
     useEffect(() => {
+        console.log("rubric item explatioanio: ", name)
         if (deduction !== null || deduction !== undefined) {
             setSelection(FeedbackType.Neutral)
         } else {
@@ -75,6 +76,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, deduction, onCha
                 className="RubricItem__itemName"
                 id={name}
                 name={name}
+                value={name}
                 placeholder="Add a rubric item..."
                 onChange={handleNameChange}
             />
@@ -83,6 +85,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, deduction, onCha
                 className="RubricItem"
                 id={points}
                 name={points}
+                value={points}
                 placeholder="0"
                 onChange={handlePointsChange}
             />

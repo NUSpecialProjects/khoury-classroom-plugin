@@ -19,6 +19,7 @@ const AssignmentRubric: React.FC = () => {
         try {
           const rubric = await getRubric(assignment.rubric_id)
           if (rubric !== null) {
+            console.log("Assignment rubric retrieved rubric data, ", rubric)
             setRubricData(rubric)
           }
 
@@ -55,7 +56,7 @@ const AssignmentRubric: React.FC = () => {
 
           {rubricData ? (
             <div>
-              <NewRubric givenRubricData={rubricData}/>
+              <NewRubric assignment={assignment} givenRubricData={rubricData}/>
             </div>
 
           ) : (

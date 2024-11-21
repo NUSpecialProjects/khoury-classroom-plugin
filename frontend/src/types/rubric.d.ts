@@ -19,7 +19,3 @@ interface IRubricItem {
     explanation: string;
     created_at: Date | null;
 }
-
-interface IFullRubricResponse {
-    full_rubric: IFullRubric;
-}
