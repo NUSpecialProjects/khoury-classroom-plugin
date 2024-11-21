@@ -48,6 +48,10 @@
       background: var(--brand-lighter);
     }
   }
+
+  .simplebar-track {
+    margin-right: 5px;
+  }
 }
 
 .FileTreeDirectory {
@@ -106,11 +110,13 @@
   }
 }
 
-.FileTree__nodeName {
+.FileTree__nodeName,
+.FileTree__nodeName > span {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.5;
 
   &--modified {
     color: #d5bf5d;

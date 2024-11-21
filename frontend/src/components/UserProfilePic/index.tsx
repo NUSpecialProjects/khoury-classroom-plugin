@@ -7,12 +7,13 @@ const UserProfilePic: React.FC = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const currentUser = (await fetchCurrentUser()) as IGitHubUser;
-        setUser(currentUser);
-      } catch (_) {
-        // do nothing
-      }
+      await fetchCurrentUser()
+        .then((user: IGitHubUser | null) => {
+          setUser(user);
+        })
+        .catch((error: unknown) => {
+          console.error("Error fetching user data:", error);
+        });
     };
 
     void fetchUser();
@@ -20,7 +21,11 @@ const UserProfilePic: React.FC = () => {
 
   return (
     <div className="User">
-      {user && <img src={user.avatar_url} alt={user.login} className="User__avatar" />}
+      {user ? (
+        <img src={user.avatar_url} alt={user.login} className="User__avatar" />
+      ) : (
+        <div className="User__avatar"> </div>
+      )}
     </div>
   );
 };

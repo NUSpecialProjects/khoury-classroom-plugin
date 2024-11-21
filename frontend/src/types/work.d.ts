@@ -12,7 +12,7 @@ interface IStudentWork {
   grades_published_timestamp?: Date;
   work_state: string;
   created_at: Date;
-  contributors: [string];
+  contributors: string[];
 }
 
 interface IPaginatedStudentWork extends IStudentWork {
@@ -23,9 +23,10 @@ interface IPaginatedStudentWork extends IStudentWork {
 }
 
 interface IStudentWorkResponses {
-  student_works: [IStudentWork];
+  student_works: IStudentWork[];
 }
 
 interface IPaginatedStudentWorkResponse {
   student_work: IPaginatedStudentWork;
+  feedback: IGraderFeedback[];
 }

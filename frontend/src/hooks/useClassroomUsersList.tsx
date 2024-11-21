@@ -14,12 +14,8 @@ export function useClassroomUsersList(classroomId?: number) {
             setClassroomUsers(users);
             setError(null);
           })
-          .catch((err) => {
-            setError(
-              err instanceof Error
-                ? err
-                : new Error("Failed to fetch classroom users")
-            );
+          .catch((_) => {
+            setError(new Error("Failed to fetch classroom users"));
             setClassroomUsers([]);
           })
           .finally(() => {

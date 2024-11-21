@@ -3,6 +3,7 @@ interface IFileTreeNode {
   name: string;
   path: string;
   sha: string;
+  diff: IGitDiff[] | null;
   status: string;
   childNodes: {
     [name: string]: IFileTreeNode;
@@ -10,7 +11,6 @@ interface IFileTreeNode {
 }
 
 interface IFileTree extends React.HTMLProps<HTMLDivElement> {
-  gitTree: IGitTreeNode[];
   selectFileCallback: (node: IFileTreeNode) => void;
 }
 

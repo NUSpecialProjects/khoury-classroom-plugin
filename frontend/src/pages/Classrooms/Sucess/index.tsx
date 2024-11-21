@@ -11,9 +11,7 @@ const Success: React.FC = () => {
   return (
     <Panel title={selectedClassroom?.name + " Classroom Created!"} logo={true}>
       <div className="ButtonWrapper">
-        <Button variant="primary" href="/app/dashboard">
-          View my classroom
-        </Button>
+        <Button href="/app/dashboard">View my classroom</Button>
       </div>
     </Panel>
   );

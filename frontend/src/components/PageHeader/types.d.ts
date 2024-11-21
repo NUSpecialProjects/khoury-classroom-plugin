@@ -8,5 +8,5 @@ interface IBreadcrumbPageHeader extends IPageHeader {
 
 interface ISubPageHeader extends IPageHeader {
     chevronLink: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }

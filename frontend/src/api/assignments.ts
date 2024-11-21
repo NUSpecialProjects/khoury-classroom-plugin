@@ -1,5 +1,57 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
+
+
+export async function postAssignmentToken(
+  classroomID: number,
+  assignmentID: number,
+  duration?: number // Duration is optional
+): Promise<IAssignmentToken> {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/token`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        duration: duration,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const resp: IAssignmentToken = await response.json();
+  return resp;
+}
+
+export async function useAssignmentToken(
+  token: string
+): Promise<IAssignmentAcceptResponse> {
+  const response = await fetch( // the classroom id doesn't matter here
+    `${base_url}/classrooms/classroom/${0}/assignments/token/${token}`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const resp: IAssignmentAcceptResponse = await response.json();
+  return resp;
+}
+
+
 export const getAssignments = async (
   classroomId: number
 ): Promise<IAssignmentOutline[]> => {
@@ -24,10 +76,10 @@ export const getAssignments = async (
 };
 
 export const getAssignmentIndirectNav = async (
-  classroomid: number,
+  classroomID: number,
   assignmentID: number
 ): Promise<IAssignmentOutline> => {
-  const result = await fetch(`${base_url}/classrooms/classroom/${classroomid}/assignments/assignment/${assignmentID}`, {
+  const result = await fetch(`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}`, {
     method: 'GET',
     credentials: 'include',
     headers: {
@@ -42,30 +94,6 @@ export const getAssignmentIndirectNav = async (
   const data: IAssignmentOutline = (await result.json() as IAssignmentOutlineResponse).assignment_outline
 
   return data
-};
-
-export const acceptAssignment = async (orgName: string, repoName: string, classroomID: number, assignmentName: string) => {
-  const result = await fetch(
-    `${base_url}/classrooms/classroom/${classroomID}/assignments/accept`,
-    {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        org_name: orgName,
-        repo_name: repoName,
-        assignment_name: assignmentName,
-        assignment_id: 1,
-        org_id: 182810684
-      }),
-    }
-  );
-
-  if (!result.ok) {
-    throw new Error(result.statusText);
-  }
 };
 
 export const createAssignment = async (
