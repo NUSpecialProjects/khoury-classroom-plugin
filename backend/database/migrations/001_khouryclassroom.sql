@@ -16,7 +16,7 @@ END $$;
 
 DO $$ BEGIN
     CREATE TYPE USER_STATUS AS 
-    ENUM('NOT_IN_ORG','REQUESTED', 'ORG_INVITED', 'ACTIVE'); -- intentionally don't have a "NONE" status, as any user in our DB should at least have requested to join the org
+    ENUM('NOT_IN_ORG', 'REMOVED', 'REQUESTED', 'ORG_INVITED', 'ACTIVE'); -- intentionally don't have a "NONE" status, as any user in our DB has "interacted" with our system in some way
 EXCEPTION 
     WHEN duplicate_object THEN null;
 END $$;
