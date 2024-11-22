@@ -9,8 +9,10 @@
   flex-shrink: 0;
   padding: 5px 0;
   border: 1px solid #383838;
-  position: relative;
-  z-index: 0;
+
+  &__wrapper {
+    display: contents;
+  }
 
   .react-resizable-handle-e,
   .react-resizable-handle-w {
@@ -23,6 +25,7 @@
     background: transparent;
     transition: background 0.2s ease;
     user-select: none;
+    z-index: 10;
 
     &:hover,
     &:active {
@@ -34,5 +37,13 @@
   }
   .react-resizable-handle-w {
     left: -2px;
+  }
+
+  &--collapsed {
+    .react-resizable-handle-e,
+    .react-resizable-handle-w {
+      background: #739ef3;
+      opacity: 1;
+    }
   }
 }

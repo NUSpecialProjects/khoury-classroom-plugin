@@ -4,6 +4,7 @@
   --comment-background: #202227;
   --comment-border: #434854;
 
+  position: relative;
   height: 100%;
   flex-grow: 1;
   flex-shrink: 1;

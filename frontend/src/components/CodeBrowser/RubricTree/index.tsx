@@ -11,7 +11,7 @@ const RubricTree: React.FC = () => {
   const { rubric, postFeedback } = useContext(GraderContext);
   return (
     rubric && (
-      <ResizablePanel border="left" hideable>
+      <ResizablePanel border="left">
         <div className="RubricTree__head">Rubric</div>
 
         <SimpleBar className="RubricTree__body scrollable">

@@ -52,7 +52,7 @@ export const FileTree: React.FC<IFileTree> = ({ selectFileCallback }) => {
   }, [gitTree]);
 
   return (
-    <ResizablePanel border="right" zIndex={treeDepth * 2}>
+    <ResizablePanel border="right" minWidth={150}>
       <div className="FileTree__head">Files</div>
       <SimpleBar className="FileTree__body scrollable">
         <>

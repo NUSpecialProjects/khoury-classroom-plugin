@@ -2,8 +2,9 @@
   &__head {
     color: white;
     font-size: 1.1rem;
-    padding: 10px;
+    margin: 10px;
     font-weight: 300;
+    width: 100%;
     overflow: hidden;
   }
 }
