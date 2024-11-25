@@ -85,19 +85,17 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	}
 
 	// Create necessary repo branches
-	_, err := s.appClient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
-		*pushEvent.Repo.Name,
-		*pushEvent.Repo.MasterBranch,
-		"development")
-	if err != nil {
-		return errs.InternalServerError()
-	}
-	_, err = s.appClient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
-		*pushEvent.Repo.Name,
-		*pushEvent.Repo.MasterBranch,
-		"feedback")
-	if err != nil {
-		return errs.InternalServerError()
+	repoBranches := []string{"development", "feedback"}
+	for _, branch := range repoBranches {
+		_, err := s.appClient.CreateBranch(c.Context(),
+			*pushEvent.Repo.Organization,
+			*pushEvent.Repo.Name,
+			*pushEvent.Repo.MasterBranch,
+			branch)
+
+		if err != nil {
+			return errs.InternalServerError()
+		}
 	}
 
 	// Find the associated assignment and classroom

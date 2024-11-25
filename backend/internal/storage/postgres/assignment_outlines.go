@@ -86,40 +86,47 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 	return assignmentOutline, nil
 }
 
-func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutline) (int32, error) {
-	var assignmentOutlineID int32
+func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models.AssignmentOutline) (models.AssignmentOutline, error) {
+	var assignmentOutline models.AssignmentOutline
 
 	err := db.connPool.QueryRow(ctx, `
-		INSERT INTO assignment_outlines (template_id, name, classroom_id, group_assignment, main_due_date)
-		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id
+		INSERT INTO assignment_outlines (template_id, base_repo_id, name, classroom_id, rubric_id, group_assignment, main_due_date)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id,
+			template_id,
+			base_repo_id,
+			created_at,
+			released_at,
+			name,
+			classroom_id,
+			rubric_id,
+			group_assignment,
+			main_due_date
 	`,
 		assignmentRequestData.TemplateID,
+		assignmentRequestData.BaseRepoID,
 		assignmentRequestData.Name,
 		assignmentRequestData.ClassroomID,
+		assignmentRequestData.RubricID,
 		assignmentRequestData.GroupAssignment,
 		assignmentRequestData.MainDueDate,
-	).Scan(&assignmentOutlineID)
+	).Scan(&assignmentOutline.ID,
+		&assignmentOutline.TemplateID,
+		&assignmentOutline.BaseRepoID,
+		&assignmentOutline.CreatedAt,
+		&assignmentOutline.ReleasedAt,
+		&assignmentOutline.Name,
+		&assignmentOutline.ClassroomID,
+		&assignmentOutline.RubricID,
+		&assignmentOutline.GroupAssignment,
+		&assignmentOutline.MainDueDate,
+	)
 
 	if err != nil {
-		return assignmentOutlineID, errs.NewDBError(err)
+		return assignmentOutline, errs.NewDBError(err)
 	}
 
-	return assignmentOutlineID, nil
-}
-
-func (db *DB) AttachBaseRepoToAssignment(ctx context.Context, assignmentID int32, baseRepoID int64) error {
-	_, err := db.connPool.Exec(ctx, `
-		UPDATE assignment_outlines
-		SET base_repo_id = $1
-		WHERE id = $2
-	`, baseRepoID, assignmentID)
-
-	if err != nil {
-		return errs.NewDBError(err)
-	}
-
-	return nil
+	return assignmentOutline, nil
 }
 
 func (db *DB) GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error) {

@@ -2,7 +2,6 @@ package assignments
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -84,17 +83,14 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		}
 
 		// Store assignment locally
-		createdAssignmentID, err := s.store.CreateAssignment(c.Context(), assignmentData)
-		if err != nil {
-			return err
-		}
-		err = s.store.AttachBaseRepoToAssignment(c.Context(), createdAssignmentID, baseRepo.BaseID)
+		assignmentData.BaseRepoID = baseRepo.BaseID
+		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
 		if err != nil {
 			return err
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"created_assignment_id": createdAssignmentID,
+			"created_assignment": createdAssignment,
 		})
 	}
 }
@@ -220,22 +216,21 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		}
 
 		// Remove student team's access to forked repo
-		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, forkName)
+		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, *studentWorkRepo.Name)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
 
 		// Insert into DB
-		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, "ACCEPTED", *assignment.MainDueDate)
+		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, models.WorkStateAccepted, *assignment.MainDueDate)
 		if err != nil {
 			return err
 		}
 
 		// Instead of getting the repository immediately, construct the expected URL
-		expectedRepoURL := fmt.Sprintf("https://github.com/%s/%s", classroom.OrgName, forkName)
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"message":  "Assignment Accepted!",
-			"repo_url": expectedRepoURL,
+			"repo_url": studentWorkRepo.HTMLURL,
 		})
 	}
 }

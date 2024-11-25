@@ -137,41 +137,54 @@ WHERE student_work_id = $3
 	return formatted[0], nil
 }
 
-func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState string, dueDate time.Time) (int, error) {
+func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState models.WorkState, dueDate time.Time) (models.StudentWork, error) {
+	var studentWork models.StudentWork
+
 	//Get internal ID of inserting user
 	var userID int
 	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, gitHubUserID).Scan(&userID)
 	if err != nil {
-		return -1, fmt.Errorf("user %d does not exist in database", userID)
+		return studentWork, fmt.Errorf("user %d does not exist in database", userID)
 	}
 
 	// TODO: Make a single transaction once we institute atomicity infrastructure
-	var studentWorkID int
 	err = db.connPool.QueryRow(ctx,
 		`INSERT INTO student_works (assignment_outline_id,
     		repo_name,
     		unique_due_date,
     		work_state)
-        VALUES ($1, $2, $3, $4) RETURNING id`,
+        VALUES ($1, $2, $3, $4)
+		RETURNING id,
+			assignment_outline_id,
+			repo_name,
+			unique_due_date,
+			work_state,
+			created_at`,
 		assignmentOutlineID,
 		repoName,
 		dueDate,
 		workState,
-	).Scan(&studentWorkID)
+	).Scan(&studentWork.ID,
+		&studentWork.AssignmentOutlineID,
+		&studentWork.RepoName,
+		&studentWork.UniqueDueDate,
+		&studentWork.WorkState,
+		&studentWork.CreatedAt,
+	)
 
 	if err != nil {
-		return -1, fmt.Errorf("error inserting student works")
+		return studentWork, fmt.Errorf("error inserting student works")
 	}
 
 	// Insert forking user as work contributor
 	_, err = db.connPool.Exec(ctx,
 		`INSERT INTO work_contributors (user_id, student_work_id) VALUES ($1, $2)`,
 		userID,
-		studentWorkID,
+		studentWork.ID,
 	)
 	if err != nil {
-		return -1, fmt.Errorf("error inserting work contributors")
+		return studentWork, fmt.Errorf("error inserting work contributors")
 	}
 
-	return studentWorkID, nil
+	return studentWork, nil
 }

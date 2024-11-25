@@ -13,9 +13,18 @@ type StudentWork struct {
 	ManualFeedbackScore      *int       `json:"manual_feedback_score" db:"manual_feedback_score"`
 	AutoGraderScore          *int       `json:"auto_grader_score" db:"auto_grader_score"`
 	GradesPublishedTimestamp *time.Time `json:"grades_published_timestamp" db:"grades_published_timestamp"`
-	WorkState                string     `json:"work_state" db:"work_state"`
+	WorkState                WorkState  `json:"work_state" db:"work_state"`
 	CreatedAt                time.Time  `json:"created_at" db:"created_at"`
 }
+
+type WorkState string
+
+const (
+	WorkStateAccepted         WorkState = "ACCEPTED"
+	WorkStateGradingAssigned  WorkState = "GRADING_ASSIGNED"
+	WorkStateGradingCompleted WorkState = "GRADING_COMPLETED"
+	WorkStateGradePublished   WorkState = "GRADE_PUBLISHED"
+)
 
 type StudentWorkPagination struct {
 	PreviousStudentWorkID *int `json:"previous_student_work_id" db:"previous_student_work_id"`
