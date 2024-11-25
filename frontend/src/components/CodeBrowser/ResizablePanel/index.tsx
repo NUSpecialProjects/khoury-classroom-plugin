@@ -30,7 +30,8 @@ const ResizablePanel: React.FC<ITreePanel> = ({
   useEffect(() => {
     if (!wrapper.current) return;
     const bound = wrapper.current?.children[0].getBoundingClientRect();
-    setThreshold(bound.x + (border == "right" ? bound.width : 0));
+    console.log("test");
+    setThreshold(bound.x + (border == "right" ? minWidth : 0));
   }, [wrapper]);
 
   return (
@@ -43,27 +44,29 @@ const ResizablePanel: React.FC<ITreePanel> = ({
         resizeHandles={border2dir[border] as ResizeHandle[]}
         minConstraints={[4, 0]}
         onResize={(e, { size }) => {
+          if (!self.current) return;
+
+          // check if mouse is halfway between the panel edge-to-edge
           const mouseX = (e as unknown as MouseEvent).clientX;
           const w = size.width;
           if (
             (border2dir[border].includes("w") && mouseX >= threshold) ||
             (border2dir[border].includes("e") && mouseX <= threshold)
           ) {
-            console.log("test");
+            // override default resizing behavior if so
             if (
               (border2dir[border].includes("e") &&
                 mouseX <= threshold - minWidth / 2) ||
               (border2dir[border].includes("w") &&
                 mouseX >= threshold + minWidth / 2)
             ) {
-              self.current?.setState({ width: 4 });
+              // collapse panel if mouse under halfway
+              self.current.setState({ width: 4 });
             } else {
-              self.current?.setState({ width: minWidth });
+              // expand panel if mouse over halfway
+              self.current.setState({ width: minWidth });
             }
-          } else {
-            self.current?.setState({ width: w });
           }
-
           setCollapsed(w == 4);
         }}
       >

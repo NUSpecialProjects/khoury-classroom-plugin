@@ -1,3 +1,7 @@
+.react-draggable-transparent-selection {
+  cursor: e-resize;
+}
+
 .TreePanel {
   background: #151515;
   font-size: 0.86rem;
@@ -21,11 +25,11 @@
     top: 0;
     width: 4px;
     height: 100%;
-    cursor: col-resize;
     background: transparent;
     transition: background 0.2s ease;
     user-select: none;
     z-index: 10;
+    cursor: e-resize;
 
     &:hover,
     &:active {

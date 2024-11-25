@@ -14,11 +14,14 @@ interface IGraderContext {
   feedback: IGraderFeedbackMap;
   stagedFeedback: IGraderFeedbackMap;
   rubric: IFullRubric | null;
+  selectedRubricItems: number[];
   setSelectedFile: React.Dispatch<React.SetStateAction<IFileTreeNode | null>>;
   addFeedback: (feedback: IGraderFeedback) => number;
   editFeedback: (feedbackID: number, feedback: IGraderFeedback) => void;
   removeFeedback: (feedbackID: number) => void;
   postFeedback: () => void;
+  selectRubricItem: (riID: number) => void;
+  deselectRubricItem: (riID: number) => void;
 }
 
 export const GraderContext: React.Context<IGraderContext> =
@@ -30,11 +33,14 @@ export const GraderContext: React.Context<IGraderContext> =
     feedback: {},
     stagedFeedback: {},
     rubric: null,
+    selectedRubricItems: [],
     setSelectedFile: () => {},
     addFeedback: () => 0,
     editFeedback: () => {},
     removeFeedback: () => {},
     postFeedback: () => {},
+    selectRubricItem: () => {},
+    deselectRubricItem: () => {},
   });
 
 export const GraderProvider: React.FC<{
@@ -50,6 +56,7 @@ export const GraderProvider: React.FC<{
   const [studentWork, setStudentWork] = useState<IPaginatedStudentWork | null>(
     null
   );
+  const [selectedRubricItems, setSelectedRubricItems] = useState<number[]>([]);
   const [selectedFile, setSelectedFile] = useState<IFileTreeNode | null>(null);
   const [rubric, setRubric] = useState<IFullRubric | null>(null);
 
@@ -129,6 +136,15 @@ export const GraderProvider: React.FC<{
     });
   };
 
+  const selectRubricItem = (riID: number) => {
+    setSelectedRubricItems((prevRubricItems) => [...prevRubricItems, riID]);
+  };
+
+  const deselectRubricItem = (riID: number) => {
+    const deselected = selectedRubricItems.filter((ri) => ri !== riID);
+    setSelectedRubricItems(deselected);
+  };
+
   // once feedback is updated, reset id to its length
   // this is so when posting staged feedback, it will never overwrite existing feedback
   useEffect(() => {
@@ -145,11 +161,14 @@ export const GraderProvider: React.FC<{
         feedback,
         stagedFeedback,
         rubric,
+        selectedRubricItems,
         setSelectedFile,
         addFeedback,
         editFeedback,
         removeFeedback,
         postFeedback,
+        selectRubricItem,
+        deselectRubricItem,
       }}
     >
       {children}

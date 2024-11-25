@@ -48,8 +48,15 @@ interface ICodeLine {
 const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { currentUser } = useContext(AuthContext);
-  const { assignmentID, studentWorkID, feedback, stagedFeedback, addFeedback } =
-    useContext(GraderContext);
+  const {
+    assignmentID,
+    studentWorkID,
+    feedback,
+    stagedFeedback,
+    rubric,
+    selectedRubricItems,
+    addFeedback,
+  } = useContext(GraderContext);
   const [editing, setEditing] = useState(false);
   const [feedbackExists, setFeedbackExists] = useState(false);
   const [stagedFeedbackExists, setStagedFeedbackExists] = useState(false);
@@ -93,7 +100,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     const data = new FormData(form);
     const fb: IGraderFeedback = {
       path,
-      line: Number(data.get("line")),
+      line,
       body: String(data.get("comment")).trim(),
       points: Number(data.get("points")),
       ta_username: currentUser.login,
@@ -105,6 +112,32 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     form.reset();
   };
 
+  const handleAttachRubricItem = (riID: number) => {
+    if (
+      !currentUser ||
+      !selectedClassroom ||
+      !assignmentID ||
+      !studentWorkID ||
+      !rubric
+    )
+      return;
+
+    const ri = rubric.rubric_items.find((ri: IRubricItem) => ri.id == riID);
+    if (!ri) return;
+
+    const fb: IGraderFeedback = {
+      path,
+      line,
+      body: ri.explanation,
+      points: ri.point_value,
+      ta_username: currentUser.login,
+    };
+    if (fb.points == 0 && fb.body == "") return;
+    if (fb.body == "") fb.body = "No comment left for this point adjustment.";
+    addFeedback(fb);
+    setEditing(false);
+  };
+
   return (
     <>
       <div className={`CodeLine${isDiff ? " CodeLine--diff" : ""}`}>
@@ -114,7 +147,13 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
             <div
               className="CodeLine__newCommentButton"
               onClick={() => {
-                setEditing(!editing);
+                if (selectedRubricItems.length == 0) {
+                  setEditing(!editing);
+                } else {
+                  selectedRubricItems.forEach((riID) => {
+                    handleAttachRubricItem(riID);
+                  });
+                }
               }}
             >
               +
@@ -152,8 +191,6 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
                 className="CodeLine__newCommentForm"
                 onSubmit={handleAddFeedback}
               >
-                <input readOnly hidden type="number" name="line" value={line} />
-
                 <div className="CodeLine__newCommentPoints">
                   <label htmlFor="points">Point Adjustment</label>
                   <input
