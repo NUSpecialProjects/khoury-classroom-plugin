@@ -12,6 +12,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/CamPlume1/khoury-classroom/internal/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5"
 )
 
 // Returns the assignments in a classroom.
@@ -59,6 +60,15 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		error := c.BodyParser(&assignmentData)
 		if error != nil {
 			return errs.InvalidRequestBody(assignmentData)
+		}
+
+		// Error if assignment already exists
+		existingAssignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentData.Name, assignmentData.ClassroomID)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return err
+		}
+		if existingAssignment != nil {
+			return errs.BadRequest(errors.New("assignment with that name already exists"))
 		}
 
 		// Get classroom and assignment template
@@ -235,6 +245,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 	}
 }
 
+// KHO-209
 // TODO: Choose naming pattern once we have a full assignment flow. Stub for now
 // TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
 func generateForkName(sourceName, userName string) string {

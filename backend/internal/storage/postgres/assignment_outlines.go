@@ -150,3 +150,25 @@ func (db *DB) GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (
 
 	return assignmentOutline, nil
 }
+
+func (db *DB) GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentName string, classroom int64) (*models.AssignmentOutline, error) {
+	var assignmentOutline models.AssignmentOutline
+	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_outlines WHERE name = $1 AND classroom_id = $2", assignmentName, classroom).Scan(
+		&assignmentOutline.ID,
+		&assignmentOutline.TemplateID,
+		&assignmentOutline.BaseRepoID,
+		&assignmentOutline.CreatedAt,
+		&assignmentOutline.ReleasedAt,
+		&assignmentOutline.Name,
+		&assignmentOutline.ClassroomID,
+		&assignmentOutline.RubricID,
+		&assignmentOutline.GroupAssignment,
+		&assignmentOutline.MainDueDate,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &assignmentOutline, nil
+}

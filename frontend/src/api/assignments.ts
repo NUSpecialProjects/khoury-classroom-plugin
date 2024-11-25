@@ -119,10 +119,19 @@ export const createAssignment = async (
   );
 
   if (!result.ok) {
-    throw new Error("Network response was not ok");
+    let errorMessage;
+
+    // Attempt to parse the error message from the response body
+    try {
+      const errorData = await result.json();
+      errorMessage = errorData.msg;
+    } catch {
+      errorMessage = "an unknown error occurred";
+    }
+
+    throw new Error(`Failed to create assignment: ${errorMessage}`);
   }
 
-  const data = (await result.json())
-
-  return data.assignment_outline as IAssignmentFormData
+  const data = (await result.json());
+  return data.assignment_outline as IAssignmentFormData;
 };

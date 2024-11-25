@@ -43,11 +43,15 @@ const MultiStepForm = <T,>({
   );
 
   const handleSubmit = useCallback(async () => {
-    const success = await submitFunc(formData);
-    if (success) {
+    try {
+      await submitFunc(formData);
       setError(null);
-    } else {
-      setError("Submission failed. Please try again.");
+    } catch (e) {
+      const err: string = e instanceof Error
+        ? e.message
+        : "Submission failed. Please try again.";
+
+      setError(err);
     }
   }, [submitFunc, formData]);
 
