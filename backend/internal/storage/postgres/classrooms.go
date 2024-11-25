@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"log"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -9,16 +10,21 @@ import (
 )
 
 func (db *DB) CreateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error) {
-	err := db.connPool.QueryRow(ctx, "INSERT INTO classrooms (name, org_id, org_name, created_at) VALUES ($1, $2, $3, $4) RETURNING *",
+	err := db.connPool.QueryRow(ctx, `
+	INSERT INTO classrooms (name, org_id, org_name, created_at, student_team_name)
+	VALUES ($1, $2, $3, $4, $5)
+	RETURNING id, name, org_id, org_name, created_at, student_team_name`,
 		classroomData.Name,
 		classroomData.OrgID,
 		classroomData.OrgName,
 		classroomData.CreatedAt,
+		classroomData.StudentTeamName,
 	).Scan(&classroomData.ID,
 		&classroomData.Name,
 		&classroomData.OrgID,
 		&classroomData.OrgName,
-		&classroomData.CreatedAt)
+		&classroomData.CreatedAt,
+		&classroomData.StudentTeamName)
 
 	if err != nil {
 		return models.Classroom{}, errs.NewDBError(err)
@@ -28,15 +34,21 @@ func (db *DB) CreateClassroom(ctx context.Context, classroomData models.Classroo
 }
 
 func (db *DB) UpdateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error) {
-	err := db.connPool.QueryRow(ctx, "UPDATE classrooms SET name = $1, org_id = $2, org_name = $3 WHERE id = $4 RETURNING *",
+	err := db.connPool.QueryRow(ctx, `
+	UPDATE classrooms
+	SET name = $1, org_id = $2, org_name = $3, student_team_name = $4
+	WHERE id = $5
+	RETURNING id, name, org_id, org_name, created_at, student_team_name`,
 		classroomData.Name,
 		classroomData.OrgID,
 		classroomData.OrgName,
+		classroomData.StudentTeamName,
 		classroomData.ID).Scan(&classroomData.ID,
 		&classroomData.Name,
 		&classroomData.OrgID,
 		&classroomData.OrgName,
-		&classroomData.CreatedAt)
+		&classroomData.CreatedAt,
+		&classroomData.StudentTeamName)
 
 	if err != nil {
 		return models.Classroom{}, errs.NewDBError(err)
@@ -47,12 +59,16 @@ func (db *DB) UpdateClassroom(ctx context.Context, classroomData models.Classroo
 
 func (db *DB) GetClassroomByID(ctx context.Context, classroomID int64) (models.Classroom, error) {
 	var classroomData models.Classroom
-	err := db.connPool.QueryRow(ctx, "SELECT * FROM classrooms WHERE id = $1", classroomID).Scan(
+	err := db.connPool.QueryRow(ctx, `
+	SELECT id, name, org_id, org_name, created_at, student_team_name
+	FROM classrooms
+	WHERE id = $1`, classroomID).Scan(
 		&classroomData.ID,
 		&classroomData.Name,
 		&classroomData.OrgID,
 		&classroomData.OrgName,
 		&classroomData.CreatedAt,
+		&classroomData.StudentTeamName,
 	)
 
 	if err != nil {
@@ -199,16 +215,24 @@ func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID 
 }
 
 func (db *DB) GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM classrooms WHERE org_id = $1", orgID)
+	rows, err := db.connPool.Query(ctx, `
+	SELECT id, name, org_id, org_name, created_at, student_team_name
+	FROM classrooms
+	WHERE org_id = $1`, orgID)
 	if err != nil {
 		return nil, err
 	}
+
+	log.Default().Println(rows)
 
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Classroom])
 }
 
 func (db *DB) GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.Classroom, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM classrooms WHERE org_id = $1 AND id IN (SELECT classroom_id FROM classroom_membership WHERE user_id = $2 AND status = 'ACTIVE')", orgID, userID)
+	rows, err := db.connPool.Query(ctx, `
+	SELECT id, name, org_id, org_name, created_at, student_team_name
+	FROM classrooms
+	WHERE org_id = $1 AND id IN (SELECT classroom_id FROM classroom_membership WHERE user_id = $2 AND status = 'ACTIVE')`, orgID, userID)
 	if err != nil {
 		return nil, err
 	}

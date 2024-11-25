@@ -56,22 +56,23 @@ export default function App(): React.JSX.Element {
                 <Route path="invite-students" element={<Pages.InviteStudents />} />
                 <Route path="success" element={<Pages.Success />} />
               </Route>
-              <Route path="organization">
+              <Route path="organization" element={<PrivateRoute />}>
                 <Route
                   path="select"
                   element={<Pages.OrganizationSelectPage />}
                 />
               </Route>
 
-              <Route
-                path="token/classroom/join"
-                element={<Pages.JoinClassroom />}
-              />
-              <Route
-                  path="token/assignment/accept"
+              <Route path="token" element={<PrivateRoute />}>
+                <Route
+                  path="classroom/join"
+                  element={<Pages.JoinClassroom />}
+                />
+                <Route
+                  path="assignment/accept"
                   element={<Pages.AcceptAssignment />}
                 />
-
+              </Route>
               {/******* CLASS SELECTED: INNER APP *******/}
               <Route path="" element={<Layout />}>
                 <Route path="assignments" element={<Pages.Assignments />} />
