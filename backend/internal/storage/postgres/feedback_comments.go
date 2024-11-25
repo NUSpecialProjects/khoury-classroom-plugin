@@ -46,26 +46,38 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 	return formattedFeedback, err
 }
 
-// create a new comment (ad-hoc: also create a rubric item simultaneously)
-func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
-	_, err := db.connPool.Exec(ctx,
-		`WITH ri AS
-			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)
-		INSERT INTO feedback_comment
-			(rubric_item_id, file_path, file_line, student_work_id, ta_user_id)
-			VALUES ((SELECT id FROM ri), $3, $4, $5, $6)`,
-		comment.Points,
-		comment.Body,
-		comment.Path,
-		comment.Line,
-		studentWorkID,
-		TAUserID,
-	)
+// create a new feedback comment
+func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
 
-	return err
-}
+	//ad-hoc: also create a rubric item simultaneously
+	if comment.RubricItemID == nil {
+		_, err := db.connPool.Exec(ctx,
+			`WITH ri AS
+				(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)
+			INSERT INTO feedback_comment
+				(rubric_item_id, file_path, file_line, student_work_id, ta_user_id)
+				VALUES ((SELECT id FROM ri), $3, $4, $5, $6)`,
+			comment.Points,
+			comment.Body,
+			comment.Path,
+			comment.Line,
+			studentWorkID,
+			TAUserID,
+		)
+		return err
+	} else {
+		// rubric item already exists, simply attach it
+		_, err := db.connPool.Exec(ctx,
+			`INSERT INTO feedback_comment
+				(rubric_item_id, file_path, file_line, student_work_id, ta_user_id)
+				VALUES ($1, $2, $3, $4, $5)`,
+			comment.RubricItemID,
+			comment.Path,
+			comment.Line,
+			studentWorkID,
+			TAUserID,
+		)
 
-// attach an existing rubric item to a new comment
-func (db *DB) AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error {
-	return nil
+		return err
+	}
 }

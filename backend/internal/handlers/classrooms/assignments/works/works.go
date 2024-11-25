@@ -84,7 +84,7 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		var comments []models.PRReviewComment
 		for _, comment := range requestBody.Comments {
 			// insert into DB
-			err := s.store.CreateNewFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
+			err := s.store.CreateFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
 			if err != nil {
 				return errs.InternalServerError()
 			}

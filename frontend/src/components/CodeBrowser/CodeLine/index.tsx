@@ -126,6 +126,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     if (!ri) return;
 
     const fb: IGraderFeedback = {
+      rubric_item_id: riID,
       path,
       line,
       body: ri.explanation,
