@@ -1,39 +1,51 @@
 import { useEffect, useState } from "react";
-import { FaChevronLeft } from "react-icons/fa6";
-import { Link, useLocation } from "react-router-dom";
+import { FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { Link, Navigate, useLocation } from "react-router-dom";
 
 import "./styles.css";
 import { getRubric } from "@/api/rubrics";
 import Button from "@/components/Button";
-import NewRubric from "@/pages/Rubrics/NewRubric";
+import { Table, TableCell, TableDiv, TableRow } from "@/components/Table";
+import RubricItem from "@/components/RubricItem";
+
 
 const AssignmentRubric: React.FC = () => {
   const location = useLocation();
-  const assignment = location.state.assignment || {};
 
+  const [assignment, setAssignmentData] = useState<IAssignmentOutline>()
   const [rubricData, setRubricData] = useState<IFullRubric>()
 
   useEffect(() => {
-    console.log("use effecting")
-    if (assignment && assignment.rubric_id) {
-      (async () => {
-        try {
-          const rubric = await getRubric(assignment.rubric_id)
-          if (rubric !== null) {
-            console.log("Assignment rubric retrieved rubric data, ", rubric)
-            setRubricData(rubric)
-          } else {
-            console.log("no rubric data found from this assignment")
+    if (location.state) {
+      setAssignmentData(location.state.assignment)
+      const aData = location.state.assignment
+      if (aData && aData.rubric_id) {
+        (async () => {
+          try {
+            const rubric = await getRubric(aData.rubric_id)
+            if (rubric !== null) {
+              console.log("Assignment rubric retrieved rubric data, ", rubric)
+              setRubricData(rubric)
+            } else {
+              console.log("no rubric data found from this assignment")
+            }
+
+          } catch (error) {
+            //do nothing
           }
 
-        } catch (error) {
-          //do nothing
-        }
-
-      })();
+        })();
+      }
+    } else {
+      console.log("no assignment state")
     }
 
-    
+
+
+
+
+
+
   }, [assignment]);
 
 
@@ -59,11 +71,23 @@ const AssignmentRubric: React.FC = () => {
 
           {rubricData ? (
             <div>
-              <NewRubric assignment={assignment} givenRubricData={rubricData}/>
+              <Table cols={2}>
+                <TableRow>
+                  <TableCell>Explanation </TableCell>
+                  <TableCell>Point Value </TableCell>
+                </TableRow>
+                 
+              {rubricData &&
+                rubricData.rubric_items.map((item, i: number) => (
+                    <TableRow key={i}>
+                        <TableCell> {item.explanation} </TableCell>
+                        <TableCell> {item.point_value > 0 ? "+" + item.point_value : item.point_value} </TableCell>
+                    </TableRow>
+              ))}
+              </Table>
+             
             </div>
-
           ) : (
-
             <div className="AssignmentRubric__noRubric">
               <div className="AssignmentRubric__noRubricTitle">This Assignment does not have a Rubric yet.</div>
               <Button href="" variant="secondary"> Import existing rubric</Button>

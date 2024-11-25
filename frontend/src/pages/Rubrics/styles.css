@@ -1,0 +1,13 @@
+.RubricsTable {
+    transition: background 0.1s ease;
+    cursor: pointer;
+
+
+    & .TableRow--expanded {
+        background: #f3f3f3;
+    }
+}
+
+.ItemTable {
+    padding: 0 40px;
+}
