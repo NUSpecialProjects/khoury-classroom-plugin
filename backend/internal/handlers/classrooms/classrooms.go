@@ -232,10 +232,8 @@ func (s *ClassroomService) removeUserFromClassroom() fiber.Handler {
 		}
 
 		// remove the user from the student team
-		err = s.githubappclient.RemoveTeamMember(c.Context(), classroom.OrgName, *studentTeam.ID, toBeRemovedUser.GithubUsername)
-		if err != nil {
-			// do nothing, the user has already been removed from the team or they were never in the team
-		}
+		s.githubappclient.RemoveTeamMember(c.Context(), classroom.OrgName, *studentTeam.ID, toBeRemovedUser.GithubUsername)
+		// on err: do nothing, the user has already been removed from the team or they were never in the team
 
 		err = s.store.RemoveUserFromClassroom(c.Context(), classroomID, userID)
 		if err != nil {
@@ -713,7 +711,7 @@ func (s *ClassroomService) requireAtLeastRole(c *fiber.Ctx, classroomID int64, r
 		if err != nil { // student team doesn't exist :(
 			return models.ClassroomUser{}, errs.InternalServerError()
 		} else { // student team exists, check if the user is in it
-			var studentIsInStudentTeam bool = false
+			var studentIsInStudentTeam = false
 			studentTeamMembers, err := s.githubappclient.GetTeamMembers(c.Context(), *studentTeam.ID)
 			if err != nil {
 				return models.ClassroomUser{}, errs.InternalServerError()
