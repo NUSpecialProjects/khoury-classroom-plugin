@@ -2,6 +2,7 @@ package classrooms
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -232,8 +233,11 @@ func (s *ClassroomService) removeUserFromClassroom() fiber.Handler {
 		}
 
 		// remove the user from the student team
-		s.githubappclient.RemoveTeamMember(c.Context(), classroom.OrgName, *studentTeam.ID, toBeRemovedUser.GithubUsername)
-		// on err: do nothing, the user has already been removed from the team or they were never in the team
+		err = s.githubappclient.RemoveTeamMember(c.Context(), classroom.OrgName, *studentTeam.ID, toBeRemovedUser.GithubUsername)
+		if err != nil {
+			log.Default().Println("Warning: Failed to remove user from student team", err)
+			// do nothing, the user has already been removed from the team or they were never in the team
+		}
 
 		err = s.store.RemoveUserFromClassroom(c.Context(), classroomID, userID)
 		if err != nil {
