@@ -108,6 +108,14 @@ func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, des
 	return createdTeam, nil
 }
 
+func (api *AppAPI) DeleteTeam(ctx context.Context, teamID int64) error {
+	_, err := api.Client.Teams.DeleteTeam(ctx, teamID)
+	if err != nil {
+		return fmt.Errorf("error deleting team: %v", err)
+	}
+	return nil
+}
+
 func (api *AppAPI) AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error {
 	opt := &github.TeamAddTeamRepoOptions{
 		Permission: permission,

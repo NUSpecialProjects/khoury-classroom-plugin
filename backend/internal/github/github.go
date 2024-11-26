@@ -21,6 +21,9 @@ type GitHubAppClient interface { // All methods in the APP client
 	// Create a new team in an organization
 	CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error)
 
+	// Delete a team in an organization
+	DeleteTeam(ctx context.Context, teamID int64) error
+
 	// Add a repository permission to a team
 	AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error
 
