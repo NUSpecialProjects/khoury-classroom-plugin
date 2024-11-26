@@ -135,3 +135,27 @@ export const createAssignment = async (
   const data = (await result.json());
   return data.assignment_outline as IAssignmentFormData;
 };
+
+export const assignmentNameExists = async (
+  classroomId: number,
+  assignmentName: string
+): Promise<boolean> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomId}/assignments/assignment/${assignmentName}/exists`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!result.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data = await result.json();
+
+  return data.exists as boolean;
+}

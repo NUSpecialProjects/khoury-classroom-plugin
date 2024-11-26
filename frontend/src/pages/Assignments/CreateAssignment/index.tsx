@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import MultiStepForm from '@/components/MultiStepForm';
 import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
 import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
-import { createAssignment } from "@/api/assignments";
+import { createAssignment, assignmentNameExists } from "@/api/assignments";
 
 import './styles.css'
 
@@ -60,8 +60,15 @@ const CreateAssignment: React.FC = () => {
       title: 'Assignment Details',
       component: AssignmentDetails,
       onNext: async (data: IAssignmentFormData): Promise<void> => {
-        if (!data.assignmentName || !data.mainDueDate) {
-          throw new Error('Please provide the assignment name and due date.');
+        // Check the user provided an assignment name
+        if (!data.assignmentName) {
+          throw new Error('Please provide the assignment name.');
+        }
+
+        // Check if the assignment name is unique
+        const nameExists = await assignmentNameExists(data.classroomId, data.assignmentName);
+        if (nameExists) {
+          throw new Error('An assignment with this name already exists in this classroom.');
         }
       },
     },

@@ -245,6 +245,30 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 	}
 }
 
+func (s *AssignmentService) checkAssignmentName() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Fetch assignment name and classrooID from request
+		assignmentName := c.Params("assignment_name")
+		if assignmentName == "" {
+			return errs.BadRequest(errors.New("assignment name is required"))
+		}
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		// Check if assignment with name exists
+		assignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentName, classroomID)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"exists": assignment != nil,
+		})
+	}
+}
+
 // KHO-209
 // TODO: Choose naming pattern once we have a full assignment flow. Stub for now
 // TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
