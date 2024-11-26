@@ -1,7 +1,7 @@
 package assignments
 
 import (
-    "errors"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -240,7 +240,7 @@ func createMockStudentWork(repo string, assName string, assID int) models.Studen
 // Updates an existing assignment.
 func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-	    assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
 		}
@@ -250,7 +250,7 @@ func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 		if error != nil {
 			return errs.BadRequest(error)
 		}
-        fmt.Println(rubricID)
+		fmt.Println(rubricID)
 
 		updatedAssignment, err := s.store.UpdateAssignmentRubric(c.Context(), rubricID, assignmentID)
 		if err != nil {
@@ -258,5 +258,5 @@ func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"assignment_outline": updatedAssignment})
-    }
+	}
 }

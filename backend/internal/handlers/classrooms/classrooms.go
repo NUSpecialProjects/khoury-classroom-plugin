@@ -200,19 +200,19 @@ func (s *ClassroomService) getRubricsInClassroom() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-        var fullRubrics []models.FullRubric
-        for _, rubric := range rubrics {
-            var fullRubric models.FullRubric
-            fullRubric.Rubric = rubric
+		var fullRubrics []models.FullRubric
+		for _, rubric := range rubrics {
+			var fullRubric models.FullRubric
+			fullRubric.Rubric = rubric
 
-            items, err := s.store.GetRubricItems(c.Context(), rubric.ID)
-            if err != nil {
-                return errs.InternalServerError()
-            }
-            fullRubric.RubricItems = items
+			items, err := s.store.GetRubricItems(c.Context(), rubric.ID)
+			if err != nil {
+				return errs.InternalServerError()
+			}
+			fullRubric.RubricItems = items
 
-            fullRubrics = append(fullRubrics, fullRubric)
-        }
+			fullRubrics = append(fullRubrics, fullRubric)
+		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{"full_rubrics": fullRubrics})
 	}

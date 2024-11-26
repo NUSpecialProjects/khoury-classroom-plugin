@@ -68,13 +68,13 @@ func (db *DB) GetAssignmentsInClassroom(ctx context.Context, classroomID int64) 
 func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error) {
 	var assignmentOutline models.AssignmentOutline
 	err := db.connPool.QueryRow(ctx, "SELECT * FROM assignment_outlines WHERE id = $1", assignmentID).Scan(
-        &assignmentOutline.ID,
+		&assignmentOutline.ID,
 		&assignmentOutline.TemplateID,
 		&assignmentOutline.CreatedAt,
 		&assignmentOutline.ReleasedAt,
 		&assignmentOutline.Name,
-        &assignmentOutline.ClassroomID,
-    	&assignmentOutline.RubricID,
+		&assignmentOutline.ClassroomID,
+		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
 	)
@@ -146,19 +146,19 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 }
 
 func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error) {
-    var updatedAssignmentData models.AssignmentOutline
-    fmt.Println(rubricID)
-    err := db.connPool.QueryRow(ctx, "UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 RETURNING *",
+	var updatedAssignmentData models.AssignmentOutline
+	fmt.Println(rubricID)
+	err := db.connPool.QueryRow(ctx, "UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 RETURNING *",
 		rubricID, assignmentID).Scan(
-        &updatedAssignmentData.ID,
+		&updatedAssignmentData.ID,
 		&updatedAssignmentData.TemplateID,
 		&updatedAssignmentData.CreatedAt,
 		&updatedAssignmentData.ReleasedAt,
 		&updatedAssignmentData.Name,
-        &updatedAssignmentData.ClassroomID,
-        &updatedAssignmentData.RubricID,
-        &updatedAssignmentData.GroupAssignment,
-        &updatedAssignmentData.MainDueDate)
+		&updatedAssignmentData.ClassroomID,
+		&updatedAssignmentData.RubricID,
+		&updatedAssignmentData.GroupAssignment,
+		&updatedAssignmentData.MainDueDate)
 
 	if err != nil {
 		return models.AssignmentOutline{}, errs.NewDBError(err)

@@ -18,7 +18,6 @@ const Rubrics: React.FC = () => {
                 try {
                     const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
                     if (retrievedRubrics !== null) {
-                        console.log("Assignment rubric retrieved rubric data, ", retrievedRubrics)
                         setRubricsData(retrievedRubrics)
                     }
                 } catch (_) {
@@ -27,8 +26,6 @@ const Rubrics: React.FC = () => {
 
             })();
         }
-        
-        console.log("rubric Item data")
     }, []);
 
 

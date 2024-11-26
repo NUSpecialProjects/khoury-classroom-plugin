@@ -69,10 +69,8 @@ const RubricEditor: React.FC = () => {
 
             // update existing rubric
             if (rubricData) {
-                console.log("updating")
                 await updateRubric(rubricData.rubric.id!, fullRubric)
                     .then((updatedRubric) => {
-                        console.log(updatedRubric)
                         setRubricEdited(false)
                         setRubricData(updatedRubric)
                         if (assignmentData !== null && assignmentData !== undefined) {
@@ -170,8 +168,6 @@ const RubricEditor: React.FC = () => {
             setRubricItemData(editableItems)
         }
     }, [rubricData])
-
-
 
     return (
         <div className="NewRubric__body">

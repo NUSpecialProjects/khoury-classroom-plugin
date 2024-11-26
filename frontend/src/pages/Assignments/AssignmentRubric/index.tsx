@@ -58,11 +58,7 @@ const AssignmentRubric: React.FC = () => {
           try {
             const rubric = await getRubric(aData.rubric_id)
             if (rubric !== null) {
-              console.log("Assignment rubric retrieved rubric data, ", rubric)
               setRubricData(rubric)
-              console.log(rubric.rubric_items)
-            } else {
-              console.log("no rubric data found from this assignment")
             }
 
           } catch (error) {
@@ -78,7 +74,6 @@ const AssignmentRubric: React.FC = () => {
         try {
           const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
           if (retrievedRubrics !== null) {
-            console.log("Assignment rubric retrieved rubric data, ", retrievedRubrics)
             setRubrics(retrievedRubrics)
           }
         } catch (_) {

@@ -53,15 +53,15 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-        rubric, err := s.store.GetRubric(c.Context(), rubricID)
-        if err != nil {
-           return errs.NewDBError(err)
-        }
+		rubric, err := s.store.GetRubric(c.Context(), rubricID)
+		if err != nil {
+			return errs.NewDBError(err)
+		}
 
-        rubricItems, err := s.store.GetRubricItems(c.Context(), rubricID)
-        if err != nil {
-            return errs.InternalServerError()
-        }
+		rubricItems, err := s.store.GetRubricItems(c.Context(), rubricID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"rubric":       rubric,
@@ -72,51 +72,51 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 }
 
 func (s *RubricService) UpdateRubric() fiber.Handler {
-    return func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		rubricID, err := strconv.ParseInt(c.Params("rubric_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
 		}
 
-        var newRubricData models.FullRubric
-        error := c.BodyParser(&newRubricData)
-        if error != nil {
-            return errs.InvalidRequestBody(models.FullRubric{})
-        }
+		var newRubricData models.FullRubric
+		error := c.BodyParser(&newRubricData)
+		if error != nil {
+			return errs.InvalidRequestBody(models.FullRubric{})
+		}
 
-        updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData.Rubric)
-        if err != nil {
-            fmt.Println(err, "updating rubric gave this error")
-            return errs.InternalServerError()
-        }
+		updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData.Rubric)
+		if err != nil {
+			fmt.Println(err, "updating rubric gave this error")
+			return errs.InternalServerError()
+		}
 
-        var updatedItems []models.RubricItem
-        for _, item := range newRubricData.RubricItems {
-            fmt.Println(item.ID)
-            if (item.ID == 0) { 
-                fmt.Println("Item without id!")
-                item.RubricID = updatedRubric.ID
-                newItem, err := s.store.AddItemToRubric(c.Context(), item) 
-                if err != nil {
-                    return errs.InternalServerError()
-                }
-                updatedItems = append(updatedItems, newItem)
+		var updatedItems []models.RubricItem
+		for _, item := range newRubricData.RubricItems {
+			fmt.Println(item.ID)
+			if item.ID == 0 {
+				fmt.Println("Item without id!")
+				item.RubricID = updatedRubric.ID
+				newItem, err := s.store.AddItemToRubric(c.Context(), item)
+				if err != nil {
+					return errs.InternalServerError()
+				}
+				updatedItems = append(updatedItems, newItem)
 
-            } else {
-                item.RubricID = rubricID
-                updatedItem, err := s.store.UpdateRubricItem(c.Context(), item)
-                if err != nil {
-                    fmt.Println(err, " Updaing item gave this error")
-                    return errs.InternalServerError()
-                }
-            updatedItems = append(updatedItems, updatedItem)
+			} else {
+				item.RubricID = rubricID
+				updatedItem, err := s.store.UpdateRubricItem(c.Context(), item)
+				if err != nil {
+					fmt.Println(err, " Updaing item gave this error")
+					return errs.InternalServerError()
+				}
+				updatedItems = append(updatedItems, updatedItem)
 
-            }
-        }
+			}
+		}
 
-        return c.Status(http.StatusOK).JSON(fiber.Map{
-            "rubric" : updatedRubric,
-            "rubric_items" : updatedItems,
-        })
-    }
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"rubric":       updatedRubric,
+			"rubric_items": updatedItems,
+		})
+	}
 }
