@@ -1,0 +1,11 @@
+.metric {
+    padding: 10px;
+    background-color: var(--panels-background);
+    align-items: center;
+}
+
+.metricTitle {
+    font-size: var(--font-size-xs);
+    color: var(--secondary-text);
+    text-align: center;
+}

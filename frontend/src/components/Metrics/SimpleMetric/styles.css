@@ -1,0 +1,6 @@
+.simpleMetric {
+    &__value {
+        font-size: var(--font-size-m);
+        text-align: center;
+    }
+}
