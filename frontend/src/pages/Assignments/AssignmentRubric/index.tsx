@@ -60,8 +60,7 @@ const AssignmentRubric: React.FC = () => {
             if (rubric !== null) {
               setRubricData(rubric)
             }
-
-          } catch (error) {
+          } catch (_) {
             //do nothing
           }
 
