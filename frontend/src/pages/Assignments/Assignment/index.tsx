@@ -73,7 +73,7 @@ const Assignment: React.FC = () => {
   useEffect(() => {
     const generateInviteLink = async () => {
       if (!assignment) return;
-      
+
       try {
         if (!selectedClassroom) return;
         const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
@@ -124,9 +124,11 @@ const Assignment: React.FC = () => {
             </Button>
           </div>
 
-          <h2>Assignment Link</h2>
-          <CopyLink link={inviteLink} name="invite-assignment" />
-          {linkError && <p className="error">{linkError}</p>}
+          <div className="Assignment__subSectionWrapper">
+            <h2>Assignment Link</h2>
+            <CopyLink link={inviteLink} name="invite-assignment" />
+            {linkError && <p className="error">{linkError}</p>}
+          </div>
 
           <div className="Assignment__subSectionWrapper">
             <h2>Metrics</h2>
