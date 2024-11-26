@@ -11,13 +11,15 @@ import { createAssignment } from "@/api/assignments";
 import './styles.css'
 
 const CreateAssignment: React.FC = () => {
+  const navigate = useNavigate();
+
+  // Determine active classroom and organization
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const orgName = selectedClassroom?.org_name;
 
+  // Fetch template repositories
   const [templateRepos, setTemplateRepos] = useState<ITemplateRepo[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTemplates = async (orgName: string | undefined) => {
@@ -25,6 +27,8 @@ const CreateAssignment: React.FC = () => {
         setLoadingTemplates(true);
 
         // TODO: Implement dynamic pagination in template dropdown
+        // Currently, only the first 100 templates are fetched,
+        // which are not necessarily all templates.
         getOrganizationTemplates(orgName, "100", "1")
           .then((response) => {
             setTemplateRepos(response.templates);
@@ -41,20 +45,7 @@ const CreateAssignment: React.FC = () => {
     fetchTemplates(orgName);
   }, [orgName]);
 
-  const steps: IStep<IAssignmentFormData>[] = [
-    { title: 'Assignment Details', component: AssignmentDetails },
-    {
-      title: 'Starter Code Repository',
-      component: (props: IStepComponentProps<IAssignmentFormData>) => (
-        <StarterCodeDetails
-          {...props}
-          templateRepos={templateRepos}
-          isLoading={loadingTemplates}
-        />
-      )
-    },
-  ];
-
+  // Initial form state
   const initialData: IAssignmentFormData = {
     assignmentName: '',
     classroomId: selectedClassroom?.id || -1,
@@ -63,14 +54,37 @@ const CreateAssignment: React.FC = () => {
     templateRepo: null
   };
 
-  const handleSubmit = async (data: IAssignmentFormData): Promise<boolean> => {
-    if (!data?.templateRepo?.template_repo_id) return false;
+  // Define each page of the form
+  const steps: IStep<IAssignmentFormData>[] = [
+    {
+      title: 'Assignment Details',
+      component: AssignmentDetails,
+      onNext: async (data: IAssignmentFormData): Promise<void> => {
+        if (!data.assignmentName || !data.mainDueDate) {
+          throw new Error('Please provide the assignment name and due date.');
+        }
+      },
+    },
+    {
+      title: 'Starter Code Repository',
+      component: (props: IStepComponentProps<IAssignmentFormData>) => (
+        <StarterCodeDetails
+          {...props}
+          templateRepos={templateRepos}
+          isLoading={loadingTemplates}
+        />
+      ),
+      onNext: async (data: IAssignmentFormData): Promise<void> => {
+        if (!data.templateRepo?.template_repo_id) {
+          throw new Error('Please select a template repository.');
+        }
 
-    await createAssignment(data.templateRepo.template_repo_id, data);
+        await createAssignment(data.templateRepo.template_repo_id, data);
 
-    navigate('/app/dashboard');
-    return true;
-  }
+        navigate('/app/dashboard');
+      },
+    },
+  ];
 
   return (
     <div className="CreateAssignment">
@@ -79,7 +93,6 @@ const CreateAssignment: React.FC = () => {
       </div>
       <MultiStepForm
         steps={steps}
-        submitFunc={handleSubmit}
         cancelLink="/app/dashboard"
         initialData={initialData}
       />
