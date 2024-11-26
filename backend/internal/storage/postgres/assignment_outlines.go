@@ -45,6 +45,7 @@ func (db *DB) GetAssignmentByToken(ctx context.Context, token string) (models.As
 		&assignmentOutline.ReleasedAt,
 		&assignmentOutline.Name,
 		&assignmentOutline.ClassroomID,
+		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
 	)
@@ -73,9 +74,9 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 		&assignmentOutline.ReleasedAt,
 		&assignmentOutline.Name,
         &assignmentOutline.ClassroomID,
-        &assignmentOutline.RubricID,
-        &assignmentOutline.GroupAssignment,
-        &assignmentOutline.MainDueDate,
+    	&assignmentOutline.RubricID,
+		&assignmentOutline.GroupAssignment,
+		&assignmentOutline.MainDueDate,
 	)
 	if err != nil {
 		return models.AssignmentOutline{}, errs.NewDBError(err)
@@ -88,7 +89,7 @@ func (db *DB) GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assig
 	var result models.AssignmentOutlineWithTemplate
 	err := db.connPool.QueryRow(ctx, `
 	SELECT 
-		ao.id, ao.template_id, ao.created_at, ao.released_at, ao.name, ao.classroom_id, ao.group_assignment, ao.main_due_date,
+		ao.id, ao.template_id, ao.created_at, ao.released_at, ao.name, ao.classroom_id, ao.rubric_id, ao.group_assignment, ao.main_due_date,
 		at.template_repo_owner, at.template_repo_id, at.template_repo_name, at.created_at
 	FROM assignment_outlines ao
 	JOIN assignment_templates at ON ao.template_id = at.template_repo_id
@@ -99,6 +100,7 @@ func (db *DB) GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assig
 		&result.ReleasedAt,
 		&result.Name,
 		&result.ClassroomID,
+		&result.RubricID,
 		&result.GroupAssignment,
 		&result.MainDueDate,
 		&result.Template.TemplateRepoOwner,
@@ -119,7 +121,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 	err := db.connPool.QueryRow(ctx, `
 		INSERT INTO assignment_outlines (template_id, name, classroom_id, group_assignment, main_due_date)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING *
+		RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date
 	`,
 		assignmentRequestData.TemplateID,
 		assignmentRequestData.Name,
@@ -132,6 +134,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 		&assignmentData.ReleasedAt,
 		&assignmentData.Name,
 		&assignmentData.ClassroomID,
+		&assignmentData.RubricID,
 		&assignmentData.GroupAssignment,
 		&assignmentData.MainDueDate)
 

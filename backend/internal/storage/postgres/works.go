@@ -155,7 +155,7 @@ func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, G
     		auto_grader_score,
     		grades_published_timestamp,
     		work_state)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 		work.AssignmentOutlineID,
 		work.RepoName,
 		work.UniqueDueDate,
