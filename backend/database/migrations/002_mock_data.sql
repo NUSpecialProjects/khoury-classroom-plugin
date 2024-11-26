@@ -31,6 +31,7 @@ VALUES
 (12, 'Nick', 'Tietje2', 'NickTietje', 183017928),
 (13, 'Seby', 'Tremblay', 'sebytremblay', 91509344),
 (14, 'Cam', 'Plume', 'CamPlume1', 116120547);
+(15, 'Nandini', 'Ghosh', 'nandini-ghosh', 93226556),
 
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
@@ -58,6 +59,9 @@ VALUES
 (12, 1, 'TA', NOW(), 'ACTIVE'),
 (13, 1, 'TA', NOW(), 'ACTIVE'),
 (14, 1, 'TA', NOW(), 'ACTIVE');
+(15, 1, 'TA', NOW(), 'ACTIVE');
+(15, 2, 'TA', NOW(), 'ACTIVE');
+(15, 5, 'STUDENT', NOW(), 'ACTIVE');
 
 
 -- Insert into assignment_templates
