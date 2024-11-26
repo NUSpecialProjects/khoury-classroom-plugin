@@ -4,8 +4,8 @@ import "./styles.css";
 interface IRubricItemProps {
     name: string;
     points: string;
-    deduction?: boolean;
-    onChange: (updatedFields: Partial<{ explanation: string; point_value: number; deduction: boolean }>) => void;
+    impact?: boolean;
+    onChange: (updatedFields: Partial<{ explanation: string; point_value: number; impact: boolean }>) => void;
 }
 
 enum FeedbackType {
@@ -14,7 +14,7 @@ enum FeedbackType {
     Neutral = "N"
 }
 
-const RubricItem: React.FC<IRubricItemProps> = ({ name, points, deduction, onChange,}) => {
+const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange,}) => {
     const [selection, setSelection] = useState<FeedbackType>(FeedbackType.Neutral);
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange({ explanation: e.target.value });
@@ -57,14 +57,13 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, deduction, onCha
 
     // on startup
     useEffect(() => {
-        console.log("rubric item explatioanio: ", name)
-        if (deduction !== null || deduction !== undefined) {
+        if (impact !== null && impact === undefined) {
             setSelection(FeedbackType.Neutral)
         } else {
-            if (deduction) {
-                setSelection(FeedbackType.Deduction)
-            } else {
+            if (impact) {
                 setSelection(FeedbackType.Addition)
+            } else {
+                setSelection(FeedbackType.Deduction)
             }
         } 
     }, [])

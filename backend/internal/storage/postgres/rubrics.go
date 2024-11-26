@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -75,15 +76,17 @@ func (db *DB) GetRubricItems(ctx context.Context, rubricID int64) ([]models.Rubr
 func (db *DB) UpdateRubric(ctx context.Context, rubricID int64, rubricData models.Rubric) (models.Rubric, error) {
     var updatedRubric models.Rubric
     err := db.connPool.QueryRow(ctx, `UPDATE rubrics SET name = $1, org_id = $2, classroom_id = $3,
-        reusable = $4, created_at = $5 WHERE id = $6`,
+        reusable = $4, created_at = $5 WHERE id = $6 
+        RETURNING id, name, org_id, classroom_id, reusable, created_at`,
         rubricData.Name,
         rubricData.OrgID,
         rubricData.ClassroomID,
         rubricData.Reusable,
         rubricData.CreatedAt,
-        rubricData.ID).Scan(
+        rubricID).Scan(
         &updatedRubric.ID,
         &updatedRubric.Name,
+        &updatedRubric.OrgID,
         &updatedRubric.ClassroomID,
         &updatedRubric.Reusable,
         &updatedRubric.CreatedAt)
@@ -95,7 +98,10 @@ func (db *DB) UpdateRubric(ctx context.Context, rubricID int64, rubricData model
 
 func (db *DB) UpdateRubricItem(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error) {
     var updatedItem models.RubricItem
-    err := db.connPool.QueryRow(ctx, `UPDATE rubric_items SET rubric_id = $1, point_value = $2, explanation = $3, created_at = $4 WHERE id = $5`,
+    fmt.Println(rubricItemData.ID)
+    err := db.connPool.QueryRow(ctx, `UPDATE rubric_items SET rubric_id = $1, point_value = $2, explanation = $3, created_at = $4
+        WHERE id = $5
+        RETURNING id, rubric_id, point_value, explanation, created_at`,
         rubricItemData.RubricID,
         rubricItemData.PointValue,
         rubricItemData.Explanation,

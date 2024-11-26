@@ -9,7 +9,7 @@ import AcceptAssignment from "./Token/Apply/Assignment";
 import Grading from "./Grading";
 import Grader from "./Grading/Grader";
 import Rubrics from "./Rubrics";
-import NewRubric from "./Rubrics/NewRubric";
+import RubricEditor from "./Rubrics/RubricEditor";
 import Callback from "./Callback";
 import Login from "./Login";
 import JoinClassroom from "./Token/Apply/Classroom";
@@ -35,7 +35,7 @@ export {
   Grading,
   Grader,
   Rubrics,
-  NewRubric,
+  RubricEditor,
   Callback,
   Login,
   JoinClassroom,

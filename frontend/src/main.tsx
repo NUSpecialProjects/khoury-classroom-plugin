@@ -94,7 +94,7 @@ export default function App(): React.JSX.Element {
                   element={<Pages.Grader />}
                 />
                 <Route path="rubrics" element={<Pages.Rubrics />} />
-                <Route path="rubrics/new" element={<Pages.NewRubric />} />
+                <Route path="rubrics/new" element={<Pages.RubricEditor />} />
                 <Route path="settings" element={<Pages.Settings />} />
                 <Route path="dashboard" element={<Pages.Dashboard />} />
               </Route>

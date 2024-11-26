@@ -1,6 +1,7 @@
 package rubrics
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -85,21 +86,37 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
 
         updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData.Rubric)
         if err != nil {
+            fmt.Println(err, "updating rubric gave this error")
             return errs.InternalServerError()
         }
 
         var updatedItems []models.RubricItem
         for _, item := range newRubricData.RubricItems {
-            updatedItem, err := s.store.UpdateRubricItem(c.Context(), item)
-            if err != nil {
-                return errs.InternalServerError()
-            }
+            fmt.Println(item.ID)
+            if (item.ID == 0) { 
+                fmt.Println("Item without id!")
+                item.RubricID = updatedRubric.ID
+                newItem, err := s.store.AddItemToRubric(c.Context(), item) 
+                if err != nil {
+                    return errs.InternalServerError()
+                }
+                updatedItems = append(updatedItems, newItem)
+
+            } else {
+                item.RubricID = rubricID
+                updatedItem, err := s.store.UpdateRubricItem(c.Context(), item)
+                if err != nil {
+                    fmt.Println(err, " Updaing item gave this error")
+                    return errs.InternalServerError()
+                }
             updatedItems = append(updatedItems, updatedItem)
+
+            }
         }
 
         return c.Status(http.StatusOK).JSON(fiber.Map{
-            "updatedRubric" : updatedRubric,
-            "updatedRubricItems" : updatedItems,
+            "rubric" : updatedRubric,
+            "rubric_items" : updatedItems,
         })
     }
 }
