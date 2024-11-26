@@ -19,9 +19,7 @@ export const createRubric = async (
     }
 
     const data: IFullRubric = (await response.json() as IFullRubric) 
-
     return data
-  
   };
 
 
@@ -84,6 +82,5 @@ export const getRubricsInClassroom = async (
   }
 
   const data: IFullRubric[] = (await result.json() as IFullRubricsResponse).full_rubrics  
-
   return data
 }
