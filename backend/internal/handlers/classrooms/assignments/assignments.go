@@ -82,7 +82,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		}
 
 		// Create base repository and store locally
-		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
+		baseRepoName := generateForkName(classroom.OrgName, classroom.Name, assignmentData.Name)
 		baseRepo, err := s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
 			return err
@@ -183,7 +183,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		}
 
 		// Check if fork already exists
-		forkName := generateForkName(assignment.Name, user.Login)
+		forkName := generateForkName(classroom.Name, assignment.Name, user.Login)
 		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
 		if studentWorkRepo != nil {
 			// Ensure student team is removed
@@ -231,8 +231,14 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
+		// Default due date to 9999-12-31 23:59:59 UTC if not provided
+		dueDate := time.Date(9999, 12, 31, 23, 59, 59, 0, time.UTC)
+		if assignment.MainDueDate != nil {
+			dueDate = *assignment.MainDueDate
+		}
+
 		// Insert into DB
-		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, models.WorkStateAccepted, *assignment.MainDueDate)
+		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, models.WorkStateAccepted, dueDate)
 		if err != nil {
 			return err
 		}
@@ -272,8 +278,8 @@ func (s *AssignmentService) checkAssignmentName() fiber.Handler {
 // KHO-209
 // TODO: Choose naming pattern once we have a full assignment flow. Stub for now
 // TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
-func generateForkName(sourceName, userName string) string {
-	return sourceName + "-" + strings.ReplaceAll(userName, " ", "")
+func generateForkName(parts ...string) string {
+	return strings.Join(parts, "-")
 }
 
 // Updates an existing assignment.

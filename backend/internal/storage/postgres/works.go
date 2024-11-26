@@ -171,7 +171,6 @@ func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, 
 		&studentWork.WorkState,
 		&studentWork.CreatedAt,
 	)
-
 	if err != nil {
 		return studentWork, fmt.Errorf("error inserting student works")
 	}
