@@ -30,7 +30,6 @@ const ResizablePanel: React.FC<ITreePanel> = ({
   useEffect(() => {
     if (!wrapper.current) return;
     const bound = wrapper.current?.children[0].getBoundingClientRect();
-    console.log("test");
     setThreshold(bound.x + (border == "right" ? minWidth : 0));
   }, [wrapper]);
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SelectedClassroomContext } from "./selectedClassroom";
@@ -16,7 +16,7 @@ interface IGraderContext {
   rubric: IFullRubric | null;
   selectedRubricItems: number[];
   setSelectedFile: React.Dispatch<React.SetStateAction<IFileTreeNode | null>>;
-  addFeedback: (feedback: IGraderFeedback) => number;
+  addFeedback: (feedback: IGraderFeedback[]) => void;
   editFeedback: (feedbackID: number, feedback: IGraderFeedback) => void;
   removeFeedback: (feedbackID: number) => void;
   postFeedback: () => void;
@@ -50,7 +50,7 @@ export const GraderProvider: React.FC<{
 }> = ({ assignmentID, studentWorkID, children }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
-  const [nextFeedbackID, setNextFeedbackID] = useState(0);
+  const nextFeedbackID = useRef(0);
   const [feedback, setFeedback] = useState<IGraderFeedbackMap>({});
   const [stagedFeedback, setStagedFeedback] = useState<IGraderFeedbackMap>({});
   const [studentWork, setStudentWork] = useState<IPaginatedStudentWork | null>(
@@ -72,7 +72,6 @@ export const GraderProvider: React.FC<{
     getAssignmentRubric(selectedClassroom.id, Number(assignmentID)).then(
       (resp) => {
         setRubric(resp);
-        console.log(resp);
       }
     );
   }, [studentWorkID]);
@@ -101,18 +100,21 @@ export const GraderProvider: React.FC<{
   }, [studentWorkID]);
 
   const getNextFeedbackID = () => {
-    const tmp = nextFeedbackID;
-    setNextFeedbackID(nextFeedbackID + 1);
+    const tmp = nextFeedbackID.current;
+    nextFeedbackID.current = nextFeedbackID.current + 1;
     return tmp;
   };
 
-  const addFeedback = (fb: IGraderFeedback) => {
-    const id = getNextFeedbackID();
+  const addFeedback = (feedback: IGraderFeedback[]) => {
+    const newFeedback: { [id: number]: IGraderFeedback } = {};
+    for (const fb of feedback) {
+      newFeedback[getNextFeedbackID()] = fb;
+    }
+
     setStagedFeedback((prevFeedback) => ({
       ...prevFeedback,
-      [id]: fb,
+      ...newFeedback,
     }));
-    return id;
   };
 
   const editFeedback = (_feedbackID: number, _feedback: IGraderFeedback) => {};
@@ -148,7 +150,7 @@ export const GraderProvider: React.FC<{
   // once feedback is updated, reset id to its length
   // this is so when posting staged feedback, it will never overwrite existing feedback
   useEffect(() => {
-    setNextFeedbackID(feedback ? Object.keys(feedback).length : 0);
+    nextFeedbackID.current = feedback ? Object.keys(feedback).length : 0;
   }, [feedback]);
 
   return (

@@ -107,12 +107,12 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     };
     if (fb.points == 0 && fb.body == "") return;
     if (fb.body == "") fb.body = "No comment left for this point adjustment.";
-    addFeedback(fb);
+    addFeedback([fb]);
     setEditing(false);
     form.reset();
   };
 
-  const handleAttachRubricItem = (riID: number) => {
+  const attachRubricItems = (riIDs: number[]) => {
     if (
       !currentUser ||
       !selectedClassroom ||
@@ -122,20 +122,24 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
     )
       return;
 
-    const ri = rubric.rubric_items.find((ri: IRubricItem) => ri.id == riID);
-    if (!ri) return;
+    const feedback = rubric.rubric_items.reduce(
+      (selected: IGraderFeedback[], ri: IRubricItem) => {
+        if (riIDs.includes(ri.id)) {
+          selected.push({
+            rubric_item_id: ri.id,
+            path,
+            line,
+            body: ri.explanation,
+            points: ri.point_value,
+            ta_username: currentUser.login,
+          });
+        }
+        return selected;
+      },
+      []
+    );
 
-    const fb: IGraderFeedback = {
-      rubric_item_id: riID,
-      path,
-      line,
-      body: ri.explanation,
-      points: ri.point_value,
-      ta_username: currentUser.login,
-    };
-    if (fb.points == 0 && fb.body == "") return;
-    if (fb.body == "") fb.body = "No comment left for this point adjustment.";
-    addFeedback(fb);
+    addFeedback(feedback);
     setEditing(false);
   };
 
@@ -151,9 +155,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
                 if (selectedRubricItems.length == 0) {
                   setEditing(!editing);
                 } else {
-                  selectedRubricItems.forEach((riID) => {
-                    handleAttachRubricItem(riID);
-                  });
+                  attachRubricItems(selectedRubricItems);
                 }
               }}
             >
