@@ -231,14 +231,8 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		// Default due date to 9999-12-31 23:59:59 UTC if not provided
-		dueDate := time.Date(9999, 12, 31, 23, 59, 59, 0, time.UTC)
-		if assignment.MainDueDate != nil {
-			dueDate = *assignment.MainDueDate
-		}
-
 		// Insert into DB
-		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, models.WorkStateAccepted, dueDate)
+		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, models.WorkStateAccepted, assignment.MainDueDate)
 		if err != nil {
 			return err
 		}
