@@ -10,6 +10,8 @@ import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments
 import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
+import MetricPanel from "@/components/Metrics/MetricPanel";
+import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -132,7 +134,11 @@ const Assignment: React.FC = () => {
 
           <div className="Assignment__subSectionWrapper">
             <h2>Metrics</h2>
-            <p>Metrics go here</p>
+            <MetricPanel>
+              <SimpleMetric metricTitle="Simple Metric" metricValue="220"></SimpleMetric>
+              <SimpleMetric metricTitle="Simple Metric" metricValue="220"></SimpleMetric>
+              <SimpleMetric metricTitle="Simple Metric" metricValue="220"></SimpleMetric>
+            </MetricPanel>
           </div>
 
           <div className="Assignment__subSectionWrapper">

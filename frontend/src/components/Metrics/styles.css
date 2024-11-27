@@ -1,5 +1,5 @@
 .metric {
-    padding: 10px;
+    padding: 20px;
     background-color: var(--panels-background);
     align-items: center;
 }
@@ -8,4 +8,5 @@
     font-size: var(--font-size-xs);
     color: var(--secondary-text);
     text-align: center;
+    padding-bottom: 10px;
 }
