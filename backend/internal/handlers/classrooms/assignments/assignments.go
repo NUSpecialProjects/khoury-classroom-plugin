@@ -192,7 +192,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		}
 
 		// Insert into DB
-		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
+		studentwork := createMockStudentWork(forkName, assignment.Name, assignment.ID)
 		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
 		if err != nil {
 			return errs.InternalServerError()
@@ -215,11 +215,11 @@ func generateForkName(sourceName, userName string) string {
 }
 
 // TODO: Integrate with actual assignment information when infrastructure is available
-func createMockStudentWork(repo string, assName string, assID int) models.StudentWork {
+func createMockStudentWork(repo string, assName string, assID int64) models.StudentWork {
 	assignmentName := assName
 	repoName := repo
-	manualFeedbackScore := 85
-	autoGraderScore := 90
+	manualFeedbackScore := int64(85)
+	autoGraderScore := int64(90)
 	uniqueDueDate := time.Now().AddDate(0, 0, 7)             // Due in 7 days MOCK
 	gradesPublishedTimestamp := time.Now().AddDate(0, 0, -1) // Grades published yesterday MOCK
 	return models.StudentWork{
@@ -232,7 +232,7 @@ func createMockStudentWork(repo string, assName string, assID int) models.Studen
 		ManualFeedbackScore:      &manualFeedbackScore,
 		AutoGraderScore:          &autoGraderScore,
 		GradesPublishedTimestamp: &gradesPublishedTimestamp,
-		WorkState:                "ACCEPTED",
+		WorkState:                models.WorkStateAccepted,
 		CreatedAt:                time.Now(),
 	}
 }

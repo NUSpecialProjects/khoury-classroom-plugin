@@ -1,6 +1,6 @@
 package models
 
 type Test struct {
-	ID      int32  `json:"id"`
+	ID      int64  `json:"id"`
 	Content string `json:"content"`
 }

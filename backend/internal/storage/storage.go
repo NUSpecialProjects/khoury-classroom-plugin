@@ -20,14 +20,14 @@ type Storage interface {
 }
 
 type FeedbackComment interface {
-	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error)
-	CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
-	AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error
+	GetFeedbackOnWork(ctx context.Context, studentWorkID int64) ([]models.PRReviewCommentResponse, error)
+	CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error
+	AttachRubricItemToWork(ctx context.Context, studentWorkID int64, path string, line int64, rubricItemID int64) error
 }
 
 type Works interface {
-	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
-	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
+	GetWorks(ctx context.Context, classroomID int64, assignmentID int64) ([]*models.StudentWorkWithContributors, error)
+	GetWork(ctx context.Context, classroomID int64, assignmentID int64, studentWorkID int64) (*models.PaginatedStudentWorkWithContributors, error)
 	CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error
 }
 
