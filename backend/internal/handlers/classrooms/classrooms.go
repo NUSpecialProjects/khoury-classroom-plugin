@@ -196,7 +196,7 @@ func (s *ClassroomService) getClassroomUsers() fiber.Handler {
 		for _, classroomUser := range usersInClassroom {
 			newClassroomUser, err := s.updateUserStatus(c.Context(), client, classroomUser.User, classroom)
 			// don't include members who are not in the org
-			if newClassroomUser.Status == models.UserStatusRemoved || newClassroomUser.Status == models.UserStatusNotInOrg {
+			if newClassroomUser.Status == models.UserStatusRemoved {
 				continue
 			}
 			if err != nil { // failed to update their status, so just keep the old one

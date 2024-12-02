@@ -107,6 +107,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
       case ClassroomUserStatus.ORG_INVITED:
         return <Button size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
       case ClassroomUserStatus.REQUESTED:
+      case ClassroomUserStatus.NOT_IN_ORG:
         return <Button size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
       default:
         return null;
