@@ -272,7 +272,12 @@ func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.requireAtLeastRole(c, classroomID, models.TA)
+		classroomRole, err := models.NewClassroomRole(body.ClassroomRole)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		_, err = s.requireGreaterThanRole(c, classroomID, classroomRole)
 		if err != nil {
 			return err
 		}
@@ -280,11 +285,6 @@ func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 		token, err := utils.GenerateToken(16)
 		if err != nil {
 			return errs.InternalServerError()
-		}
-
-		classroomRole, err := models.NewClassroomRole(body.ClassroomRole)
-		if err != nil {
-			return errs.BadRequest(err)
 		}
 
 		tokenData := models.ClassroomToken{
