@@ -341,28 +341,29 @@ func (s *ClassroomService) useClassroomToken() fiber.Handler {
 		}
 
 		classroomUser, err := s.store.GetUserInClassroom(c.Context(), classroomToken.ClassroomID, *user.ID)
-
-		if err == nil && classroomUser.Status == models.UserStatusRemoved {
-			// don't do anything if the user has been removed from the classroom
-			return errs.InsufficientPermissionsError()
-		} else if err == nil && classroomUser.Status == models.UserStatusNotInOrg { // user is already in the classroom. If their role can be upgraded, do so. Don't downgrade them.
-			// check if their role can be upgraded
-			roleComparison := classroomUser.Role.Compare(classroomToken.ClassroomRole)
-			if roleComparison < 0 {
-				// Upgrade the user's role in the classroom
-				classroomUser, err = s.store.ModifyUserRole(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), *classroomUser.ID)
-				if err != nil {
-					return errs.InternalServerError()
-				}
-			} else if roleComparison >= 0 {
-				// User's current role is higher than token role, therefore do nothing and return an error
-				return errs.InvalidRoleOperation()
-			}
-		} else { // user is not in the classroom, add them with the token's role
+		if err != nil {
 			classroomUser, err = s.store.AddUserToClassroom(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), models.UserStatusRequested, *user.ID)
 			if err != nil {
 				return errs.InternalServerError()
 			}
+		}
+
+		// don't do anything if the user has been removed from the classroom
+		if classroomUser.Status == models.UserStatusRemoved {
+			return errs.InsufficientPermissionsError()
+		}
+
+		// user is already in the classroom. If their role can be upgraded, do so. Don't downgrade them.
+		roleComparison := classroomUser.Role.Compare(classroomToken.ClassroomRole)
+		if roleComparison < 0 {
+			// Upgrade the user's role in the classroom
+			classroomUser, err = s.store.ModifyUserRole(c.Context(), classroomToken.ClassroomID, string(classroomToken.ClassroomRole), *classroomUser.ID)
+			if err != nil {
+				return errs.InternalServerError()
+			}
+		} else if roleComparison >= 0 {
+			// User's current role is higher than token role, therefore do nothing and return an error
+			return errs.InvalidRoleOperation()
 		}
 
 		classroomUser, err = s.inviteUserToOrganization(c.Context(), s.githubappclient, classroom, classroomToken.ClassroomRole, user)
