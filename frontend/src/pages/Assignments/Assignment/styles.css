@@ -17,6 +17,7 @@
     flex-direction: row;
     gap: 10px;
     color: var(--caption-text);
+    text-wrap: nowrap;
   }
 
   &__date {
