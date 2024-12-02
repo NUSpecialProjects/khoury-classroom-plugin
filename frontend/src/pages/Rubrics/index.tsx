@@ -11,6 +11,7 @@ import RubricList from "@/components/RubricList";
 const Rubrics: React.FC = () => {
     const { selectedClassroom } = useContext(SelectedClassroomContext)
     const [rubrics, setRubricsData] = useState<IFullRubric[]>([])
+    const [failedRurbicRetrival, setfailedRurbicRetrival] = useState(false)
 
     useEffect(() => {
         if (selectedClassroom) {
@@ -20,8 +21,9 @@ const Rubrics: React.FC = () => {
                     if (retrievedRubrics !== null) {
                         setRubricsData(retrievedRubrics)
                     }
+
                 } catch (_) {
-                    //do nothing
+                    setfailedRurbicRetrival(true)
                 }
 
             })();
@@ -34,11 +36,27 @@ const Rubrics: React.FC = () => {
         <div>
             <PageHeader pageTitle="Rubrics"></PageHeader>
 
-            <RubricList rubrics={rubrics} />
+            {!failedRurbicRetrival ?
+                <div>
+                    {rubrics.length > 0 ?
+                        <RubricList rubrics={rubrics} />
+                        :
+                        <div> No Rubrics Found </div>
+                    }
 
-            <Link to={`/app/rubrics/new`}>
-                <Button href=""> Create New Rubric </Button>
-            </Link>
+                    <Link to={`/app/rubrics/new`}>
+                        <Button href=""> Create New Rubric </Button>
+                    </Link>
+                </div>
+
+                :
+                
+                <div>
+                    <div> Failed to get existing rubrics </div>
+                    <Button href="" onClick={() => window.location.reload()}>Click to retry</Button>
+                </div>
+            }
+
         </div>
     );
 };

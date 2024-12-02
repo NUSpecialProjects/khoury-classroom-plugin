@@ -16,6 +16,8 @@ enum FeedbackType {
 
 const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange,}) => {
     const [selection, setSelection] = useState<FeedbackType>(FeedbackType.Neutral);
+    const [displayPoints, setDisplayPoints] = useState(points.toString())
+
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange({ explanation: e.target.value });
     };
@@ -30,16 +32,26 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
     }
 
     const handlePointsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const pointValue = parseInt(e.target.value, 10);
-        updatePointsBasedOnDeduction(pointValue, selection)
-        
+        const value = e.target.value;
+        if (value === "") {
+            setDisplayPoints("")
+            onChange({ point_value: null })
+            return;
+        }
+    
+        const pointValue = parseInt(value, 10);
+        if (!isNaN(pointValue)) {
+            setDisplayPoints(pointValue.toString())
+            updatePointsBasedOnDeduction(pointValue, selection);
+        }
     };
+    
 
 
     const makeAddition = () => {
         if(selection !== FeedbackType.Addition) {
             setSelection(FeedbackType.Addition);
-            updatePointsBasedOnDeduction(parseInt(points,10), FeedbackType.Addition)
+            updatePointsBasedOnDeduction(parseInt(points, 10), FeedbackType.Addition)
         } else {
             setSelection(FeedbackType.Neutral)
         }
@@ -48,7 +60,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
     const makeDeduction = () => {
         if(selection !== FeedbackType.Deduction) {
             setSelection(FeedbackType.Deduction);
-            updatePointsBasedOnDeduction(parseInt(points,10), FeedbackType.Deduction)
+            updatePointsBasedOnDeduction(parseInt(points, 10), FeedbackType.Deduction)
         } else {
             setSelection(FeedbackType.Neutral)
         }
@@ -83,9 +95,9 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
             <input
                 className="RubricItem"
                 id={points}
-                name={points}
-                value={points}
-                placeholder="0"
+                name={"pointValue"}
+                value={displayPoints}
+                placeholder="Enter point value"
                 onChange={handlePointsChange}
             />
 

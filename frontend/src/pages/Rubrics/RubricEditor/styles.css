@@ -22,6 +22,10 @@
         border-bottom-color: var(--border-color);
         padding-bottom: 10px;
 
+        &__FailedSave {
+            color: red;
+        }
+
     }
 
     &__noRubric {

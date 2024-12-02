@@ -29,7 +29,11 @@ const RubricEditor: React.FC = () => {
     const [rubricName, setRubricName] = useState<string>("")
 
     // if there has been any changes since last save
-    const [rubricEdited, setRubricEdited] = useState<boolean>(false)
+    const [rubricEdited, setRubricEdited] = useState(false)
+ 
+    const [failedToSave, setFailedToSave] = useState(false)
+    const [invalidPointValue, setInvalidPointValue] = useState(false)
+
 
     // front end id for each rubric item, kept track of using a counter
     const [itemCount, setitemCount] = useState(0);
@@ -50,10 +54,24 @@ const RubricEditor: React.FC = () => {
     const backButton = () => {
         navigate(-1);
     }
-    // saving the rubric, creates a rubric in the backend
+    // saving the rubric, creates a rubric in the backendindex
     const saveRubric = async () => {
-        if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
+        if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited && !invalidPointValue) {
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
+            
+            //validate items
+            rubricItems.forEach((item) => {
+                if (item.point_value === null) {
+                    console.log("bad point value")
+                    setInvalidPointValue(true)
+                    setFailedToSave(true)
+                    return;
+                }
+                console.log("does this hit?")
+                setInvalidPointValue(false)
+            });
+
+
 
             const fullRubric: IFullRubric = {
                 rubric: {
@@ -72,12 +90,15 @@ const RubricEditor: React.FC = () => {
                 await updateRubric(rubricData.rubric.id!, fullRubric)
                     .then((updatedRubric) => {
                         setRubricEdited(false)
+                        setFailedToSave(false)
                         setRubricData(updatedRubric)
                         if (assignmentData !== null && assignmentData !== undefined) {
-                            setAssignmentRubric(updatedRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
+                           setAssignmentRubric(updatedRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
                         }
+                        navigate(-1)
                     })
                     .catch((_) => {
+                        setFailedToSave(true)
                     });
 
                 // create new rubric
@@ -85,20 +106,26 @@ const RubricEditor: React.FC = () => {
                 await createRubric(fullRubric)
                     .then((createdRubric) => {
                         setRubricEdited(false)
+                        setFailedToSave(false)
                         setRubricData(createdRubric)
                         if (assignmentData !== null && assignmentData !== undefined) {
                             setAssignmentRubric(createdRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
                         }
+                        navigate(-1)
                     })
                     .catch((_) => {
+                        setFailedToSave(true)
                     });
             }
+        } else if (invalidPointValue) {
+            setFailedToSave(true)
         }
     };
 
     // handles when any rubric item is updated
     const handleItemChange = (id: number, updatedFields: Partial<IRubricItem>) => {
         setRubricEdited(true);
+
         setRubricItemData((prevItems) =>
             prevItems.map((item) =>
                 item.frontFacingIndex === id
@@ -177,6 +204,19 @@ const RubricEditor: React.FC = () => {
                 {rubricEdited ? "*" : ""}
             </div>
 
+            {failedToSave && 
+                <div className="NewRubric__title__FailedSave">
+                    {"Couldn't save rubric. Please try again."}
+                </div>
+            }
+
+            {failedToSave && invalidPointValue && 
+                <div className="NewRubric__title__FailedSave">
+                    {"Point values cannot be empty."}
+                </div>
+            }
+            
+
 
             <Input
                 label="Rubric name"
@@ -194,8 +234,10 @@ const RubricEditor: React.FC = () => {
                     <RubricItem
                         key={item.frontFacingIndex}
                         name={item.rubricItem.explanation}
-                        points={Math.abs(item.rubricItem.point_value).toString()}
-                        impact={item.rubricItem.point_value === 0 ? undefined : item.rubricItem.point_value > 0}
+                        points={item.rubricItem.point_value ? Math.abs(item.rubricItem.point_value).toString() : ""}
+                        impact={
+                            item.rubricItem.point_value === 0 || item.rubricItem.point_value === null ? undefined : item.rubricItem.point_value > 0
+                        }
                         onChange={(newItem) => handleItemChange(item.frontFacingIndex, newItem)}
                     />
                 ))

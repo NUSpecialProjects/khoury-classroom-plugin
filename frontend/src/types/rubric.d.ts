@@ -15,11 +15,14 @@ interface IRubric {
 interface IRubricItem {
     id: number | null;
     rubric_id: number | null;
-    point_value: number;
+    point_value: number | null;
     explanation: string;
     created_at: Date | null;
 }
 
+interface IFullRubricResponse {
+    full_rubric: IFullRubric
+}
 
 interface IFullRubricsResponse {
     full_rubrics: IFullRubric[]
