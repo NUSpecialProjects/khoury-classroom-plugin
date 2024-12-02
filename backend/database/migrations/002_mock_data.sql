@@ -1,17 +1,17 @@
 -- Insert into classrooms
-INSERT INTO classrooms (id, name, org_id, org_name, created_at)
+INSERT INTO classrooms (id, name, org_id, org_name, created_at, student_team_name)
 VALUES
-(1, 'Kennys Coding Classroom', 182810684, 'NUSpecialProjects', NOW()),
-(2, 'Advanced Running Analytics', 182810684, 'NUSpecialProjects', NOW()),
-(3, 'Chocolate Lovers Unite', 182810684, 'NUSpecialProjects', NOW()),
-(4, 'Data Structures and Algorithms', 182810684, 'NUSpecialProjects', NOW()),
-(5, 'Mobile App Development', 182810684, 'NUSpecialProjects', NOW()),
-(6, 'AI and Machine Learning', 182810684, 'NUSpecialProjects', NOW()),
-(7, 'Web Development Bootcamp', 98771, 'WebCoders', NOW()),
-(8, 'Cloud Computing', 98772, 'CloudExperts', NOW()),
-(9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW()),
-(10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW()),
-(11, 'Khoury Coding Bootcamp', 182810684, 'NUSpecialProjects', NOW());
+(1, 'Kennys Coding Classroom', 182810684, 'NUSpecialProjects', NOW(), 'kennys-coding-classroom-students'),
+(2, 'Advanced Running Analytics', 182810684, 'NUSpecialProjects', NOW(), 'advanced-running-analytics-students'),
+(3, 'Chocolate Lovers Unite', 182810684, 'NUSpecialProjects', NOW(), 'chocolate-lovers-unite-analytics-students'),
+(4, 'Data Structures and Algorithms', 182810684, 'NUSpecialProjects', NOW(), 'data-structures-and-algorithms-students'),
+(5, 'Mobile App Development', 182810684, 'NUSpecialProjects', NOW(), 'mobile-app-development-students'),
+(6, 'AI and Machine Learning', 182810684, 'NUSpecialProjects', NOW(), 'ai-and-machine-learning-students'),
+(7, 'Web Development Bootcamp', 98771, 'WebCoders', NOW(), 'web-development-bootcamp-students'),
+(8, 'Cloud Computing', 98772, 'CloudExperts', NOW(), 'cloud-computing-students'),
+(9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW(), 'cybersecurity-fundamentals-students'),
+(10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW(), 'software-engineering-principles-students'),
+(11, 'Khoury Coding Bootcamp', 182810684, 'NUSpecialProjects', NOW(), 'khoury-coding-bootcamp-students');
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Create users (Kenny and others)

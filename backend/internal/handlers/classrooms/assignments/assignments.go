@@ -82,7 +82,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		}
 
 		// Create base repository and store locally
-		baseRepoName := generateForkName(classroom.OrgName, classroom.Name, assignmentData.Name)
+		baseRepoName := generateSlugCase(classroom.OrgName, classroom.Name, assignmentData.Name)
 		baseRepo, err := s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
 			return err
@@ -183,7 +183,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		}
 
 		// Check if fork already exists
-		forkName := generateForkName(classroom.Name, assignment.Name, user.Login)
+		forkName := generateSlugCase(classroom.Name, assignment.Name, user.Login)
 		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
 		if studentWorkRepo != nil {
 			// Ensure student team is removed
@@ -272,8 +272,13 @@ func (s *AssignmentService) checkAssignmentName() fiber.Handler {
 // KHO-209
 // TODO: Choose naming pattern once we have a full assignment flow. Stub for now
 // TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
-func generateForkName(parts ...string) string {
-	return strings.Join(parts, "-")
+func generateSlugCase(parts ...string) string {
+	var processedParts []string
+	for _, part := range parts {
+		processedParts = append(processedParts, strings.ReplaceAll(strings.ToLower(part), " ", "-"))
+	}
+
+	return strings.Join(processedParts, "-")
 }
 
 // Updates an existing assignment.
