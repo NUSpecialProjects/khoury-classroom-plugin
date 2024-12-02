@@ -10,7 +10,8 @@ import (
 )
 
 func (db *DB) CreateRubric(ctx context.Context, rubricData models.Rubric) (models.Rubric, error) {
-	err := db.connPool.QueryRow(ctx, "INSERT INTO rubrics (name, org_id, classroom_id, reusable) VALUES ($1, $2, $3, $4) RETURNING *",
+	err := db.connPool.QueryRow(ctx, `INSERT INTO rubrics (name, org_id, classroom_id, reusable) VALUES ($1, $2, $3, $4) 
+        RETURNING id, name, org_id, classroom_id, reusable, created_at`,
 		rubricData.Name,
 		rubricData.OrgID,
 		rubricData.ClassroomID,
@@ -29,7 +30,8 @@ func (db *DB) CreateRubric(ctx context.Context, rubricData models.Rubric) (model
 }
 
 func (db *DB) AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error) {
-	err := db.connPool.QueryRow(ctx, "INSERT INTO rubric_items (rubric_id, point_value, explanation) VALUES ($1, $2, $3) RETURNING *",
+	err := db.connPool.QueryRow(ctx, `INSERT INTO rubric_items (rubric_id, point_value, explanation) VALUES ($1, $2, $3) 
+        RETURNING id, rubric_id, point_value, explanation, created_at`,
 		rubricItemData.RubricID,
 		rubricItemData.PointValue,
 		rubricItemData.Explanation).Scan(

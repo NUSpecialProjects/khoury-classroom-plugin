@@ -86,7 +86,6 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
 
 		updatedRubric, err := s.store.UpdateRubric(c.Context(), rubricID, newRubricData.Rubric)
 		if err != nil {
-			fmt.Println(err, "updating rubric gave this error")
 			return errs.InternalServerError()
 		}
 
@@ -94,7 +93,6 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
 		for _, item := range newRubricData.RubricItems {
 			fmt.Println(item.ID)
 			if item.ID == 0 {
-				fmt.Println("Item without id!")
 				item.RubricID = updatedRubric.ID
 				newItem, err := s.store.AddItemToRubric(c.Context(), item)
 				if err != nil {
@@ -106,11 +104,9 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
 				item.RubricID = rubricID
 				updatedItem, err := s.store.UpdateRubricItem(c.Context(), item)
 				if err != nil {
-					fmt.Println(err, " Updaing item gave this error")
 					return errs.InternalServerError()
 				}
 				updatedItems = append(updatedItems, updatedItem)
-
 			}
 		}
 

@@ -148,7 +148,8 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error) {
 	var updatedAssignmentData models.AssignmentOutline
 	fmt.Println(rubricID)
-	err := db.connPool.QueryRow(ctx, "UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 RETURNING *",
+	err := db.connPool.QueryRow(ctx, `UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 
+        RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date`,
 		rubricID, assignmentID).Scan(
 		&updatedAssignmentData.ID,
 		&updatedAssignmentData.TemplateID,

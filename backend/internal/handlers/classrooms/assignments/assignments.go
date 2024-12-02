@@ -250,7 +250,6 @@ func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 		if error != nil {
 			return errs.BadRequest(error)
 		}
-		fmt.Println(rubricID)
 
 		updatedAssignment, err := s.store.UpdateAssignmentRubric(c.Context(), rubricID, assignmentID)
 		if err != nil {

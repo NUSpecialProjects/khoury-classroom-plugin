@@ -150,8 +150,6 @@ export const setAssignmentRubric = async (
   }
 
   const data: IAssignmentOutline = (await response.json() as IAssignmentOutlineResponse).assignment_outline 
-  console.log(data)
 
   return data
-
 };

@@ -39,16 +39,6 @@ const AssignmentRubric: React.FC = () => {
     }
   };
 
-
-  const notImporting = () => {
-    setImporting(false)
-  }
-
-  const allowImporting = () => {
-    setImporting(true)
-  }
-
-
   useEffect(() => {
     if (location.state) {
       setAssignmentData(location.state.assignment)
@@ -151,14 +141,14 @@ const AssignmentRubric: React.FC = () => {
                     ))}
                   </select>
 
-                  <Button href="" variant="secondary" onClick={notImporting}>
+                  <Button href="" variant="secondary" onClick={() => setImporting(false)}>
                     Cancel
                   </Button>
                 </div>
 
                 :
                 <div>
-                  <Button href="" variant="secondary" onClick={allowImporting}> Import existing rubric</Button>
+                  <Button href="" variant="secondary" onClick={() => setImporting(true)}> Import existing rubric</Button>
 
 
                   <Link to={`/app/rubrics/new`} state={{ assignment }}>
