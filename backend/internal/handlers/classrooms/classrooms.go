@@ -277,7 +277,11 @@ func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.requireGreaterThanRole(c, classroomID, classroomRole)
+		if classroomRole == models.Professor {
+			_, err = s.requireAtLeastRole(c, classroomID, classroomRole)
+		} else {
+			_, err = s.requireGreaterThanRole(c, classroomID, classroomRole)
+		}
 		if err != nil {
 			return err
 		}
