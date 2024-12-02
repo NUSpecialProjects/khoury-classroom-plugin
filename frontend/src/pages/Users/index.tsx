@@ -144,6 +144,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
             <p>Share this link to invite and add students to {selectedClassroom?.name}.</p>
             {(role_type === ClassroomRole.PROFESSOR || role_type === ClassroomRole.TA) &&
               <p>Warning: This will make them an admin of the organization.</p>}
+            {error && <p className="error">{error}</p>}
           </div>
           <CopyLink link={link} name="invite-link"></CopyLink>
 
