@@ -8,7 +8,8 @@ import (
 
 type Storage interface {
 	Close(context.Context)
-	FeedbackComment
+	Regrades
+	FeedbackComments
 	Works
 	Test
 	Session
@@ -19,7 +20,11 @@ type Storage interface {
 	AssignmentTemplate
 }
 
-type FeedbackComment interface {
+type Regrades interface {
+	CreateRegradeRequest(ctx context.Context, feedbackID int, comment string) error
+}
+
+type FeedbackComments interface {
 	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error)
 	CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
 }

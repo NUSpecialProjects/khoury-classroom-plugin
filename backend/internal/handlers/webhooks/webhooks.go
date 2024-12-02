@@ -38,7 +38,7 @@ func (s *WebHookService) PRComment(c *fiber.Ctx) error {
 		return err
 	}
 	if payload.Comment.AuthorAssociation == "COLLABORATOR" {
-		println("regrade request")
+		s.store.CreateRegradeRequest(c.Context(), 0, "")
 	}
 	return c.SendStatus(200)
 }
