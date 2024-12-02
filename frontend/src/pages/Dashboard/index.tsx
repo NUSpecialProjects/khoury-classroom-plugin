@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
                       size="small"
                       href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
                     >
-                      <MdAdd /> Create Assignment
+                      <MdAdd className="icon"/> Create Assignment
                     </Button>
                   </div>
                 </div>

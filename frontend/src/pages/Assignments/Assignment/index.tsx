@@ -13,6 +13,10 @@ import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
+import { MdEditDocument } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
+import { FaGithub } from "react-icons/fa";
+
 const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignmentOutline>();
@@ -116,13 +120,13 @@ const Assignment: React.FC = () => {
 
           <div className="Assignment__externalButtons">
             <Button href="" variant="secondary" newTab>
-              View in Github Classroom
+              <FaGithub className="icon" /> View Template Repository
             </Button>
             <Button href="" variant="secondary" newTab>
-              View Starter Code
+              <MdEditDocument className="icon" />  View Rubric
             </Button>
             <Button href="" variant="secondary" newTab>
-              View Rubric
+              <MdEdit className="icon" /> Edit Assignment
             </Button>
           </div>
 
