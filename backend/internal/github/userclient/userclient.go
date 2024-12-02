@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
@@ -128,50 +129,22 @@ func (api *UserAPI) AcceptOrgInvitation(ctx context.Context, orgName string) err
 	return nil
 }
 
-// // Helper function to parse the Link header and extract the URL for the next page
-// func getNextPageURL(linkHeader string) string {
-// 	links := strings.Split(linkHeader, ",")
-// 	for _, link := range links {
-// 		parts := strings.Split(strings.TrimSpace(link), ";")
-// 		if len(parts) < 2 {
-// 			continue
-// 		}
-// 		urlPart := strings.Trim(parts[0], "<>")
-// 		relPart := strings.Trim(parts[1], " ")
-// 		if relPart == `rel="next"` {
-// 			return urlPart
-// 		}
-// 	}
-// 	return ""
-// }
-
 func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destName string) error {
-
 	endpoint := fmt.Sprintf("/repos/%s/%s/forks", owner, repo)
 
-	// Define the payload struct for the request body
-	type ForkRequestBody struct {
-		Org      string `json:"organization"`
-		DestName string `json:"name"`
-	}
-
-	// Create an instance of the payload with the necessary data
-	payload := ForkRequestBody{
-		Org:      org,
-		DestName: destName,
-	}
-
 	//Initialize post request
-	req, err := api.Client.NewRequest("POST", endpoint, payload)
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+		"organization": org,
+		"name":         destName,
+	})
 	if err != nil {
-		// No errors package for github service level. Can add another ticket
-		return err
+		return errs.GithubAPIError(err)
 	}
 
 	// Make the API call
 	response, err := api.Client.Do(ctx, req, nil)
 	if err != nil && response.StatusCode != 202 {
-		return err
+		return errs.GithubAPIError(err)
 	}
 
 	return nil

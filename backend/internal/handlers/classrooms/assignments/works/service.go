@@ -12,13 +12,13 @@ import (
 )
 
 type WorkService struct {
-	store           storage.Storage
-	userCfg         *config.GitHubUserClient
-	githubappclient github.GitHubAppClient
+	store     storage.Storage
+	userCfg   *config.GitHubUserClient
+	appClient github.GitHubAppClient
 }
 
-func NewWorkService(store storage.Storage, userCfg *config.GitHubUserClient, githubappclient github.GitHubAppClient) *WorkService {
-	return &WorkService{store: store, userCfg: userCfg, githubappclient: githubappclient}
+func NewWorkService(store storage.Storage, userCfg *config.GitHubUserClient, appClient github.GitHubAppClient) *WorkService {
+	return &WorkService{store: store, userCfg: userCfg, appClient: appClient}
 }
 
 // Helper function for getting a student work by ID
