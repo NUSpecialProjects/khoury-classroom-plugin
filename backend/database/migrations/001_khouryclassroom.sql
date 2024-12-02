@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS classrooms (
     org_id INTEGER NOT NULL,
     org_name VARCHAR(255) NOT NULL,
     student_team_name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (name, org_id)
 );
 
 DO $$ BEGIN
