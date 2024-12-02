@@ -1,4 +1,6 @@
 .Assignment {
+  padding-bottom: 50px;
+
   &__head {
     display: flex;
     justify-content: space-between;
