@@ -135,9 +135,10 @@ const Assignment: React.FC = () => {
           <div className="Assignment__subSectionWrapper">
             <h2>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric metricTitle="Simple Metric" metricValue="220"></SimpleMetric>
-              <SimpleMetric metricTitle="Simple Metric" metricValue="220"></SimpleMetric>
-              <SimpleMetric metricTitle="Simple Metric" metricValue="220"></SimpleMetric>
+              <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
+              <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
+              <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
+              <SimpleMetric metricTitle="Regrade  Requests" metricValue="0"></SimpleMetric>
             </MetricPanel>
           </div>
 

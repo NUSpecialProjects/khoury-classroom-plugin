@@ -2,6 +2,8 @@
     padding: 20px;
     background-color: var(--panels-background);
     align-items: center;
+    flex-grow: 1;
+    flex-basis: 200px;
 }
 
 .metricTitle {
