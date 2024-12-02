@@ -41,7 +41,7 @@ const JoinedTable = `
 
 // squashes a list of student work contributors to a list of student works with an array of contributors
 func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks []T, newFormattedWork func(T) F) []F {
-	workMap := make(map[int]F)
+	workMap := make(map[int64]F)
 
 	for _, work := range rawWorks {
 		if _, exists := workMap[work.GetID()]; !exists {
@@ -64,7 +64,7 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 }
 
 // Get all student works from an assignment
-func (db *DB) GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error) {
+func (db *DB) GetWorks(ctx context.Context, classroomID int64, assignmentID int64) ([]*models.StudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
 SELECT %s FROM %s
 WHERE classroom_id = $1 AND assignment_outline_id = $2
@@ -92,7 +92,7 @@ ORDER BY u.last_name, u.first_name;
 }
 
 // Get a single student work from an assignment
-func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
+func (db *DB) GetWork(ctx context.Context, classroomID int64, assignmentID int64, studentWorkID int64) (*models.PaginatedStudentWorkWithContributors, error) {
 	query := fmt.Sprintf(`
 WITH joined_tables AS
          (SELECT %s FROM %s ORDER BY last_name, first_name),

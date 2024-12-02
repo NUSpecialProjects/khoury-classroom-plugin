@@ -9,7 +9,7 @@ import (
 )
 
 // gets all feedback comments on a student work
-func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error) {
+func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int64) ([]models.PRReviewCommentResponse, error) {
 	query := `SELECT student_work_id, rubric_item_id, github_username, file_path, file_line, fc.created_at, point_value, explanation
 	FROM feedback_comment fc
 	JOIN rubric_items ri ON fc.rubric_item_id = ri.id
@@ -47,7 +47,7 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 }
 
 // create a new comment (ad-hoc: also create a rubric item simultaneously)
-func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error {
 	_, err := db.connPool.Exec(ctx,
 		`WITH ri AS
 			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)
@@ -66,6 +66,6 @@ func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, stud
 }
 
 // attach an existing rubric item to a new comment
-func (db *DB) AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error {
+func (db *DB) AttachRubricItemToWork(ctx context.Context, studentWorkID int64, path string, line int64, rubricItemID int64) error {
 	return nil
 }

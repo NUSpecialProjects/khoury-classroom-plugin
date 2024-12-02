@@ -7,12 +7,12 @@ type PRReviewRequest struct {
 
 type PRReviewComment struct {
 	Path *string `json:"path"`
-	Line *int    `json:"line"`
+	Line *int64  `json:"line"`
 	Body string  `json:"body"`
 }
 
 type PRReviewCommentResponse struct {
 	PRReviewComment
-	Points     int    `json:"points"`
+	Points     int64  `json:"points"`
 	TAUsername string `json:"ta_username"`
 }

@@ -48,11 +48,11 @@ func createStatusMap(modifiedFiles []*github.CommitFile) map[string]models.FileS
 	return statusMap
 }
 
-func atoi(s string) int {
+func atoi(s string) int64 {
 	if s == "" {
 		return 1 // Default length of 1 when length is omitted
 	}
-	n, _ := strconv.Atoi(s)
+	n, _ := strconv.ParseInt(s, 10, 64)
 	return n
 }
 

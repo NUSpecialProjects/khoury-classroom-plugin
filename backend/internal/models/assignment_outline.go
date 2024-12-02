@@ -14,7 +14,7 @@ type AssignmentTokenRequestBody struct {
 }
 
 type AssignmentOutline struct {
-	ID              int32      `json:"id,omitempty"`
+	ID              int64      `json:"id,omitempty"`
 	TemplateID      int64      `json:"template_id,omitempty"`
 	BaseRepoID      int64      `json:"base_repo_id,omitempty"`
 	CreatedAt       time.Time  `json:"created_at,omitempty"`

@@ -23,15 +23,15 @@ func NewWorkService(store storage.Storage, userCfg *config.GitHubUserClient, app
 
 // Helper function for getting a student work by ID
 func (s *WorkService) getWork(c *fiber.Ctx) (*models.PaginatedStudentWorkWithContributors, error) {
-	classroomID, err := strconv.Atoi(c.Params("classroom_id"))
+	classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
 	if err != nil {
 		return nil, errs.BadRequest(err)
 	}
-	assignmentID, err := strconv.Atoi(c.Params("assignment_id"))
+	assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
 	if err != nil {
 		return nil, errs.BadRequest(err)
 	}
-	studentWorkID, err := strconv.Atoi(c.Params("work_id"))
+	studentWorkID, err := strconv.ParseInt(c.Params("work_id"), 10, 64)
 	if err != nil {
 		return nil, errs.BadRequest(err)
 	}
