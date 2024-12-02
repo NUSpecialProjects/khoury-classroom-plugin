@@ -15,6 +15,7 @@ interface IUserOrgsAndClassroomsResponse {
 
 interface IClassroomListResponse {
   classrooms: IClassroom[];
+  org_role: OrgRole;
 }
 
 interface IClassroomToken {
