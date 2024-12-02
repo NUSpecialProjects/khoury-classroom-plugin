@@ -13,6 +13,7 @@ const OrganizationSelection: React.FC = () => {
   const [orgsWithoutApp, setOrgsWithoutApp] = useState<IOrganization[]>([]);
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
   const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
+  
 
   useEffect(() => {
     const fetchOrganizations = async () => {

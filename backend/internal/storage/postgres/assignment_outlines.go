@@ -120,7 +120,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 	err := db.connPool.QueryRow(ctx, `
 		INSERT INTO assignment_outlines (template_id, name, classroom_id, group_assignment, main_due_date)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING *
+		RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date
 	`,
 		assignmentRequestData.TemplateID,
 		assignmentRequestData.Name,

@@ -43,6 +43,7 @@ const Login: React.FC = () => {
       setStatus(LoginStatus.READY);
       setError(null);
     } catch (_) {
+      setCallbackURL(null);
       setStatus(LoginStatus.LOGIN_ERRORED);
       setError("Error occurred while communicating with the server");
     }
