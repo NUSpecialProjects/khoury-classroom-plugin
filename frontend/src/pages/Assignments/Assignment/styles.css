@@ -1,17 +1,7 @@
 .Assignment {
-  padding-bottom: 50px;
-
-  &__head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    flex-direction: row;
-    gap: 10px;
-    border-bottom-width: var(--border-width);
-    border-bottom-style: var(--border-style);
-    border-bottom-color: var(--border-color);
-    padding-bottom: 10px;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
   &__dates {
     display: flex;
@@ -50,12 +40,26 @@
     }
 
     .Button {
+      flex: 1;
+    }
+  }
+
+  &__link {
+    > h2 {
+      padding-bottom: 10px;
+    }
       flex-grow: 1;
       width: 100%;
     }
   }
 
-  &__subSectionWrapper {
-    padding: 20px;
+  &__metricsCharts {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+  }
+
+  &__metricsChart {
+    max-width: 400px;
   }
 }
