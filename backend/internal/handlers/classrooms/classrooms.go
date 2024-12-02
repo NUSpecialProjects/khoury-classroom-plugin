@@ -75,9 +75,8 @@ func (s *ClassroomService) createClassroom() fiber.Handler {
 			return errs.InconsistentOrgMembershipError()
 		}
 
-		// Enforce slug case for locally stored names
-		classroomData.Name = strings.ReplaceAll(strings.ToLower(classroomData.Name), " ", "-")
-		studentTeamName := classroomData.Name + "-students"
+		// Determine the team name for the classroom
+		studentTeamName := strings.ReplaceAll(strings.ToLower(classroomData.Name), " ", "-") + "-students"
 		classroomData.StudentTeamName = &studentTeamName
 
 		// Create the student team
