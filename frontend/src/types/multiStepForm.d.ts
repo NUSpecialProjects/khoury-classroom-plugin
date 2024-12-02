@@ -10,11 +10,11 @@ interface IStepComponentProps<T> {
 interface IStep<T> {
     title: string;
     component: React.ComponentType<IStepComponentProps<T>>;
+    onNext: (data: T) => Promise<void>;
 }
 
 interface IMultiStepFormProps<T> {
     steps: IStep<T>[];
-    submitFunc: (data: T) => Promise<boolean>;
     cancelLink: string;
     initialData: T;
 }
@@ -24,9 +24,9 @@ interface IMultiStepFormProps<T> {
 // ==============================
 
 interface IAssignmentFormData {
-    assignmentName: string
-    classroomId: number
-    groupAssignment: boolean
-    mainDueDate: Date | null
-    templateRepo: ITemplateRepo | null
+    assignmentName: string;
+    classroomId: number;
+    groupAssignment: boolean;
+    mainDueDate: Date | null;
+    templateRepo: ITemplateRepo | null;
 }

@@ -6,16 +6,16 @@ import (
 )
 
 type WebHookService struct {
-	store           storage.Storage
-	githubappclient github.GitHubAppClient
+	store     storage.Storage
+	appClient github.GitHubAppClient
 }
 
 func newWebHookService(
 	store storage.Storage,
-	githubappclient github.GitHubAppClient,
+	appClient github.GitHubAppClient,
 ) *WebHookService {
 	return &WebHookService{
-		store:           store,
-		githubappclient: githubappclient,
+		store:     store,
+		appClient: appClient,
 	}
 }
