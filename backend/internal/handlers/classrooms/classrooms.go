@@ -463,11 +463,6 @@ func (s *ClassroomService) sendOrganizationInvitesToRequestedUsers() fiber.Handl
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.requireAtLeastRole(c, classroomID, models.TA)
-		if err != nil {
-			return err
-		}
-
 		classroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
 		if err != nil {
 			return errs.InternalServerError()
@@ -476,6 +471,11 @@ func (s *ClassroomService) sendOrganizationInvitesToRequestedUsers() fiber.Handl
 		classroomRole, err := models.NewClassroomRole(c.Params("classroom_role"))
 		if err != nil {
 			return errs.BadRequest(err)
+		}
+
+		_, err = s.requireGreaterThanRole(c, classroomID, classroomRole)
+		if err != nil {
+			return err
 		}
 
 		classroomUsers, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
@@ -516,11 +516,6 @@ func (s *ClassroomService) sendOrganizationInviteToUser() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.requireAtLeastRole(c, classroomID, models.TA)
-		if err != nil {
-			return err
-		}
-
 		classroom, err := s.store.GetClassroomByID(c.Context(), classroomID)
 		if err != nil {
 			return errs.InternalServerError()
@@ -531,12 +526,17 @@ func (s *ClassroomService) sendOrganizationInviteToUser() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		userID, err := strconv.ParseInt(c.Params("user_id"), 10, 64)
+		_, err = s.requireGreaterThanRole(c, classroomID, classroomRole)
+		if err != nil {
+			return err
+		}
+
+		inviteeUserID, err := strconv.ParseInt(c.Params("user_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
 		}
 
-		invitee, err := s.store.GetUserInClassroom(c.Context(), classroomID, userID)
+		invitee, err := s.store.GetUserInClassroom(c.Context(), classroomID, inviteeUserID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -562,14 +562,19 @@ func (s *ClassroomService) denyRequestedUser() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.requireAtLeastRole(c, classroomID, models.TA)
-		if err != nil {
-			return err
-		}
-
 		userID, err := strconv.ParseInt(c.Params("user_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
+		}
+
+		targetUser, err := s.store.GetUserInClassroom(c.Context(), classroomID, userID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		_, err = s.requireGreaterThanRole(c, classroomID, targetUser.Role)
+		if err != nil {
+			return err
 		}
 
 		err = s.store.RemoveUserFromClassroom(c.Context(), classroomID, userID)
@@ -589,22 +594,22 @@ func (s *ClassroomService) revokeOrganizationInvite() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.requireAtLeastRole(c, classroomID, models.TA)
-		if err != nil {
-			return err
-		}
-
 		userID, err := strconv.ParseInt(c.Params("user_id"), 10, 64)
 		if err != nil {
 			return errs.BadRequest(err)
 		}
 
-		err = s.store.RemoveUserFromClassroom(c.Context(), classroomID, userID)
+		targetUser, err := s.store.GetUserInClassroom(c.Context(), classroomID, userID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
 
-		classroomUser, err := s.store.GetUserInClassroom(c.Context(), classroomID, userID)
+		_, err = s.requireGreaterThanRole(c, classroomID, targetUser.Role)
+		if err != nil {
+			return err
+		}
+
+		err = s.store.RemoveUserFromClassroom(c.Context(), classroomID, userID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -614,7 +619,7 @@ func (s *ClassroomService) revokeOrganizationInvite() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		err = s.githubappclient.CancelOrgInvitation(c.Context(), classroom.OrgName, classroomUser.GithubUsername)
+		err = s.githubappclient.CancelOrgInvitation(c.Context(), classroom.OrgName, targetUser.GithubUsername)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -694,6 +699,19 @@ func (s *ClassroomService) acceptOrgInvitation(context context.Context, userClie
 
 // Helper function to check if the user has at least the role specified
 func (s *ClassroomService) requireAtLeastRole(c *fiber.Ctx, classroomID int64, role models.ClassroomRole) (models.ClassroomUser, error) {
+	return s.checkRole(c, classroomID, role, func(userRole, requiredRole models.ClassroomRole) bool {
+		return userRole.Compare(requiredRole) < 0
+	})
+}
+
+func (s *ClassroomService) requireGreaterThanRole(c *fiber.Ctx, classroomID int64, role models.ClassroomRole) (models.ClassroomUser, error) {
+	return s.checkRole(c, classroomID, role, func(userRole, requiredRole models.ClassroomRole) bool {
+		return userRole.Compare(requiredRole) <= 0
+	})
+}
+
+// Helper function containing shared role checking logic
+func (s *ClassroomService) checkRole(c *fiber.Ctx, classroomID int64, role models.ClassroomRole, failCheck func(models.ClassroomRole, models.ClassroomRole) bool) (models.ClassroomUser, error) {
 	_, _, user, err := middleware.GetClientAndUser(c, s.store, s.userCfg)
 	if err != nil {
 		return models.ClassroomUser{}, errs.AuthenticationError()
@@ -709,8 +727,8 @@ func (s *ClassroomService) requireAtLeastRole(c *fiber.Ctx, classroomID int64, r
 		return models.ClassroomUser{}, errs.InternalServerError()
 	}
 
-	// if the user does not have AT LEAST the role specified, return an error
-	if classroomUser.Role.Compare(role) < 0 {
+	// Check if user has sufficient role using provided comparison function
+	if failCheck(classroomUser.Role, role) {
 		return models.ClassroomUser{}, errs.InsufficientPermissionsError()
 	}
 
