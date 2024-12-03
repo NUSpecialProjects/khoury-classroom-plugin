@@ -9,6 +9,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github"
 	"github.com/CamPlume1/khoury-classroom/internal/github/userclient"
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/CamPlume1/khoury-classroom/internal/storage"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
@@ -88,4 +89,23 @@ func GetClient(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserCl
 	}
 
 	return client, nil
+}
+
+func GetClientAndUser(c *fiber.Ctx, store storage.Storage, userCfg *config.GitHubUserClient) (github.GitHubUserClient, models.GitHubUser, models.User, error) {
+	client, err := GetClient(c, store, userCfg)
+	if err != nil {
+		return nil, models.GitHubUser{}, models.User{}, errs.AuthenticationError()
+	}
+
+	currentGitHubUser, err := client.GetCurrentUser(c.Context())
+	if err != nil {
+		return nil, models.GitHubUser{}, models.User{}, errs.AuthenticationError()
+	}
+
+	user, err := store.GetUserByGitHubID(c.Context(), currentGitHubUser.ID)
+	if err != nil {
+		return nil, models.GitHubUser{}, models.User{}, errs.AuthenticationError()
+	}
+
+	return client, currentGitHubUser, user, nil
 }

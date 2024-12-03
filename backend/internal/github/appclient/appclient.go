@@ -108,12 +108,11 @@ func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, des
 	return createdTeam, nil
 }
 
-func (api *AppAPI) AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error {
-	_, _, err := api.Client.Teams.AddTeamMembership(ctx, teamID, userName, opt)
+func (api *AppAPI) DeleteTeam(ctx context.Context, teamID int64) error {
+	_, err := api.Client.Teams.DeleteTeam(ctx, teamID)
 	if err != nil {
-		return fmt.Errorf("error adding member to team: %v", err)
+		return fmt.Errorf("error deleting team: %v", err)
 	}
-
 	return nil
 }
 
