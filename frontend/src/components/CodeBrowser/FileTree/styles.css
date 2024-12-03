@@ -1,56 +1,11 @@
 .FileTree {
-  background: #151515;
-  overflow: auto;
-  font-size: 0.86rem;
-  position: relative;
-  max-width: 80%;
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  padding: 5px 0;
-  border-right: 1px solid #383838;
-  position: relative;
-  z-index: 0;
-
   &__head {
     color: white;
     font-size: 1.1rem;
-    padding: 10px;
+    margin: 10px;
     font-weight: 300;
-  }
-
-  &__body {
-    height: 100%;
     width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE 10+ */
-    ::-webkit-scrollbar {
-      background: transparent; /* Chrome/Safari/Webkit */
-      width: 0px;
-    }
-  }
-
-  .ResizeHandle {
-    position: absolute;
-    content: "";
-    top: 0;
-    right: 0;
-    width: 4px;
-    height: 100%;
-    cursor: col-resize;
-    background: transparent;
-    transition: background 0.2s ease;
-
-    &:hover {
-      background: var(--brand-lighter);
-    }
-  }
-
-  .simplebar-track {
-    margin-right: 5px;
+    overflow: hidden;
   }
 }
 
@@ -93,7 +48,7 @@
 
 .FileTreeDirectory > .FileTree__nodeName,
 .FileTreeFile {
-  transition: background 0.2s ease;
+  transition: background 0.15s;
   user-select: none;
   cursor: pointer;
   height: 24px;
