@@ -11,15 +11,19 @@ import RubricList from "@/components/RubricList";
 const Rubrics: React.FC = () => {
     const { selectedClassroom } = useContext(SelectedClassroomContext)
     const [rubrics, setRubricsData] = useState<IFullRubric[]>([])
+
+    const [loading, setLoading] = useState(false)
     const [failedRurbicRetrival, setfailedRurbicRetrival] = useState(false)
 
     useEffect(() => {
         if (selectedClassroom) {
             (async () => {
+                setLoading(true)
                 try {
                     const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
                     if (retrievedRubrics !== null) {
                         setRubricsData(retrievedRubrics)
+                        setLoading(false)
                     }
 
                 } catch (_) {
@@ -36,7 +40,18 @@ const Rubrics: React.FC = () => {
         <div>
             <PageHeader pageTitle="Rubrics"></PageHeader>
 
-            {!failedRurbicRetrival ?
+            {failedRurbicRetrival && (
+                <div>
+                    <div> Failed to get existing rubrics </div>
+                </div>
+            )}
+
+
+            {!failedRurbicRetrival && loading && (
+                <div> Loading... </div>
+            )}
+
+            {(!failedRurbicRetrival && !loading && rubrics) && (
                 <div>
                     {rubrics.length > 0 ?
                         <RubricList rubrics={rubrics} />
@@ -49,13 +64,10 @@ const Rubrics: React.FC = () => {
                     </Link>
                 </div>
 
-                :
-                
-                <div>
-                    <div> Failed to get existing rubrics </div>
-                    <Button href="" onClick={() => window.location.reload()}>Click to retry</Button>
-                </div>
-            }
+            )}
+
+
+
 
         </div>
     );

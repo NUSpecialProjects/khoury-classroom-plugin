@@ -1,18 +1,21 @@
 import { useContext, useEffect, useState } from "react";
 import { FaChevronLeft } from "react-icons/fa6";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./styles.css";
 import { getRubric, getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { setAssignmentRubric } from "@/api/assignments";
 
 
 const AssignmentRubric: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { selectedClassroom } = useContext(SelectedClassroomContext)
+
+  const [loading, setLoading] = useState(false)
+  const [errorState, setErrorState] = useState(false)
 
 
   const [assignment, setAssignmentData] = useState<IAssignmentOutline>()
@@ -26,59 +29,62 @@ const AssignmentRubric: React.FC = () => {
     const selectedId = parseInt(event.target.value, 10);
     if (selectedId) {
       const selectedRubric = rubrics.find((rubric) => rubric.rubric.id === selectedId);
-      if (selectedRubric) {
-        setRubricData(selectedRubric)
-        if (selectedClassroom && assignment) {
-          setAssignmentRubric(
-            selectedRubric.rubric.id!,
-            selectedClassroom.id,
-            assignment.id)
-    
-        }
+      if (selectedRubric && assignment) {
+        navigate('/app/rubrics/new', {
+          state: { assignment: assignment, rubricData: selectedRubric },
+        });
+
       }
     }
   };
 
   useEffect(() => {
-    if (location.state) {
-      setAssignmentData(location.state.assignment)
-      const aData = location.state.assignment
-      if (aData && aData.rubric_id) {
-        (async () => {
-          try {
-            const rubric = await getRubric(aData.rubric_id)
-            if (rubric !== null) {
-              setRubricData(rubric)
-            }
-          } catch (_) {
-            //do nothing
-          }
+    const fetchData = async () => {
+        setLoading(true); // Start loading
 
-        })();
-      }
-    }
-
-    if (selectedClassroom) {
-      (async () => {
         try {
-          const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
-          if (retrievedRubrics !== null) {
-            setRubrics(retrievedRubrics)
-          }
+            if (location.state) {
+                setAssignmentData(location.state.assignment);
+                const aData = location.state.assignment;
+                if (aData && aData.rubric_id) {
+                    const rubric = await getRubric(aData.rubric_id);
+                    if (rubric !== null) {
+                        setRubricData(rubric);
+                    }
+                }
+            }
+
+            if (selectedClassroom) {
+                const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id);
+                if (retrievedRubrics !== null) {
+                    setRubrics(retrievedRubrics);
+                }
+            }
         } catch (_) {
-          //do nothing
+            console.log("error!!!");
+            setErrorState(true);
+        } finally {
+            setLoading(false); 
         }
+    };
 
-      })();
-    }
+    fetchData();
+}, [location.state, selectedClassroom]);
 
-
-  }, [assignment]);
 
 
   return (
     <div className="AssignmentRubric">
-      {assignment && (
+
+      {errorState && (
+        <div> {"Could not get this assignment's rubric"} </div>
+      )}
+
+      {loading && !errorState && (
+        <div> Loading... </div>
+      )}
+
+      {assignment && !errorState && !loading && (
         <>
           <div className="Assignment__head">
             <div className="Assignment__title">
@@ -133,7 +139,7 @@ const AssignmentRubric: React.FC = () => {
               {importing ?
                 <div>
                   <select id="dropdown" onChange={choseExisting}>
-                    <option value="">-- Select a rubric --</option>
+                    <option value="">-- Select a starter rubric --</option>
                     {rubrics.map((rubric) => (
                       <option key={rubric.rubric.id} value={rubric.rubric.id!}>
                         {rubric.rubric.name}

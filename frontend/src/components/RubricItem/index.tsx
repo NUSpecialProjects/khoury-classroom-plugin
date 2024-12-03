@@ -4,18 +4,18 @@ import "./styles.css";
 interface IRubricItemProps {
     name: string;
     points: string;
-    impact?: boolean;
-    onChange: (updatedFields: Partial<{ explanation: string; point_value: number | null; impact: boolean }>) => void;
+    impact: ItemFeedbackType;
+    onChange: (updatedFields: Partial<{ explanation: string; point_value: number | null; impact: ItemFeedbackType }>) => void;
 }
 
-enum FeedbackType {
+export enum ItemFeedbackType {
     Addition = "A",
     Deduction = "D",
     Neutral = "N"
 }
 
 const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange,}) => {
-    const [selection, setSelection] = useState<FeedbackType>(FeedbackType.Neutral);
+    const [selection, setSelection] = useState<ItemFeedbackType>(ItemFeedbackType.Neutral)
     const [displayPoints, setDisplayPoints] = useState(points.toString())
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,20 +24,23 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
 
 
  
-    const updatePointsBasedOnDeduction = (pointValue: number, feedbackType: FeedbackType) => {
+    const updatePointsBasedOnDeduction = (pointValue: number, feedbackType: ItemFeedbackType) => {
         if (!isNaN(pointValue)) {
-            const adjustedValue = feedbackType === FeedbackType.Deduction ? -1*Math.abs(pointValue) : Math.abs(pointValue)
-            onChange({ point_value: adjustedValue });
+            const adjustedValue = feedbackType === ItemFeedbackType.Deduction ? -1*Math.abs(pointValue) : Math.abs(pointValue)
+            onChange({ point_value: adjustedValue, impact: feedbackType });
         }
     }
 
     const handlePointsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        console.log(value)
         if (value === "") {
             setDisplayPoints("")
-            onChange({ point_value: null })
+            onChange({ point_value: null, impact: ItemFeedbackType.Neutral})
             return;
+        }
+        
+        if (value === "0") {
+            makeNeutral()
         }
     
         const pointValue = Math.abs(parseInt(value, 10));
@@ -47,38 +50,35 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
         }
     };
     
+    const makeNeutral = () => {
+        setSelection(ItemFeedbackType.Neutral)
+    }
 
 
-    const makeAddition = () => {
-        if(selection !== FeedbackType.Addition) {
-            setSelection(FeedbackType.Addition);
-            updatePointsBasedOnDeduction(parseInt(points, 10), FeedbackType.Addition)
+    const toggleAddition = () => {
+        if(selection !== ItemFeedbackType.Addition) {
+            setSelection(ItemFeedbackType.Addition);
+            updatePointsBasedOnDeduction(parseInt(points, 10), ItemFeedbackType.Addition)
         } else {
-            setSelection(FeedbackType.Neutral)
+            setSelection(ItemFeedbackType.Neutral)
+            onChange({ impact: ItemFeedbackType.Neutral })
         }
     };
 
-    const makeDeduction = () => {
-        if(selection !== FeedbackType.Deduction) {
-            setSelection(FeedbackType.Deduction);
-            updatePointsBasedOnDeduction(parseInt(points, 10), FeedbackType.Deduction)
+    const toggleDeduction = () => {
+        if(selection !== ItemFeedbackType.Deduction) {
+            setSelection(ItemFeedbackType.Deduction);
+            updatePointsBasedOnDeduction(parseInt(points, 10), ItemFeedbackType.Deduction)
         } else {
-            setSelection(FeedbackType.Neutral)
+            setSelection(ItemFeedbackType.Neutral)
+            onChange({ impact: ItemFeedbackType.Neutral })
         }
     };
 
 
     // on startup
     useEffect(() => {
-        if (impact !== null && impact === undefined) {
-            setSelection(FeedbackType.Neutral)
-        } else {
-            if (impact) {
-                setSelection(FeedbackType.Addition)
-            } else {
-                setSelection(FeedbackType.Deduction)
-            }
-        } 
+        setSelection(impact)
     }, [])
 
 
@@ -94,7 +94,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
             />
 
             <input
-                className="RubricItem"
+                className="RubricItem__itemPoints"
                 id={points}
                 name={"pointValue"}
                 value={displayPoints}
@@ -102,11 +102,11 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
                 onChange={handlePointsChange}
             />
 
-            <div>
-                <button onClick={makeAddition} className={`RubricItem__button${selection === FeedbackType.Addition ? "AdditionActive" : ""}`}
+            <div className="RubricItem__buttonWrap">
+                <button onClick={toggleAddition} className={`RubricItem__button${selection === ItemFeedbackType.Addition ? "AdditionActive" : ""}`}
                 >+</button>
 
-                <button onClick={makeDeduction} className={`RubricItem__button${selection === FeedbackType.Deduction ? "DeductionActive" : ""}`}
+                <button onClick={toggleDeduction} className={`RubricItem__button${selection === ItemFeedbackType.Deduction ? "DeductionActive" : ""}`}
                 >-</button>
 
             </div>

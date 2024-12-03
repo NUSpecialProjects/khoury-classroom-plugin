@@ -4,6 +4,7 @@ import "./styles.css";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa6";
 import Button from "../Button";
 import { useState } from "react";
+import { FaEdit } from "react-icons/fa";
 
 
 interface IRubricRowData extends React.HTMLProps<HTMLDivElement> {
@@ -32,7 +33,7 @@ const RubricRow: React.FC<IRubricRowData> = ({
                 <TableCell>
                 <Link to={`/app/rubrics/new`} state={{ rubricData }}>
                     <Button href="" variant="secondary" >
-                        Edit this Rubric
+                        <FaEdit />
                     </Button>
                 </Link>
                 </TableCell>
@@ -40,6 +41,13 @@ const RubricRow: React.FC<IRubricRowData> = ({
             {!collapsed && (
                 <TableDiv>
                     <Table cols={3} className="ItemTable">
+                        
+                        <TableRow>
+                            <TableCell>Rubric Item</TableCell>
+                            <TableCell>Point Value</TableCell>
+                            <TableCell/>
+                        </TableRow>
+
                         {rubricData.rubric_items &&
                             rubricData.rubric_items.map((item, i: number) => (
                                 <TableRow
@@ -50,7 +58,7 @@ const RubricRow: React.FC<IRubricRowData> = ({
                                     </TableCell>
 
                                     <TableCell> 
-                                        {item.point_value > 0 ? "+" + item.point_value : item.point_value}
+                                        {item.point_value !== null ? (item.point_value > 0 ? "+" + item.point_value : item.point_value) : ""}
                                     </TableCell>
 
                                     <TableCell/>
