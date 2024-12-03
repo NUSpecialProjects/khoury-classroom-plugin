@@ -119,14 +119,46 @@ export const createAssignment = async (
   );
 
   if (!result.ok) {
+    let errorMessage;
+
+    // Attempt to parse the error message from the response body
+    try {
+      const errorData = await result.json();
+      errorMessage = errorData.msg;
+    } catch {
+      errorMessage = "an unknown error occurred";
+    }
+
+    throw new Error(`Failed to create assignment: ${errorMessage}`);
+  }
+
+  const data = (await result.json());
+  return data.assignment_outline as IAssignmentFormData;
+};
+
+export const assignmentNameExists = async (
+  classroomId: number,
+  assignmentName: string
+): Promise<boolean> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomId}/assignments/assignment/${assignmentName}/exists`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!result.ok) {
     throw new Error("Network response was not ok");
   }
 
-  const data = (await result.json())
+  const data = await result.json();
 
-  return data.assignment_outline as IAssignmentFormData
-};
-
+  return data.exists as boolean;
+}
 
 export const setAssignmentRubric = async (
   rubric_id: number,

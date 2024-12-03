@@ -30,6 +30,7 @@ func NewClassroomRole(role string) (ClassroomRole, error) {
 	return cr, nil
 }
 
+// Returns 0 if the roles are the same, 1 if THIS ROLE has higher permissions than OTHER ROLE, and -1 if vice versa
 func (cr ClassroomRole) Compare(other ClassroomRole) int16 {
 	roleRank := map[ClassroomRole]int16{
 		Professor: 3,

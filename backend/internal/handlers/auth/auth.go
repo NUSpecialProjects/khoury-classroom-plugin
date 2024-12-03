@@ -129,7 +129,7 @@ func (service *AuthService) GetCurrentUser() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		client, err := middleware.GetClient(c, service.store, service.userCfg)
 		if err != nil {
-			return errs.GithubClientError(err)
+			return errs.AuthenticationError()
 		}
 
 		user, err := client.GetCurrentUser(c.Context())

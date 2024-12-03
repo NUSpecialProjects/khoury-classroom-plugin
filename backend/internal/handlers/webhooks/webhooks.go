@@ -84,11 +84,33 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.BadRequest(errors.New("invalid repository data"))
 	}
 
-	// Create development branch
-	_, err := s.githubappclient.CreateBranch(c.Context(), *pushEvent.Repo.Organization,
-		*pushEvent.Repo.Name,
-		*pushEvent.Repo.MasterBranch,
-		"dev")
+	// Create necessary repo branches
+	repoBranches := []string{"development", "feedback"}
+	for _, branch := range repoBranches {
+		_, err := s.appClient.CreateBranch(c.Context(),
+			*pushEvent.Repo.Organization,
+			*pushEvent.Repo.Name,
+			*pushEvent.Repo.MasterBranch,
+			branch)
+
+		if err != nil {
+			return errs.InternalServerError()
+		}
+	}
+
+	// Find the associated assignment and classroom
+	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
+	if err != nil {
+		return errs.InternalServerError()
+	}
+	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
+	if err != nil {
+		return errs.InternalServerError()
+	}
+
+	// Give the student team read access to the repository
+	err = s.appClient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, *classroom.StudentTeamName,
+		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
 		return errs.InternalServerError()
 	}

@@ -81,24 +81,24 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
       });
   };
 
-  const handleRefresh = () => {
-    const fetchClassroomUsers = async () => {
-      if (selectedClassroom) {
-        await getClassroomUsers(selectedClassroom.id)
-          .then((users) => {
-            setUsers(users.filter((user: IClassroomUser) => user.classroom_role === role_type));
-            setError(null);
-          })
-          .catch((_) => {
-            setError("Failed to update classroom users");
-          })
-      } else {
+  useEffect(() => {
+    const handleRefresh = async () => {
+      if (!selectedClassroom) {
         setError(null);
+        return;
+      }
+  
+      try {
+        const users = await getClassroomUsers(selectedClassroom.id);
+        setUsers(users.filter((user: IClassroomUser) => user.classroom_role === role_type));
+        setError(null);
+      } catch (_) {
+        setError("Failed to update classroom users");
       }
     };
 
-    fetchClassroomUsers();
-  };
+    handleRefresh();
+  }, [selectedClassroom]);
 
   const getActionButton = (user: IClassroomUser) => {
     switch (user.status) {
@@ -107,15 +107,12 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
       case ClassroomUserStatus.ORG_INVITED:
         return <Button size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
       case ClassroomUserStatus.REQUESTED:
+      case ClassroomUserStatus.NOT_IN_ORG:
         return <Button size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
       default:
         return null;
     }
   };
-
-  useEffect(() => {
-    handleRefresh();
-  }, []);
 
   useEffect(() => {
     const handleCreateToken = async () => {
@@ -140,24 +137,24 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   return (
     <div>
       <SubPageHeader pageTitle={role_label + `s`} chevronLink="/app/dashboard/"></SubPageHeader>
+      {link && (
+        <div className="Users__inviteLinkWrapper">
+          <div>
+            <h2>Invite {role_label + `s`}</h2>
+            <p>Share this link to invite and add students to {selectedClassroom?.name}.</p>
+            {(role_type === ClassroomRole.PROFESSOR || role_type === ClassroomRole.TA) &&
+              <p>Warning: This will make them an admin of the organization.</p>}
+            {error && <p className="error">{error}</p>}
+          </div>
+          <CopyLink link={link} name="invite-link"></CopyLink>
 
-      <div className="Users__inviteLinkWrapper">
-        <div>
-          <h2>Invite {role_label + `s`}</h2>
-          <p>Share this link to invite and add students to {selectedClassroom?.name}.</p>
-          {(role_type === ClassroomRole.PROFESSOR || role_type === ClassroomRole.TA) &&
-            <p>Warning: This will make them an admin of the organization.</p>}
-          {error && <p className="error">{error}</p>}
-        </div>
-        <CopyLink link={link} name="invite-tas"></CopyLink>
-
-        {users.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
-          <div className="Users__inviteAllWrapper">
-            <Button onClick={handleInviteAll}>Invite All Requested Users</Button>
+          {users.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
+            <div className="Users__inviteAllWrapper">
+              <Button onClick={handleInviteAll}>Invite All Requested Users</Button>
           </div>
         )}
-      </div>
-    
+        </div>
+      )}
 
       <div className="Users__tableWrapper">
         {users.length > 0 ? (
