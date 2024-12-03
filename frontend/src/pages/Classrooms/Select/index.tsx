@@ -20,8 +20,6 @@ const ClassroomSelection: React.FC = () => {
 
   const navigate = useNavigate();
 
-  //TODO: check if the user is an org admin before showing create classroom
-
   useEffect(() => {
     const fetchClassrooms = async () => {
       if (!loading && !orgID) {
