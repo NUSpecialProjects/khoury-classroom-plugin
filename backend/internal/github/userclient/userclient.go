@@ -129,13 +129,35 @@ func (api *UserAPI) AcceptOrgInvitation(ctx context.Context, orgName string) err
 	return nil
 }
 
-func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destName string) error {
-	endpoint := fmt.Sprintf("/repos/%s/%s/forks", owner, repo)
+func (api *UserAPI) ForkRepository(ctx context.Context, srcOwner, srcRepo, dstOrg, dstRepo string) error {
+	endpoint := fmt.Sprintf("/repos/%s/%s/forks", srcOwner, srcRepo)
 
 	//Initialize post request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
-		"organization": org,
-		"name":         destName,
+		"organization": dstOrg,
+		"name":         dstRepo,
+	})
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	// Make the API call
+	response, err := api.Client.Do(ctx, req, nil)
+	if err != nil && response.StatusCode != 202 {
+		return errs.GithubAPIError(err)
+	}
+
+	return nil
+}
+
+func (api *UserAPI) CreateFeedbackPR(ctx context.Context, owner, repo string) error {
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls", owner, repo)
+
+	//Initialize post request
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+		"title": "Feedback",
+		"base":  "grading",
+		"body":  "Grade and feedback will be left here",
 	})
 	if err != nil {
 		return errs.GithubAPIError(err)
