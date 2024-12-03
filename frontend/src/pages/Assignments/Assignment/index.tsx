@@ -1,7 +1,9 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { Chart as ChartJS, registerables } from "chart.js";
-import { Bar, Pie } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
+import { ChartOptions } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
@@ -19,6 +21,7 @@ import CopyLink from "@/components/CopyLink";
 import "./styles.css";
 
 ChartJS.register(...registerables);
+ChartJS.register(ChartDataLabels);
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -31,14 +34,23 @@ const Assignment: React.FC = () => {
   const base_url: string = import.meta.env
     .VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
-  const data = {
-    labels: ["January", "February", "March", "April", "May", "June"],
+  const data1 = {
+    labels: ["Committed", "Accepted", "Not Accepted"],
+    datasets: [
+      {
+        backgroundColor: ["#219386", "#f69c0e", "#f83b5c"], // Setting up the background color for the dataset
+        data: [29, 5, 4], // Setting up the data for the dataset
+      },
+    ],
+  };
+
+  const data2 = {
+    labels: ["Graded", "Ungraded"],
     datasets: [
       {
         label: "My First dataset", // Setting up the label for the dataset
-        backgroundColor: "rgb(255, 99, 132)", // Setting up the background color for the dataset
-        borderColor: "rgb(255, 99, 132)", // Setting up the border color for the dataset
-        data: [0, 10, 5, 2, 20, 30, 45], // Setting up the data for the dataset
+        backgroundColor: ["#219386", "#e5e7eb"], // Setting up the background color for the dataset
+        data: [3000, 700], // Setting up the data for the dataset
       },
     ],
   };
@@ -158,10 +170,72 @@ const Assignment: React.FC = () => {
             <h2>Metrics</h2>
             <div className="Assignment__metricsCharts">
               <div className="Assignment__metricsChart">
-                <Bar data={data} />
+                <Bar
+                  data={data1}
+                  options={{
+                    maintainAspectRatio: false,
+                    indexAxis: "y", // Horizontal bars
+                    layout: {
+                      padding: {
+                        right: 50,
+                      },
+                    },
+                    scales: {
+                      x: {
+                        display: false,
+                      },
+                      y: {
+                        grid: {
+                          display: false,
+                        },
+                      },
+                    },
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                      datalabels: {
+                        align: "end",
+                        anchor: "end",
+                        color: "#000",
+                        font: {
+                          size: 12,
+                        },
+                      },
+                      tooltip: {
+                        enabled: false,
+                      },
+                    },
+                  }}
+                />
               </div>
               <div className="Assignment__metricsChart">
-                <Pie data={data} />
+                <Doughnut
+                  data={data2}
+                  options={{
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        onClick: () => {},
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                          usePointStyle: true,
+                          font: {
+                            size: 10,
+                          },
+                        },
+                      },
+                      datalabels: {
+                        color: ["#fff", "#000"],
+                        font: {
+                          size: 12,
+                        },
+                      },
+                    },
+                    cutout: "50%",
+                  }}
+                />
               </div>
             </div>
           </div>
