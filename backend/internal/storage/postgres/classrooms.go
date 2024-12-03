@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"log"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -219,8 +218,6 @@ func (db *DB) GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Cla
 	if err != nil {
 		return nil, err
 	}
-
-	log.Default().Println(rows)
 
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Classroom])
 }
