@@ -9,9 +9,11 @@ import { Table, TableRow, TableCell } from "@/components/Table";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import Button from "@/components/Button";
 import { MdAdd } from "react-icons/md";
+import { OrgRole } from "@/types/users";
 
 const ClassroomSelection: React.FC = () => {
   const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
+  const [orgRole, setOrgRole] = useState<OrgRole>(OrgRole.MEMBER);
   const orgID = useUrlParameter("org_id");
   const [loading, setLoading] = useState(true);
   const { setSelectedClassroom } = useContext(SelectedClassroomContext);
@@ -29,8 +31,10 @@ const ClassroomSelection: React.FC = () => {
           if (!isNaN(org_id)) {
             const data: IClassroomListResponse = await getClassroomsInOrg(org_id);
             if (data.classrooms) {
-              //TODO: this is broken
               setClassrooms(data.classrooms);
+            }
+            if (data.org_role) {
+              setOrgRole(data.org_role);
             }
           }
         } catch (_) { 
@@ -63,11 +67,13 @@ const ClassroomSelection: React.FC = () => {
             <TableRow>
               <TableCell>
                 <div className="Selection__tableHeaderText">Classroom Name</div>
-                <div className="Selection__tableHeaderButton">
-                  <Button size="small" href={`/app/classroom/create?org_id=${orgID}`}>
-                    <MdAdd /> New Classroom
-                  </Button>
-                </div>
+                {orgRole === OrgRole.ADMIN &&
+                  (<div className="Selection__tableHeaderButton">
+                    <Button size="small" href={`/app/classroom/create?org_id=${orgID}`}>
+                        <MdAdd /> New Classroom
+                      </Button>
+                    </div>
+                  )}
               </TableCell>
             </TableRow>
             {/* If the org has classrooms, populate table, else display a message 
