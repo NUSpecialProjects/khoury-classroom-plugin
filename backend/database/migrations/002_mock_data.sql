@@ -1,144 +1,57 @@
 -- Insert into classrooms
 INSERT INTO classrooms (id, name, org_id, org_name, created_at, student_team_name)
 VALUES
-(1, 'Kennys Coding Classroom', 182810684, 'NUSpecialProjects', NOW(), 'kennys-coding-classroom-students'),
-(2, 'Advanced Running Analytics', 182810684, 'NUSpecialProjects', NOW(), 'advanced-running-analytics-students'),
-(3, 'Chocolate Lovers Unite', 182810684, 'NUSpecialProjects', NOW(), 'chocolate-lovers-unite-analytics-students'),
-(4, 'Data Structures and Algorithms', 182810684, 'NUSpecialProjects', NOW(), 'data-structures-and-algorithms-students'),
-(5, 'Mobile App Development', 182810684, 'NUSpecialProjects', NOW(), 'mobile-app-development-students'),
-(6, 'AI and Machine Learning', 182810684, 'NUSpecialProjects', NOW(), 'ai-and-machine-learning-students'),
-(7, 'Web Development Bootcamp', 98771, 'WebCoders', NOW(), 'web-development-bootcamp-students'),
-(8, 'Cloud Computing', 98772, 'CloudExperts', NOW(), 'cloud-computing-students'),
-(9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW(), 'cybersecurity-fundamentals-students'),
-(10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW(), 'software-engineering-principles-students'),
-(11, 'Khoury Coding Bootcamp', 182810684, 'NUSpecialProjects', NOW(), 'khoury-coding-bootcamp-students');
+(1, 'Spring 2025', 182810684, 'NUSpecialProjects', NOW(), 'kennys-coding-classroom-students'),
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Create users (Kenny and others)
 INSERT INTO users (id, first_name, last_name, github_username, github_user_id)
 VALUES
 (1, 'Kenny', 'Chen', 'kennybc', 54950614),
-(2, 'Grace', 'Hopper', 'gracehopper', 789012),
-(3, 'Alan', 'Turing', 'alanturing', 345678),
-(4, 'Ada', 'Lovelace', 'adalovelace', 901234),
-(5, 'Linus', 'Torvalds', 'linustorvalds', 567890),
-(6, 'Margaret', 'Hamilton', 'mhamilton', 234567),
-(7, 'Tim', 'Berners-Lee', 'timbl', 890123),
-(8, 'Barbara', 'Liskov', 'bliskov', 678901),
-(9, 'Dennis', 'Ritchie', 'dritchie', 112233),
-(10, 'Ken', 'Thompson', 'kthompson', 445566),
-(11, 'Alex', 'Angione', 'alexangione419', 111721125),
-(12, 'Nick', 'Tietje2', 'NickTietje', 183017928),
-(13, 'Seby', 'Tremblay', 'sebytremblay', 91509344),
-(14, 'Cam', 'Plume', 'CamPlume1', 116120547),
-(15, 'Nick', 'Tietje', 'ntietje1', 124538220);
-
+(2, 'Alex', 'Angione', 'alexangione419', 111721125),
+(3, 'Nick', 'Tietje2', 'NickTietje', 183017928),
+(4, 'Seby', 'Tremblay', 'sebytremblay', 91509344),
+(5, 'Cam', 'Plume', 'CamPlume1', 116120547),
+(6, 'Nick', 'Tietje', 'ntietje1', 124538220),
+(7, 'Nandini', 'Ghosh', 'nandini-ghosh', 93226556),
+(8, 'Mark', 'Fontenot', 'MarkFontenot', 1777629);
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 -- Insert into classroom_membership
 INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at, status)
 VALUES
-(1, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
+(1, 1, 'TA', NOW(), 'ACTIVE'),
 (2, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
 (3, 1, 'STUDENT', NOW(), 'ACTIVE'),
-(4, 2, 'STUDENT', NOW(), 'ACTIVE'),
-(5, 2, 'TA', NOW(), 'ACTIVE'),
-(6, 3, 'STUDENT', NOW(), 'ACTIVE'),
-(7, 3, 'PROFESSOR', NOW(), 'ACTIVE'),
-(8, 4, 'STUDENT', NOW(), 'ACTIVE'),
-(9, 4, 'PROFESSOR', NOW(), 'ACTIVE'),
-(10, 5, 'TA', NOW(), 'ACTIVE'),
-(1, 6, 'STUDENT', NOW(), 'ACTIVE'),
-(3, 7, 'STUDENT', NOW(), 'ACTIVE'),
-(6, 8, 'STUDENT', NOW(), 'ACTIVE'),
-(8, 9, 'STUDENT', NOW(), 'ACTIVE'),
-(5, 10, 'TA', NOW(), 'ACTIVE'),
-(11, 11, 'STUDENT', NOW(), 'ACTIVE'),
-(12, 11, 'STUDENT', NOW(), 'ACTIVE'),
-(11, 1, 'TA', NOW(), 'ACTIVE'),
-(12, 1, 'TA', NOW(), 'ACTIVE'),
-(13, 1, 'TA', NOW(), 'ACTIVE'),
-(14, 1, 'TA', NOW(), 'ACTIVE'),
-(15, 1, 'TA', NOW(), 'ACTIVE');
-
-
--- Insert into assignment_templates
-INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_repo_name)
-VALUES
-('kennysmith', 1000, NOW(), 'Template 1'),
-('gracehopper', 1001, NOW(), 'Template 2'),
-('linustorvalds', 1002, NOW(), 'Template 3'),
-('alanturing', 1003, NOW(), 'Template 4'),
-('adalovelace', 1004, NOW(), 'Template 5'),
-('mhamilton', 1005, NOW(), 'Template 6'),
-('timbl', 1006, NOW(), 'Template 7'),
-('bliskov', 1007, NOW(), 'Template 8'),
-('dritchie', 1008, NOW(), 'Template 9'),
-('kthompson', 1009, NOW(), 'Template 10');
-
--- Insert into assignment_base_repos
-INSERT INTO assignment_base_repos (base_repo_owner, base_repo_id, created_at, base_repo_name)
-VALUES
-('kennysmith', 1000, NOW(), 'Base Repo 1'),
-('gracehopper', 1001, NOW(), 'Base Repo 2'),
-('linustorvalds', 1002, NOW(), 'Base Repo 3'),
-('alanturing', 1003, NOW(), 'Base Repo 4'),
-('adalovelace', 1004, NOW(), 'Base Repo 5'),
-('mhamilton', 1005, NOW(), 'Base Repo 6'),
-('timbl', 1006, NOW(), 'Base Repo 7'),
-('bliskov', 1007, NOW(), 'Base Repo 8'),
-('dritchie', 1008, NOW(), 'Base Repo 9'),
-('kthompson', 1009, NOW(), 'Base Repo 10');
+(4, 1, 'TA', NOW(), 'ACTIVE'),
+(5, 1, 'TA', NOW(), 'ACTIVE'),
+(6, 1, 'TA', NOW(), 'ACTIVE'),
+(7, 1, 'TA', NOW(), 'ACTIVE'),
+(8, 1, 'PROFESSOR', NOW(), 'ACTIVE');
 
 -- Insert into rubrics
 INSERT INTO rubrics (id, name, org_id, classroom_id, reusable) VALUES 
-(1, 'Introduction to Programming Rubric', 1, 1, true),
-(2, 'Data Structures Project Rubric', 1, 1, false),
-(3, 'Algorithms Midterm Rubric', 2, 1, false),
-(4, 'Database Design Project Rubric', 2, 1, true),
-(5, 'Machine Learning Final Rubric', 3, 2, false),
-(6, 'Operating Systems Lab Rubric', 3, 2, true),
-(7, 'Web Development Assignment Rubric', 4, 2, false),
-(8, 'Network Security Exam Rubric', 4, 1, false),
-(9, 'Software Engineering Project Rubric', 5, 2, true),
-(10, 'Artificial Intelligence Assignment Rubric', 5, 2, true);
+(1, 'Assignment 1 Rubric', 1, 1, true);
 SELECT setval('rubrics_id_seq', (SELECT MAX(id) FROM rubrics));
 
 -- Insert into rubric_items
 INSERT INTO rubric_items (id, rubric_id, point_value, explanation, created_at)
 VALUES
-(1, 1, 10, 'Tracks running distances accurately', NOW()),
-(2, 1, 10, 'Records chocolate consumption correctly', NOW()),
-(3, 1, 10, 'Code is well-documented and clean', NOW()),
-(4, 2, 15, 'Lexical analysis implemented', NOW()),
-(5, 2, 15, 'Parsing and syntax tree generation', NOW()),
-(6, 3, 20, 'Kernel module loads without errors', NOW()),
-(7, 3, 20, 'Module performs expected operations', NOW()),
-(8, 4, 25, 'Encryption algorithm efficiency', NOW()),
-(9, 4, 25, 'Security level meets standards', NOW()),
-(10, 5, 10, 'User interface is intuitive', NOW()),
-(11, 5, 10, 'GPS tracking is accurate', NOW()),
-(12, 6, 30, 'AI chatbot responds correctly', NOW()),
-(13, 7, 15, 'Website layout is responsive', NOW()),
-(14, 7, 15, 'Accessibility standards are met', NOW()),
-(15, 8, 20, 'Cloud deployment is successful', NOW()),
-(16, 9, 25, 'Identified security vulnerabilities', NOW()),
-(17, 10, 20, 'Implemented design patterns correctly', NOW());
+(1, 1, 1, 'The code works well', NOW()),
+(2, 1, -1, 'The code is really bad', NOW()),
+(3, 1, 0, 'You wrote code', NOW());
 SELECT setval('rubric_items_id_seq', (SELECT MAX(id) FROM rubric_items));
+
+-- Insert into assignment_templates
+INSERT INTO assignment_templates (template_repo_owner, template_repo_id, created_at, template_repo_name)
+VALUES
+()
+
 
 -- Insert into assignment_outlines
 INSERT INTO assignment_outlines (id, template_id, base_repo_id, created_at, released_at, name, rubric_id, classroom_id, group_assignment)
 VALUES
-(1, 1001, 1000, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, 1, FALSE),
-(2, 1002, 1001, NOW(), '2023-02-01 09:00:00', 'Compiler Design', NULL, 1, TRUE),
-(3, 1003, 1002, NOW(), '2023-03-01 09:00:00', 'Linux Kernel Module', 3, 2, FALSE),
-(4, 1004, 1003, NOW(), '2023-04-01 09:00:00', 'Encryption Algorithms', 3, 2, TRUE),
-(5, 1005, 1004, NOW(), '2023-05-01 09:00:00', 'Mobile App for Runners', 4, 3, FALSE),
-(6, 1006, 1005, NOW(), '2023-06-01 09:00:00', 'AI Chatbot', 5, 4, TRUE),
-(7, 1007, 1006, NOW(), '2023-07-01 09:00:00', 'Website Development', NULL, 5, FALSE),
-(8, 1008, 1007, NOW(), '2023-08-01 09:00:00', 'Cloud Deployment', 6, 6, TRUE),
-(9, 1009, 1008, NOW(), '2023-09-01 09:00:00', 'Cybersecurity Analysis', 9, 7, FALSE),
-(10, 1009, 1009, NOW(), '2023-10-01 09:00:00', 'Software Design Patterns', NULL, 8, TRUE);
+(1, 1001, 1000, NOW(), '2023-01-01 09:00:00', 'Running and Chocolate Tracker App', 1, 1, FALSE);
 SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
 
 -- Insert into student_works

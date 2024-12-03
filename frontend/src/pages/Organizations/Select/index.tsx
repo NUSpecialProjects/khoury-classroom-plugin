@@ -21,9 +21,11 @@ const OrganizationSelection: React.FC = () => {
         const data: IOrganizationsResponse = await getAppInstallations();
         //checking if data exists before populating and setting lists
         if (data.orgs_with_app) {
+          console.log(data.orgs_with_app)
           setOrgsWithApp(data.orgs_with_app);
         }
         if (data.orgs_without_app) {
+          console.log(data.orgs_without_app)
           setOrgsWithoutApp(data.orgs_without_app);
         }
       } catch (_) {
