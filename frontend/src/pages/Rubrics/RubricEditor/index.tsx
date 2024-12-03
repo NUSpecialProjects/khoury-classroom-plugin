@@ -9,7 +9,7 @@ import { createRubric, updateRubric } from "@/api/rubrics";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { setAssignmentRubric } from "@/api/assignments";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 
 interface IEditableItem {
