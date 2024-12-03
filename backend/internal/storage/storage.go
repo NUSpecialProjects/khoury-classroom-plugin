@@ -72,7 +72,6 @@ type AssignmentOutline interface {
 	GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentName string, classroom int64) (*models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
 	UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error)
-	GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assignmentID int64) (models.AssignmentOutlineWithTemplate, error)
 	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
 	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
 }
