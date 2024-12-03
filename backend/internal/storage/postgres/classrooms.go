@@ -109,11 +109,8 @@ func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, classro
 }
 
 func (db *DB) RemoveUserFromClassroom(ctx context.Context, classroomID int64, userID int64) error {
-	_, err := db.connPool.Exec(ctx, "DELETE FROM classroom_membership WHERE classroom_id = $1 AND user_id = $2", classroomID, userID)
-	if err != nil {
-		return errs.NewDBError(err)
-	}
-	return nil
+	_, err := db.ModifyUserStatus(ctx, classroomID, models.UserStatusRemoved, userID)
+	return err
 }
 
 func (db *DB) ModifyUserRole(ctx context.Context, classroomID int64, classroomRole string, userID int64) (models.ClassroomUser, error) {

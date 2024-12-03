@@ -13,6 +13,7 @@ type UserStatus string
 
 const (
 	UserStatusNotInOrg   UserStatus = "NOT_IN_ORG"
+	UserStatusRemoved    UserStatus = "REMOVED"
 	UserStatusRequested  UserStatus = "REQUESTED"
 	UserStatusOrgInvited UserStatus = "ORG_INVITED"
 	UserStatusActive     UserStatus = "ACTIVE"
@@ -22,6 +23,8 @@ func NewUserStatus(status string) (UserStatus, error) {
 	switch status {
 	case "NOT_IN_ORG":
 		return UserStatusNotInOrg, nil
+	case "REMOVED":
+		return UserStatusRemoved, nil
 	case "REQUESTED":
 		return UserStatusRequested, nil
 	case "ORG_INVITED":
