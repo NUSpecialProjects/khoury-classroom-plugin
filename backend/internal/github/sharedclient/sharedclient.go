@@ -2,6 +2,7 @@ package sharedclient
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -155,40 +156,93 @@ func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.Use
 	return user, err
 }
 
-//Given a repo name and org name, create a push ruleset to protect the .github directory
-func (api *CommonAPI) CreatePushRuleset(ctx context.Context, orgName, repoName string) error {
-	endpoint := fmt.Sprintf("/repos/%s/%s/rulesets", orgName, repoName)
 
-	body := map[string]interface{}{
-        "name":       "Restrict .github Directory Edits: Preserves Submission Deadline",
-        "target":     "branch",
-        "enforcement": "active",
-        "rules": []map[string]interface{}{
-            {
-                "type": "file_path",
-                "parameters": map[string]interface{}{
-                    "operator": "starts_with",
-                    "pattern":  ".github/",
-                },
-                "actions": map[string]interface{}{
-                    "block": map[string]interface{}{
-                        "enabled": true,
-                        "reason":  "Modification of the .github directory is restricted. Please contact course staff for an extension",
-                    },
-                },
-            },
-        },
-    }
-	req, err := api.Client.NewRequest("POST", endpoint, body)
+
+func (api *CommonAPI) createRuleSet(ctx context.Context, ruleset interface{}, orgName, repoName string) error {
+	fmt.Printf("Ruleset:%v\n\n", ruleset)
+	endpoint := fmt.Sprintf("/repos/%s/%s/rulesets", orgName, repoName)
+	req, err := api.Client.NewRequest("POST", endpoint, ruleset)
 	if err != nil {
 		fmt.Printf("Request Construction failed")
+		return err
 	}
 
-	_, err = api.Client.Do(ctx, req, nil)
+	resp, err := api.Client.Do(ctx, req, nil)
 	if err != nil {
-		fmt.Printf("request execution failed")
+		fmt.Printf("request execution failed\n\n")
+		fmt.Printf("Request:%v\n\n", req)
+		fmt.Printf("Response: %v\n\n", resp)
+		fmt.Printf("Error: %v\n\n", err)
+		return err
 	}
 
 	return nil
 	
+
+}
+
+//Given a repo name and org name, create a push ruleset to protect the .github directory
+func (api *CommonAPI) CreatePushRuleset(ctx context.Context, orgName, repoName string) error {
+
+	body := map[string]interface{}{
+		"name":        "Restrict .github Directory Edits: Preserves Submission Deadline",
+		"target":      "push",
+		"enforcement": "active",
+		"rules": []map[string]interface{}{
+			{
+				"type": "file_path_restriction",
+				"parameters": map[string]interface{}{
+					"restricted_file_paths": []string{".github/**/*"},
+
+				},
+			},
+		},
+	}
+	return api.createRuleSet(ctx, body, orgName, repoName)
+}
+
+
+
+
+
+
+func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, orgName, repoName string) error {
+
+	addition := models.RepositoryAddition{
+		FilePath: ".github/workflows/deadline.yml",
+		RepoName: repoName,
+		OwnerName: orgName,
+		DestinationBranch: "main",
+		Content: "example",
+		CommitMessage: "Deadline enforcement GH action files",
+	}
+	return api.EditRepository(ctx, &addition)
+
+}
+
+func (api *CommonAPI) EditRepository(ctx context.Context, addition *models.RepositoryAddition) error {
+	fmt.Println("Reached function correctly")
+	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", addition.OwnerName, addition.RepoName, addition.FilePath)
+	encodedContent := base64.StdEncoding.EncodeToString([]byte(addition.Content))
+
+	body := map[string]interface{}{
+		"message": addition.CommitMessage,
+		"content": encodedContent,
+		"branch": addition.DestinationBranch,
+	}
+
+	req, err := api.Client.NewRequest("PUT", endpoint, body)
+	fmt.Println("Body: ", req)
+	if err != nil {
+		fmt.Printf("Request Construction failed: %s", addition.CommitMessage)
+	}
+
+	resp, err := api.Client.Do(ctx, req, nil)
+	if err != nil {
+		fmt.Printf("request execution failed: %s", addition.CommitMessage)
+		fmt.Println(err.Error())
+	}
+
+	fmt.Println(resp)
+	return nil
 }

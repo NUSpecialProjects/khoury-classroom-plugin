@@ -30,6 +30,8 @@ type GitHubAppClient interface { // All methods in the APP client
 
 	// Add a repository permission to a user
 	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
+
+	CreateDeadlineEnforcement(ctx context.Context, orgName, repoName string) error
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
@@ -48,6 +50,7 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
 
 	ForkRepository(ctx context.Context, org, owner, repo, destName string) error
+
 	// Create Branch protections for a given repo in an org
 	CreatePushRuleset(ctx context.Context, orgName, repoName string) error
 }
