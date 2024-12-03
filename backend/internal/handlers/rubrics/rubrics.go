@@ -39,10 +39,10 @@ func (s *RubricService) CreateRubric() fiber.Handler {
 			createdItems = append(createdItems, createdItem)
 		}
 
-        createdFullRubric := models.FullRubric {
-            Rubric:      createdRubric,
-            RubricItems: createdItems,
-        }
+		createdFullRubric := models.FullRubric{
+			Rubric:      createdRubric,
+			RubricItems: createdItems,
+		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"full_rubric": createdFullRubric,
@@ -67,13 +67,13 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		fullRubric := models.FullRubric {
-            Rubric:      rubric,
-            RubricItems: rubricItems,
-        }
+		fullRubric := models.FullRubric{
+			Rubric:      rubric,
+			RubricItems: rubricItems,
+		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-            "full_rubric": fullRubric,
+			"full_rubric": fullRubric,
 		})
 
 	}
@@ -118,13 +118,13 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
 			}
 		}
 
-        updatedFullRubric := models.FullRubric {
-            Rubric:      updatedRubric,
-            RubricItems: updatedItems,
-        }
+		updatedFullRubric := models.FullRubric{
+			Rubric:      updatedRubric,
+			RubricItems: updatedItems,
+		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-            "full_rubric": updatedFullRubric,
+			"full_rubric": updatedFullRubric,
 		})
 	}
 }
