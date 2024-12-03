@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 )
@@ -17,6 +18,7 @@ type Storage interface {
 	AssignmentOutline
 	Rubric
 	AssignmentTemplate
+	AssignmentBaseRepo
 }
 
 type FeedbackComment interface {
@@ -28,7 +30,7 @@ type FeedbackComment interface {
 type Works interface {
 	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
 	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
-	CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error
+	CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error)
 }
 
 type Test interface {
@@ -66,9 +68,10 @@ type User interface {
 type AssignmentOutline interface {
 	GetAssignmentsInClassroom(ctx context.Context, classroomID int64) ([]models.AssignmentOutline, error)
 	GetAssignmentByID(ctx context.Context, assignmentID int64) (models.AssignmentOutline, error)
+	GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error)
+	GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentName string, classroom int64) (*models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
 
-	GetAssignmentWithTemplateByAssignmentID(ctx context.Context, assignmentID int64) (models.AssignmentOutlineWithTemplate, error)
 	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
 	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
 }
@@ -77,6 +80,11 @@ type AssignmentTemplate interface {
 	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
 	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
 	GetAssignmentTemplateByID(ctx context.Context, templateID int64) (models.AssignmentTemplate, error)
+}
+
+type AssignmentBaseRepo interface {
+	CreateBaseRepo(ctx context.Context, baseRepoData models.AssignmentBaseRepo) error
+	GetBaseRepoByID(ctx context.Context, id int64) (models.AssignmentBaseRepo, error)
 }
 
 type Rubric interface {
