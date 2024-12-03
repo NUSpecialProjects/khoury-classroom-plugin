@@ -5,7 +5,7 @@ interface IRubricItemProps {
     name: string;
     points: string;
     impact?: boolean;
-    onChange: (updatedFields: Partial<{ explanation: string; point_value: number; impact: boolean }>) => void;
+    onChange: (updatedFields: Partial<{ explanation: string; point_value: number | null; impact: boolean }>) => void;
 }
 
 enum FeedbackType {
@@ -33,13 +33,14 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
 
     const handlePointsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
+        console.log(value)
         if (value === "") {
             setDisplayPoints("")
             onChange({ point_value: null })
             return;
         }
     
-        const pointValue = parseInt(value, 10);
+        const pointValue = Math.abs(parseInt(value, 10));
         if (!isNaN(pointValue)) {
             setDisplayPoints(pointValue.toString())
             updatePointsBasedOnDeduction(pointValue, selection);

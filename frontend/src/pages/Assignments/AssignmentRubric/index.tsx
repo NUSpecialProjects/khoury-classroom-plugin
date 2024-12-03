@@ -119,7 +119,7 @@ const AssignmentRubric: React.FC = () => {
                   rubricData.rubric_items.map((item, i: number) => (
                     <TableRow key={i}>
                       <TableCell> {item.explanation} </TableCell>
-                      <TableCell> {item.point_value > 0 ? "+" + item.point_value : item.point_value} </TableCell>
+                      <TableCell> {item.point_value ? (item.point_value > 0 ? "+" + item.point_value : item.point_value) : ""} </TableCell>
                     </TableRow>
                   ))}
               </Table>

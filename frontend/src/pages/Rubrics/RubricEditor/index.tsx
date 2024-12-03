@@ -14,6 +14,11 @@ interface IEditableItem {
     rubricItem: IRubricItem;
 }
 
+interface IRubricLineItem {
+    explanation: string,
+    point_value: number,
+    impact: boolean | undefined
+}
 
 const RubricEditor: React.FC = () => {
     const location = useLocation()
@@ -30,9 +35,11 @@ const RubricEditor: React.FC = () => {
 
     // if there has been any changes since last save
     const [rubricEdited, setRubricEdited] = useState(false)
- 
+
+    //error handling
     const [failedToSave, setFailedToSave] = useState(false)
     const [invalidPointValue, setInvalidPointValue] = useState(false)
+    const [invalidExplanation, setInvalidExplanation] = useState(false)
 
 
     // front end id for each rubric item, kept track of using a counter
@@ -44,7 +51,7 @@ const RubricEditor: React.FC = () => {
         frontFacingIndex: itemCount,
         rubricItem: {
             id: null,
-            point_value: 0,
+            point_value: null,
             explanation: "",
             rubric_id: null,
             created_at: null
@@ -56,20 +63,26 @@ const RubricEditor: React.FC = () => {
     }
     // saving the rubric, creates a rubric in the backendindex
     const saveRubric = async () => {
-        if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited && !invalidPointValue) {
+        if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
-            
+
             //validate items
-            rubricItems.forEach((item) => {
-                if (item.point_value === null) {
-                    console.log("bad point value")
-                    setInvalidPointValue(true)
+            for (const item of rubricItems) {
+                if (item.explanation === "") {
+                    setInvalidExplanation(true)
                     setFailedToSave(true)
                     return;
                 }
-                console.log("does this hit?")
+
+                if (item.point_value === null) {
+                    setInvalidPointValue(true);
+                    setFailedToSave(true);
+                    return;
+                }
+
                 setInvalidPointValue(false)
-            });
+                setInvalidExplanation(false)
+            }
 
 
 
@@ -93,7 +106,7 @@ const RubricEditor: React.FC = () => {
                         setFailedToSave(false)
                         setRubricData(updatedRubric)
                         if (assignmentData !== null && assignmentData !== undefined) {
-                           setAssignmentRubric(updatedRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
+                            setAssignmentRubric(updatedRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
                         }
                         navigate(-1)
                     })
@@ -117,30 +130,34 @@ const RubricEditor: React.FC = () => {
                         setFailedToSave(true)
                     });
             }
-        } else if (invalidPointValue) {
+        } else if (invalidPointValue || invalidExplanation) {
             setFailedToSave(true)
         }
     };
 
     // handles when any rubric item is updated
-    const handleItemChange = (id: number, updatedFields: Partial<IRubricItem>) => {
+    const handleItemChange = (id: number, updatedFields: Partial<IRubricLineItem>) => {
         setRubricEdited(true);
+        
+        // if (updatedFields.impact == undefined && updatedFields.point_value !== 0) {
+
+        // }
 
         setRubricItemData((prevItems) =>
             prevItems.map((item) =>
                 item.frontFacingIndex === id
                     ? {
-                          ...item,
-                          rubricItem: {
+                        ...item,
+                        rubricItem: {
                             ...item.rubricItem,
                             ...updatedFields,
                         },
-                      }
+                    }
                     : item
             )
         );
     };
-    
+
 
 
     // handles when the rubric's name is changed
@@ -204,18 +221,23 @@ const RubricEditor: React.FC = () => {
                 {rubricEdited ? "*" : ""}
             </div>
 
-            {failedToSave && 
+            {failedToSave &&
                 <div className="NewRubric__title__FailedSave">
                     {"Couldn't save rubric. Please try again."}
                 </div>
             }
 
-            {failedToSave && invalidPointValue && 
+            {failedToSave && invalidPointValue &&
                 <div className="NewRubric__title__FailedSave">
-                    {"Point values cannot be empty."}
+                    {" - Point values cannot be empty."}
                 </div>
             }
-            
+
+            {failedToSave && invalidExplanation &&
+                <div className="NewRubric__title__FailedSave">
+                    {" - Item explanations cannot be empty."}
+                </div>
+            }
 
 
             <Input
@@ -240,6 +262,8 @@ const RubricEditor: React.FC = () => {
                         }
                         onChange={(newItem) => handleItemChange(item.frontFacingIndex, newItem)}
                     />
+
+
                 ))
             }
 
