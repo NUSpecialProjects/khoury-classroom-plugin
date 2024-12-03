@@ -2,7 +2,6 @@ import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
-import { ChartOptions } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
@@ -38,8 +37,8 @@ const Assignment: React.FC = () => {
     labels: ["Committed", "Accepted", "Not Accepted"],
     datasets: [
       {
-        backgroundColor: ["#219386", "#f69c0e", "#f83b5c"], // Setting up the background color for the dataset
-        data: [29, 5, 4], // Setting up the data for the dataset
+        backgroundColor: ["#219386", "#f69c0e", "#f83b5c"],
+        data: [29, 5, 4],
       },
     ],
   };
@@ -48,9 +47,8 @@ const Assignment: React.FC = () => {
     labels: ["Graded", "Ungraded"],
     datasets: [
       {
-        label: "My First dataset", // Setting up the label for the dataset
-        backgroundColor: ["#219386", "#e5e7eb"], // Setting up the background color for the dataset
-        data: [3000, 700], // Setting up the data for the dataset
+        backgroundColor: ["#219386", "#e5e7eb"],
+        data: [3000, 700],
       },
     ],
   };
@@ -174,7 +172,7 @@ const Assignment: React.FC = () => {
                   data={data1}
                   options={{
                     maintainAspectRatio: false,
-                    indexAxis: "y", // Horizontal bars
+                    indexAxis: "y",
                     layout: {
                       padding: {
                         right: 50,
@@ -231,6 +229,9 @@ const Assignment: React.FC = () => {
                         font: {
                           size: 12,
                         },
+                      },
+                      tooltip: {
+                        enabled: false,
                       },
                     },
                     cutout: "50%",
