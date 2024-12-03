@@ -39,6 +39,7 @@
   &__externalButtons {
     display: flex;
     flex-direction: row;
+    padding: 20px;
     padding-bottom: 30px;
     gap: 20px;
 
@@ -47,19 +48,7 @@
     }
   }
 
-  &____contentWrapper {
-    padding: 20px;
-  }
-
-  &__metricsWrapper {
-    padding: 20px;
-  }
-
-  &__assignmentsWrapper {
-    padding: 20px;
-  }
-
   &__subSectionWrapper {
-    padding-bottom: 20px;
+    padding: 20px;
   }
 }

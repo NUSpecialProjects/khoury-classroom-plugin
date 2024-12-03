@@ -22,7 +22,8 @@
 
   &__classroomDetailsWrapper {
     display: flex;
-    gap: 15px;
+    width: 100%;
+    gap: 10px;
   }
 
   &__assignmentsHeader {
@@ -37,7 +38,7 @@
     margin-left: auto;
   }
 
-  &__assignmentsWrapper {
+  &__sectionWrapper {
     padding: 20px;
   }
 }
