@@ -222,6 +222,11 @@ const Assignment: React.FC = () => {
                         grid: {
                           display: false,
                         },
+                        ticks: {
+                          font: {
+                            size: 10,
+                          },
+                        },
                       },
                     },
                     plugins: {
@@ -233,7 +238,7 @@ const Assignment: React.FC = () => {
                         anchor: "end",
                         color: "#000",
                         font: {
-                          size: 12,
+                          size: 10,
                         },
                       },
                       tooltip: {
@@ -263,7 +268,7 @@ const Assignment: React.FC = () => {
                       datalabels: {
                         color: ["#fff", "#000"],
                         font: {
-                          size: 12,
+                          size: 10,
                         },
                       },
                       tooltip: {
