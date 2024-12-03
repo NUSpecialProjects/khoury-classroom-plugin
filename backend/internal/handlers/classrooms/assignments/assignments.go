@@ -258,7 +258,7 @@ func (s *AssignmentService) getAssignmentRubric() fiber.Handler {
 		}
 
 		if assignment.RubricID == nil {
-			return c.Status(http.StatusOK).JSON(nil)
+			return errs.NotFound("rubric", "assignment_id", assignmentID)
 		}
 
 		rubric, err := s.store.GetRubric(c.Context(), *assignment.RubricID)
