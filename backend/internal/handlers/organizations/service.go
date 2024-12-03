@@ -7,19 +7,19 @@ import (
 )
 
 type OrganizationService struct {
-	store           storage.Storage
-	githubappclient github.GitHubAppClient
-	userCfg         *config.GitHubUserClient
+	store     storage.Storage
+	appClient github.GitHubAppClient
+	userCfg   *config.GitHubUserClient
 }
 
 func NewOrganizationService(
 	store storage.Storage,
-	githubappclient github.GitHubAppClient,
+	appClient github.GitHubAppClient,
 	userCfg *config.GitHubUserClient,
 ) *OrganizationService {
 	return &OrganizationService{
-		store:           store,
-		githubappclient: githubappclient,
-		userCfg:         userCfg,
+		store:     store,
+		appClient: appClient,
+		userCfg:   userCfg,
 	}
 }

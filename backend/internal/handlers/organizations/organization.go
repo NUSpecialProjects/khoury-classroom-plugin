@@ -40,7 +40,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 			return errs.GithubClientError(err)
 		}
 		// Get the app client
-		appClient := service.githubappclient
+		appClient := service.appClient
 
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())

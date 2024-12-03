@@ -15,7 +15,7 @@ func (s *WorkService) GetFileTree() fiber.Handler {
 			return err
 		}
 
-		tree, err := s.githubappclient.GetFileTree(work.OrgName, work.RepoName)
+		tree, err := s.appClient.GetFileTree(work.OrgName, work.RepoName)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
@@ -37,7 +37,7 @@ func (s *WorkService) GetFileBlob() fiber.Handler {
 			return errs.BadRequest(errors.New("missing blob SHA"))
 		}
 
-		content, err := s.githubappclient.GetFileBlob(work.OrgName, work.RepoName, c.Params("sha"))
+		content, err := s.appClient.GetFileBlob(work.OrgName, work.RepoName, c.Params("sha"))
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
