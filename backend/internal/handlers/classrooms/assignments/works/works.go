@@ -24,7 +24,12 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		assignmentWithTemplate, err := s.store.GetAssignmentWithTemplateByAssignmentID(c.Context(), assignmentID)
+		assignmentOutline, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		assignmentTemplate, err := s.store.GetAssignmentTemplateByID(c.Context(), assignmentOutline.TemplateID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -32,6 +37,10 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 		works, err := s.store.GetWorks(c.Context(), classroomID, assignmentID)
 		if err != nil {
 			return err
+		}
+
+		for _, work := range works {
+			fmt.Println(work.Contributors)
 		}
 
 		// get list of students in class to get which students havent accepted the assignment
@@ -45,7 +54,7 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 		mockWorks := []*models.StudentWorkWithContributors{}
 		for _, student := range studentsWithoutWorks {
 			fmt.Println(student)
-			mockWorks = append(mockWorks, generateNotAcceptedWork(student, assignmentWithTemplate))
+			mockWorks = append(mockWorks, generateNotAcceptedWork(student, assignmentOutline, assignmentTemplate))
 		}
 
 		works = append(works, mockWorks...)
@@ -56,23 +65,23 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 	}
 }
 
-func generateNotAcceptedWork(student models.ClassroomUser, assignmentWithTemplate models.AssignmentOutlineWithTemplate) *models.StudentWorkWithContributors {
+func generateNotAcceptedWork(student models.ClassroomUser, assignmentOutline models.AssignmentOutline, assignmentTemplate models.AssignmentTemplate) *models.StudentWorkWithContributors {
 	return &models.StudentWorkWithContributors{
 		StudentWork: models.StudentWork{
 			ID:                       -1,
-			OrgName:                  assignmentWithTemplate.Template.TemplateRepoOwner, // This will eventually not always be the org name once we support templates outside of the org
-			ClassroomID:              assignmentWithTemplate.AssignmentOutline.ClassroomID,
-			AssignmentName:           &assignmentWithTemplate.AssignmentOutline.Name,
-			AssignmentOutlineID:      assignmentWithTemplate.AssignmentOutline.ID,
-			RepoName:                 assignmentWithTemplate.Template.TemplateRepoName,
-			UniqueDueDate:            assignmentWithTemplate.AssignmentOutline.MainDueDate,
+			OrgName:                  assignmentTemplate.TemplateRepoOwner, // This will eventually not always be the org name once we support templates outside of the org
+			ClassroomID:              assignmentOutline.ClassroomID,
+			AssignmentName:           &assignmentOutline.Name,
+			AssignmentOutlineID:      assignmentOutline.ID,
+			RepoName:                 assignmentTemplate.TemplateRepoName,
+			UniqueDueDate:            assignmentOutline.MainDueDate,
 			ManualFeedbackScore:      nil,
 			AutoGraderScore:          nil,
 			GradesPublishedTimestamp: nil,
 			WorkState:                models.WorkStateNotAccepted,
 			CreatedAt:                time.Unix(0, 0),
 		},
-		Contributors: []string{fmt.Sprintf("%s %s", student.FirstName, student.LastName)},
+		Contributors: []models.User{student.User},
 	}
 }
 
@@ -80,7 +89,7 @@ func generateNotAcceptedWork(student models.ClassroomUser, assignmentWithTemplat
 func filterStudentsWithoutWorks(students []models.ClassroomUser, works []*models.StudentWorkWithContributors) []models.ClassroomUser {
 	var studentsWithoutWorks []models.ClassroomUser
 	for _, student := range students {
-		if (student.Role == models.Student) && !studentWorkExists(*student.ID, works) {
+		if (student.Role == models.Student) && !studentWorkExists(student.GithubUsername, works) {
 			studentsWithoutWorks = append(studentsWithoutWorks, student)
 		}
 	}
@@ -88,12 +97,16 @@ func filterStudentsWithoutWorks(students []models.ClassroomUser, works []*models
 }
 
 // checks if a student has accepted the assignment
-func studentWorkExists(studentID int64, works []*models.StudentWorkWithContributors) bool {
+func studentWorkExists(studentLogin string, works []*models.StudentWorkWithContributors) bool {
 	for _, work := range works {
-		if work.ID == studentID {
-			return true
+		for _, contributor := range work.Contributors {
+			if contributor.GithubUsername == studentLogin {
+				fmt.Println("student work exists for ", studentLogin)
+				return true
+			}
 		}
 	}
+	fmt.Println("student work does not exist for ", studentLogin)
 	return false
 }
 

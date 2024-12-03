@@ -137,7 +137,7 @@ WHERE student_work_id = $3
 	return formatted[0], nil
 }
 
-func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error) {
+func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int64, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error) {
 	var studentWork models.StudentWork
 
 	//Get internal ID of inserting user

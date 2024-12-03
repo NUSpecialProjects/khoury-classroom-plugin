@@ -78,12 +78,12 @@ type RawPaginatedStudentWork struct {
 // a formatted (squashed) view of a student work: combine separate contributor entries on a common student work
 type StudentWorkWithContributors struct {
 	StudentWork
-	Contributors []string `json:"contributors"`
+	Contributors []User `json:"contributors"`
 }
 
 type PaginatedStudentWorkWithContributors struct {
 	PaginatedStudentWork
-	Contributors []string `json:"contributors"`
+	Contributors []User `json:"contributors"`
 }
 
 type IStudentWork interface {
@@ -93,7 +93,7 @@ type IStudentWork interface {
 }
 
 type IFormattedStudentWork interface {
-	AddContributor(contributor string)
+	AddContributor(contributor User)
 }
 
 func (w RawStudentWork) GetID() int64         { return w.ID }
@@ -104,10 +104,10 @@ func (w RawPaginatedStudentWork) GetID() int64         { return w.ID }
 func (w RawPaginatedStudentWork) GetFirstName() string { return w.FirstName }
 func (w RawPaginatedStudentWork) GetLastName() string  { return w.LastName }
 
-func (w *StudentWorkWithContributors) AddContributor(contributor string) {
+func (w *StudentWorkWithContributors) AddContributor(contributor User) {
 	w.Contributors = append(w.Contributors, contributor)
 }
 
-func (w *PaginatedStudentWorkWithContributors) AddContributor(contributor string) {
+func (w *PaginatedStudentWorkWithContributors) AddContributor(contributor User) {
 	w.Contributors = append(w.Contributors, contributor)
 }
