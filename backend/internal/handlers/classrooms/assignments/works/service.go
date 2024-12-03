@@ -3,6 +3,7 @@ package works
 import (
 	"strconv"
 
+	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -11,16 +12,17 @@ import (
 )
 
 type WorkService struct {
-	store           storage.Storage
-	githubappclient github.GitHubAppClient
+	store     storage.Storage
+	userCfg   *config.GitHubUserClient
+	appClient github.GitHubAppClient
 }
 
-func NewWorkService(store storage.Storage, githubappclient github.GitHubAppClient) *WorkService {
-	return &WorkService{store: store, githubappclient: githubappclient}
+func NewWorkService(store storage.Storage, userCfg *config.GitHubUserClient, appClient github.GitHubAppClient) *WorkService {
+	return &WorkService{store: store, userCfg: userCfg, appClient: appClient}
 }
 
 // Helper function for getting a student work by ID
-func getWork(s *WorkService, c *fiber.Ctx) (*models.PaginatedStudentWorkWithContributors, error) {
+func (s *WorkService) getWork(c *fiber.Ctx) (*models.PaginatedStudentWorkWithContributors, error) {
 	classroomID, err := strconv.Atoi(c.Params("classroom_id"))
 	if err != nil {
 		return nil, errs.BadRequest(err)

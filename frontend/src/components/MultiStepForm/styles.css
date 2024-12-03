@@ -1,0 +1,38 @@
+.MultiStepForm {
+    position: relative;
+
+    /* Style for the current form step */
+    &__formStep {
+        margin-bottom: 20px;
+    }
+
+    /* Style for displaying error messages */
+    &__error {
+        color: red;
+        margin-bottom: 10px;
+    }
+
+    /* Navigation buttons wrapper */
+    &__formNavigationButtonsWrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        width: fit-content;
+        padding-top: 20px;
+    }
+
+    /* Spinner Overlay Styles */
+    &__spinnerOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        border-radius: 8px;
+    }
+}

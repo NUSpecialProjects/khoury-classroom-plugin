@@ -25,4 +25,9 @@
     font-weight: 500;
     padding-bottom: 10px;
   }
+
+  &__caption {
+    color: var(--caption-text);
+    font-size: var(--font-size-xs);
+  }
 }

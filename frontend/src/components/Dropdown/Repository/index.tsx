@@ -1,9 +1,10 @@
 import React, { ChangeEvent } from 'react';
+import '../styles.css';
 
-interface IRepositoryDropdownProps {
-    repositories: IRepository[];
-    onChange?: (selectedTemplate: IRepository) => void;
-    selectedRepo: IRepository | null;
+interface ITemplateRepoDropdownProps {
+    repositories: ITemplateRepo[];
+    onChange?: (selectedTemplate: ITemplateRepo) => void;
+    selectedRepo: ITemplateRepo | null;
     loading: boolean;
 }
 
@@ -11,7 +12,7 @@ const PLACEHOLDER_OPTION = 'Select a repository';
 const LOADING_OPTION = 'Loading repositories...';
 const NO_REPOSITORIES_OPTION = 'No repositories available';
 
-const RepositoryDropdown: React.FC<IRepositoryDropdownProps> = ({
+const TemplateRepoDropdown: React.FC<ITemplateRepoDropdownProps> = ({
     onChange,
     repositories,
     selectedRepo,
@@ -19,7 +20,7 @@ const RepositoryDropdown: React.FC<IRepositoryDropdownProps> = ({
 }) => {
     const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(event.target.value, 10);
-        const selectedRepo = repositories.find((repo) => repo.id === selectedId);
+        const selectedRepo = repositories.find((repo) => repo.template_repo_id === selectedId);
 
         if (onChange && selectedRepo) {
             onChange(selectedRepo);
@@ -42,23 +43,30 @@ const RepositoryDropdown: React.FC<IRepositoryDropdownProps> = ({
         }
 
         return repositories.map((repo) => (
-            <option key={repo.id} value={repo.id}>
-                {repo.name}
+            <option key={repo.template_repo_id} value={repo.template_repo_id}>
+                {repo.template_repo_name}
             </option>
         ));
     };
 
     return (
-        <select
-            value={selectedRepo?.id ?? ''}
-            onChange={handleChange}
-        >
-            <option value="" disabled>
-                {PLACEHOLDER_OPTION}
-            </option>
-            {renderOptions()}
-        </select>
+        <div className="Dropdown__wrapper">
+            <label className="Dropdown__label" htmlFor="organization">
+                Pick a template repository to use as the starter code
+            </label>
+            <select
+                className="Dropdown"
+                value={selectedRepo?.template_repo_id ?? ''}
+                onChange={handleChange}
+            >
+                <option className="Dropdown__option" value="" disabled>
+                    {PLACEHOLDER_OPTION}
+                </option>
+                {renderOptions()}
+            </select>
+            <div className='Dropdown__caption'>The template repository <b>must</b> be owned by the organization you are in</div>
+        </div>
     );
 };
 
-export default RepositoryDropdown;
+export default TemplateRepoDropdown;

@@ -1,0 +1,17 @@
+.emptyDataBanner {
+    padding: 60px;
+    margin: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    background-color: var(--page-background);
+    border-style: var(--border-style);
+    border-width: var(--border-width);
+    border-color: var(--dark-border-color);
+    border-radius: 5px;
+    color: var(--caption-text);
+    font-size: var(--body-font-size);
+    line-height: 150%;
+    text-align: center;
+}

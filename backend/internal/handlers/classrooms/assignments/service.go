@@ -14,5 +14,4 @@ type AssignmentService struct {
 
 func NewAssignmentService(store storage.Storage, userCfg *config.GitHubUserClient, appClient github.GitHubAppClient) *AssignmentService {
 	return &AssignmentService{store: store, userCfg: userCfg, appClient: appClient}
-
 }

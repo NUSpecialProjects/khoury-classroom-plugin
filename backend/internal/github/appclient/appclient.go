@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
+	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 	"github.com/jferrl/go-githubauth"
 	"golang.org/x/oauth2"
@@ -91,40 +93,11 @@ func (api *AppAPI) ListInstallations(ctx context.Context) ([]*github.Installatio
 	return installations, nil
 }
 
-func (api *AppAPI) GetGitTree(owner string, repo string) ([]github.TreeEntry, error) {
-	// Get the reference to the branch
-	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
-	if err != nil {
-		return nil, fmt.Errorf("error fetching branch ref: %v", err)
-	}
-
-	// Get the commit from the ref
-	commitSHA := ref.Object.GetSHA()
-	commit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, commitSHA)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching commit: %v", err)
-	}
-
-	treeSHA := commit.Tree.GetSHA()
-	tree, _, err := api.Client.Git.GetTree(context.Background(), owner, repo, treeSHA, true)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching tree: %v", err)
-	}
-
-	return tree.Entries, nil
-}
-
-func (api *AppAPI) GetGitBlob(owner string, repo string, sha string) ([]byte, error) {
-	contents, _, err := api.Client.Git.GetBlobRaw(context.Background(), owner, repo, sha)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching contents: %v", err)
-	}
-	return contents, nil
-}
-
-func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error) {
+func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error) {
 	team := &github.NewTeam{
-		Name: teamName,
+		Name:        teamName,
+		Description: description,
+		Maintainers: maintainers,
 	}
 
 	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
@@ -168,4 +141,31 @@ func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string,
 	}
 
 	return nil
+}
+
+func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) (*models.AssignmentBaseRepo, error) {
+	endpoint := fmt.Sprintf("/repos/%s/%s/generate", orgName, templateRepoName)
+
+	// Construct the request
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+		"name":    newRepoName,
+		"owner":   orgName,
+		"private": true,
+	})
+	if err != nil {
+		return nil, errs.GithubAPIError(err)
+	}
+
+	// Execute the request
+	var repo *models.Repository
+	_, err = api.Client.Do(ctx, req, &repo)
+	if err != nil {
+		return nil, errs.GithubAPIError(err)
+	}
+
+	return &models.AssignmentBaseRepo{
+		BaseRepoOwner: orgName,
+		BaseRepoName:  newRepoName,
+		BaseID:        repo.ID,
+	}, nil
 }

@@ -3,7 +3,6 @@ package github
 import (
 	"context"
 
-	"github.com/CamPlume1/khoury-classroom/internal/config"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
@@ -16,11 +15,11 @@ type GitHubAppClient interface { // All methods in the APP client
 	// Get the installations of the github app
 	ListInstallations(ctx context.Context) ([]*github.Installation, error)
 
-	GetFileTree(owner string, repo string, pullNumber int) ([]models.FileTreeNode, error)
+	GetFileTree(owner string, repo string) ([]models.FileTreeNode, error)
 	GetFileBlob(owner string, repo string, sha string) ([]byte, error)
 
 	// Create a new team in an organization
-	CreateTeam(ctx context.Context, orgName, teamName string) (*github.Team, error)
+	CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error)
 
 	// Add a user to a team
 	AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error
@@ -32,13 +31,15 @@ type GitHubAppClient interface { // All methods in the APP client
 	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
 
 	CreateDeadlineEnforcement(ctx context.Context, orgName, repoName string) error
+	// Create instance of template repository
+	CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) (*models.AssignmentBaseRepo, error)
 }
 
 type GitHubUserClient interface { // All methods in the OAUTH client
 	GitHubBaseClient
 
 	// Get the details of an organization
-	GetOrg(ctx context.Context, orgName string) (*github.Organization, error)
+	GetOrg(ctx context.Context, orgName string) (*models.Organization, error)
 
 	// Get the current authenticated user
 	GetCurrentUser(ctx context.Context) (models.GitHubUser, error)
@@ -46,8 +47,11 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	// Get the organizations the authenticated user is part of
 	GetUserOrgs(ctx context.Context) ([]models.Organization, error)
 
-	// Callback for the OAUTH flow
-	GitHubCallback(code string, clientCfg config.GitHubUserClient) (string, error)
+	// Accept an invitation to an organization
+	AcceptOrgInvitation(ctx context.Context, orgName string) error
+
+	// Get the membership of the authenticated user to an organization (404 if not a member or invited)
+	GetCurrUserOrgMembership(ctx context.Context, orgName string) (*github.Membership, error)
 
 	ForkRepository(ctx context.Context, org, owner, repo, destName string) error
 
@@ -66,11 +70,8 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// List the commits in a repository
 	ListCommits(ctx context.Context, owner string, repo string, opts *github.CommitsListOptions) ([]*github.RepositoryCommit, error)
 
-	// Get the details of a branch
-	GetBranch(ctx context.Context, ownerName string, repoName string, branchName string) (*github.Branch, error)
-
 	// Create a new branch in a repository
-	CreateBranch(ctx context.Context, owner string, repo string, baseBranch string, newBranchName string) error
+	CreateBranch(ctx context.Context, owner, repo, baseBranch, newBranchName string) (*github.Reference, error)
 
 	// Get the details of a pull request
 	GetPullRequest(ctx context.Context, owner string, repo string, pullNumber int) (*github.PullRequest, error)
@@ -82,7 +83,26 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CreatePullRequest(ctx context.Context, owner string, repo string, baseBranch string, headBranch string, title string, body string) (*github.PullRequest, error)
 
 	// Create a new pull request review
-	CreatePRReview(ctx context.Context, owner string, repo string, pullNumber int, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
+	CreatePRReview(ctx context.Context, owner string, repo string, body string, comments []models.PRReviewComment) (*github.PullRequestComment, error)
 
+	// Get the details of a user
 	GetUser(ctx context.Context, userName string) (*github.User, error)
+
+	// Get the membership of a user to an organization (404 if not a member or invited)
+	GetUserOrgMembership(ctx context.Context, orgName string, userName string) (*github.Membership, error)
+
+	// Invite a user to an organization
+	InviteUserToOrganization(ctx context.Context, orgName string, userID int64) error
+
+	SetUserMembershipInOrg(ctx context.Context, orgName string, userName string, role string) error
+
+	CancelOrgInvitation(ctx context.Context, orgName string, userName string) error
+	// Get the details of a repository
+	GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error)
+
+	// Updates a team's permissions within a repository
+	UpdateTeamRepoPermissions(ctx context.Context, org, teamSlug, owner, repo, permission string) error
+
+	// Remove repository from team
+	RemoveRepoFromTeam(ctx context.Context, org, teamSlug, owner, repo string) error
 }

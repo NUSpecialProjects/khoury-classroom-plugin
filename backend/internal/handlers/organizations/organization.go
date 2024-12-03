@@ -41,7 +41,7 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 			return errs.GithubClientError(err)
 		}
 		// Get the app client
-		appClient := service.githubappclient
+		appClient := service.appClient
 
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
@@ -106,7 +106,22 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		classrooms, err := service.store.GetClassroomsInOrg(c.Context(), orgID)
+		client, err := middleware.GetClient(c, service.store, service.userCfg)
+		if err != nil {
+			return errs.GithubClientError(err)
+		}
+
+		currentGitHubUser, err := client.GetCurrentUser(c.Context())
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		user, err := service.store.GetUserByGitHubID(c.Context(), currentGitHubUser.ID)
+		if err != nil {
+			return errs.NewDBError(err)
+		}
+
+		classrooms, err := service.store.GetUserClassroomsInOrg(c.Context(), orgID, *user.ID)
 		if err != nil {
 			return err
 		}
@@ -145,13 +160,28 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 			return errs.GithubAPIError(err)
 		}
 
-		var templateRepos []models.Repository
+		var templateRepos []models.AssignmentTemplate
 		for _, repo := range repos {
 			if repo.IsTemplate && !repo.Archived {
-				templateRepos = append(templateRepos, *repo)
+				templateRepo := models.AssignmentTemplate{
+					TemplateRepoOwner: repo.Owner.Login,
+					TemplateRepoName:  repo.Name,
+					TemplateID:        repo.ID,
+				}
+				templateRepos = append(templateRepos, templateRepo)
+
+				// Store the template locally if it doesn't already exist
+				if exists, err := service.store.AssignmentTemplateExists(c.Context(), repo.ID); err != nil {
+					return errs.NewDBError(err)
+				} else if !exists {
+					_, err := service.store.CreateAssignmentTemplate(c.Context(), templateRepo)
+					if err != nil {
+						return errs.NewDBError(err)
+					}
+				}
 			}
 		}
 
-		return c.Status(200).JSON(fiber.Map{"template_repos": templateRepos})
+		return c.Status(200).JSON(fiber.Map{"templates": templateRepos})
 	}
 }

@@ -25,7 +25,6 @@ interface IClassroomToken {
   created_at: string;
 }
 
-interface IClassroomJoinResponse {
-  message: string;
+interface IClassroomJoinResponse extends ITokenUseResponse {
   classroom: IClassroom;
 }

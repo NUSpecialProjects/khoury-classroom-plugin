@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -17,10 +18,8 @@ const DesiredFields = `
 	sw.assignment_outline_id,
 	sw.repo_name,
 	sw.unique_due_date,
-	sw.submitted_pr_number,
 	sw.manual_feedback_score,
 	sw.auto_grader_score,
-	sw.submission_timestamp,
 	sw.grades_published_timestamp,
 	sw.work_state,
 	sw.created_at,
@@ -138,54 +137,53 @@ WHERE student_work_id = $3
 	return formatted[0], nil
 }
 
-
-
-func (db *DB) CreateStudentWork(ctx context.Context, work *models.StudentWork, GHUserID int64) error {
+func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error) {
+	var studentWork models.StudentWork
 
 	//Get internal ID of inserting user
-	var userID int 
-	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, GHUserID).Scan(&userID)
+	var userID int
+	err := db.connPool.QueryRow(ctx, `SELECT id FROM users WHERE github_user_id = $1`, gitHubUserID).Scan(&userID)
 	if err != nil {
-		return fmt.Errorf("user %d does not exist in database", userID)
+		return studentWork, fmt.Errorf("user %d does not exist in database", userID)
 	}
-	
+
 	// TODO: Make a single transaction once we institute atomicity infrastructure
-	var studentWorkID int
 	err = db.connPool.QueryRow(ctx,
 		`INSERT INTO student_works (assignment_outline_id,
     		repo_name,
     		unique_due_date,
-    		submitted_pr_number,
-    		manual_feedback_score,
-    		auto_grader_score,
-    		submission_timestamp,
-    		grades_published_timestamp,
     		work_state)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-		work.AssignmentOutlineID,
-		work.RepoName,
-		work.UniqueDueDate,
-		work.SubmittedPRNumber,
-		work.ManualFeedbackScore,
-		work.AutoGraderScore,
-		work.SubmissionTimestamp,
-		work.GradesPublishedTimestamp,
-		work.WorkState,
-	).Scan(&studentWorkID)
-
+        VALUES ($1, $2, $3, $4)
+		RETURNING id,
+			assignment_outline_id,
+			repo_name,
+			unique_due_date,
+			work_state,
+			created_at`,
+		assignmentOutlineID,
+		repoName,
+		dueDate,
+		workState,
+	).Scan(&studentWork.ID,
+		&studentWork.AssignmentOutlineID,
+		&studentWork.RepoName,
+		&studentWork.UniqueDueDate,
+		&studentWork.WorkState,
+		&studentWork.CreatedAt,
+	)
 	if err != nil {
-		return fmt.Errorf("error inserting student works")
+		return studentWork, fmt.Errorf("error inserting student works")
 	}
 
 	// Insert forking user as work contributor
 	_, err = db.connPool.Exec(ctx,
 		`INSERT INTO work_contributors (user_id, student_work_id) VALUES ($1, $2)`,
-		userID, 
-		studentWorkID,
+		userID,
+		studentWork.ID,
 	)
 	if err != nil {
-		return fmt.Errorf("error inserting work contributors")
+		return studentWork, fmt.Errorf("error inserting work contributors")
 	}
-	return nil
 
+	return studentWork, nil
 }

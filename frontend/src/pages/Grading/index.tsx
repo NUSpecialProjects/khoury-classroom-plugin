@@ -12,8 +12,13 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
+import PageHeader from "@/components/PageHeader";
 
 import "./styles.css";
+
+interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
+  assignmentId: number;
+}
 
 const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   assignmentId,
@@ -34,8 +39,8 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
       .then((studentAssignments) => {
         setStudentAssignments(studentAssignments);
       })
-      .catch((_) => {
-        // do nothing
+      .catch((err: unknown) => {
+        console.error("Error fetching student assignments:", err);
       });
   }, []);
 
@@ -69,7 +74,9 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                     );
                   }}
                 >
-                  <TableCell>{studentAssignment.contributors}</TableCell>
+                  <TableCell>
+                    {studentAssignment.contributors.join(", ")}
+                  </TableCell>
                   <TableCell>-/100</TableCell>
                 </TableRow>
               ))}
@@ -91,14 +98,14 @@ const Grading: React.FC = () => {
       .then((assignments) => {
         setAssignments(assignments);
       })
-      .catch((_) => {
-        // do nothing
+      .catch((err: unknown) => {
+        console.error("Error fetching assignments:", err);
       });
   }, []);
 
   return (
     <div className="Grading">
-      <h2 style={{ marginBottom: 0 }}>Assignments</h2>
+      <PageHeader pageTitle="Assignments"></PageHeader>
       <Table cols={4} primaryCol={1} className="AssignmentsTable">
         <TableRow style={{ borderTop: "none" }}>
           <TableCell></TableCell>
@@ -107,7 +114,7 @@ const Grading: React.FC = () => {
           <TableCell>Due Date</TableCell>
         </TableRow>
         {assignments.map((assignment, i: number) => (
-          <GradingAssignmentRow key={i} assignmentId={i + 1}>
+          <GradingAssignmentRow key={i} assignmentId={assignment.id}>
             <TableCell>{assignment.name}</TableCell>
             <TableCell>{formatDate(assignment.created_at)}</TableCell>
             <TableCell>{formatDate(assignment.main_due_date)}</TableCell>

@@ -10,29 +10,38 @@
     border-bottom-color: var(--border-color);
     padding-bottom: 10px;
   }
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.2rem;
-  }
+
   &__dates {
-    font-size: 0.9rem;
     display: flex;
+    width: fit-content;
     flex-direction: row;
-    gap: 30px;
+    gap: 10px;
+    color: var(--caption-text);
+  }
+
+  &__date {
+    display: flex;
+    width: fit-content;
+    flex-direction: row;
+    font-size: 0.6em;
+    font-weight: 400;
     color: var(--caption-text);
 
-    li {
-      list-style: none;
+    &--title {
+      font-weight: 600;
+      margin-right: 5px;
     }
   }
 
   &__externalButtons {
     display: flex;
     flex-direction: row;
-    padding: 20px;
-    gap: 10px;
+    padding-bottom: 20px;
+    gap: 20px;
+
+    .Button {
+      flex: 1;
+    }
   }
 
   &____contentWrapper {
@@ -45,5 +54,9 @@
 
   &__assignmentsWrapper {
     padding: 20px;
+  }
+
+  &__subSectionWrapper {
+    padding-bottom: 20px;
   }
 }

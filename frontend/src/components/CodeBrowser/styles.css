@@ -1,0 +1,34 @@
+.CodeBrowser {
+  /* ANTHRACITE :) */
+  --browser-background: #18191d;
+  --comment-background: #202227;
+  --comment-border: #434854;
+
+  height: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 10px;
+  background: var(--browser-background);
+  font-size: 13px;
+
+  &__scroll {
+    width: 100%;
+    height: 100%;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  code {
+    white-space: pre-wrap;
+    word-break: break-word;
+    display: grid;
+    grid-template-columns: min-content auto;
+    width: 100%;
+    font-size: inherit;
+  }
+}

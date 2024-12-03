@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/github/sharedclient"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
@@ -21,7 +22,6 @@ func NewFromCode(cfg *config.GitHubUserClient, code string) (*UserAPI, error) {
 
 	token, err := oAuthCfg.Exchange(context.Background(), code)
 	if err != nil {
-		fmt.Println("Error exchanging code for token", err)
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func (api *UserAPI) GetCurrentUser(ctx context.Context) (models.GitHubUser, erro
 	// Make the API call
 	_, err = api.Client.Do(ctx, req, &user)
 	if err != nil {
-		return user, fmt.Errorf("error fetching classrooms: %v", err)
+		return user, fmt.Errorf("error fetching current user: %v", err)
 	}
 	return user, nil
 }
@@ -88,54 +88,64 @@ func (api *UserAPI) GetOrg(ctx context.Context, orgName string) (*models.Organiz
 	return &org, nil
 }
 
-// // Helper function to parse the Link header and extract the URL for the next page
-// func getNextPageURL(linkHeader string) string {
-// 	links := strings.Split(linkHeader, ",")
-// 	for _, link := range links {
-// 		parts := strings.Split(strings.TrimSpace(link), ";")
-// 		if len(parts) < 2 {
-// 			continue
-// 		}
-// 		urlPart := strings.Trim(parts[0], "<>")
-// 		relPart := strings.Trim(parts[1], " ")
-// 		if relPart == `rel="next"` {
-// 			return urlPart
-// 		}
-// 	}
-// 	return ""
-// }
+// Get the membership of the authenticated user to an organization (404 if not a member or invited)
+func (api *UserAPI) GetCurrUserOrgMembership(ctx context.Context, orgName string) (*github.Membership, error) {
+	endpoint := fmt.Sprintf("/user/memberships/orgs/%s", orgName)
 
+	// Create a new GET requestd
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
 
+	var membership github.Membership
 
+	_, err = api.Client.Do(ctx, req, &membership)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching organization membership: %v", err)
+	}
+
+	return &membership, nil
+}
+
+// Accept an invitation to an organization
+func (api *UserAPI) AcceptOrgInvitation(ctx context.Context, orgName string) error {
+	endpoint := fmt.Sprintf("/user/memberships/orgs/%s", orgName)
+
+	body := map[string]interface{}{
+		"state": "active",
+	}
+
+	req, err := api.Client.NewRequest("PATCH", endpoint, body)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return fmt.Errorf("error accepting organization invitation: %v", err)
+	}
+
+	return nil
+}
 
 func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destName string) error {
-
 	endpoint := fmt.Sprintf("/repos/%s/%s/forks", owner, repo)
 
-	// Define the payload struct for the request body
-	type ForkRequestBody struct {
-		Org string `json:"organization"`
-		DestName  string `json:"name"`
-	}
-
-	// Create an instance of the payload with the necessary data
-	payload := ForkRequestBody{
-		Org: org,
-		DestName:  destName,
-	}
-
 	//Initialize post request
-	req, err := api.Client.NewRequest("POST", endpoint, payload)
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+		"organization": org,
+		"name":         destName,
+	})
 	if err != nil {
-		// No errors package for github service level. Can add another ticket
-		return err
+		return errs.GithubAPIError(err)
 	}
 
 	// Make the API call
 	response, err := api.Client.Do(ctx, req, nil)
 	if err != nil && response.StatusCode != 202 {
-		return err
+		return errs.GithubAPIError(err)
 	}
 
-	return  nil
+	return nil
 }
