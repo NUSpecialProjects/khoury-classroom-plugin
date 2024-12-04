@@ -1,0 +1,53 @@
+.react-draggable-transparent-selection {
+  cursor: e-resize;
+}
+
+.TreePanel {
+  background: #151515;
+  font-size: 0.86rem;
+  position: relative;
+  max-width: 80%;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 5px 0;
+  border: 1px solid #383838;
+
+  &__wrapper {
+    display: contents;
+  }
+
+  .react-resizable-handle-e,
+  .react-resizable-handle-w {
+    position: absolute;
+    content: "";
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: transparent;
+    transition: background 0.2s ease;
+    user-select: none;
+    z-index: 10;
+    cursor: e-resize;
+
+    &:hover,
+    &:active {
+      background: var(--brand-lighter);
+    }
+  }
+  .react-resizable-handle-e {
+    right: -2px;
+  }
+  .react-resizable-handle-w {
+    left: -2px;
+  }
+
+  &--collapsed {
+    .react-resizable-handle-e,
+    .react-resizable-handle-w {
+      background: #739ef3;
+      opacity: 1;
+    }
+  }
+}

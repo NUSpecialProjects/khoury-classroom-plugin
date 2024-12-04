@@ -1,0 +1,92 @@
+.RubricTree {
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+
+  &__head {
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px;
+    font-weight: 300;
+    overflow: hidden;
+  }
+
+  &__body {
+    flex: 1;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__foot {
+    padding: 0 10px;
+
+    .Button {
+      width: 100%;
+      padding: 14px;
+      overflow: hidden;
+    }
+  }
+}
+
+.RubricItem {
+  padding: 8px 10px;
+  display: flex;
+  color: #a3a3a3;
+  flex-direction: row;
+  gap: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(.RubricItem--selected) {
+    background: #292929;
+  }
+
+  &--selected {
+    background: linear-gradient(
+      -75deg,
+      #393939 30%,
+      rgba(0, 0, 0, 0.1),
+      #393939 70%
+    );
+    background-size: 300%;
+    background-position-x: 100%;
+    animation: shimmer 1s infinite linear;
+
+    &:hover {
+      animation-play-state: paused;
+    }
+  }
+
+  &__points {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+    flex-direction: row;
+    gap: 5px;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: 500;
+
+    &--positive {
+      background: var(--green);
+    }
+    &--negative {
+      background: var(--red);
+    }
+    &--neutral {
+      background: var(--comment-border);
+    }
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: 0%;
+  }
+}
