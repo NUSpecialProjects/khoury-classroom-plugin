@@ -792,15 +792,14 @@ var semesterNameMap = map[time.Month]string{
 func (s *ClassroomService) getClassroomNames() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// get the current date
-		// generate a full year of semester names (i.e. Fall 2024, Spring 2025, etc.)
-		// return them in a list
 		now := time.Now()
 		semesterNames := []string{}
 		currentMonthIndex := int(now.Month())
 		for i := currentMonthIndex; i < currentMonthIndex+12; i++ {
-			month := time.Month((i-1)%12 + 1) // Adjust to handle month 0 case
+			// generate a full year of semester names (i.e. Fall 2024, Spring 2025, etc.)
+			month := time.Month((i-1)%12 + 1)
 			year := now.Year()
-			if i > 12 {
+			if i > 12 { // if the month is past December, we need to roll over to the next year
 				year = year + 1
 			}
 			semester, ok := semesterNameMap[month]
