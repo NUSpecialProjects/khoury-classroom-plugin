@@ -156,7 +156,8 @@ func (api *UserAPI) CreateFeedbackPR(ctx context.Context, owner, repo string) er
 	//Initialize post request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
 		"title": "Feedback",
-		"base":  "grading",
+		"head":  "main",
+		"base":  "feedback",
 		"body":  "Grade and feedback will be left here",
 	})
 	if err != nil {
