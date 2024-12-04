@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
     if (tas.length === 0 || students.length === 0) {
       return "N/A";
     } else {
-      return tas.length + ':' + students.length;
+      return tas.length + ' : ' + students.length;
     }
   };
 
