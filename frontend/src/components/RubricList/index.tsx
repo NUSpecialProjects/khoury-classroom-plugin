@@ -31,38 +31,38 @@ const RubricRow: React.FC<IRubricRowData> = ({
                     {rubricData.rubric.name}
                 </TableCell>
                 <TableCell>
-                <Link to={`/app/rubrics/new`} state={{ rubricData }}>
-                    <Button href="" variant="secondary" >
-                        <FaEdit />
-                    </Button>
-                </Link>
+                    <Link to={`/app/rubrics/new`} state={{ rubricData }}>
+                        <Button href="" variant="secondary" >
+                            <FaEdit />
+                        </Button>
+                    </Link>
                 </TableCell>
             </TableRow>
             {!collapsed && (
                 <TableDiv>
                     <Table cols={3} className="ItemTable">
-                        
+
                         <TableRow>
                             <TableCell>Rubric Item</TableCell>
                             <TableCell>Point Value</TableCell>
-                            <TableCell/>
+                            <TableCell />
                         </TableRow>
 
                         {rubricData.rubric_items &&
-                            rubricData.rubric_items.map((item, i: number) => (
+                            rubricData.rubric_items.map((item) => (
                                 <TableRow
-                                    key={i}>
+                                    key={item.id}>
 
                                     <TableCell>
                                         {item.explanation}
                                     </TableCell>
 
-                                    <TableCell> 
+                                    <TableCell>
                                         {item.point_value !== null ? (item.point_value > 0 ? "+" + item.point_value : item.point_value) : ""}
                                     </TableCell>
 
-                                    <TableCell/>
-                                    
+                                    <TableCell />
+
                                 </TableRow>
                             ))}
                     </Table>
@@ -83,20 +83,22 @@ const RubricList: React.FC<IRubricListData> = ({
 
     return (
         <Table cols={3} primaryCol={1} className="RubricsTable">
-                <TableRow style={{ borderTop: "none" }}>
-                    <TableCell></TableCell>
-                    <TableCell>Rubric Name</TableCell>
-                    <TableCell></TableCell>
-                </TableRow>
-                {rubrics &&
-                    rubrics.length > 0 &&
-                    rubrics.map((rubric, i) => (
-                        <RubricRow
-                            key={i}
-                            rubricData={rubric}>
-                        </RubricRow>
-                    ))}
-            </Table>
+            <TableRow style={{ borderTop: "none" }}>
+                <TableCell></TableCell>
+                <TableCell>Rubric Name</TableCell>
+                <TableCell></TableCell>
+            </TableRow>
+            {rubrics &&
+                rubrics.length > 0 &&
+                rubrics.sort((a, b) => {
+                   return a.rubric.id && b.rubric.id ? b.rubric.id - a.rubric.id : 0; // Descending order
+                }).map((rubric, i) => (
+                    <RubricRow
+                        key={i}
+                        rubricData={rubric}>
+                    </RubricRow>
+                ))}
+        </Table>
     );
 }
 

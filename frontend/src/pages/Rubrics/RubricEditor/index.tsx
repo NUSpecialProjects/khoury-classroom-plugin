@@ -176,7 +176,7 @@ const RubricEditor: React.FC = () => {
     // handles when the rubric's name is changed
     const handleNameChange = (newName: string) => {
         setRubricName(newName)
-        console.log("name changes")
+        setRubricEdited(true)
     }
 
     // handles adding another rubric item
