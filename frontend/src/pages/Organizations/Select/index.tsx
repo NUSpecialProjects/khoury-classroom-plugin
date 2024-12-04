@@ -82,7 +82,10 @@ const OrganizationSelection: React.FC = () => {
             
           {selectedOrg &&
             orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
-              <Button href={selectedOrg.html_url}>
+              <Button
+                href={`https://github.com/apps/khoury-classroom/installations/new?target_id=${selectedOrg.id}`}
+                newTab={true}
+              >
                 Install GitGrader for {selectedOrg.login}
               </Button>
             )}
