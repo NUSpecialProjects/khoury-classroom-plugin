@@ -30,22 +30,24 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const getTaToStudentRatio = (users: IClassroomUser[]): string => {
-    if (users) {
-      const tas = users.filter(
-        (user) => user.classroom_role === "TA"
-      );
-
-      const students = users.filter(
-        (user) => user.classroom_role === "STUDENT"
-      );
-
-      if (tas.length === 0 || students.length === 0) {
-        return "N/A";
-      } else {
-        return tas.length + ':' + students.length;
-      }
+    if (!users || users.length === 0) {
+      return "N/A";
     }
-  }
+  
+    const tas = users.filter(
+      (user) => user.classroom_role === "TA"
+    );
+  
+    const students = users.filter(
+      (user) => user.classroom_role === "STUDENT"
+    );
+  
+    if (tas.length === 0 || students.length === 0) {
+      return "N/A";
+    } else {
+      return tas.length + ':' + students.length;
+    }
+  };
 
   useEffect(() => {
     const fetchAssignments = async (classroom: IClassroom) => {
