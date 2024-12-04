@@ -8,7 +8,7 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDate } from "@/utils/date";
+import { formatDateTime } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
@@ -106,13 +106,13 @@ const Assignment: React.FC = () => {
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Released on:"}</div>
                 {assignment.created_at
-                  ? formatDate(new Date(assignment.created_at))
+                  ? formatDateTime(new Date(assignment.created_at))
                   : "N/A"}
               </div>
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Due Date:"}</div>
                 {assignment.main_due_date
-                  ? formatDate(new Date(assignment.main_due_date))
+                  ? formatDateTime(new Date(assignment.main_due_date))
                   : "N/A"}
               </div>
             </div>

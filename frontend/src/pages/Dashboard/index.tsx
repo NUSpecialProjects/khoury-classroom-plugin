@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
-import { formatDate } from "@/utils/date";
+import { formatDateTime, formatDate } from "@/utils/date";
 import { useClassroomUser } from "@/hooks/useClassroomUser";
 import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
@@ -25,8 +25,27 @@ const Dashboard: React.FC = () => {
   } = useClassroomUser(selectedClassroom?.id);
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
+
   );
   const navigate = useNavigate();
+
+  const getTaToStudentRatio = (users: IClassroomUser[]): string => {
+    if (users) {
+      const tas = users.filter(
+        (user) => user.classroom_role === "TA"
+      );
+
+      const students = users.filter(
+        (user) => user.classroom_role === "STUDENT"
+      );
+
+      if (tas.length === 0 || students.length === 0) {
+        return "N/A";
+      } else {
+        return tas.length + ':' + students.length;
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchAssignments = async (classroom: IClassroom) => {
@@ -139,9 +158,10 @@ const Dashboard: React.FC = () => {
                       }
                     />
                   </div>
-                  <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
-                  <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
-                  <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
+
+                  <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at)}></SimpleMetric>
+                  <SimpleMetric metricTitle="Assignments" metricValue={assignments.length.toString()}></SimpleMetric>
+                  <SimpleMetric metricTitle="TA to Student Ratio" metricValue={getTaToStudentRatio(classroomUsersList)}></SimpleMetric>
                 </MetricPanel>
               </div>
 
@@ -174,7 +194,7 @@ const Dashboard: React.FC = () => {
                           {assignment.name}
                         </Link>
                       </TableCell>
-                      <TableCell>{formatDate(assignment.created_at)}</TableCell>
+                      <TableCell>{formatDateTime(assignment.created_at)}</TableCell>
                     </TableRow>
                   ))}
                 </Table>
@@ -186,5 +206,4 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
-
 export default Dashboard;
