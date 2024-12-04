@@ -74,7 +74,6 @@ const RubricEditor: React.FC = () => {
     const saveRubric = async () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
-            console.log(rubricItems)
 
             //validate items
             for (const item of rubricItems) {
@@ -200,7 +199,6 @@ const RubricEditor: React.FC = () => {
     const deleteItem = (item_id: number) => {
         if ((rubricItemData.filter((item) => !item.hidden)).length > 1) {
             setRubricEdited(true)
-            console.log("#deleted")
             setRubricItemData((prevItems) =>
                 prevItems.map((item) =>
                     item.frontFacingIndex === item_id
