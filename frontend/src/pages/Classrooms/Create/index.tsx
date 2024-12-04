@@ -107,15 +107,17 @@ const ClassroomCreation: React.FC = () => {
               value={organization ? organization.login : ""}
             />
 
-            <GenericDropdown
-              labelText="Classroom name"
-              selectedOption={showCustomNameInput ? "Custom" : name}
-              loading={false}
-              options={predefinedClassroomNames.map(option => ({ value: option, label: option }))}
-              onChange={handleNameChange}
-            />
+            {predefinedClassroomNames.length > 0 && (
+              <GenericDropdown
+                labelText="Classroom name"
+                selectedOption={showCustomNameInput ? "Custom" : name}
+                loading={false}
+                options={predefinedClassroomNames.map(option => ({ value: option, label: option }))}
+                onChange={handleNameChange}
+              />
+            )}
 
-            {showCustomNameInput && (
+            {(showCustomNameInput || predefinedClassroomNames.length === 0) && (
               <Input
                 label="Custom classroom name"
                 name="classroom-name"
