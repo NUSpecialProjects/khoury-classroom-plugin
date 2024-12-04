@@ -7,13 +7,15 @@ import {
   getAppInstallations,
   getOrganizationDetails,
 } from "@/api/organizations";
+import { getCallbackURL } from "@/api/auth";
 
 const OrganizationSelection: React.FC = () => {
   const [orgsWithApp, setOrgsWithApp] = useState<IOrganization[]>([]);
   const [orgsWithoutApp, setOrgsWithoutApp] = useState<IOrganization[]>([]);
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
   const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
-  
+  const [consentUrl, setConsentUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -26,8 +28,12 @@ const OrganizationSelection: React.FC = () => {
         if (data.orgs_without_app) {
           setOrgsWithoutApp(data.orgs_without_app);
         }
-      } catch (_) {
-        // do nothing
+
+        const callbackData = await getCallbackURL();
+        setConsentUrl(callbackData.consent_url);
+        setError(null);
+      } catch (e) {
+        setError("Error fetching organizations");
       } finally {
         setLoadingOrganizations(false);
       }
@@ -43,11 +49,10 @@ const OrganizationSelection: React.FC = () => {
         setSelectedOrg(orgDetails);
       })
       .catch((_) => {
-        // do nothing
+        setError("Error fetching organization details");
       });
   };
 
-  //TODO: visually disable the button while it's loading the org details
   return (
     <Panel title="Your Organizations" logo={true}>
       <div className="Organization">
@@ -58,6 +63,11 @@ const OrganizationSelection: React.FC = () => {
           loading={loadingOrganizations}
           onSelect={handleOrganizationSelect}
         />
+        {consentUrl && (
+          <a className="Organization__link" href={consentUrl}>
+            {"Don't see your organization?"}
+          </a>
+        )}
 
         <div className="Organization__buttonWrapper">
           {selectedOrg &&
@@ -69,6 +79,7 @@ const OrganizationSelection: React.FC = () => {
                 View Classrooms for {selectedOrg.login}
               </Button>
             )}
+            
           {selectedOrg &&
             orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
               <Button href={selectedOrg.html_url}>
@@ -76,6 +87,7 @@ const OrganizationSelection: React.FC = () => {
               </Button>
             )}
         </div>
+        {error && <div className="error">{error}</div>}
       </div>
     </Panel>
   );
