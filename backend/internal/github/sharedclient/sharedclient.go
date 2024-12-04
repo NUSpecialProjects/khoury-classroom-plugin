@@ -2,7 +2,6 @@ package sharedclient
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -323,26 +322,6 @@ func (api *CommonAPI) RemoveTeamMember(ctx context.Context, orgName string, team
 func (api *CommonAPI) GetTeamMembers(ctx context.Context, teamID int64) ([]*github.User, error) {
 	members, _, err := api.Client.Teams.ListTeamMembers(ctx, teamID, nil)
 	return members, err
-}
-
-func (api *CommonAPI) EditRepository(ctx context.Context, addition *models.RepositoryAddition) error {
-	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", addition.OwnerName, addition.RepoName, addition.FilePath)
-	encodedContent := base64.StdEncoding.EncodeToString([]byte(addition.Content))
-	body := map[string]interface{}{
-		"message": addition.CommitMessage,
-		"content": encodedContent,
-		"branch":  addition.DestinationBranch,
-	}
-	req, err := api.Client.NewRequest("PUT", endpoint, body)
-	if err != nil {
-		return err
-	}
-
-	_, err = api.Client.Do(ctx, req, nil)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string) error {

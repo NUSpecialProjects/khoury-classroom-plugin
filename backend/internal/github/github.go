@@ -121,9 +121,6 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	// Remove repository from team
 	RemoveRepoFromTeam(ctx context.Context, org, teamSlug, owner, repo string) error
 
-	// Edit a repository with an addition
-	EditRepository(ctx context.Context, addition *models.RepositoryAddition) error
-
 	// Create empty commit (will create a diff that allows feedback PR to be created)
 	CreateEmptyCommit(ctx context.Context, owner, repo string) error
 }
