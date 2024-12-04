@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import Caret from "./Caret";
+import "./styles.css";
 
 export interface IDropdownOption {
   value: string;

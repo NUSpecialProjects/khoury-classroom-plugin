@@ -1,7 +1,4 @@
 .Dropdown {
-  width: 100%;
-  position: relative;
-
   &__wrapper {
     display: flex;
     padding: 10px;
