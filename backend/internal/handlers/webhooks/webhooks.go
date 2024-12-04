@@ -3,6 +3,7 @@ package webhooks
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
@@ -69,7 +70,7 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If app bot triggered the initial commit, initialize the base repository
-	if isInitialCommit && pushEvent.Pusher != nil && *pushEvent.Pusher.Name == "khoury-classroom[bot]" {
+	if isInitialCommit && hasNamedPusher(pushEvent) && isBotPushEvent(pushEvent) {
 		err = s.baseRepoInitialization(c, pushEvent)
 		if err != nil {
 			return err
@@ -77,7 +78,7 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If students pushed commits, update the work state accordingly
-	if pushEvent.Pusher != nil && *pushEvent.Pusher.Name != "khoury-classroom[bot]" && pushEvent.Commits != nil && len(pushEvent.Commits) > 0 {
+	if hasNamedPusher(pushEvent) && !isBotPushEvent(pushEvent) && pushEvent.Commits != nil && len(pushEvent.Commits) > 0 {
 		err = s.updateWorkStateOnStudentCommit(c, pushEvent)
 		if err != nil {
 			return err
@@ -85,6 +86,14 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	return nil
+}
+
+func hasNamedPusher(pushEvent github.PushEvent) bool {
+	return pushEvent.Pusher != nil && pushEvent.Pusher.Name != nil
+}
+
+func isBotPushEvent(pushEvent github.PushEvent) bool {
+	return strings.Contains(*pushEvent.Pusher.Name, "[bot]")
 }
 
 func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.PushEvent) error {
