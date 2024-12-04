@@ -87,7 +87,10 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	}
 
 	// Create empty commit (will create a diff that allows feedback PR to be created)
-	s.appClient.CreateEmptyCommit(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	err := s.appClient.CreateEmptyCommit(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	if err != nil {
+		errs.InternalServerError()
+	}
 
 	// Find the associated assignment and classroom
 	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
