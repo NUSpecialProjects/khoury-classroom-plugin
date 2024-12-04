@@ -10,7 +10,13 @@ import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments
 import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
+
+import { Chart as ChartJS, registerables, Tooltip } from "chart.js";
 import { Line } from 'react-chartjs-2'
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+ChartJS.register(...registerables);
+ChartJS.register(ChartDataLabels);
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -23,21 +29,38 @@ const Assignment: React.FC = () => {
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   const lineOptions = {
+
     responsive: true,
-    plugins: {  
+    plugins: {
+      legend: {
+        display: false,
+      },
       title: {
         display: true,
-        text: 'Commits Over Time'
+        text: 'Commits over time',
       },
+      datalabels: {
+        display: false, 
+      },
+    },
+    elements: {
+      point: {
+          radius: 1, 
+      },
+      labels: {
+        display: false
+      }
     },
   };
 
   const lineTempData = {
-    labels: ['June', 'July', 'Aug'],
-    datasets: [
+    labels: ['5/10', '5/11', '5/12', '5/13', '5/14','5/15','5/16','5/17','5/18','5/19','5/20',],
+      datasets: [
       {
-        label: 'Commits Over Time',
-        data: [100, 200, 300]
+        data: [0, 0, 1, 2, 7, 2, 121, 2, 0, 0, 2], // Data points
+        borderColor: 'rgba(75, 192, 192, 1)', // Line color
+        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fill under the line
+        tension: 0.1, // Curve tension
       },
     ],
   };
@@ -153,10 +176,13 @@ const Assignment: React.FC = () => {
             <h2>Metrics</h2>
             <p>Metrics go here</p>
 
-            <Line
-              options={lineOptions}
-              data={lineTempData}>
-            </Line>
+            <div className="Assignment__metricsWrapper">
+              <Line
+                options={lineOptions}
+                data={lineTempData}
+              />
+            </div>
+
 
 
           </div>
