@@ -1,6 +1,6 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-export const getCallbackURL = async (): Promise<string> => {
+export const getCallbackURL = async (): Promise<ICallbackURLResponse> => {
   const response = await fetch(`${base_url}/callback`, {
     method: "GET",
     credentials: "include",
@@ -8,8 +8,8 @@ export const getCallbackURL = async (): Promise<string> => {
       "Content-Type": "application/json",
     },
   });
-  const data = await response.json();
-  return data.url;
+  const data = (await response.json()) as ICallbackURLResponse;
+  return data;
 };
 
 export const sendCode = async (code: string): Promise<void> => {
