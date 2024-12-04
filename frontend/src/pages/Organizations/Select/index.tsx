@@ -63,11 +63,6 @@ const OrganizationSelection: React.FC = () => {
           loading={loadingOrganizations}
           onSelect={handleOrganizationSelect}
         />
-        {consentUrl && (
-          <a className="Organization__link" href={consentUrl}>
-            {"Don't see your organization?"}
-          </a>
-        )}
 
         <div className="Organization__buttonWrapper">
           {selectedOrg &&
@@ -83,13 +78,18 @@ const OrganizationSelection: React.FC = () => {
           {selectedOrg &&
             orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
               <Button
-                href={`https://github.com/apps/khoury-classroom/installations/new?target_id=${selectedOrg.id}`}
+                href={`https://github.com/apps/khoury-classroom/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
                 newTab={true}
               >
                 Install GitGrader for {selectedOrg.login}
               </Button>
             )}
         </div>
+        {consentUrl && (
+          <a className="Organization__link" href={consentUrl}>
+            {"Don't see your organization?"}
+          </a>
+        )}
         {error && <div className="error">{error}</div>}
       </div>
     </Panel>
