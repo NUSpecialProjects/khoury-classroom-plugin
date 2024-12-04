@@ -14,13 +14,26 @@ const ButtonWrapper: React.FC<IButtonProps> = ({
   href,
   newTab = false,
 }) => {
-  return href ? (
-    <Link to={href} target={newTab ? "_blank" : "_self"}>
-      {children}
-    </Link>
-  ) : (
-    <>{children}</>
-  );
+  if (!href) {
+    return <>{children}</>;
+  }
+
+  // For external URLs or when newTab is explicitly set
+  if (newTab) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    );
+  }
+
+  // For internal routing
+  if (!href.startsWith('http')) {
+    return <Link to={href}>{children}</Link>;
+  }
+
+  // For external URLs without new tab
+  return <a href={href}>{children}</a>;
 };
 
 const Button: React.FC<IButtonProps> = ({
@@ -29,10 +42,11 @@ const Button: React.FC<IButtonProps> = ({
   href,
   variant = "primary",
   size = "default",
+  newTab,
   ...props
 }) => {
   return (
-    <ButtonWrapper href={href}>
+    <ButtonWrapper href={href} newTab={newTab}>
       <button
         className={`Button Button--${variant} Button--${size} ${className ?? ""}`}
         {...props}
