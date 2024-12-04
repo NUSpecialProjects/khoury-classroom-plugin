@@ -32,7 +32,7 @@ const OrganizationSelection: React.FC = () => {
         const callbackData = await getCallbackURL();
         setConsentUrl(callbackData.consent_url);
         setError(null);
-      } catch (e) {
+      } catch (_) {
         setError("Error fetching organizations");
       } finally {
         setLoadingOrganizations(false);
