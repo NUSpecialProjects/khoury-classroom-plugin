@@ -1,16 +1,6 @@
 .Dropdown {
-  max-width: 400px;
-  padding: 10px;
-  background: var(--page-background);
-  color: var(--primary-text);
-  font-size: var(--body-font-size);
-  border-radius: 5px;
-  border-width: var(--border-width);
-  border-style: var(--border-style);
-  border-color: var(--button-border-color);
-  cursor: pointer;
-  transition: background 0.2s ease;
-  padding-bottom: 10px;
+  width: 100%;
+  position: relative;
 
   &__wrapper {
     display: flex;
@@ -18,6 +8,13 @@
     flex-direction: column;
     flex: 1;
     justify-content: center;
+  }
+
+  &__select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 400px;
   }
 
   &__label {
@@ -34,5 +31,25 @@
     padding-top: 10px;
     color: var(--caption-text);
     font-size: var(--font-size-xs);
-}
+  }
+
+  &__select {
+    max-width: 400px;
+    padding: 10px;
+    background: var(--page-background);
+    color: var(--primary-text);
+    font-size: var(--body-font-size);
+    border-radius: 5px;
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--button-border-color);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    padding-bottom: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding-right: 30px;
+  }
 }

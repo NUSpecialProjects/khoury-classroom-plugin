@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { postClassroom } from "@/api/classrooms";
+import { getClassroomNames, postClassroom } from "@/api/classrooms";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getOrganizationDetails } from "@/api/organizations";
 import useUrlParameter from "@/hooks/useUrlParameter";
 import Panel from "@/components/Panel";
 import Button from "@/components/Button";
-import Input from "@/components/Input";
 
 import "./styles.css";
+import Input from "@/components/Input";
+import GenericDropdown from "@/components/Dropdown";
 
 const ClassroomCreation: React.FC = () => {
   const [name, setName] = useState("");
@@ -16,8 +17,26 @@ const ClassroomCreation: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const orgID = useUrlParameter("org_id");
+  const [predefinedClassroomNames, setPredefinedClassroomNames] = useState<string[]>([]);
+  const [showCustomNameInput, setShowCustomNameInput] = useState(false);
   const { setSelectedClassroom } = useContext(SelectedClassroomContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchClassroomNames = async () => {
+      try {
+        const names = await getClassroomNames();
+        setPredefinedClassroomNames([...names, "Custom"]);
+        if (names.length > 0) {
+          setName(names[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch classroom names:", error);
+      }
+    };
+
+    fetchClassroomNames();
+  }, []);
 
   useEffect(() => {
     const fetchOrganizationDetails = async () => {
@@ -38,6 +57,16 @@ const ClassroomCreation: React.FC = () => {
 
     fetchOrganizationDetails();
   }, [orgID, navigate]);
+
+  const handleNameChange = (selected: string) => {
+    if (selected === "Custom") {
+      setShowCustomNameInput(true);
+      setName("");
+    } else {
+      setShowCustomNameInput(false);
+      setName(selected);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,14 +107,24 @@ const ClassroomCreation: React.FC = () => {
               value={organization ? organization.login : ""}
             />
 
-            <Input
-              label="Classroom name"
-              name="classroom-name"
-              placeholder="Enter a name for your classroom..."
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+            <GenericDropdown
+              labelText="Classroom name"
+              selectedOption={showCustomNameInput ? "Custom" : name}
+              loading={false}
+              options={predefinedClassroomNames.map(option => ({ value: option, label: option }))}
+              onChange={handleNameChange}
             />
+
+            {showCustomNameInput && (
+              <Input
+                label="Custom classroom name"
+                name="classroom-name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            )}
+
             {error && <p className="error">{error}</p>}
             {!organization && (
               <p className="error">
