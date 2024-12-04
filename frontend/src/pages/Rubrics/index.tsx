@@ -22,9 +22,10 @@ const Rubrics: React.FC = () => {
                 try {
                     const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
                     if (retrievedRubrics !== null) {
+                        console.log("we have rubrics")
                         setRubricsData(retrievedRubrics)
-                        setLoading(false)
                     }
+                    setLoading(false)
 
                 } catch (_) {
                     setfailedRurbicRetrival(true)

@@ -11,7 +11,6 @@ import { setAssignmentRubric } from "@/api/assignments";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-
 interface IEditableItem {
     frontFacingIndex: number;
     rubricItem: IRubricItem;
@@ -46,6 +45,7 @@ const RubricEditor: React.FC = () => {
     const [invalidPointValue, setInvalidPointValue] = useState(false)
     const [invalidExplanation, setInvalidExplanation] = useState(false)
     const [invalidPointImpact, setInvalidPointImpact] = useState(false)
+    const [emptyRubric, setEmptyRubric] = useState(false)
 
 
     // front end id for each rubric item, kept track of using a counter
@@ -73,6 +73,11 @@ const RubricEditor: React.FC = () => {
     // saving the rubric, creates a rubric in the backendindex
     const saveRubric = async () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
+            if (rubricItemData.filter((item) => !item.hidden).length === 0) {
+                setEmptyRubric(true)
+                setFailedToSave(true)
+                return;
+            }
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
 
             //validate items
@@ -197,7 +202,6 @@ const RubricEditor: React.FC = () => {
     }
 
     const deleteItem = (item_id: number) => {
-        if ((rubricItemData.filter((item) => !item.hidden)).length > 1) {
             setRubricEdited(true)
             setRubricItemData((prevItems) =>
                 prevItems.map((item) =>
@@ -213,7 +217,7 @@ const RubricEditor: React.FC = () => {
                         : item
                 )
             );
-        }
+        
 
     }
 
@@ -294,7 +298,12 @@ const RubricEditor: React.FC = () => {
                     {" - Point impact cannot be empty for non-zero values."}
                 </div>
             }
-
+            
+            {failedToSave && emptyRubric &&
+                <div className="NewRubric__title__FailedSave">
+                    {" - A rubric cannot have no items."}
+                </div>
+            }
 
             <Input
                 label="Rubric name"
