@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -46,8 +47,8 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 	return formattedFeedback, err
 }
 
-// create a new comment (ad-hoc: also create a rubric item simultaneously)
-func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+// create a new feedback comment (ad-hoc: also create a rubric item simultaneously)
+func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
 	_, err := db.connPool.Exec(ctx,
 		`WITH ri AS
 			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)
@@ -61,11 +62,25 @@ func (db *DB) CreateNewFeedbackComment(ctx context.Context, TAUserID int64, stud
 		studentWorkID,
 		TAUserID,
 	)
-
 	return err
 }
 
-// attach an existing rubric item to a new comment
-func (db *DB) AttachRubricItemToWork(ctx context.Context, studentWorkID int, path string, line int, rubricItemID int) error {
-	return nil
+// create a new feedback comment (attach existing rubric item)
+func (db *DB) AttachRubricItemToFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+	if comment.RubricItemID == nil {
+		return errors.New("no rubric item id given")
+	}
+
+	_, err := db.connPool.Exec(ctx,
+		`INSERT INTO feedback_comment
+				(rubric_item_id, file_path, file_line, student_work_id, ta_user_id)
+				VALUES ($1, $2, $3, $4, $5)`,
+		comment.RubricItemID,
+		comment.Path,
+		comment.Line,
+		studentWorkID,
+		TAUserID,
+	)
+
+	return err
 }
