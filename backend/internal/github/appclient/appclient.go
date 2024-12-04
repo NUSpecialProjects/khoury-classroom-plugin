@@ -108,12 +108,11 @@ func (api *AppAPI) CreateTeam(ctx context.Context, orgName, teamName string, des
 	return createdTeam, nil
 }
 
-func (api *AppAPI) AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error {
-	_, _, err := api.Client.Teams.AddTeamMembership(ctx, teamID, userName, opt)
+func (api *AppAPI) DeleteTeam(ctx context.Context, teamID int64) error {
+	_, err := api.Client.Teams.DeleteTeam(ctx, teamID)
 	if err != nil {
-		return fmt.Errorf("error adding member to team: %v", err)
+		return fmt.Errorf("error deleting team: %v", err)
 	}
-
 	return nil
 }
 
@@ -143,24 +142,29 @@ func (api *AppAPI) AssignPermissionToUser(ctx context.Context, ownerName string,
 	return nil
 }
 
-func (api *AppAPI) CreateBaseAssignmentRepo(ctx context.Context, orgName, templateRepoName, newRepoName string) error {
-	// Construct the request
+func (api *AppAPI) CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) (*models.AssignmentBaseRepo, error) {
 	endpoint := fmt.Sprintf("/repos/%s/%s/generate", orgName, templateRepoName)
+
+	// Construct the request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
 		"name":    newRepoName,
 		"owner":   orgName,
 		"private": true,
 	})
 	if err != nil {
-		return errs.InternalServerError()
+		return nil, errs.GithubAPIError(err)
 	}
 
 	// Execute the request
 	var repo *models.Repository
 	_, err = api.Client.Do(ctx, req, &repo)
 	if err != nil {
-		return errs.InternalServerError()
+		return nil, errs.GithubAPIError(err)
 	}
 
-	return nil
+	return &models.AssignmentBaseRepo{
+		BaseRepoOwner: orgName,
+		BaseRepoName:  newRepoName,
+		BaseID:        repo.ID,
+	}, nil
 }

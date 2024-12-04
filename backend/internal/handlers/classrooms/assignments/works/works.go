@@ -84,9 +84,18 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		var comments []models.PRReviewComment
 		for _, comment := range requestBody.Comments {
 			// insert into DB
-			err := s.store.CreateNewFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
-			if err != nil {
-				return errs.InternalServerError()
+			if comment.RubricItemID == nil {
+				// create new rubric item and then attach
+				err := s.store.CreateFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
+				if err != nil {
+					return errs.InternalServerError()
+				}
+			} else {
+				// attach rubric item
+				err := s.store.AttachRubricItemToFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
+				if err != nil {
+					return errs.InternalServerError()
+				}
 			}
 
 			// format comment: body -> [pt value] body

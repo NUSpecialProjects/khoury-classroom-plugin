@@ -7,15 +7,15 @@ import (
 )
 
 type ClassroomService struct {
-	store           storage.Storage
-	githubappclient github.GitHubAppClient
-	userCfg         *config.GitHubUserClient
+	store     storage.Storage
+	appClient github.GitHubAppClient
+	userCfg   *config.GitHubUserClient
 }
 
 func newClassroomService(
 	store storage.Storage,
-	githubappclient github.GitHubAppClient,
+	appClient github.GitHubAppClient,
 	userCfg *config.GitHubUserClient,
 ) *ClassroomService {
-	return &ClassroomService{store: store, githubappclient: githubappclient, userCfg: userCfg}
+	return &ClassroomService{store: store, appClient: appClient, userCfg: userCfg}
 }

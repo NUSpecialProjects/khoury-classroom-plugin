@@ -5,6 +5,7 @@ interface IGraderFeedbackMap {
   [commentID: number]: IGraderFeedback;
 }
 interface IGraderFeedback {
+  rubric_item_id?: number;
   path: string;
   line: number;
   body: string;

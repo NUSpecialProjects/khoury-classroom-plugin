@@ -2,7 +2,6 @@ package assignments
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/CamPlume1/khoury-classroom/internal/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5"
 )
 
 // Returns the assignments in a classroom.
@@ -62,27 +62,41 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			return errs.InvalidRequestBody(assignmentData)
 		}
 
-		// Store assignment in DB
-		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
-		if err != nil {
+		// Error if assignment already exists
+		existingAssignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentData.Name, assignmentData.ClassroomID)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 			return err
+		}
+		if existingAssignment != nil {
+			return errs.BadRequest(errors.New("assignment with that name already exists"))
 		}
 
 		// Get classroom and assignment template
-		classroom, err := s.store.GetClassroomByID(c.Context(), createdAssignment.ClassroomID)
+		classroom, err := s.store.GetClassroomByID(c.Context(), assignmentData.ClassroomID)
 		if err != nil {
 			return err
 		}
-		template, err := s.store.GetAssignmentTemplateByID(c.Context(), createdAssignment.TemplateID)
+		template, err := s.store.GetAssignmentTemplateByID(c.Context(), assignmentData.TemplateID)
 		if err != nil {
 			return err
 		}
 
-		// Create base repository using assignment template
-		baseRepoName := generateForkName(classroom.OrgName, assignmentData.Name)
-		err = s.appClient.CreateBaseAssignmentRepo(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
+		// Create base repository and store locally
+		baseRepoName := generateSlugCase(classroom.OrgName, classroom.Name, assignmentData.Name)
+		baseRepo, err := s.appClient.CreateRepoFromTemplate(c.Context(), classroom.OrgName, template.TemplateRepoName, baseRepoName)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
+		}
+		err = s.store.CreateBaseRepo(c.Context(), *baseRepo)
+		if err != nil {
+			return err
+		}
+
+		// Store assignment locally
+		assignmentData.BaseRepoID = baseRepo.BaseID
+		createdAssignment, err := s.store.CreateAssignment(c.Context(), assignmentData)
+		if err != nil {
+			return err
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
@@ -143,22 +157,20 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Get assignment using the token
 		assignment, err := s.store.GetAssignmentByToken(c.Context(), token)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
 		}
 
-		// Get assignment with additional template information
-		assignmentWithTemplate, err := s.store.GetAssignmentWithTemplateByAssignmentID(c.Context(), int64(assignment.ID))
+		// Get assignment base repository
+		baseRepo, err := s.store.GetBaseRepoByID(c.Context(), assignment.BaseRepoID)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
 		}
 
-		//Retrieve user client
+		// Retrieve user client and session
 		client, err := middleware.GetClient(c, s.store, s.userCfg)
 		if err != nil {
 			return errs.AuthenticationError()
 		}
-
-		// Retrieve current session
 		user, err := client.GetCurrentUser(c.Context())
 		if err != nil {
 			return errs.GithubAPIError(err)
@@ -170,71 +182,103 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
-		templateRepoName := assignmentWithTemplate.Template.TemplateRepoName
-		templateRepoOwner := assignmentWithTemplate.Template.TemplateRepoOwner
-
-		// Generate fork name
-		forkName := generateForkName(templateRepoName, user.Login)
-
 		// Check if fork already exists
+		forkName := generateSlugCase(classroom.Name, assignment.Name, user.Login)
 		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
-		if studentWorkRepo != nil { // Fork already exists, early return
+		if studentWorkRepo != nil {
+			// Ensure student team is removed
+			err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, forkName)
+			if err != nil {
+				return errs.GithubAPIError(err)
+			}
+
 			return c.Status(http.StatusOK).JSON(fiber.Map{
 				"message":  "Assignment already accepted",
 				"repo_url": studentWorkRepo.HTMLURL,
 			})
 		}
 
-		// Generate Fork
-		err = client.ForkRepository(c.Context(), templateRepoOwner, classroom.OrgName, templateRepoName, forkName)
+		// Otherwise generate fork
+		err = client.ForkRepository(c.Context(),
+			baseRepo.BaseRepoOwner,
+			classroom.OrgName,
+			baseRepo.BaseRepoName,
+			forkName)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		// Wait to perform actions on the fork until it is finished initializing
+		initialDelay := 1 * time.Second
+		maxDelay := 30 * time.Second
+		for {
+			studentWorkRepo, _ = client.GetRepository(c.Context(), classroom.OrgName, forkName)
+			if studentWorkRepo != nil {
+				break
+			}
+
+			if initialDelay > maxDelay {
+				return errs.GithubAPIError(errors.New("fork unsuccessful, please try again later"))
+			}
+
+			time.Sleep(initialDelay)
+			initialDelay *= 2
+		}
+
+		// Remove student team's access to forked repo
+		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, *studentWorkRepo.Name)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
 
 		// Insert into DB
-		studentwork := createMockStudentWork(forkName, assignment.Name, int(assignment.ID))
-		err = s.store.CreateStudentWork(c.Context(), &studentwork, user.ID)
+		_, err = s.store.CreateStudentWork(c.Context(), assignment.ID, user.ID, forkName, models.WorkStateAccepted, assignment.MainDueDate)
 		if err != nil {
-			return errs.InternalServerError()
+			return err
 		}
 
 		// Instead of getting the repository immediately, construct the expected URL
-		expectedRepoURL := fmt.Sprintf("https://github.com/%s/%s", classroom.OrgName, forkName)
-
 		return c.Status(http.StatusOK).JSON(fiber.Map{
-			"message":  "Assignment accepted - it may take a few minutes to create the repository",
-			"repo_url": expectedRepoURL,
+			"message":  "Assignment Accepted!",
+			"repo_url": studentWorkRepo.HTMLURL,
 		})
 	}
 }
 
-// TODO: Choose naming pattern once we have a full assignment flow. Stub for now
-// TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
-func generateForkName(sourceName, userName string) string {
-	return sourceName + "-" + strings.ReplaceAll(userName, " ", "")
+func (s *AssignmentService) checkAssignmentName() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Fetch assignment name and classrooID from request
+		assignmentName := c.Params("assignment_name")
+		if assignmentName == "" {
+			return errs.BadRequest(errors.New("assignment name is required"))
+		}
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		// Check if assignment with name exists
+		assignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentName, classroomID)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"exists": assignment != nil,
+		})
+	}
 }
 
-// TODO: Integrate with actual assignment information when infrastructure is available
-func createMockStudentWork(repo string, assName string, assID int) models.StudentWork {
-	assignmentName := assName
-	repoName := repo
-	manualFeedbackScore := 85
-	autoGraderScore := 90
-	uniqueDueDate := time.Now().AddDate(0, 0, 7)             // Due in 7 days MOCK
-	gradesPublishedTimestamp := time.Now().AddDate(0, 0, -1) // Grades published yesterday MOCK
-	return models.StudentWork{
-		ID:                       1,
-		ClassroomID:              101,
-		AssignmentName:           &assignmentName,
-		AssignmentOutlineID:      assID,
-		RepoName:                 repoName,
-		UniqueDueDate:            &uniqueDueDate,
-		ManualFeedbackScore:      &manualFeedbackScore,
-		AutoGraderScore:          &autoGraderScore,
-		GradesPublishedTimestamp: &gradesPublishedTimestamp,
-		WorkState:                "ACCEPTED",
-		CreatedAt:                time.Now(),
+// KHO-209
+// TODO: Choose naming pattern once we have a full assignment flow. Stub for now
+// TODO: ensure duplicates are impossible, just append an incrementing -x to name in that case
+func generateSlugCase(parts ...string) string {
+	var processedParts []string
+	for _, part := range parts {
+		processedParts = append(processedParts, strings.ReplaceAll(strings.ToLower(part), " ", "-"))
 	}
+
+	return strings.Join(processedParts, "-")
 }
 
 // Updates an existing assignment.
@@ -242,5 +286,38 @@ func (s *AssignmentService) updateAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Implement logic here
 		return c.SendStatus(fiber.StatusNotImplemented)
+	}
+}
+
+func (s *AssignmentService) getAssignmentRubric() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		assignment, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		if assignment.RubricID == nil {
+			return errs.NotFound("rubric", "assignment_id", assignmentID)
+		}
+
+		rubric, err := s.store.GetRubric(c.Context(), *assignment.RubricID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		rubricItems, err := s.store.GetRubricItems(c.Context(), rubric.ID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(models.FullRubric{
+			Rubric:      rubric,
+			RubricItems: rubricItems,
+		})
 	}
 }

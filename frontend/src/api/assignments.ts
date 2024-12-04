@@ -1,7 +1,5 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-
-
 export async function postAssignmentToken(
   classroomID: number,
   assignmentID: number,
@@ -32,7 +30,8 @@ export async function postAssignmentToken(
 export async function useAssignmentToken(
   token: string
 ): Promise<IAssignmentAcceptResponse> {
-  const response = await fetch( // the classroom id doesn't matter here
+  const response = await fetch(
+    // the classroom id doesn't matter here
     `${base_url}/classrooms/classroom/${0}/assignments/token/${token}`,
     {
       method: "POST",
@@ -50,7 +49,6 @@ export async function useAssignmentToken(
   const resp: IAssignmentAcceptResponse = await response.json();
   return resp;
 }
-
 
 export const getAssignments = async (
   classroomId: number
@@ -79,21 +77,26 @@ export const getAssignmentIndirectNav = async (
   classroomID: number,
   assignmentID: number
 ): Promise<IAssignmentOutline> => {
-  const result = await fetch(`${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!result.ok) {
     throw new Error("Network response was not ok");
   }
 
-  const data: IAssignmentOutline = (await result.json() as IAssignmentOutlineResponse).assignment_outline
+  const data: IAssignmentOutline = (
+    (await result.json()) as IAssignmentOutlineResponse
+  ).assignment_outline;
 
-  return data
+  return data;
 };
 
 export const createAssignment = async (
@@ -114,7 +117,40 @@ export const createAssignment = async (
         classroom_id: assignment.classroomId,
         group_assignment: assignment.groupAssignment,
         main_due_date: assignment.mainDueDate,
-      })
+      }),
+    }
+  );
+
+  if (!result.ok) {
+    let errorMessage;
+
+    // Attempt to parse the error message from the response body
+    try {
+      const errorData = await result.json();
+      errorMessage = errorData.msg;
+    } catch {
+      errorMessage = "an unknown error occurred";
+    }
+
+    throw new Error(`Failed to create assignment: ${errorMessage}`);
+  }
+
+  const data = await result.json();
+  return data.assignment_outline as IAssignmentFormData;
+};
+
+export const assignmentNameExists = async (
+  classroomId: number,
+  assignmentName: string
+): Promise<boolean> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomId}/assignments/assignment/${assignmentName}/exists`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   );
 
@@ -122,7 +158,29 @@ export const createAssignment = async (
     throw new Error("Network response was not ok");
   }
 
-  const data = (await result.json())
+  const data = await result.json();
 
-  return data.assignment_outline as IAssignmentFormData
+  return data.exists as boolean;
+};
+
+export const getAssignmentRubric = async (
+  classroomID: number,
+  assignmentID: number
+): Promise<IFullRubric> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/rubric`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!result.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  return await result.json();
 };
