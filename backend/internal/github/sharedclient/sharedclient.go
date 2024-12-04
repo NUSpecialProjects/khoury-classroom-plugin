@@ -3,10 +3,14 @@ package sharedclient
 import (
 	"context"
 	"encoding/base64"
+
+	//"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/CamPlume1/khoury-classroom/internal/utils"
 	"github.com/google/go-github/github"
 )
 
@@ -67,6 +71,7 @@ func (api *CommonAPI) getBranchHead(ctx context.Context, owner, repo, branchName
 }
 
 func (api *CommonAPI) CreateBranch(ctx context.Context, owner, repo, baseBranch, newBranchName string) (*github.Reference, error) {
+	fmt.Println("Creating branch!!!")
 	endpoint := fmt.Sprintf("/repos/%s/%s/git/refs", owner, repo)
 
 	// Get the SHA of the base branch
@@ -187,7 +192,6 @@ func (api *CommonAPI) GetUser(ctx context.Context, userName string) (*github.Use
 
 
 func (api *CommonAPI) createRuleSet(ctx context.Context, ruleset interface{}, orgName, repoName string) error {
-	fmt.Printf("Ruleset:%v\n\n", ruleset)
 	endpoint := fmt.Sprintf("/repos/%s/%s/rulesets", orgName, repoName)
 	req, err := api.Client.NewRequest("POST", endpoint, ruleset)
 	if err != nil {
@@ -211,17 +215,17 @@ func (api *CommonAPI) createRuleSet(ctx context.Context, ruleset interface{}, or
 
 //Given a repo name and org name, create a push ruleset to protect the .github directory
 func (api *CommonAPI) CreatePushRuleset(ctx context.Context, orgName, repoName string) error {
+	//fmt.Println("Creating Push Ruleset")
 
 	body := map[string]interface{}{
 		"name":        "Restrict .github Directory Edits: Preserves Submission Deadline",
 		"target":      "push",
 		"enforcement": "active",
-		"rules": []map[string]interface{}{
-			{
+		"rules": []interface{}{
+			map[string]interface{}{
 				"type": "file_path_restriction",
 				"parameters": map[string]interface{}{
 					"restricted_file_paths": []string{".github/**/*"},
-
 				},
 			},
 		},
@@ -231,17 +235,83 @@ func (api *CommonAPI) CreatePushRuleset(ctx context.Context, orgName, repoName s
 
 
 
+func (api *CommonAPI) CreateBranchRuleset(ctx context.Context,  orgName, repoName string) error {
+	//fmt.Println("Creating Branch Ruleset")
+
+	body := map[string]interface{}{
+		"name": "protect feedback from edits",
+		"target": "branch",
+		"enforcement": "active",
+		"conditions": map[string]interface{}{
+			"ref_name": map[string]interface{}{
+				"exclude": []interface{}{},
+				"include": []interface{}{"refs/heads/feedback", "~DEFAULT_BRANCH"},
+			},
+		},
+		"rules": []interface{}{
+			map[string]interface{}{
+				"type": "non_fast_forward",
+			},
+			map[string]interface{}{
+				"type": "pull_request",
+				"parameters" : map[string]interface{}{
+								"required_approving_review_count": 0,
+        						"dismiss_stale_reviews_on_push": true,
+       							"require_code_owner_review": false,
+        						"require_last_push_approval": false,
+        						"required_review_thread_resolution": false,
+       							"automatic_copilot_code_review_enabled": false,
+				},
+			},
+			map[string]interface{}{
+				"type": "required_status_checks",
+				"parameters": map[string]interface{}{
+					"strict_required_status_checks_policy": false,
+					"do_not_enforce_on_create": false,
+					"required_status_checks": []map[string]string{
+						map[string]string{
+							"context": "check-date",
+						},
+						map[string]string{
+							"context": "check-target",
+						},
+
+					},
+					
+				},
+			},
+		},
+	}
+
+	return api.createRuleSet(ctx, body, orgName, repoName)
+}
 
 
 
-func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, orgName, repoName string) error {
 
+
+func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, deadline *time.Time, orgName, repoName string) error {
 	addition := models.RepositoryAddition{
 		FilePath: ".github/workflows/deadline.yml",
 		RepoName: repoName,
 		OwnerName: orgName,
 		DestinationBranch: "main",
-		Content: "example",
+		Content: utils.ActionWithDeadlineStub(),
+		CommitMessage: "Deadline enforcement GH action files",
+	}
+	return api.EditRepository(ctx, &addition)
+
+}
+
+
+func (api *CommonAPI) CreatePREnforcement(ctx context.Context, orgName, repoName string) error {
+
+	addition := models.RepositoryAddition{
+		FilePath: ".github/workflows/branchProtections.yml",
+		RepoName: repoName,
+		OwnerName: orgName,
+		DestinationBranch: "main",
+		Content: utils.TargetBranchProtectionAction(),
 		CommitMessage: "Deadline enforcement GH action files",
 	}
 	return api.EditRepository(ctx, &addition)
@@ -249,7 +319,7 @@ func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, orgName, re
 }
 
 func (api *CommonAPI) EditRepository(ctx context.Context, addition *models.RepositoryAddition) error {
-	fmt.Println("Reached function correctly")
+	fmt.Println("Reached function correctly- Repository Edit\n\n")
 	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", addition.OwnerName, addition.RepoName, addition.FilePath)
 	encodedContent := base64.StdEncoding.EncodeToString([]byte(addition.Content))
 
@@ -265,13 +335,12 @@ func (api *CommonAPI) EditRepository(ctx context.Context, addition *models.Repos
 		fmt.Printf("Request Construction failed: %s", addition.CommitMessage)
 	}
 
-	resp, err := api.Client.Do(ctx, req, nil)
+	_, err = api.Client.Do(ctx, req, nil)
 	if err != nil {
 		fmt.Printf("request execution failed: %s", addition.CommitMessage)
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(resp)
 	return nil
 }
 func (api *CommonAPI) InviteUserToOrganization(ctx context.Context, orgName string, userID int64) error {

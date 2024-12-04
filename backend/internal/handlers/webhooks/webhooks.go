@@ -1,8 +1,10 @@
 package webhooks
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"errors"
+	"fmt"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
@@ -49,17 +51,12 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 }
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
+	fmt.Println("Push Event Triggered")
+	fmt.Println(c.AllParams())
 	// Extract the 'payload' form value
-	payload := c.FormValue("payload")
-	if payload == "" {
-		return errs.BadRequest(errors.New("missing payload"))
-	}
-
-	// Unmarshal the JSON payload into the PushEvent struct
-	var pushEvent github.PushEvent
-	err := json.Unmarshal([]byte(payload), &pushEvent)
-	if err != nil {
-		return errs.BadRequest(errors.New("invalid JSON payload"))
+	pushEvent := github.PushEvent{}
+	if err := c.BodyParser(&pushEvent); err != nil {
+		return err
 	}
 
 	// Check if this is first commit in a repository
@@ -84,10 +81,25 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.BadRequest(errors.New("invalid repository data"))
 	}
 
-	// Create necessary repo branches
+	stubTime := time.Now()
+
+	//TODO: Deadline commit here
+	err := s.appClient.CreateDeadlineEnforcement(c.Context(), &stubTime, *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("DEADLINE ENFORCEMENT FAILED")
+	}
+
+	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("DEADLINE ENFORCEMENT FAILED")
+		}
+
+	//Create necessary repo branches
 	repoBranches := []string{"development", "feedback"}
 	for _, branch := range repoBranches {
-		_, err := s.appClient.CreateBranch(c.Context(),
+		_, err = s.appClient.CreateBranch(c.Context(),
 			*pushEvent.Repo.Organization,
 			*pushEvent.Repo.Name,
 			*pushEvent.Repo.MasterBranch,
@@ -96,6 +108,13 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		if err != nil {
 			return errs.InternalServerError()
 		}
+	}
+
+
+	err = s.appClient.CreatePushRuleset(c.Context(),  *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	if err != nil {
+		fmt.Printf("Error creating push ruleset")
+		fmt.Println(err.Error())
 	}
 
 	// Find the associated assignment and classroom

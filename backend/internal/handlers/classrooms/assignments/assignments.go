@@ -2,6 +2,8 @@ package assignments
 
 import (
 	"errors"
+	"fmt"
+	//"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -54,13 +56,18 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 }
 
 func (s *AssignmentService) createAssignment() fiber.Handler {
+	//TODO: .github folder addition
+	//TODO: push rulesets
+	//TODO: Branch protections (maybe)
 	return func(c *fiber.Ctx) error {
+		fmt.Println("Creating Assignment/n/n")
 		// Parse request body
 		var assignmentData models.AssignmentOutline
 		error := c.BodyParser(&assignmentData)
 		if error != nil {
 			return errs.InvalidRequestBody(assignmentData)
 		}
+
 
 		// Error if assignment already exists
 		existingAssignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentData.Name, assignmentData.ClassroomID)
@@ -98,6 +105,19 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		if err != nil {
 			return err
 		}
+
+		// //Create deadline enforcement if one is given
+		// if assignmentData.MainDueDate != nil {
+
+		// 	err = s.appClient.CreatePushRuleset(c.Context(), classroom.OrgName, baseRepoName)
+		// 	if err != nil {
+		// 		fmt.Println("Skill Issue #2")
+		// 	}
+		// 	err = s.appClient.CreateBranchRuleset(c.Context(), classroom.OrgName, baseRepoName)
+		// 	if err != nil {
+		// 		fmt.Println("Skill Issue #3")
+		// 	}
+		// }
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"created_assignment": createdAssignment,
@@ -148,6 +168,7 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 
 // Uses an assignment token to accept an assignment.
 func (s *AssignmentService) useAssignmentToken() fiber.Handler {
+	//@CamTODO-> Downgrade student access
 	return func(c *fiber.Ctx) error {
 		token := c.Params("token")
 		if token == "" {
@@ -223,6 +244,13 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 
 			time.Sleep(initialDelay)
 			initialDelay *= 2
+		}
+
+		//@CamTODO: Get rid of happy path here with repo get fail
+		err = client.CreateBranchRuleset(c.Context(), classroom.OrgName, forkName)
+		if err != nil {
+			fmt.Printf("Error creating branch ruleset\n\n")
+			fmt.Println(err.Error())
 		}
 
 		// Remove student team's access to forked repo

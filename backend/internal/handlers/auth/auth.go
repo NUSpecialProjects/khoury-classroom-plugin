@@ -1,7 +1,8 @@
 package auth
 
 import (
-	"fmt"
+	//"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -25,17 +26,19 @@ func (service *AuthService) Ping() fiber.Handler {
 }
 
 func (service *AuthService) GetCallbackURL() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		oAuthCfg := service.userCfg.OAuthConfig()
-		clientID := oAuthCfg.ClientID
-		redirectURI := oAuthCfg.RedirectURL
-		scope := strings.Join(service.userCfg.Scopes, ",")
-		allowSignup := "false"
-		authURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&scope=%s&allow_signup=%s",
-			clientID, redirectURI, scope, allowSignup)
-
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{"url": authURL})
-	}
+    return func(c *fiber.Ctx) error {
+        oAuthCfg := service.userCfg.OAuthConfig()
+        // Build URL with proper encoding
+        params := url.Values{
+            "client_id":    {oAuthCfg.ClientID},
+            "redirect_uri": {oAuthCfg.RedirectURL},
+            "scope":        {strings.Join(oAuthCfg.Scopes, ",")},
+            "allow_signup": {"false"},
+            "prompt":       {"consent"}, // Force consent screen
+        }
+        authURL := "https://github.com/login/oauth/authorize?" + params.Encode()
+        return c.Status(fiber.StatusOK).JSON(fiber.Map{"url": authURL})
+    }
 }
 
 func (service *AuthService) Login() fiber.Handler {

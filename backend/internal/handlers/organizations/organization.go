@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	//"fmt"
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -45,12 +46,14 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 
 		// Get the list of organizations the user is part of
 		userOrgs, err := userClient.GetUserOrgs(c.Context())
+		//fmt.Println(userOrgs)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
 
 		// Get the list of installations of the GitHub app
 		appInstallations, err := appClient.ListInstallations(c.Context())
+		//fmt.Println(appInstallations)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
