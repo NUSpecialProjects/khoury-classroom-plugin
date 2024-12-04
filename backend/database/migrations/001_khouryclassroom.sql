@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS classroom_membership (
     status USER_STATUS NOT NULL, -- represents whether the user has "requested" to join the org, been invited to the org, or is in the org
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
-    UNIQUE (user_id, classroom_id)
+    PRIMARY KEY (user_id, classroom_id)
 );
 
 CREATE TABLE IF NOT EXISTS assignment_templates (
@@ -143,7 +143,8 @@ CREATE TABLE IF NOT EXISTS work_contributors (
     student_work_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (student_work_id) REFERENCES student_works(id)
+    FOREIGN KEY (student_work_id) REFERENCES student_works(id),
+    PRIMARY KEY (user_id, student_work_id)
 );
 
 CREATE TABLE IF NOT EXISTS feedback_comment (
