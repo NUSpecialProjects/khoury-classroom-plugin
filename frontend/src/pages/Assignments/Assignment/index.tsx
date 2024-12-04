@@ -10,6 +10,7 @@ import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments
 import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
+import { Line } from 'react-chartjs-2'
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -20,6 +21,26 @@ const Assignment: React.FC = () => {
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+
+  const lineOptions = {
+    responsive: true,
+    plugins: {  
+      title: {
+        display: true,
+        text: 'Commits Over Time'
+      },
+    },
+  };
+
+  const lineTempData = {
+    labels: ['June', 'July', 'Aug'],
+    datasets: [
+      {
+        label: 'Commits Over Time',
+        data: [100, 200, 300]
+      },
+    ],
+  };
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -73,7 +94,7 @@ const Assignment: React.FC = () => {
   useEffect(() => {
     const generateInviteLink = async () => {
       if (!assignment) return;
-      
+
       try {
         if (!selectedClassroom) return;
         const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
@@ -131,6 +152,13 @@ const Assignment: React.FC = () => {
           <div className="Assignment__subSectionWrapper">
             <h2>Metrics</h2>
             <p>Metrics go here</p>
+
+            <Line
+              options={lineOptions}
+              data={lineTempData}>
+            </Line>
+
+
           </div>
 
           <div className="Assignment__subSectionWrapper">
