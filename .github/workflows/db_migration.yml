@@ -1,0 +1,31 @@
+name: Database Migration
+
+on:
+  push:
+    branches:
+      - main
+      - feature/kho-237/workflow-db-migration
+    paths:
+      - 'backend/database/migrations/001_khouryclassroom.sql'
+      - '.github/workflows/db_migration.yml'
+
+jobs:
+  invoke-lambda:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Store Snapshot of AWS RDS Instance
+        run: |
+          aws rds create-db-snapshot --db-instance-identifier gitmarks-db --db-snapshot-identifier gitmarks-db-snapshot
+
+      - name: Invoke AWS Lambda function
+        uses: gagoar/invoke-aws-lambda@v3.4.0
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          REGION: us-east-2
+          FunctionName: drop_db
+          InvocationType: Event
+          Payload: '{}'
