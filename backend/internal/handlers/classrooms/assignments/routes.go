@@ -27,6 +27,9 @@ func AssignmentRoutes(router fiber.Router, service *AssignmentService, params *t
 	// Update an assignment
 	assignmentRouter.Put("/assignment/:assignment_id", service.updateAssignment())
 
+	// Get the rubric and rubric items attached to an assignment
+	assignmentRouter.Get("/assignment/:assignment_id/rubric", service.getAssignmentRubric())
+
 	// Check if an assignment name exists
 	assignmentRouter.Get("/assignment/:assignment_name/exists", service.checkAssignmentName())
 

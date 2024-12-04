@@ -64,17 +64,8 @@
     flex-direction: row;
     border-radius: 5px;
   }
-  &__files {
-    height: 100%;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  &__file {
-    padding: 5px;
-    background: #eee;
-    cursor: pointer;
-    &:hover {
-      background: #ddd;
-    }
+
+  .simplebar-track {
+    margin-right: 5px;
   }
 }
