@@ -1,5 +1,6 @@
 import React from "react";
 import GenericDropdown, { IDropdownOption } from "..";
+import { MdAdd, MdCheck, MdClose } from "react-icons/md";
 
 interface Props {
   orgsWithApp: IOrganization[];
@@ -24,7 +25,7 @@ const OrganizationDropdown: React.FC<Props> = ({
       orgsWithApp.forEach(org => {
         options.push({
           value: org.login,
-          label: `${org.login} ✔️`,
+          label: <>{`${org.login} `} <MdCheck /></>
         });
       });
     }
@@ -34,14 +35,14 @@ const OrganizationDropdown: React.FC<Props> = ({
       orgsWithoutApp.forEach(org => {
         options.push({
           value: org.login,
-          label: `${org.login} ❌`,
+          label: <>{`${org.login} `} <MdClose /></>
         });
       });
     }
 
     options.push({
       value: "create_new_org",
-      label: "Create a New Organization ➕"
+      label: <>{`Create a New Organization `} <MdAdd /></>
     });
 
     return options;

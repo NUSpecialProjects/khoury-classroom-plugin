@@ -1,10 +1,10 @@
-import { ChangeEvent, useState } from "react";
+import { useState, ReactNode } from "react";
 import Caret from "./Caret";
 import "./styles.css";
 
 export interface IDropdownOption {
   value: string;
-  label: string;
+  label: ReactNode;
   disabled?: boolean;
 }
 
@@ -33,63 +33,55 @@ const GenericDropdown = ({
 }: IDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-      const selected = event.target.value;
-      if (onChange) {
-          onChange(selected);
-      }
+  const handleSelect = (value: string) => {
+    if (onChange) {
+      onChange(value);
+    }
+    setIsOpen(false);
   };
 
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const renderOptions = () => {
-      if (loading) {
-          return (
-              <option value="" disabled>
-                  {loadingText}
-              </option>
-          );
-      } else if (options.length === 0) {
-          return (
-              <option value="" disabled>
-                  {noOptionsText}
-              </option>
-          );
-      }
-
-      return options.map((option, index) => (
-          <option key={index} value={option.value} disabled={option.disabled}>
-              {option.label}
-          </option>
-      ));
-  };
+  const selectedLabel = options.find(opt => opt.value === selectedOption)?.label || placeholder;
 
   return (
-      <div className="Dropdown">
-          <div className="Dropdown__wrapper">
-              <label className="Dropdown__label" htmlFor="dropdown">
-                  {labelText}
-              </label>
-              <div className="Dropdown__select-wrapper">
-                  <select
-                      className="Dropdown__select"
-                      value={selectedOption || ''}
-                      onChange={handleChange}
-                      onClick={handleClick}
-                      onBlur={() => setIsOpen(false)}
+    <div className="Dropdown">
+      <div className="Dropdown__wrapper">
+        <label className="Dropdown__label">
+          {labelText}
+        </label>
+        <div className="Dropdown__select-wrapper">
+          <button
+            type="button"
+            className="Dropdown__button"
+            onClick={() => setIsOpen(!isOpen)}
+            onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+          >
+            <span className="Dropdown__selected-text">{selectedLabel}</span>
+            <Caret isUp={!isOpen} clickable={false}/>
+          </button>
+          
+          {isOpen && (
+            <ul className="Dropdown__options-list">
+              {loading ? (
+                <li className="Dropdown__option Dropdown__option--disabled">{loadingText}</li>
+              ) : options.length === 0 ? (
+                <li className="Dropdown__option Dropdown__option--disabled">{noOptionsText}</li>
+              ) : (
+                options.map((option, index) => (
+                  <li
+                    key={index}
+                    className={`Dropdown__option ${option.disabled ? 'Dropdown__option--disabled' : ''}`}
+                    onClick={() => !option.disabled && handleSelect(option.value)}
                   >
-                      <option className="Dropdown__option" value="" disabled>
-                          {placeholder}
-                      </option>
-                      {renderOptions()}
-                  </select>
-                  <Caret isUp={!isOpen} clickable={false}/>
-              </div>
-              {captionText && <div className='Dropdown__caption'>{captionText}</div>}
-          </div>
+                    {option.label}
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
+        </div>
+        {captionText && <div className='Dropdown__caption'>{captionText}</div>}
       </div>
+    </div>
   );
 };
 
