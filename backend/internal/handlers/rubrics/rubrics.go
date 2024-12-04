@@ -59,7 +59,7 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 
 		rubric, err := s.store.GetRubric(c.Context(), rubricID)
 		if err != nil {
-			return errs.NewDBError(err)
+			return errs.InternalServerError()
 		}
 
 		rubricItems, err := s.store.GetRubricItems(c.Context(), rubricID)
@@ -75,7 +75,6 @@ func (s *RubricService) GetRubricByID() fiber.Handler {
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"full_rubric": fullRubric,
 		})
-
 	}
 }
 
