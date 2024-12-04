@@ -1,8 +1,8 @@
 -- Insert into classrooms
 INSERT INTO classrooms (id, name, org_id, org_name, created_at, student_team_name)
 VALUES
-(1, 'Spring 2025', 182810684, 'NUSpecialProjects', NOW(), 'Spring-2025-students'),
-(2, 'Fall 2025', 182810684, 'NUSpecialProjects', NOW(), 'Fall-2025-students');
+(1, 'Spring 2025', 182810684, 'NUSpecialProjects', NOW(), 'spring-2025-students-MOCK'),
+(2, 'Fall 2025', 182810684, 'NUSpecialProjects', NOW(), 'fall-2025-students-MOCK');
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Create users
@@ -37,7 +37,6 @@ VALUES
 (6, 2, 'STUDENT', NOW(), 'ACTIVE'),
 (7, 2, 'STUDENT', NOW(), 'ACTIVE'),
 (8, 2, 'PROFESSOR', NOW(), 'ACTIVE');
-SELECT setval('classroom_membership_id_seq', (SELECT MAX(id) FROM classroom_membership))
 
 -- Insert into rubrics
 INSERT INTO rubrics (id, name, org_id, classroom_id, reusable) VALUES 
