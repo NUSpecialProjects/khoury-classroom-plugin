@@ -1,6 +1,7 @@
 package organizations
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -193,6 +194,7 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 				}
 				templateRepos = append(templateRepos, templateRepo)
 
+                fmt.Println(templateRepo)
 				// Store the template locally if it doesn't already exist
 				if exists, err := service.store.AssignmentTemplateExists(c.Context(), repo.ID); err != nil {
 					return errs.NewDBError(err)
@@ -208,3 +210,4 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		return c.Status(200).JSON(fiber.Map{"templates": templateRepos})
 	}
 }
+
