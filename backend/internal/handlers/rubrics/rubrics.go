@@ -1,7 +1,6 @@
 package rubrics
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -98,7 +97,6 @@ func (s *RubricService) UpdateRubric() fiber.Handler {
 
 		var updatedItems []models.RubricItem
 		for _, item := range newRubricData.RubricItems {
-			fmt.Println(item.ID)
 			if item.ID == 0 {
 				item.RubricID = updatedRubric.ID
 				newItem, err := s.store.AddItemToRubric(c.Context(), item)

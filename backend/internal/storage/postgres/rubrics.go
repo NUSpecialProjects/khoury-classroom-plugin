@@ -65,7 +65,7 @@ func (db *DB) GetRubric(ctx context.Context, rubricID int64) (models.Rubric, err
 }
 
 func (db *DB) GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error) {
-	rows, err := db.connPool.Query(ctx, "SELECT * FROM rubric_items WHERE rubric_id = $1", rubricID)
+	rows, err := db.connPool.Query(ctx, "SELECT * FROM rubric_items WHERE rubric_id = $1 AND deleted = FALSE", rubricID)
 	if err != nil {
 		return nil, errs.NewDBError(err)
 	}
@@ -100,19 +100,21 @@ func (db *DB) UpdateRubric(ctx context.Context, rubricID int64, rubricData model
 func (db *DB) UpdateRubricItem(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error) {
 	var updatedItem models.RubricItem
 	fmt.Println(rubricItemData.ID)
-	err := db.connPool.QueryRow(ctx, `UPDATE rubric_items SET rubric_id = $1, point_value = $2, explanation = $3, created_at = $4
-        WHERE id = $5
-        RETURNING id, rubric_id, point_value, explanation, created_at`,
+	err := db.connPool.QueryRow(ctx, `UPDATE rubric_items SET rubric_id = $1, point_value = $2, explanation = $3, created_at = $4, deleted = $5
+        WHERE id = $6
+        RETURNING id, rubric_id, point_value, explanation, created_at, deleted`,
 		rubricItemData.RubricID,
 		rubricItemData.PointValue,
 		rubricItemData.Explanation,
 		rubricItemData.CreatedAt,
+        rubricItemData.Deleted,
 		rubricItemData.ID).Scan(
 		&updatedItem.ID,
 		&updatedItem.RubricID,
 		&updatedItem.PointValue,
 		&updatedItem.Explanation,
-		&updatedItem.CreatedAt)
+		&updatedItem.CreatedAt,
+        &updatedItem.Deleted)
 	if err != nil {
 		return models.RubricItem{}, errs.NewDBError(err)
 	}

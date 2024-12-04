@@ -15,7 +15,8 @@ import { FaRegTrashAlt } from "react-icons/fa";
 interface IEditableItem {
     frontFacingIndex: number;
     rubricItem: IRubricItem;
-    impact: ItemFeedbackType
+    impact: ItemFeedbackType;
+    hidden: boolean;
 }
 
 interface IRubricLineItem {
@@ -59,9 +60,11 @@ const RubricEditor: React.FC = () => {
             point_value: null,
             explanation: "",
             rubric_id: null,
-            created_at: null
+            created_at: null,
+            deleted: false
         },
-        impact: ItemFeedbackType.Neutral
+        impact: ItemFeedbackType.Neutral,
+        hidden: false
     }
 
     const backButton = () => {
@@ -71,6 +74,7 @@ const RubricEditor: React.FC = () => {
     const saveRubric = async () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
+            console.log(rubricItems)
 
             //validate items
             for (const item of rubricItems) {
@@ -182,8 +186,6 @@ const RubricEditor: React.FC = () => {
     // handles adding another rubric item
     const addNewItem = () => {
         setRubricEdited(true)
-        console.log("new item")
-
         setRubricItemData([...rubricItemData, newRubricItem]);
         incrementCount()
     };
@@ -196,13 +198,25 @@ const RubricEditor: React.FC = () => {
     }
 
     const deleteItem = (item_id: number) => {
-        if (rubricItemData.length > 1) {
+        if ((rubricItemData.filter((item) => !item.hidden)).length > 1) {
             setRubricEdited(true)
-            setRubricItemData((prevItems) => 
-                prevItems.filter((item) => item.frontFacingIndex !== item_id)
+            console.log("#deleted")
+            setRubricItemData((prevItems) =>
+                prevItems.map((item) =>
+                    item.frontFacingIndex === item_id
+                        ? {
+                            ...item,
+                            hidden: true,
+                            rubricItem: {
+                                ...item.rubricItem,
+                                deleted: true,
+                            },
+                        }
+                        : item
+                )
             );
         }
-        
+
     }
 
     // on startup, store an assignment if we have one 
@@ -240,7 +254,8 @@ const RubricEditor: React.FC = () => {
                 const editableItem: IEditableItem = {
                     rubricItem: item,
                     frontFacingIndex: localCount,
-                    impact: determinePointImpact(item.point_value ?? 0)
+                    impact: determinePointImpact(item.point_value ?? 0),
+                    hidden: false
                 };
                 localCount++;
                 return editableItem;
@@ -296,26 +311,31 @@ const RubricEditor: React.FC = () => {
 
             {rubricItemData && rubricItemData.length > 0 &&
                 rubricItemData.map((item, i) => (
-                    <div key={i} className="NewRubric__itemDisplay">
-                        <RubricItem
-                            key={`itemID_${item.frontFacingIndex}`}
-                            name={item.rubricItem.explanation}
-                            points={item.rubricItem.point_value !== undefined && item.rubricItem.point_value !== null
-                                ? Math.abs(item.rubricItem.point_value).toString() : ""}
-                            impact={item.impact}
-                            onChange={(newItem) => handleItemChange(item.frontFacingIndex, newItem)}
-                        />
+                    <div key={i}>
+                        {!item.hidden && (
+                            <div key={`item_display_${i}`} className="NewRubric__itemDisplay">
+                                <RubricItem
+                                    key={`itemID_${item.frontFacingIndex}`}
+                                    name={item.rubricItem.explanation}
+                                    points={item.rubricItem.point_value !== undefined && item.rubricItem.point_value !== null
+                                        ? Math.abs(item.rubricItem.point_value).toString() : ""}
+                                    impact={item.impact}
+                                    onChange={(newItem) => handleItemChange(item.frontFacingIndex, newItem)}
+                                />
 
 
-                        <Button 
-                            key={`delete_id${item.frontFacingIndex}`}
-                            href=""
-                            variant="secondary"
-                            onClick={() => {deleteItem(item.frontFacingIndex)}}> 
-                            <FaRegTrashAlt />
-                        </Button>
+                                <Button
+                                    key={`delete_id${item.frontFacingIndex}`}
+                                    href=""
+                                    variant="secondary"
+                                    onClick={() => { deleteItem(item.frontFacingIndex) }}>
+                                    <FaRegTrashAlt />
+                                </Button>
+
+
+                            </div>
+                        )}
                     </div>
-
                 ))
             }
 

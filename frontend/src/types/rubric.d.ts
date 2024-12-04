@@ -18,6 +18,7 @@ interface IRubricItem {
     point_value: number | null;
     explanation: string;
     created_at: Date | null;
+    deleted: boolean;
 }
 
 interface IFullRubricResponse {
