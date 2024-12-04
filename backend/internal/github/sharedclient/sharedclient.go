@@ -2,6 +2,7 @@ package sharedclient
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -322,4 +323,71 @@ func (api *CommonAPI) RemoveTeamMember(ctx context.Context, orgName string, team
 func (api *CommonAPI) GetTeamMembers(ctx context.Context, teamID int64) ([]*github.User, error) {
 	members, _, err := api.Client.Teams.ListTeamMembers(ctx, teamID, nil)
 	return members, err
+}
+
+func (api *CommonAPI) EditRepository(ctx context.Context, addition *models.RepositoryAddition) error {
+	endpoint := fmt.Sprintf("/repos/%s/%s/contents/%s", addition.OwnerName, addition.RepoName, addition.FilePath)
+	encodedContent := base64.StdEncoding.EncodeToString([]byte(addition.Content))
+	body := map[string]interface{}{
+		"message": addition.CommitMessage,
+		"content": encodedContent,
+		"branch":  addition.DestinationBranch,
+	}
+	req, err := api.Client.NewRequest("PUT", endpoint, body)
+	if err != nil {
+		return err
+	}
+
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string) error {
+	// Get the reference to main branch
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
+	if err != nil {
+		return err
+	}
+
+	// Get the commit from the ref
+	parentCommitSHA := ref.Object.GetSHA()
+	parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
+	if err != nil {
+		return err
+	}
+
+	// create commit from parent commit tree (no changes)
+	endpoint := fmt.Sprintf("/repos/%s/%s/git/commits", owner, repo)
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+		"message": "Initial commit",
+		"tree":    parentCommit.Tree.GetSHA(),
+		"parents": [1]string{parentCommitSHA},
+	})
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+	var commit github.Commit
+	_, err = api.Client.Do(ctx, req, &commit)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	// update main to point to the new empty commit
+	endpoint = fmt.Sprintf("/repos/%s/%s/git/refs/heads/main", owner, repo)
+	req, err = api.Client.NewRequest("PATCH", endpoint, map[string]interface{}{
+		"sha":   commit.SHA,
+		"force": true,
+	})
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	return nil
 }

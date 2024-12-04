@@ -156,17 +156,17 @@ func (api *UserAPI) CreateFeedbackPR(ctx context.Context, owner, repo string) er
 	//Initialize post request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
 		"title": "Feedback",
-		"head":  "main",
+		"head":  owner + ":main",
 		"base":  "feedback",
-		"body":  "Grade and feedback will be left here",
+		"body":  "Grade and feedback will be left here. Do not close or modify this PR!<br>Once graded, reply with a justification to any deduction you would like to dispute.",
 	})
 	if err != nil {
 		return errs.GithubAPIError(err)
 	}
 
 	// Make the API call
-	response, err := api.Client.Do(ctx, req, nil)
-	if err != nil && response.StatusCode != 202 {
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
 		return errs.GithubAPIError(err)
 	}
 
