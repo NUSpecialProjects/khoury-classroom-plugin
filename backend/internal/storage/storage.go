@@ -31,6 +31,8 @@ type Works interface {
 	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
 	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
 	CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error)
+	UpdateStudentWork(ctx context.Context, UpdateStudentWork models.StudentWork) (models.StudentWork, error)
+	GetWorkByRepoName(ctx context.Context, repoName string) (models.StudentWork, error)
 }
 
 type Test interface {
@@ -57,6 +59,7 @@ type Classroom interface {
 	GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.Classroom, error)
 	CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error)
 	GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error)
+	GetNumberOfUsersInClassroom(ctx context.Context, classroomID int64) (int, error)
 }
 
 type User interface {
@@ -71,6 +74,9 @@ type AssignmentOutline interface {
 	GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error)
 	GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentName string, classroom int64) (*models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
+	CountWorksByState(ctx context.Context, assignmentID int) (map[models.WorkState]int, error)
+	GetEarliestCommitDate(ctx context.Context, assignmentID int) (*time.Time, error)
+	GetTotalWorkCommits(ctx context.Context, assignmentID int) (int, error)
 
 	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
 	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
