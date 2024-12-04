@@ -29,7 +29,6 @@ const Assignment: React.FC = () => {
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   const lineOptions = {
-
     responsive: true,
     plugins: {
       legend: {
@@ -40,12 +39,27 @@ const Assignment: React.FC = () => {
         text: 'Commits over time',
       },
       datalabels: {
-        display: false, 
+        display: false,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        grid: {
+          display: false, 
+        },
+        ticks: {
+          maxTicksLimit: 5, 
+        },
       },
     },
     elements: {
       point: {
-          radius: 1, 
+        radius: 1,
       },
       labels: {
         display: false
@@ -54,13 +68,13 @@ const Assignment: React.FC = () => {
   };
 
   const lineTempData = {
-    labels: ['5/10', '5/11', '5/12', '5/13', '5/14','5/15','5/16','5/17','5/18','5/19','5/20',],
-      datasets: [
+    labels: ['5/10', '5/11', '5/12', '5/13', '5/14', '5/15', '5/16', '5/17', '5/18', '5/19', '5/20',],
+    datasets: [
       {
-        data: [0, 0, 1, 2, 7, 2, 121, 2, 0, 0, 2], // Data points
-        borderColor: 'rgba(75, 192, 192, 1)', // Line color
-        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fill under the line
-        tension: 0.1, // Curve tension
+        data: [0, 0, 1, 2, 7, 2, 121, 2, 0, 0, 2],
+        borderColor: 'rgba(244, 63, 94, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.05,
       },
     ],
   };
