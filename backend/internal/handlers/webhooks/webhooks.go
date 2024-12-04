@@ -33,8 +33,9 @@ func (s *WebHookService) PR(c *fiber.Ctx) error {
 	return c.SendStatus(200)
 }
 
+// todo: finish regrade request handling
 func (s *WebHookService) PRComment(c *fiber.Ctx) error {
-	payload := models.PRComment{}
+	payload := models.WebHookPRComment{}
 	if err := c.BodyParser(&payload); err != nil {
 		return err
 	}
