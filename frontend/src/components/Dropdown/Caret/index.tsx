@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaChevronUp } from 'react-icons/fa6';
 import './styles.css';
 
 interface CaretProps {
@@ -9,7 +10,7 @@ interface CaretProps {
 }
 
 const Caret: React.FC<CaretProps> = ({ 
-    isUp = false, 
+    isUp = true, 
     className = '', 
     onClick,
     clickable = false 
@@ -17,9 +18,11 @@ const Caret: React.FC<CaretProps> = ({
     const clickableClass = clickable ? 'Caret--clickable' : 'Caret--not-clickable';
     return (
         <span 
-            className={`Caret ${isUp ? 'Caret--up' : ''} ${clickableClass} ${className}`} 
+            className={`Caret ${!isUp ? 'Caret--rotated' : ''} ${clickableClass} ${className}`} 
             onClick={clickable ? onClick : undefined} 
-        />
+        >
+            <FaChevronUp />
+        </span>
     );
 };
 
