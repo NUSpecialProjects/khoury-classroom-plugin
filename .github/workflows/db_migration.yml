@@ -30,7 +30,7 @@ jobs:
 
       - name: Store Snapshot of AWS RDS Instance
         run: |
-          aws rds create-db-snapshot --db-instance-identifier gitmarks-db --db-snapshot-identifier gitmarks-db-snapshot
+          aws rds create-db-snapshot --db-instance-identifier khouryclassroomdb --db-snapshot-identifier gitmarks-db-snapshot
 
       - name: Invoke AWS Lambda function
         uses: gagoar/invoke-aws-lambda@v3.4.0
