@@ -188,3 +188,25 @@ export const setAssignmentRubric = async (
 
   return data
 };
+
+export const getAssignmentRubric = async (
+  classroomID: number,
+  assignmentID: number
+): Promise<IFullRubric> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/rubric`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!result.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  return await result.json();
+};
