@@ -17,6 +17,7 @@ import SimpleMetric from "@/components/Metrics/SimpleMetric";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  console.log(selectedClassroom);
   const {
     classroomUser,
     error: classroomUserError,
@@ -138,7 +139,9 @@ const Dashboard: React.FC = () => {
                       }
                     />
                   </div>
-                  {/* Eventually we should add classroom metrics here */}
+                  <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
+                  <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
+                  <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
                 </MetricPanel>
               </div>
 
