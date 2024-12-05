@@ -158,8 +158,8 @@ const Assignment: React.FC = () => {
                 studentWorks.length > 0 &&
                 studentWorks.map((sa, i) => (
                   <TableRow key={i} className="Assignment__submission">
-                    <TableCell>{sa.contributors.join(", ")}</TableCell>
-                    <TableCell>Passing</TableCell>
+                    <TableCell>{sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}</TableCell>
+                    <TableCell>{sa.work_state}</TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
                 ))}

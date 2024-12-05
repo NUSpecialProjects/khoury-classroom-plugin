@@ -22,12 +22,13 @@ type StudentWork struct {
 type WorkState string
 
 const (
+	WorkStateNotAccepted      WorkState = "NOT_ACCEPTED" // additional option outside of the DB enum
 	WorkStateAccepted         WorkState = "ACCEPTED"
 	WorkStateStarted          WorkState = "STARTED"
 	WorkStateSubmitted        WorkState = "SUBMITTED"
-	WorkStateGradingAssigned  WorkState  = "GRADING_ASSIGNED"
-	WorkStateGradingCompleted WorkState  = "GRADING_COMPLETED"
-	WorkStateGradePublished   WorkState  = "GRADE_PUBLISHED"
+	WorkStateGradingAssigned  WorkState = "GRADING_ASSIGNED"
+	WorkStateGradingCompleted WorkState = "GRADING_COMPLETED"
+	WorkStateGradePublished   WorkState = "GRADE_PUBLISHED"
 )
 
 // Make WorkState an iterable enum
@@ -55,49 +56,44 @@ type PaginatedStudentWork struct {
 
 type RawStudentWork struct {
 	StudentWork
-	FirstName string `json:"first_name" db:"first_name"`
-	LastName  string `json:"last_name" db:"last_name"`
+	User User `json:"user" db:"user"`
 }
 
 type RawPaginatedStudentWork struct {
 	PaginatedStudentWork
-	FirstName string `json:"first_name" db:"first_name"`
-	LastName  string `json:"last_name" db:"last_name"`
+	User User `json:"user" db:"user"`
 }
 
 // a formatted (squashed) view of a student work: combine separate contributor entries on a common student work
 type StudentWorkWithContributors struct {
 	StudentWork
-	Contributors []string `json:"contributors"`
+	Contributors []User `json:"contributors"`
 }
 
 type PaginatedStudentWorkWithContributors struct {
 	PaginatedStudentWork
-	Contributors []string `json:"contributors"`
+	Contributors []User `json:"contributors"`
 }
 
 type IStudentWork interface {
 	GetID() int
-	GetFirstName() string
-	GetLastName() string
+	GetUser() User
 }
 
 type IFormattedStudentWork interface {
-	AddContributor(contributor string)
+	AddContributor(contributor User)
 }
 
-func (w RawStudentWork) GetID() int           { return w.ID }
-func (w RawStudentWork) GetFirstName() string { return w.FirstName }
-func (w RawStudentWork) GetLastName() string  { return w.LastName }
+func (w RawStudentWork) GetID() int    { return w.ID }
+func (w RawStudentWork) GetUser() User { return w.User }
 
-func (w RawPaginatedStudentWork) GetID() int           { return w.ID }
-func (w RawPaginatedStudentWork) GetFirstName() string { return w.FirstName }
-func (w RawPaginatedStudentWork) GetLastName() string  { return w.LastName }
+func (w RawPaginatedStudentWork) GetID() int    { return w.ID }
+func (w RawPaginatedStudentWork) GetUser() User { return w.User }
 
-func (w *StudentWorkWithContributors) AddContributor(contributor string) {
+func (w *StudentWorkWithContributors) AddContributor(contributor User) {
 	w.Contributors = append(w.Contributors, contributor)
 }
 
-func (w *PaginatedStudentWorkWithContributors) AddContributor(contributor string) {
+func (w *PaginatedStudentWorkWithContributors) AddContributor(contributor User) {
 	w.Contributors = append(w.Contributors, contributor)
 }

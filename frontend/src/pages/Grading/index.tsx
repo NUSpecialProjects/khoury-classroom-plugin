@@ -75,7 +75,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                   }}
                 >
                   <TableCell>
-                    {studentAssignment.contributors.join(", ")}
+                    {studentAssignment.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}
                   </TableCell>
                   <TableCell>-/100</TableCell>
                 </TableRow>

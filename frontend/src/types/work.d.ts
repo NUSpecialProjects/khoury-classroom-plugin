@@ -12,7 +12,7 @@ interface IStudentWork {
   grades_published_timestamp?: Date;
   work_state: string;
   created_at: Date;
-  contributors: string[];
+  contributors: IUser[];
 }
 
 interface IPaginatedStudentWork extends IStudentWork {
