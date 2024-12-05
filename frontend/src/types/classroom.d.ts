@@ -13,8 +13,8 @@ interface IUserOrgsAndClassroomsResponse {
   orgs_and_classrooms: Map<IOrganization, IClassroom[]>;
 }
 
-interface IClassroomListResponse {
-  classrooms: IClassroom[];
+interface IClassroomUsersListResponse {
+  classroom_users: IClassroomUser[];
   org_role: OrgRole;
 }
 

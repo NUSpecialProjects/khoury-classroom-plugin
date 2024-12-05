@@ -62,6 +62,12 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			return errs.InvalidRequestBody(assignmentData)
 		}
 
+		// Check if user has at least Professor role
+		_, err := s.RequireAtLeastRole(c, assignmentData.ClassroomID, models.Professor)
+		if err != nil {
+			return err
+		}
+
 		// Error if assignment already exists
 		existingAssignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentData.Name, assignmentData.ClassroomID)
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
@@ -180,6 +186,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		classroom, err := s.store.GetClassroomByID(c.Context(), assignment.ClassroomID)
 		if err != nil {
 			return errs.InternalServerError()
+		}
+
+		// Check if user has at least student role
+		_, err = s.RequireAtLeastRole(c, classroom.ID, models.Student)
+		if err != nil {
+			return err
 		}
 
 		// Check if fork already exists
