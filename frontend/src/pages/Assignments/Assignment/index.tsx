@@ -8,8 +8,14 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDate } from "@/utils/date";
+import { formatDateTime } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
+import MetricPanel from "@/components/Metrics/MetricPanel";
+import SimpleMetric from "@/components/Metrics/SimpleMetric";
+
+import { MdEditDocument } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
+import { FaGithub } from "react-icons/fa";
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -73,7 +79,7 @@ const Assignment: React.FC = () => {
   useEffect(() => {
     const generateInviteLink = async () => {
       if (!assignment) return;
-      
+
       try {
         if (!selectedClassroom) return;
         const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
@@ -100,13 +106,13 @@ const Assignment: React.FC = () => {
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Released on:"}</div>
                 {assignment.created_at
-                  ? formatDate(new Date(assignment.created_at))
+                  ? formatDateTime(new Date(assignment.created_at))
                   : "N/A"}
               </div>
               <div className="Assignment__date">
                 <div className="Assignment__date--title"> {"Due Date:"}</div>
                 {assignment.main_due_date
-                  ? formatDate(new Date(assignment.main_due_date))
+                  ? formatDateTime(new Date(assignment.main_due_date))
                   : "N/A"}
               </div>
             </div>
@@ -114,10 +120,10 @@ const Assignment: React.FC = () => {
 
           <div className="Assignment__externalButtons">
             <Button href="" variant="secondary" newTab>
-              View in Github Classroom
+              <FaGithub className="icon" /> View Template Repository
             </Button>
             <Button href="" variant="secondary" newTab>
-              View Starter Code
+              <MdEditDocument className="icon" />  View Rubric
             </Button>
             <Link to={`/app/assignments/${assignment.id}/rubric`} state={{ assignment }}>
               <Button href="" variant="secondary">
@@ -127,13 +133,20 @@ const Assignment: React.FC = () => {
 
           </div>
 
-          <h2>Assignment Link</h2>
-          <CopyLink link={inviteLink} name="invite-assignment" />
-          {linkError && <p className="error">{linkError}</p>}
+          <div className="Assignment__subSectionWrapper">
+            <h2>Assignment Link</h2>
+            <CopyLink link={inviteLink} name="invite-assignment" />
+            {linkError && <p className="error">{linkError}</p>}
+          </div>
 
           <div className="Assignment__subSectionWrapper">
-            <h2>Metrics</h2>
-            <p>Metrics go here</p>
+            <h2 style={{ marginBottom: 10 }}>Metrics</h2>
+            <MetricPanel>
+              <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
+              <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
+              <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
+              <SimpleMetric metricTitle="Regrade  Requests" metricValue="0"></SimpleMetric>
+            </MetricPanel>
           </div>
 
           <div className="Assignment__subSectionWrapper">
