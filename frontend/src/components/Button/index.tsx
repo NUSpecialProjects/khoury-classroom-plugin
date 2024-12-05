@@ -1,14 +1,11 @@
 import { Link } from "react-router-dom";
-
 import "./styles.css";
-
 interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string;
   variant?: "primary" | "secondary";
   size?: "default" | "small";
   newTab?: boolean;
 }
-
 const ButtonWrapper: React.FC<IButtonProps> = ({
   children,
   href,
@@ -22,17 +19,17 @@ const ButtonWrapper: React.FC<IButtonProps> = ({
     <>{children}</>
   );
 };
-
 const Button: React.FC<IButtonProps> = ({
   className,
   children,
   href,
   variant = "primary",
   size = "default",
+  newTab,
   ...props
 }) => {
   return (
-    <ButtonWrapper href={href}>
+    <ButtonWrapper href={href} newTab={newTab}>
       <button
         className={`Button Button--${variant} Button--${size} ${className ?? ""}`}
         {...props}
@@ -42,5 +39,4 @@ const Button: React.FC<IButtonProps> = ({
     </ButtonWrapper>
   );
 };
-
 export default Button;

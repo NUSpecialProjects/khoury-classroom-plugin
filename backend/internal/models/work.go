@@ -15,16 +15,30 @@ type StudentWork struct {
 	GradesPublishedTimestamp *time.Time `json:"grades_published_timestamp" db:"grades_published_timestamp"`
 	WorkState                WorkState  `json:"work_state" db:"work_state"`
 	CreatedAt                time.Time  `json:"created_at" db:"created_at"`
+	CommitAmount             int        `json:"commit_amount" db:"commit_amount"`
+	FirstCommitDate          *time.Time `json:"first_commit_date" db:"first_commit_date"`
 }
 
 type WorkState string
 
 const (
 	WorkStateAccepted         WorkState = "ACCEPTED"
-	WorkStateGradingAssigned  WorkState = "GRADING_ASSIGNED"
-	WorkStateGradingCompleted WorkState = "GRADING_COMPLETED"
-	WorkStateGradePublished   WorkState = "GRADE_PUBLISHED"
+	WorkStateStarted          WorkState = "STARTED"
+	WorkStateSubmitted        WorkState = "SUBMITTED"
+	WorkStateGradingAssigned  WorkState  = "GRADING_ASSIGNED"
+	WorkStateGradingCompleted WorkState  = "GRADING_COMPLETED"
+	WorkStateGradePublished   WorkState  = "GRADE_PUBLISHED"
 )
+
+// Make WorkState an iterable enum
+var WorkStateEnum = []WorkState{
+	WorkStateAccepted,
+	WorkStateStarted,
+	WorkStateSubmitted,
+	WorkStateGradingAssigned,
+	WorkStateGradingCompleted,
+	WorkStateGradePublished,
+}
 
 type StudentWorkPagination struct {
 	PreviousStudentWorkID *int `json:"previous_student_work_id" db:"previous_student_work_id"`
