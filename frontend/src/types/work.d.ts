@@ -30,3 +30,8 @@ interface IPaginatedStudentWorkResponse {
   student_work: IPaginatedStudentWork;
   feedback: IGraderFeedback[];
 }
+
+
+interface ICommitsPerDayResponse {
+  dated_commits: Map<Date, number>;
+}

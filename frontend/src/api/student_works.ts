@@ -42,3 +42,31 @@ export const getStudentWorks = async (
   const resp = ((await response.json()) as IStudentWorkResponses).student_works;
   return resp;
 };
+
+
+export const getStudentWorkCommitsPerDay = async (
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number
+) : Promise<Map<Date, number>> => {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/commits-per-day`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = (await response.json() as ICommitsPerDayResponse);
+
+  const commitsMap = new Map<Date, number>(
+    Object.entries(resp.dated_commits).map(([key, value]) => [new Date(key), value])
+  );
+
+  return commitsMap;
+}

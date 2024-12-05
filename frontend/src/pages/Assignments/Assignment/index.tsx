@@ -7,11 +7,11 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
-import { getStudentWorks } from "@/api/student_works";
+import { getStudentWorkCommitsPerDay, getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
 
-import { Chart as ChartJS, registerables, Tooltip } from "chart.js";
+import { ChartData, Chart as ChartJS, ChartOptions, Point, registerables } from "chart.js";
 import { Line } from 'react-chartjs-2'
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
@@ -22,62 +22,81 @@ const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignmentOutline>();
   const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
+  const [commitsPerDay, setCommitsPerDay] = useState<Map<Date, number>>(new Map());
+  const [lineData, setLineData] = useState<ChartData<"line", (number | Point | null)[], unknown>>()
+  const [lineOptions, setLineOptions] = useState<ChartOptions<"line">>()
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
-  const lineOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: 'Commits over time',
-      },
-      datalabels: {
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        grid: {
-          display: false, 
-        },
-        ticks: {
-          maxTicksLimit: 5, 
-        },
-      },
-    },
-    elements: {
-      point: {
-        radius: 1,
-      },
-      labels: {
-        display: false
-      }
-    },
-  };
 
-  const lineTempData = {
-    labels: ['5/10', '5/11', '5/12', '5/13', '5/14', '5/15', '5/16', '5/17', '5/18', '5/19', '5/20',],
-    datasets: [
-      {
-        data: [0, 0, 1, 2, 7, 2, 121, 2, 0, 0, 2],
-        borderColor: 'rgba(244, 63, 94, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.05,
-      },
-    ],
-  };
+  useEffect(() => {
+
+    if (commitsPerDay) {
+      const sortedDates = Array.from(commitsPerDay.keys()).sort((a, b) => a.valueOf() - b.valueOf()) 
+      const sortedCounts: number[] = sortedDates.map((date) => commitsPerDay.get(date)!)
+
+      const sortedDatesStrings = sortedDates.map((date) => `${date.getMonth()}/${date.getDate()}`)
+
+      const lineData = {
+        labels: sortedDatesStrings,
+        datasets: [
+          {
+            data: sortedCounts,
+            borderColor: 'rgba(244, 63, 94, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.05,
+          },
+        ],
+      }
+      setLineData(lineData)
+  
+      const lineOptions = {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: true,
+            text: 'Commits over time',
+          },
+          datalabels: {
+            display: false,
+          },
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+          y: {
+            grid: {
+              display: false,
+            },
+            ticks: {
+              maxTicksLimit: 5,
+            },
+          },
+        },
+        elements: {
+          point: {
+            radius: 1,
+          },
+          labels: {
+            display: false
+          }
+        },
+      }
+      setLineOptions(lineOptions)
+    }
+
+  }, [commitsPerDay])
+
+
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -95,6 +114,11 @@ const Assignment: React.FC = () => {
             );
             if (studentWorks !== null && studentWorks !== undefined) {
               setStudentAssignment(studentWorks);
+              const cPD = await getStudentWorkCommitsPerDay(selectedClassroom.id, a.id, 1)
+              if (cPD !== null && cPD !== undefined) {
+                setCommitsPerDay(cPD)
+                console.log("ASDAUHDBSLKHJSDBSA: ", cPD instanceof Map)
+              }
             }
           } catch (_) {
             // do nothing
@@ -191,10 +215,12 @@ const Assignment: React.FC = () => {
             <p>Metrics go here</p>
 
             <div className="Assignment__metricsWrapper">
-              <Line
-                options={lineOptions}
-                data={lineTempData}
-              />
+              {lineData && lineOptions && (
+                <Line
+                  options={lineOptions}
+                  data={lineData}
+                />
+              )}
             </div>
 
 
