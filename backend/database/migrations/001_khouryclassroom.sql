@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS assignment_tokens (
 
 DO $$ BEGIN
     CREATE TYPE WORK_STATE AS 
-    ENUM('ACCEPTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
+    ENUM('ACCEPTED', 'STARTED', 'SUBMITTED', 'GRADING_ASSIGNED', 'GRADING_COMPLETED', 'GRADE_PUBLISHED');
 EXCEPTION 
     WHEN duplicate_object THEN null;
 END $$;
@@ -129,13 +129,15 @@ END $$;
 CREATE TABLE IF NOT EXISTS student_works (
     id SERIAL PRIMARY KEY,
     assignment_outline_id INTEGER NOT NULL,
-    repo_name VARCHAR(255),
+    repo_name VARCHAR(255) UNIQUE NOT NULL,
     unique_due_date TIMESTAMP,
     manual_feedback_score INTEGER,
     auto_grader_score INTEGER,
     grades_published_timestamp TIMESTAMP,
     work_state WORK_STATE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    commit_amount INTEGER DEFAULT 0,
+    first_commit_date TIMESTAMP,
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
