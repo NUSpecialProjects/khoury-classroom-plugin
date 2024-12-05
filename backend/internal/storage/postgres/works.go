@@ -22,9 +22,9 @@ const DesiredFields = `
 	sw.grades_published_timestamp,
 	sw.work_state,
 	sw.created_at,
-	u.id AS user_id,
 	sw.commit_amount,
 	sw.first_commit_date,
+	u.id AS user_id,
 	u.first_name,
 	u.last_name,
 	u.github_username,
@@ -99,13 +99,13 @@ ORDER BY u.last_name, u.first_name;
 			&rawWork.GradesPublishedTimestamp,
 			&rawWork.WorkState,
 			&rawWork.CreatedAt,
+			&rawWork.CommitAmount,
+			&rawWork.FirstCommitDate,
 			&rawWork.User.ID,
 			&rawWork.User.FirstName,
 			&rawWork.User.LastName,
 			&rawWork.User.GithubUsername,
 			&rawWork.User.GithubUserID,
-			&rawWork.CommitAmount,
-			&rawWork.FirstCommitDate,
 		)
 		if err != nil {
 			fmt.Println("Error scanning row ", err)
@@ -167,13 +167,13 @@ WHERE student_work_id = $3
 			&rawWork.TotalStudentWorks,
 			&rawWork.PreviousStudentWorkID,
 			&rawWork.NextStudentWorkID,
+			&rawWork.CommitAmount,
+			&rawWork.FirstCommitDate,
 			&rawWork.User.ID,
 			&rawWork.User.FirstName,
 			&rawWork.User.LastName,
 			&rawWork.User.GithubUsername,
 			&rawWork.User.GithubUserID,
-			&rawWork.CommitAmount,
-			&rawWork.FirstCommitDate,
 		)
 		if err != nil {
 			fmt.Println("Error scanning row ", err)
