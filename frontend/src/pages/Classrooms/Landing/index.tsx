@@ -8,7 +8,7 @@ const Landing = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   return (
-    <Panel title={`Successfully joined ${selectedClassroom?.name}`}>
+    <Panel title={`Successfully joined ${selectedClassroom?.org_name} - ${selectedClassroom?.name}`}>
       <p>You may now close this page.</p>
     </Panel>
   );
