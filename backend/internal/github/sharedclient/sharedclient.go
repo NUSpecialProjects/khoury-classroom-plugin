@@ -332,23 +332,33 @@ func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string)
 		return err
 	}
 
-	// Get the commit from the ref
-	parentCommitSHA := ref.Object.GetSHA()
-	if parentCommitSHA == "" {
-		return errors.New("invalid parent commit")
-	}
-	parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
-	if err != nil {
-		return err
+	// if no parent commit exists, refer to the empty tree
+	tree := "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+	var parentCommitSHA string
+	if ref.Object != nil {
+		// Get the commit from the ref
+		parentCommitSHA = ref.Object.GetSHA()
+		if parentCommitSHA == "" {
+			return errors.New("invalid parent commit")
+		}
+		parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
+		if err != nil {
+			return err
+		}
+
+		parentCommit.Tree.GetSHA()
 	}
 
 	// create commit from parent commit tree (no changes)
 	endpoint := fmt.Sprintf("/repos/%s/%s/git/commits", owner, repo)
-	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+	body := map[string]interface{}{
 		"message": "Initial commit",
-		"tree":    parentCommit.Tree.GetSHA(),
-		"parents": [1]string{parentCommitSHA},
-	})
+		"tree":    tree,
+	}
+	if parentCommitSHA != "" {
+		body["parents"] = [1]string{parentCommitSHA}
+	}
+	req, err := api.Client.NewRequest("POST", endpoint, body)
 	if err != nil {
 		return errs.GithubAPIError(err)
 	}
