@@ -2,7 +2,7 @@ import "./styles.css";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useMemo, useState } from "react";
 import ErrorMessage from "@/components/Error";
-import { getCallbackURL } from "@/api/login";
+import { getCallbackURL } from "@/api/auth";
 
 import { AuthContext } from "@/contexts/auth";
 import { FaGithub } from "react-icons/fa6";
@@ -35,11 +35,11 @@ const Login: React.FC = () => {
     setStatus(LoginStatus.LOADING);
     setError(null);
     try {
-      const url = await getCallbackURL();
-      if (!url) {
+      const resp = await getCallbackURL();
+      if (!resp.url) {
         throw new Error("Callback URL is empty");
       }
-      setCallbackURL(url);
+      setCallbackURL(resp.url);
       setStatus(LoginStatus.READY);
       setError(null);
     } catch (_) {

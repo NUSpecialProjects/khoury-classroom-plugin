@@ -23,6 +23,8 @@ const DesiredFields = `
 	sw.grades_published_timestamp,
 	sw.work_state,
 	sw.created_at,
+	sw.commit_amount,
+	sw.first_commit_date,
 	u.first_name,
 	u.last_name
 `
@@ -192,6 +194,84 @@ func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, 
 	)
 	if err != nil {
 		return studentWork, fmt.Errorf("error inserting work contributors")
+	}
+
+	return studentWork, nil
+}
+
+func (db *DB) GetWorkByRepoName(ctx context.Context, repoName string) (models.StudentWork, error) {
+	var studentWork models.StudentWork
+
+	err := db.connPool.QueryRow(ctx, `
+		SELECT sw.id,
+			   c.org_name,
+			   ao.name AS assignment_name,
+			   sw.assignment_outline_id,
+			   sw.repo_name,
+			   sw.unique_due_date,
+			   sw.manual_feedback_score,
+			   sw.auto_grader_score,
+			   sw.grades_published_timestamp,
+			   sw.work_state,
+			   sw.created_at,
+			   sw.commit_amount,
+			   sw.first_commit_date
+		FROM student_works sw
+		JOIN assignment_outlines ao ON sw.assignment_outline_id = ao.id
+		JOIN classrooms c ON ao.classroom_id = c.id
+		WHERE sw.repo_name = $1
+	`, repoName).Scan(
+		&studentWork.ID,
+		&studentWork.OrgName,
+		&studentWork.AssignmentName,
+		&studentWork.AssignmentOutlineID,
+		&studentWork.RepoName,
+		&studentWork.UniqueDueDate,
+		&studentWork.ManualFeedbackScore,
+		&studentWork.AutoGraderScore,
+		&studentWork.GradesPublishedTimestamp,
+		&studentWork.WorkState,
+		&studentWork.CreatedAt,
+		&studentWork.CommitAmount,
+		&studentWork.FirstCommitDate,
+	)
+
+	if err != nil {
+		return studentWork, err
+	}
+
+	return studentWork, nil
+}
+
+func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentWork) (models.StudentWork, error) {
+	_, err := db.connPool.Exec(ctx, `
+		UPDATE student_works
+		SET assignment_outline_id = $1,
+			repo_name = $2,
+			unique_due_date = $3,
+			manual_feedback_score = $4,
+			auto_grader_score = $5,
+			grades_published_timestamp = $6,
+			work_state = $7,
+			created_at = $8,
+			commit_amount = $9,
+			first_commit_date = $10
+		WHERE id = $11
+	`, studentWork.AssignmentOutlineID,
+		studentWork.RepoName,
+		studentWork.UniqueDueDate,
+		studentWork.ManualFeedbackScore,
+		studentWork.AutoGraderScore,
+		studentWork.GradesPublishedTimestamp,
+		studentWork.WorkState,
+		studentWork.CreatedAt,
+		studentWork.CommitAmount,
+		studentWork.FirstCommitDate,
+		studentWork.ID,
+	)
+
+	if err != nil {
+		return studentWork, err
 	}
 
 	return studentWork, nil

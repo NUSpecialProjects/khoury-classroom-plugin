@@ -21,8 +21,8 @@ type GitHubAppClient interface { // All methods in the APP client
 	// Create a new team in an organization
 	CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error)
 
-	// Add a user to a team
-	AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error
+	// Delete a team in an organization
+	DeleteTeam(ctx context.Context, teamID int64) error
 
 	// Add a repository permission to a team
 	AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error
@@ -100,6 +100,21 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CancelOrgInvitation(ctx context.Context, orgName string, userName string) error
 	// Get the details of a repository
 	GetRepository(ctx context.Context, owner string, repoName string) (*github.Repository, error)
+
+	// Get the details of a team
+	GetTeam(ctx context.Context, teamID int64) (*github.Team, error)
+
+	// Get the details of a team by name
+	GetTeamByName(ctx context.Context, orgName string, teamName string) (*github.Team, error)
+
+	// Add a user to a team
+	AddTeamMember(ctx context.Context, teamID int64, userName string, opt *github.TeamAddTeamMembershipOptions) error
+
+	// Remove a user from a team
+	RemoveTeamMember(ctx context.Context, orgName string, teamID int64, userName string) error
+
+	// Get the members of a team
+	GetTeamMembers(ctx context.Context, teamID int64) ([]*github.User, error)
 
 	// Updates a team's permissions within a repository
 	UpdateTeamRepoPermissions(ctx context.Context, org, teamSlug, owner, repo, permission string) error

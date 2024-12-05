@@ -86,6 +86,14 @@ func AuthenticationError() APIError {
 	return NewAPIError(http.StatusForbidden, fmt.Errorf("please authenticate properly"))
 }
 
+func InsufficientPermissionsError() APIError {
+	return NewAPIError(http.StatusForbidden, fmt.Errorf("user does not have sufficient permissions to perform this action"))
+}
+
+func StudentNotInStudentTeamError() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("student is not in the student team"))
+}
+
 func InconsistentOrgMembershipError() APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("user status is inconsistent with org membership, were they removed from the GitHub organization?"))
 }

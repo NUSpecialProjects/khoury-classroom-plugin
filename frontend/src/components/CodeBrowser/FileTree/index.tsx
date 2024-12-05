@@ -1,23 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
-import { ResizableBox } from "react-resizable";
+import SimpleBar from "simplebar-react";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { GraderContext } from "@/contexts/grader";
 import { getFileTree } from "@/api/grader";
 import { buildTree, renderTree, sortTreeNode } from "./funcs";
+import ResizablePanel from "../ResizablePanel";
 
 import "./styles.css";
-import SimpleBar from "simplebar-react";
 
 /****************
  * TREE COMPONENT
  ****************/
-export const FileTree: React.FC<IFileTree> = ({
-  selectFileCallback,
-  children,
-  className,
-}) => {
+export const FileTree: React.FC<IFileTree> = ({ selectFileCallback }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { assignmentID, studentWorkID } = useContext(GraderContext);
 
@@ -56,19 +52,10 @@ export const FileTree: React.FC<IFileTree> = ({
   }, [gitTree]);
 
   return (
-    <ResizableBox
-      className={"FileTree" + (className ? " " + className : "")}
-      style={{ zIndex: treeDepth * 2 }}
-      width={230}
-      height={Infinity}
-      resizeHandles={["e"]}
-      handle={
-        <div className="ResizeHandle" style={{ zIndex: treeDepth * 2 + 1 }} />
-      }
-    >
-      <>
-        <div className="FileTree__head">Files</div>
-        <SimpleBar className="FileTree__body">
+    <ResizablePanel border="right" minWidth={150}>
+      <div className="FileTree__head">Files</div>
+      <SimpleBar className="FileTree__body scrollable">
+        <>
           {root &&
             sortTreeNode(root).map((node) =>
               renderTree(node, 0, treeDepth, selectedFile, (n) => {
@@ -76,10 +63,9 @@ export const FileTree: React.FC<IFileTree> = ({
                 selectFileCallback(n);
               })
             )}
-          {children}
-        </SimpleBar>
-      </>
-    </ResizableBox>
+        </>
+      </SimpleBar>
+    </ResizablePanel>
   );
 };
 

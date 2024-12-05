@@ -3,6 +3,7 @@ package organizations
 import (
 	//"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
@@ -60,14 +61,16 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		var orgsWithAppInstalled []models.Organization
 		var orgsWithoutAppInstalled []models.Organization
 		for _, org := range userOrgs {
+			found := false
 			for _, installation := range appInstallations {
 				if *installation.Account.Login == org.Login {
 					orgsWithAppInstalled = append(orgsWithAppInstalled, org)
-					break
-				} else {
-					orgsWithoutAppInstalled = append(orgsWithoutAppInstalled, org)
+					found = true
 					break
 				}
+			}
+			if !found {
+				orgsWithoutAppInstalled = append(orgsWithoutAppInstalled, org)
 			}
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -127,7 +130,30 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return err
 		}
 
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{"classrooms": classrooms})
+		// Get the user's org list (work around since we only know the org_id)
+		orgs, err := client.GetUserOrgs(c.Context())
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		var orgName string
+		for _, org := range orgs {
+			if org.ID == orgID {
+				orgName = org.Login
+				break
+			}
+		}
+
+		// Get the user's membership in the organization
+		membership, err := client.GetCurrUserOrgMembership(c.Context(), orgName)
+		if err != nil {
+			return errs.NewDBError(err)
+		}
+
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"classrooms": classrooms,
+			"org_role":   strings.ToUpper(*membership.Role),
+		})
 	}
 }
 
