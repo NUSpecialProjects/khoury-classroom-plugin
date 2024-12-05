@@ -108,7 +108,7 @@ func AssignmentNotAcceptedError() APIError {
 
 
 func CriticalGithubError() APIError {
-	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("Critical Out of State Error: Github Integration"))
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("critical Out of State Error: Github Integration"))
 }
 
 /* Post Requests Only */
