@@ -39,30 +39,33 @@ jobs:
         run: |
           # Set the maximum number of snapshots to retain
           RETENTION_LIMIT=1
-
+        
           # Fetch all manual snapshots for the specified DB instance, sorted by creation time
           SNAPSHOTS=$(aws rds describe-db-snapshots \
             --db-instance-identifier gitmarks-rds-instance \
             --snapshot-type manual \
-            --query "DBSnapshots[?starts_with(DBSnapshotIdentifier, 'gitmarks-db-snapshot-')].{ID:DBSnapshotIdentifier,Time:SnapshotCreateTime}" \
+            --query "DBSnapshots[?starts_with(DBSnapshotIdentifier, 'gitmarks-db-snapshot-') && (Status=='available' || Status=='failed')].{ID:DBSnapshotIdentifier,Time:SnapshotCreateTime}" \
             --output json | jq -r 'sort_by(.Time) | .[].ID')
-
+        
           # Count the total number of snapshots
           SNAPSHOT_COUNT=$(echo "$SNAPSHOTS" | wc -l)
-
+        
           # Calculate the number of snapshots to delete
           DELETE_COUNT=$((SNAPSHOT_COUNT - RETENTION_LIMIT))
-
+        
           # If there are more snapshots than the retention limit, proceed with deletion
           if [ "$DELETE_COUNT" -gt 0 ]; then
             # List snapshots to delete
             SNAPSHOTS_TO_DELETE=$(echo "$SNAPSHOTS" | head -n "$DELETE_COUNT")
-
+        
             # Loop through each snapshot and delete it
             for SNAPSHOT_ID in $SNAPSHOTS_TO_DELETE; do
-                aws rds delete-db-snapshot --db-snapshot-identifier "$SNAPSHOT_ID"
+              echo "Deleting snapshot: $SNAPSHOT_ID"
+              aws rds delete-db-snapshot --db-snapshot-identifier "$SNAPSHOT_ID"
             done
-          fi
+          else
+            echo "No snapshots to delete."
+          fi          
           
       - name: Invoke Lambda Function
         run: |
