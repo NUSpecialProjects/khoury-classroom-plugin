@@ -6,7 +6,9 @@ import (
 )
 
 func WorkRoutes(router fiber.Router, service *WorkService) fiber.Router {
-	workRouter := router.Group("/classrooms/classroom/:classroom_id/assignments/assignment/:assignment_id/works").Use(middleware.Protected(service.userCfg.JWTSecret))
+	workRouter := router.Group(
+		"/classrooms/classroom/:classroom_id/assignments/assignment/:assignment_id/works",
+	).Use(middleware.Protected(service.userCfg.JWTSecret))
 
 	// Get the student works for an assignment
 	workRouter.Get("/", service.getWorksInAssignment())
@@ -22,6 +24,12 @@ func WorkRoutes(router fiber.Router, service *WorkService) fiber.Router {
 
 	// Get the file content of a specified file in a student work
 	workRouter.Get("/work/:work_id/blob/:sha", service.GetFileBlob())
+
+	// Get the first commit date of the student work
+	workRouter.Get("/work/:work_id/first-commit", service.GetFirstCommitDate())
+
+	// Get the total number of commits in the student work
+	workRouter.Get("/work/:work_id/commit-count", service.GetCommitCount())
 
 	return workRouter
 }

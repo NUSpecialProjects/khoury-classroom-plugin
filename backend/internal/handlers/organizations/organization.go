@@ -59,14 +59,16 @@ func (service *OrganizationService) GetInstalledOrgs() fiber.Handler {
 		var orgsWithAppInstalled []models.Organization
 		var orgsWithoutAppInstalled []models.Organization
 		for _, org := range userOrgs {
+			found := false
 			for _, installation := range appInstallations {
 				if *installation.Account.Login == org.Login {
 					orgsWithAppInstalled = append(orgsWithAppInstalled, org)
-					break
-				} else {
-					orgsWithoutAppInstalled = append(orgsWithoutAppInstalled, org)
+					found = true
 					break
 				}
+			}
+			if !found {
+				orgsWithoutAppInstalled = append(orgsWithoutAppInstalled, org)
 			}
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{

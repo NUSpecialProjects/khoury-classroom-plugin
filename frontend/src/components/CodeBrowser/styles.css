@@ -4,19 +4,16 @@
   --comment-background: #202227;
   --comment-border: #434854;
 
+  position: relative;
   height: 100%;
   flex-grow: 1;
   flex-shrink: 1;
   min-width: 0;
   overflow: auto;
-  padding: 10px;
+  padding: 5px 0;
+  padding-left: 10px;
   background: var(--browser-background);
   font-size: 13px;
-
-  &__scroll {
-    width: 100%;
-    height: 100%;
-  }
 
   pre {
     white-space: pre-wrap;
@@ -30,5 +27,13 @@
     grid-template-columns: min-content auto;
     width: 100%;
     font-size: inherit;
+    padding-right: 10px;
   }
+}
+
+.scrollable {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

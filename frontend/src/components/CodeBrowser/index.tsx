@@ -133,7 +133,7 @@ const CodeBrowser: React.FC<ICodeBrowser> = ({
       className={"CodeBrowser" + (className ? " " + className : "")}
       {...props}
     >
-      <SimpleBar className="CodeBrowser__scroll">
+      <SimpleBar className="scrollable">
         <pre>
           <code
             data-diff={JSON.stringify(file?.diff ?? "")}

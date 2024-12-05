@@ -288,3 +288,155 @@ func (s *AssignmentService) updateAssignment() fiber.Handler {
 		return c.SendStatus(fiber.StatusNotImplemented)
 	}
 }
+
+func (s *AssignmentService) getAssignmentRubric() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		assignment, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		if assignment.RubricID == nil {
+			return errs.NotFound("rubric", "assignment_id", assignmentID)
+		}
+
+		rubric, err := s.store.GetRubric(c.Context(), *assignment.RubricID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		rubricItems, err := s.store.GetRubricItems(c.Context(), rubric.ID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(models.FullRubric{
+			Rubric:      rubric,
+			RubricItems: rubricItems,
+		})
+	}
+}
+
+func (s *AssignmentService) getGradedCount() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Parse assignmentID
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		// Query work status counts
+		counts, err := s.store.CountWorksByState(c.Context(), int(assignmentID))
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		// Count graded/ungraded works
+		gradedWorks := 0
+		ungradedWorks := 0
+		for state, count := range counts {
+			if state == models.WorkStateGradingCompleted || state == models.WorkStateGradePublished {
+				gradedWorks += count
+			} else {
+				ungradedWorks += count
+			}
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"assignment_id": assignmentID,
+			"status": fiber.Map{
+				"graded":   gradedWorks,
+				"ungraded": ungradedWorks,
+			},
+		})
+	}
+}
+
+func (s *AssignmentService) getAssignmentStatus() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Parse assignmentID and classroomID
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		// Query work status counts
+		counts, err := s.store.CountWorksByState(c.Context(), int(assignmentID))
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		// Count assignment statuses
+		acceptedWork := counts[models.WorkStateAccepted]
+		startedWork := counts[models.WorkStateStarted]
+		submittedWork := counts[models.WorkStateSubmitted]
+		workInGrading := counts[models.WorkStateGradingAssigned] +
+			counts[models.WorkStateGradingCompleted] +
+			counts[models.WorkStateGradePublished]
+
+		// Determine unaccepted works using number of students in classroom
+		numStudents, err := s.store.GetNumberOfUsersInClassroom(c.Context(), classroomID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+		notAcceptedWork := numStudents - acceptedWork - startedWork - submittedWork - workInGrading
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"assignment_id": assignmentID,
+			"status": fiber.Map{
+				"not_accepted": notAcceptedWork,
+				"accepted":     acceptedWork,
+				"started":      startedWork,
+				"submitted":    submittedWork,
+				"in_grading":   workInGrading,
+			},
+		})
+	}
+}
+
+func (s *AssignmentService) GetFirstCommitDate() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		assignmentID, err := strconv.Atoi(c.Params("assignment_id"))
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		earliestCommitDate, err := s.store.GetEarliestCommitDate(c.Context(), assignmentID)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"assignment_id":   assignmentID,
+			"first_commit_at": earliestCommitDate,
+		})
+	}
+}
+
+func (s *AssignmentService) GetCommitCount() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		assignmentID, err := strconv.Atoi(c.Params("assignment_id"))
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		totalCommits, err := s.store.GetTotalWorkCommits(c.Context(), assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"assignment_id": assignmentID,
+			"total_commits": totalCommits,
+		})
+	}
+}

@@ -261,9 +261,10 @@ func (db *DB) CreateClassroomToken(ctx context.Context, tokenData models.Classro
 func (db *DB) GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error) {
 	var tokenData models.ClassroomToken
 	err := db.connPool.QueryRow(ctx, `
-	SELECT classroom_id, classroom_role, token, created_at, expires_at
-	FROM classroom_tokens
-	WHERE token = $1`, token).Scan(
+		SELECT classroom_id, classroom_role, token, created_at, expires_at
+		FROM classroom_tokens
+		WHERE token = $1
+	`, token).Scan(
 		&tokenData.ClassroomID,
 		&tokenData.ClassroomRole,
 		&tokenData.Token,
@@ -276,4 +277,19 @@ func (db *DB) GetClassroomToken(ctx context.Context, token string) (models.Class
 	}
 
 	return tokenData, nil
+}
+
+func (db *DB) GetNumberOfUsersInClassroom(ctx context.Context, classroomID int64) (int, error) {
+	var count int
+	err := db.connPool.QueryRow(ctx, `
+		SELECT COUNT(*)
+		FROM classroom_membership
+		WHERE classroom_id = $1
+	`, classroomID).Scan(&count)
+
+	if err != nil {
+		return 0, errs.NewDBError(err)
+	}
+
+	return count, nil
 }
