@@ -29,6 +29,15 @@ const Dashboard: React.FC = () => {
   );
   const navigate = useNavigate();
 
+  const getGCD = (a: number, b: number): number => {
+    while (b !== 0) {
+      const temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
+  };
+  
   const getTaToStudentRatio = (users: IClassroomUser[]): string => {
     if (!users || users.length === 0) {
       return "N/A";
@@ -44,9 +53,16 @@ const Dashboard: React.FC = () => {
   
     if (tas.length === 0 || students.length === 0) {
       return "N/A";
-    } else {
-      return tas.length + ' : ' + students.length;
     }
+  
+    const taCount = tas.length;
+    const studentCount = students.length;
+    const gcd = getGCD(taCount, studentCount);
+  
+    const reducedTaCount = taCount / gcd;
+    const reducedStudentCount = studentCount / gcd;
+  
+    return `${reducedTaCount} : ${reducedStudentCount}`;
   };
 
   useEffect(() => {
