@@ -161,7 +161,7 @@ const Dashboard: React.FC = () => {
                     />
                   </div>
 
-                  <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at)}></SimpleMetric>
+                  <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at ?? null)}></SimpleMetric>
                   <SimpleMetric metricTitle="Assignments" metricValue={assignments.length.toString()}></SimpleMetric>
                   <SimpleMetric metricTitle="TA to Student Ratio" metricValue={getTaToStudentRatio(classroomUsersList)}></SimpleMetric>
                 </MetricPanel>
