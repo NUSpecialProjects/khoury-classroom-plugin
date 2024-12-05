@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 
 import "./styles.css";
 
-interface ITreePanel extends React.HTMLProps<HTMLDivElement> {
+interface IResizablePanel extends React.HTMLProps<HTMLDivElement> {
   border: "left" | "right" | "both";
   minWidth?: number;
   zIndex?: number;
@@ -15,7 +15,7 @@ const border2dir = {
   both: ["e, w"],
 };
 
-const ResizablePanel: React.FC<ITreePanel> = ({
+const ResizablePanel: React.FC<IResizablePanel> = ({
   children,
   className,
   border,
@@ -36,10 +36,10 @@ const ResizablePanel: React.FC<ITreePanel> = ({
   }, [wrapper]);
 
   return (
-    <div className="TreePanel__wrapper" ref={wrapper}>
+    <div className="ResizablePanel__wrapper" ref={wrapper}>
       <ResizableBox
         ref={self}
-        className={`TreePanel ${collapsed ? "TreePanel--collapsed" : ""}${className ?? ""}`}
+        className={`ResizablePanel ${collapsed ? "ResizablePanel--collapsed" : ""}${className ?? ""}`}
         width={minWidth}
         height={Infinity}
         resizeHandles={border2dir[border] as ResizeHandle[]}
