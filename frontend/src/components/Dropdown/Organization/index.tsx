@@ -1,5 +1,6 @@
 import React from "react";
-import "../styles.css";
+import GenericDropdown, { IDropdownOption } from "..";
+import { MdAdd, MdCheck, MdClose } from "react-icons/md";
 
 interface Props {
   orgsWithApp: IOrganization[];
@@ -16,74 +17,62 @@ const OrganizationDropdown: React.FC<Props> = ({
   loading,
   onSelect,
 }) => {
+  const getOptions = (): IDropdownOption[] => {
+    const options: IDropdownOption[] = [];
+
+    if (orgsWithApp.length > 0) {
+      options.push({ value: "header-1", label: "Organizations with Marks Installed", disabled: true });
+      orgsWithApp.forEach(org => {
+        options.push({
+          value: org.login,
+          label: <>{`${org.login} `} <MdCheck /></>
+        });
+      });
+    }
+
+    if (orgsWithoutApp.length > 0) {
+      options.push({ value: "header-2", label: "Organizations without Marks Installed", disabled: true });
+      orgsWithoutApp.forEach(org => {
+        options.push({
+          value: org.login,
+          label: <>{`${org.login} `} <MdClose /></>
+        });
+      });
+    }
+
+    options.push({
+      value: "create_new_org",
+      label: <>{`Create a New Organization `} <MdAdd /></>
+    });
+
+    return options;
+  };
+
+  const handleChange = async (selected: string) => {
+    if (selected === "create_new_org") {
+      window.open("https://github.com/organizations/plan", "_blank");
+    } else {
+      const selectedOrg = [...orgsWithApp, ...orgsWithoutApp].find(
+        (org) => org.login === selected
+      );
+      if (selectedOrg) {
+        await onSelect(selectedOrg);
+      }
+    }
+  };
+
   return (
-    <div className="Dropdown__wrapper">
-      <label className="Dropdown__label" htmlFor="organization">
-        Select an Organization
-      </label>
-      <select
-        id="organization"
-        className="Dropdown"
-        value={selectedOrg ? selectedOrg.login : ""}
-        onChange={async (e) => {
-          const selectedLogin = e.target.value;
-          if (selectedLogin === "create_new_org") {
-            window.open("https://github.com/organizations/plan", "_blank");
-          } else {
-            const selected = [...orgsWithApp, ...orgsWithoutApp].find(
-              (org) => org.login === selectedLogin
-            );
-            if (selected) {
-              await onSelect(selected);
-            }
-          }
-        }}
-      >
-        {loading ? (
-          <option className="Dropdown__option" value="" disabled>
-            Loading organizations...
-          </option>
-        ) : (
-          <>
-            <option className="Dropdown__option" value="" disabled>
-              Select an organization
-            </option>
-            {orgsWithoutApp && orgsWithApp.length > 0 && (
-              <optgroup label="Organizations with GitGrader Installed">
-                {orgsWithApp.map((org) => (
-                  <option
-                    className="Dropdown__option"
-                    key={org.id}
-                    value={org.login}
-                    title="This organization has the GitGrader installed"
-                  >
-                    {org.login} ✔️
-                  </option>
-                ))}
-              </optgroup>
-            )}
-            {orgsWithoutApp && orgsWithoutApp.length > 0 && (
-              <optgroup label="Organizations without GitGrader Installed">
-                {orgsWithoutApp.map((org) => (
-                  <option
-                    className="Dropdown__option"
-                    key={org.id}
-                    value={org.login}
-                    title="GitGrader not installed on this organization"
-                  >
-                    {org.login} ❌
-                  </option>
-                ))}
-              </optgroup>
-            )}
-          </>
-        )}
-        <option className="Dropdown__option" value="create_new_org">
-          Create a New Organization ➕
-        </option>
-      </select>
-    </div>
+    <GenericDropdown
+      options={getOptions()}
+      onChange={handleChange}
+      selectedOption={selectedOrg ? selectedOrg.login : null}
+      loading={loading}
+      labelText="Select an Organization"
+      loadingText="Loading organizations..."
+      placeholder="Select an organization"
+    />
   );
 };
 
 export default OrganizationDropdown;
+

@@ -10,7 +10,11 @@ export const fetchCurrentUser = async (): Promise<IGitHubUser> => {
   });
 
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    if (response.status === 403) {
+      throw new Error("Unauthorized");
+    } else {
+      throw new Error("Network response was not ok");
+    }
   }
 
   const data: IGitHubUserResponse = await response.json();

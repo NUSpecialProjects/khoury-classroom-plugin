@@ -1,39 +1,6 @@
 package models
 
-import (
-	"fmt"
-	"time"
-)
-
-type WorkState string
-
-const (
-	WorkStateNotAccepted      WorkState = "NOT_ACCEPTED" // additional option outside of the DB enum
-	WorkStateAccepted         WorkState = "ACCEPTED"
-	WorkStateStarted          WorkState = "STARTED" // additional option outside of the DB enum
-	WorkStateGradingAssigned  WorkState = "GRADING_ASSIGNED"
-	WorkStateGradingCompleted WorkState = "GRADING_COMPLETED"
-	WorkStateGradePublished   WorkState = "GRADE_PUBLISHED"
-)
-
-func NewWorkState(state string) (WorkState, error) {
-	switch state {
-	case "NOT_ACCEPTED":
-		return WorkStateNotAccepted, nil
-	case "ACCEPTED":
-		return WorkStateAccepted, nil
-	case "STARTED":
-		return WorkStateStarted, nil
-	case "GRADING_ASSIGNED":
-		return WorkStateGradingAssigned, nil
-	case "GRADING_COMPLETED":
-		return WorkStateGradingCompleted, nil
-	case "GRADE_PUBLISHED":
-		return WorkStateGradePublished, nil
-	default:
-		return "", fmt.Errorf("invalid work state: %s", state)
-	}
-}
+import "time"
 
 type StudentWork struct {
 	ID                       int64      `json:"student_work_id" db:"student_work_id"`
@@ -48,6 +15,30 @@ type StudentWork struct {
 	GradesPublishedTimestamp *time.Time `json:"grades_published_timestamp" db:"grades_published_timestamp"`
 	WorkState                WorkState  `json:"work_state" db:"work_state"`
 	CreatedAt                time.Time  `json:"created_at" db:"created_at"`
+	CommitAmount             int64      `json:"commit_amount" db:"commit_amount"`
+	FirstCommitDate          *time.Time `json:"first_commit_date" db:"first_commit_date"`
+}
+
+type WorkState string
+
+const (
+	WorkStateNotAccepted      WorkState = "NOT_ACCEPTED" // additional option outside of the DB enum
+	WorkStateAccepted         WorkState = "ACCEPTED"
+	WorkStateStarted          WorkState = "STARTED"
+	WorkStateSubmitted        WorkState = "SUBMITTED"
+	WorkStateGradingAssigned  WorkState = "GRADING_ASSIGNED"
+	WorkStateGradingCompleted WorkState = "GRADING_COMPLETED"
+	WorkStateGradePublished   WorkState = "GRADE_PUBLISHED"
+)
+
+// Make WorkState an iterable enum
+var WorkStateEnum = []WorkState{
+	WorkStateAccepted,
+	WorkStateStarted,
+	WorkStateSubmitted,
+	WorkStateGradingAssigned,
+	WorkStateGradingCompleted,
+	WorkStateGradePublished,
 }
 
 type StudentWorkPagination struct {

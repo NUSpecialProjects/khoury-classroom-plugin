@@ -10,3 +10,8 @@ export enum ClassroomUserStatus {
   ORG_INVITED = "ORG_INVITED",
   NOT_IN_ORG = "NOT_IN_ORG",
 }
+
+export enum OrgRole {
+  ADMIN = "ADMIN",
+  MEMBER = "MEMBER",
+}

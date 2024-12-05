@@ -23,14 +23,16 @@ type Storage interface {
 
 type FeedbackComment interface {
 	GetFeedbackOnWork(ctx context.Context, studentWorkID int64) ([]models.PRReviewCommentResponse, error)
-	CreateNewFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error
-	AttachRubricItemToWork(ctx context.Context, studentWorkID int64, path string, line int64, rubricItemID int64) error
+	CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error
+	AttachRubricItemToFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error
 }
 
 type Works interface {
 	GetWorks(ctx context.Context, classroomID int64, assignmentID int64) ([]*models.StudentWorkWithContributors, error)
 	GetWork(ctx context.Context, classroomID int64, assignmentID int64, studentWorkID int64) (*models.PaginatedStudentWorkWithContributors, error)
 	CreateStudentWork(ctx context.Context, assignmentOutlineID int64, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error)
+	UpdateStudentWork(ctx context.Context, UpdateStudentWork models.StudentWork) (models.StudentWork, error)
+	GetWorkByRepoName(ctx context.Context, repoName string) (models.StudentWork, error)
 }
 
 type Test interface {
@@ -57,6 +59,7 @@ type Classroom interface {
 	GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.Classroom, error)
 	CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error)
 	GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error)
+	GetNumberOfUsersInClassroom(ctx context.Context, classroomID int64) (int, error)
 }
 
 type User interface {
@@ -71,6 +74,9 @@ type AssignmentOutline interface {
 	GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error)
 	GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentName string, classroom int64) (*models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
+	CountWorksByState(ctx context.Context, assignmentID int) (map[models.WorkState]int, error)
+	GetEarliestCommitDate(ctx context.Context, assignmentID int) (*time.Time, error)
+	GetTotalWorkCommits(ctx context.Context, assignmentID int) (int, error)
 
 	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
 	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
