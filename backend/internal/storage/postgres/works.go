@@ -121,6 +121,8 @@ ORDER BY u.last_name, u.first_name;
 
 // Get a single student work from an assignment
 func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
+	fmt.Printf("GetWork called with classroomID=%d, assignmentID=%d, studentWorkID=%d\n", classroomID, assignmentID, studentWorkID)
+
 	query := fmt.Sprintf(`
 WITH joined_tables AS
          (SELECT %s FROM %s ORDER BY last_name, first_name),
@@ -137,12 +139,14 @@ SELECT * FROM (paginated NATURAL JOIN joined_tables)
 WHERE student_work_id = $3
 `, DesiredFields, JoinedTable)
 
+	fmt.Printf("Executing query:\n%s\n", query)
+
 	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
 	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
 	if err != nil {
-		fmt.Println("Error in query ", err)
+		fmt.Printf("Error executing query: %v\n", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -176,20 +180,27 @@ WHERE student_work_id = $3
 			&rawWork.User.GithubUserID,
 		)
 		if err != nil {
-			fmt.Println("Error scanning row ", err)
+			fmt.Printf("Error scanning row: %v\n", err)
 			return nil, err
 		}
+		fmt.Printf("Scanned row: %+v\n", rawWork)
 		rawWorks = append(rawWorks, rawWork)
 	}
+
+	fmt.Printf("Found %d raw works\n", len(rawWorks))
 
 	formatted := formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
 		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []models.User{}}
 	})
 
+	fmt.Printf("Formatted %d works\n", len(formatted))
+
 	if len(formatted) == 0 {
+		fmt.Println("No works found, returning empty result error")
 		return nil, errs.EmptyResult()
 	}
 
+	fmt.Printf("Returning work: %+v\n", formatted[0])
 	return formatted[0], nil
 }
 

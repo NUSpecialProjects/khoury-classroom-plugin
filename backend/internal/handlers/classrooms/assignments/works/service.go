@@ -1,6 +1,7 @@
 package works
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
@@ -23,6 +24,7 @@ func NewWorkService(store storage.Storage, userCfg *config.GitHubUserClient, app
 
 // Helper function for getting a student work by ID
 func (s *WorkService) getWork(c *fiber.Ctx) (*models.PaginatedStudentWorkWithContributors, error) {
+	fmt.Println("getting work by id!!")
 	classroomID, err := strconv.Atoi(c.Params("classroom_id"))
 	if err != nil {
 		return nil, errs.BadRequest(err)
@@ -35,6 +37,9 @@ func (s *WorkService) getWork(c *fiber.Ctx) (*models.PaginatedStudentWorkWithCon
 	if err != nil {
 		return nil, errs.BadRequest(err)
 	}
+	fmt.Println("classroomID: ", classroomID)
+	fmt.Println("assignmentID: ", assignmentID)
+	fmt.Println("studentWorkID: ", studentWorkID)
 
 	work, err := s.store.GetWork(c.Context(), classroomID, assignmentID, studentWorkID)
 	if err != nil {
@@ -44,6 +49,6 @@ func (s *WorkService) getWork(c *fiber.Ctx) (*models.PaginatedStudentWorkWithCon
 			"student work ID":       c.Params("work_id"),
 		})
 	}
-
+	fmt.Println("work: ", work)
 	return work, nil
 }

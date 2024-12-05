@@ -113,15 +113,18 @@ func studentWorkExists(studentLogin string, works []*models.StudentWorkWithContr
 // Returns the details of a specific student work.
 func (s *WorkService) getWorkByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		fmt.Println("getting work by id")
 		work, err := s.getWork(c)
 		if err != nil {
 			return err
 		}
+		fmt.Println("work: ", work)
 
 		feedback, err := s.store.GetFeedbackOnWork(c.Context(), work.ID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
+		fmt.Println("feedback: ", feedback)
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"student_work": work,
