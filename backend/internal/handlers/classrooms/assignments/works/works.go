@@ -84,9 +84,18 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		var comments []models.PRReviewComment
 		for _, comment := range requestBody.Comments {
 			// insert into DB
-			err := s.store.CreateNewFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
-			if err != nil {
-				return errs.InternalServerError()
+			if comment.RubricItemID == nil {
+				// create new rubric item and then attach
+				err := s.store.CreateFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
+				if err != nil {
+					return errs.InternalServerError()
+				}
+			} else {
+				// attach rubric item
+				err := s.store.AttachRubricItemToFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
+				if err != nil {
+					return errs.InternalServerError()
+				}
 			}
 
 			// format comment: body -> [pt value] body
@@ -109,6 +118,34 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"review": review,
+		})
+	}
+}
+
+func (s *WorkService) GetCommitCount() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		work, err := s.getWork(c)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"work_id":      work.ID,
+			"commit_count": work.CommitAmount,
+		})
+	}
+}
+
+func (s *WorkService) GetFirstCommitDate() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		work, err := s.getWork(c)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"work_id":         work.ID,
+			"first_commit_at": work.FirstCommitDate,
 		})
 	}
 }

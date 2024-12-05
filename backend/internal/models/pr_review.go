@@ -13,6 +13,7 @@ type PRReviewComment struct {
 
 type PRReviewCommentResponse struct {
 	PRReviewComment
-	Points     int    `json:"points"`
-	TAUsername string `json:"ta_username"`
+	RubricItemID *int   `json:"rubric_item_id"`
+	Points       int    `json:"points"`
+	TAUsername   string `json:"ta_username"`
 }
