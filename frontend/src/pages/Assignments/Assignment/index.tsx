@@ -14,7 +14,6 @@ import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
 import { MdEditDocument } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 
 const Assignment: React.FC = () => {
