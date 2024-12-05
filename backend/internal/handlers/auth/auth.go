@@ -1,10 +1,6 @@
 package auth
 
 import (
-<<<<<<< HEAD
-	//"fmt"
-=======
->>>>>>> main
 	"net/url"
 	"strconv"
 	"strings"
