@@ -94,6 +94,11 @@ a {
   color: inherit;
 }
 
+.icon {
+ margin-right: 5px;
+ font-size: var(--body-font-size);
+}
+
 /* Custom scroll bar flex properties and styling */
 .simplebar-wrapper {
   flex-grow: 1;
