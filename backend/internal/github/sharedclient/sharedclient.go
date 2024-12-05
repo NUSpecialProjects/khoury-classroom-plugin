@@ -3,11 +3,8 @@ package sharedclient
 import (
 	"context"
 	"encoding/base64"
-
-	//"encoding/json"
 	"fmt"
 	"time"
-
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/CamPlume1/khoury-classroom/internal/utils"

@@ -55,9 +55,6 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	GetCurrUserOrgMembership(ctx context.Context, orgName string) (*github.Membership, error)
 
 	ForkRepository(ctx context.Context, org, owner, repo, destName string) error
-
-	// Create Branch protections for a given repo in an org
-	//CreatePushRuleset(ctx context.Context, orgName, repoName string) error
 }
 
 type GitHubBaseClient interface { //All methods in the SHARED client
