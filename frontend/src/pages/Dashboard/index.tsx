@@ -17,7 +17,7 @@ import SimpleMetric from "@/components/Metrics/SimpleMetric";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  console.log(selectedClassroom);
+  console.log(selectedClassroom?.created_at);
   const {
     classroomUser,
     error: classroomUserError,
