@@ -5,6 +5,7 @@ import Assignments from "./Assignments";
 import Assignment from "./Assignments/Assignment";
 import CreateAssignment from "./Assignments/CreateAssignment";
 import AcceptAssignment from "./Token/Apply/Assignment";
+import StudentSubmission from "./Assignments/StudentSubmission";
 import Grading from "./Grading";
 import Grader from "./Grading/Grader";
 import Callback from "./Callback";
@@ -28,6 +29,7 @@ export {
   Assignment,
   CreateAssignment,
   AcceptAssignment,
+  StudentSubmission,
   Grading,
   Grader,
   Callback,

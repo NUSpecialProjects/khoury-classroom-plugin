@@ -13,6 +13,7 @@ import * as Pages from "./pages";
 import Layout from "./components/Layout";
 import AuthProvider, { AuthContext } from "./contexts/auth";
 import SelectedSemesterProvider from "./contexts/selectedClassroom";
+import StudentSubmission from "./pages/Assignments/StudentSubmission";
 
 import "./global.css";
 
@@ -81,6 +82,7 @@ export default function App(): React.JSX.Element {
                   element={<Pages.CreateAssignment />}
                 />
                 <Route path="assignments/:id" element={<Pages.Assignment />} />
+                <Route path="submissions/:id" element={<Pages.StudentSubmission />} />
                 <Route path="grading" element={<Pages.Grading />} />
                 <Route path="settings" element={<Pages.Settings />} />
                 <Route path="students" element={<Pages.StudentListPage />} />
