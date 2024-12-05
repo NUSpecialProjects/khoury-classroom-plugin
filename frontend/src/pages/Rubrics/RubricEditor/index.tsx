@@ -77,7 +77,6 @@ const RubricEditor: React.FC = () => {
             if (rubricItemData.filter((item) => !item.hidden).length === 0) {
                 setEmptyRubric(true)
                 setFailedToSave(true)
-                return;
             }
             setEmptyRubric(false)
 
@@ -90,7 +89,6 @@ const RubricEditor: React.FC = () => {
                 if (item.explanation === "") {
                     setInvalidExplanation(true)
                     setFailedToSave(true)
-                    return;
                 }
                 
 
@@ -98,7 +96,6 @@ const RubricEditor: React.FC = () => {
                 if (item.point_value === null || item.point_value === undefined) {
                     setInvalidPointValue(true);
                     setFailedToSave(true);
-                    return;
                 }
             }
             setInvalidPointValue(false)
@@ -109,11 +106,14 @@ const RubricEditor: React.FC = () => {
                 if (item.impact === ItemFeedbackType.Neutral && item.rubricItem.point_value !== 0 && !item.hidden) {
                     setInvalidPointImpact(true)
                     setFailedToSave(true)
-                    return;
                 }
             }
             setInvalidPointImpact(false)
 
+
+            if (emptyRubric || invalidExplanation || invalidPointImpact || invalidPointValue) {
+                return;
+            }
 
             const fullRubric: IFullRubric = {
                 rubric: {
