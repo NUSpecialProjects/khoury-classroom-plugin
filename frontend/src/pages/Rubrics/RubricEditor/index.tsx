@@ -73,12 +73,16 @@ const RubricEditor: React.FC = () => {
     // saving the rubric, creates a rubric in the backendindex
     const saveRubric = async () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
+            console.log(rubricItemData)
             if (rubricItemData.filter((item) => !item.hidden).length === 0) {
                 setEmptyRubric(true)
                 setFailedToSave(true)
                 return;
             }
+            setEmptyRubric(false)
+
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
+            console.log(rubricItems)
 
             //validate items
             for (const item of rubricItems) {
@@ -88,6 +92,7 @@ const RubricEditor: React.FC = () => {
                     setFailedToSave(true)
                     return;
                 }
+                
 
                 // check each point value has some data
                 if (item.point_value === null || item.point_value === undefined) {
@@ -101,7 +106,7 @@ const RubricEditor: React.FC = () => {
 
             // check all non zero valued items have a selected impact
             for (const item of rubricItemData) {
-                if (item.impact === ItemFeedbackType.Neutral && item.rubricItem.point_value !== 0) {
+                if (item.impact === ItemFeedbackType.Neutral && item.rubricItem.point_value !== 0 && !item.hidden) {
                     setInvalidPointImpact(true)
                     setFailedToSave(true)
                     return;
@@ -178,7 +183,6 @@ const RubricEditor: React.FC = () => {
             )
         );
     };
-
 
 
     // handles when the rubric's name is changed

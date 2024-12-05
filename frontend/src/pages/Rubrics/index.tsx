@@ -22,7 +22,7 @@ const Rubrics: React.FC = () => {
                 try {
                     const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
                     if (retrievedRubrics !== null) {
-                        console.log("we have rubrics")
+                        console.log(retrievedRubrics)
                         setRubricsData(retrievedRubrics)
                     }
                     setLoading(false)
