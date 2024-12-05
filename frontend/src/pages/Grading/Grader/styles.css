@@ -57,55 +57,12 @@
   }
 
   &__body {
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    border-radius: 5px;
-  }
-
-  &__toolBar {
-    background: #3b3c41;
-    padding-left: 10px;
-    color: rgb(238, 238, 238);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    &__zoomButtons {
-      display: flex;
-      gap: 2px;
-    }
-
-    &__zoomButton {
-      display: flex;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 6px;
-      transition: background 0.1s;
-      user-select: none;
-      cursor: pointer;
-
-      svg {
-        width: 20px;
-        height: 20px;
-        stroke-width: 1px;
-      }
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
-      &:active {
-        background: rgba(255, 255, 255, 0.4);
-      }
-    }
-  }
-
-  &__viewPort {
     flex-grow: 1;
     min-height: 0;
     overflow: hidden;
     display: flex;
     flex-direction: row;
+    border-radius: 5px;
   }
 
   .simplebar-track {

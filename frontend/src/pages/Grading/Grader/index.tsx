@@ -1,6 +1,5 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { GoZoomIn, GoZoomOut } from "react-icons/go";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 
 import FileTree from "@/components/CodeBrowser/FileTree";
@@ -28,15 +27,6 @@ const Grader: React.FC = () => {
     selectedFile,
     setSelectedFile,
   } = useContext(GraderContext);
-  const [graderFontSize, setGraderFontSize] = useState(13);
-
-  const zoomIn = () => {
-    setGraderFontSize(Math.min(graderFontSize + 1, 24));
-  };
-
-  const zoomOut = () => {
-    setGraderFontSize(Math.max(graderFontSize - 1, 8));
-  };
 
   return (
     studentWork && (
@@ -81,34 +71,16 @@ const Grader: React.FC = () => {
           </div>
         </div>
         <div className="Grader__body">
-          <div className="Grader__toolBar">
-            <div className="Grader__toolBar__fileName">
-              {selectedFile ? selectedFile.path : "No file selected"}
-            </div>
-            <div className="Grader__toolBar__zoomButtons">
-              <div className="Grader__toolBar__zoomButton" onClick={zoomIn}>
-                <GoZoomIn />
-              </div>
-              <div className="Grader__toolBar__zoomButton" onClick={zoomOut}>
-                <GoZoomOut />
-              </div>
-            </div>
-          </div>
-          <div
-            className="Grader__viewPort"
-            style={{ fontSize: graderFontSize }}
-          >
-            <FileTree
-              className="Grader__files"
-              selectFileCallback={setSelectedFile}
-            />
-            <CodeBrowser
-              assignmentID={assignmentID}
-              studentWorkID={studentWorkID}
-              file={selectedFile}
-            />
-            <RubricTree />
-          </div>
+          <FileTree
+            className="Grader__files"
+            selectFileCallback={setSelectedFile}
+          />
+          <CodeBrowser
+            assignmentID={assignmentID}
+            studentWorkID={studentWorkID}
+            file={selectedFile}
+          />
+          <RubricTree />
         </div>
       </div>
     )
