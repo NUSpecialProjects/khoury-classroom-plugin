@@ -11,7 +11,7 @@ import {
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getAssignments } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDate } from "@/utils/date";
+import { formatDateTime } from "@/utils/date";
 import PageHeader from "@/components/PageHeader";
 
 import "./styles.css";
@@ -116,8 +116,8 @@ const Grading: React.FC = () => {
         {assignments.map((assignment, i: number) => (
           <GradingAssignmentRow key={i} assignmentId={assignment.id}>
             <TableCell>{assignment.name}</TableCell>
-            <TableCell>{formatDate(assignment.created_at)}</TableCell>
-            <TableCell>{formatDate(assignment.main_due_date)}</TableCell>
+            <TableCell>{formatDateTime(assignment.created_at)}</TableCell>
+            <TableCell>{formatDateTime(assignment.main_due_date)}</TableCell>
           </GradingAssignmentRow>
         ))}
       </Table>
