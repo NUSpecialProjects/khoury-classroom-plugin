@@ -32,12 +32,10 @@ jobs:
         run: |
           aws rds create-db-snapshot --db-instance-identifier gitmarks-rds-instance --db-snapshot-identifier gitmarks-db-snapshot
 
-      - name: Invoke AWS Lambda function
-        uses: gagoar/invoke-aws-lambda@v3.4.0
-        with:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REGION: us-east-2
-          FunctionName: drop_db
-          InvocationType: Event
-          Payload: '{}'
+      - name: Invoke Lambda Function
+        run: |
+          aws lambda invoke \
+            --function-name drop_db \
+            --invocation-type Event \
+            --cli-binary-format raw-in-base64-out \
+            /dev/null
