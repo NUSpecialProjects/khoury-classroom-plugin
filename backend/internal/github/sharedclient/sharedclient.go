@@ -233,6 +233,16 @@ func (api *CommonAPI) CreateBranchRuleset(ctx context.Context,  orgName, repoNam
 				"type": "non_fast_forward",
 			},
 			map[string]interface{}{
+				"type": "deletion",
+			},
+			map[string]interface{}{
+				"type": "update",
+				"parameters": map[string]interface{}{
+				  "update_allows_fetch_and_merge": true,
+				},
+			  },
+			  
+			map[string]interface{}{
 				"type": "pull_request",
 				"parameters" : map[string]interface{}{
 								"required_approving_review_count": 0,
