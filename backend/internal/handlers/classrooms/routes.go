@@ -76,5 +76,7 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 	// Get the current authenticated user + their role in the classroom
 	classroomRouter.Get("/classroom/:classroom_id/user", service.getCurrentClassroomUser())
 
+	classroomRouter.Get("/names", service.getClassroomNames())
+
 	return classroomRouter
 }

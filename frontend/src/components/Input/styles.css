@@ -11,6 +11,7 @@
   cursor: pointer;
   transition: background 0.2s ease;
   padding-bottom: 10px;
+  width: 100%;
 
   &__wrapper {
     display: flex;
@@ -29,5 +30,22 @@
   &__caption {
     color: var(--caption-text);
     font-size: var(--font-size-xs);
+  }
+
+  &__container {
+    position: relative;
+    width: 100%;
+  }
+
+  &__rightElement {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  &__rightElement * {
+    pointer-events: auto;
   }
 }
