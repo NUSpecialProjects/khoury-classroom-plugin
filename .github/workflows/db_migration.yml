@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - feature/kho-237/workflow-db-migration
     paths:
       - 'backend/database/migrations/001_khouryclassroom.sql'
       - '.github/workflows/db_migration.yml'
@@ -37,8 +36,8 @@ jobs:
 
       - name: Delete Old Snapshots
         run: |
-          # Set the maximum number of snapshots to retain
-          RETENTION_LIMIT=1
+          # Set the maximum number of snapshots to retain (not including new one)
+          RETENTION_LIMIT=2
         
           # Fetch all manual snapshots for the specified DB instance, sorted by creation time
           SNAPSHOTS=$(aws rds describe-db-snapshots \
@@ -67,7 +66,7 @@ jobs:
             echo "No snapshots to delete."
           fi          
           
-      - name: Invoke Lambda Function
+      - name: Re-Initialize RDS Schema
         run: |
           aws lambda invoke \
             --function-name drop_db \

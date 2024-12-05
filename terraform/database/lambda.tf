@@ -2,7 +2,7 @@
 
 resource "aws_lambda_function" "drop_db_function" {
   filename         = "./database/func/drop_db.zip"
-  function_name    = "drop_db"
+  function_name    = "gitmarks-reinitialize-rds-schema"
   role             = aws_iam_role.lambda_execution_role.arn
   handler          = "drop_db.lambda_handler"
   runtime          = "python3.9"
