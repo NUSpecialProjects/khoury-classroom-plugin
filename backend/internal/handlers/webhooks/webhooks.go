@@ -66,6 +66,14 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 		}
 	}
 
+	// If students pushed commits, update the work state accordingly
+	if !s.isBotPushEvent(pushEvent) && pushEvent.Commits != nil && len(pushEvent.Commits) > 0 {
+		err := s.updateWorkStateOnStudentCommit(c, pushEvent)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
