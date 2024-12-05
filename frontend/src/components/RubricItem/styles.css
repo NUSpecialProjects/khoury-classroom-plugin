@@ -1,0 +1,64 @@
+.RubricItem {
+  &__wrapper {
+    display: flex;
+    padding: 10px;
+    background-color: #F5F5F5;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 5px;
+    width: 100%;
+
+  }
+
+  &__itemName {
+    border-radius: 5px;
+    padding: 10px;
+    color: var(--primary-text);
+    font-size: var(--body-font-size);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding-bottom: 10px;
+    align-self: flex-start;
+    width: 100%;
+  }
+
+  &__itemPoints {
+    width: 80%;
+    padding: 10px;
+    color: var(--primary-text);
+    font-size: var(--body-font-size);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    padding-bottom: 10px;
+    border-radius: 5px;
+
+  }
+
+  &__buttonWrap {
+    display: flex;
+    flex-direction: row;
+    width: 100px;
+  }
+
+
+  &__button {
+    background-color: #F5F5F5;
+    width: 30px;
+  }
+
+ 
+  &__buttonDeductionActive {
+    background-color: red;
+    width: 30px;
+  }
+
+  &__buttonAdditionActive {
+    background-color: green;
+    width: 30px;
+
+  }
+
+}

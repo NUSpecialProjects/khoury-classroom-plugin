@@ -52,6 +52,9 @@ func classroomRoutes(router fiber.Router, service *ClassroomService) fiber.Route
 	// Get the users of this classroom
 	classroomRouter.Get("/classroom/:classroom_id/students", service.getClassroomUsers())
 
+	// Get all rubrics assoricated with this classroom
+	classroomRouter.Get("/classroom/:classroom_id/rubrics", service.getRubricsInClassroom())
+
 	// Send org invites to all requested users
 	classroomRouter.Put("/classroom/:classroom_id/invite/role/:classroom_role", service.sendOrganizationInvitesToRequestedUsers())
 
