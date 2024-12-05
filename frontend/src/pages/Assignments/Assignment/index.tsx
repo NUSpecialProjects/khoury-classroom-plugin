@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 
 import "./styles.css";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
@@ -14,7 +14,6 @@ import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
 import { MdEditDocument } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 
 const Assignment: React.FC = () => {
@@ -125,9 +124,12 @@ const Assignment: React.FC = () => {
             <Button href="" variant="secondary" newTab>
               <MdEditDocument className="icon" />  View Rubric
             </Button>
-            <Button href="" variant="secondary" newTab>
-              <MdEdit className="icon" /> Edit Assignment
-            </Button>
+            <Link to={`/app/assignments/${assignment.id}/rubric`} state={{ assignment }}>
+              <Button href="" variant="secondary">
+                View Rubric
+              </Button>
+            </Link>
+
           </div>
 
           <div className="Assignment__subSectionWrapper">

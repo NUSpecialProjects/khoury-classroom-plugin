@@ -17,6 +17,7 @@ type RubricItem struct {
 	PointValue  int64     `json:"point_value"`
 	Explanation string    `json:"explanation"`
 	CreatedAt   time.Time `json:"created_at"`
+    Deleted     bool      `json:"deleted"`
 }
 
 type FullRubric struct {

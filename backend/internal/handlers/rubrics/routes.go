@@ -18,6 +18,7 @@ func RubricRoutes(router fiber.Router, service *RubricService) fiber.Router {
 
 	route.Post("/rubric", service.CreateRubric())
 	route.Get("/rubric/:rubric_id", service.GetRubricByID())
+	route.Put("/rubric/:rubric_id", service.UpdateRubric())
 
 	return route
 }
