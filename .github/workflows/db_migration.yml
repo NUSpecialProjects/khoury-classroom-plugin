@@ -38,7 +38,7 @@ jobs:
       - name: Delete Old Snapshots
         run: |
           # Set the maximum number of snapshots to retain
-          RETENTION_LIMIT=5
+          RETENTION_LIMIT=1
 
           # Fetch all manual snapshots for the specified DB instance, sorted by creation time
           SNAPSHOTS=$(aws rds describe-db-snapshots \
