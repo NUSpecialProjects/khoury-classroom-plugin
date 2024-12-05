@@ -13,11 +13,11 @@ const optionsDateTime: Intl.DateTimeFormatOptions = {
 };
 
 //formats a date with only the day, month and year
-export const formatDate = (date: Date | undefined) => {
+export const formatDate = (date: Date | null) => {
   return date ? new Date(date).toLocaleDateString("en-US", optionsDate) : "N/A";
 };
 
 //formats a date with the date and timestamp
-export const formatDateTime = (date: Date | undefined) => {
+export const formatDateTime = (date: Date | null) => {
   return date ? new Date(date).toLocaleDateString("en-US", optionsDateTime) : "N/A";
 };
