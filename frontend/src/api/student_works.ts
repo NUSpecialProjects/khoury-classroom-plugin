@@ -42,24 +42,3 @@ export const getStudentWorks = async (
   const resp = ((await response.json()) as IStudentWorkResponses).student_works;
   return resp;
 };
-
-export const getAssignmentFirstCommit = async (
-  classroomID: number,
-  assignmentID: number 
-): Promise<Date> => {
-  const response = await fetch(
-    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/first-commit`,
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const resp = ((await response.json()) as IAssignmentCommitDate).first_commit_at;
-  return resp;
-};

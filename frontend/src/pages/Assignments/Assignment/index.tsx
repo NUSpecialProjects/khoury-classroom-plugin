@@ -6,9 +6,8 @@ import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
-import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
+import { getAssignmentIndirectNav, postAssignmentToken, getAssignmentFirstCommit, getAssignmentTotalCommits } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
-import { getAssignmentFirstCommit } from "@/api/student_works";
 import { formatDateTime, formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
@@ -28,6 +27,7 @@ const Assignment: React.FC = () => {
   const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
   const [firstCommit, setFirstCommit] = useState<string>("");
+  const [totalCommits, setTotalCommits] = useState<string>();
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -116,6 +116,27 @@ const Assignment: React.FC = () => {
   }
 }, [selectedClassroom, assignment]);
 
+useEffect(() => {
+  if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+    (async () => {
+      try {
+        const total = await getAssignmentTotalCommits (
+          selectedClassroom.id,
+          assignment.id
+        );
+        if (totalCommits !== null && totalCommits !== undefined) {
+          setTotalCommits(total.toString());
+        } else {
+          setTotalCommits("N/A");
+        }
+
+      } catch (_) {
+        // do nothing
+      }
+    })();
+}
+}, [selectedClassroom, assignment]);
+
   return (
     <div className="Assignment">
       {assignment && (
@@ -162,9 +183,7 @@ const Assignment: React.FC = () => {
             <h2 style={{ marginBottom: 10 }}>Metrics</h2>
             <MetricPanel>
               <SimpleMetric metricTitle="First Commit Date" metricValue={firstCommit}></SimpleMetric>
-              <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
-              <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
-              <SimpleMetric metricTitle="Regrade  Requests" metricValue="0"></SimpleMetric>
+              <SimpleMetric metricTitle="Total Commits" metricValue={totalCommits ?? "N/A"}></SimpleMetric>
             </MetricPanel>
           </div>
 
