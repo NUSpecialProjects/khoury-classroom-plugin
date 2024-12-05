@@ -19,6 +19,7 @@ import OrganizationSelectPage from "./Organizations/Select";
 import InviteTAs from "./Classrooms/InviteTAs";
 import InviteStudents from "./Classrooms/InviteStudents";
 import Success from "./Classrooms/Sucess";
+import Landing from "./Classrooms/Landing";
 
 export {
   PageNotFound,
@@ -42,4 +43,5 @@ export {
   InviteTAs,
   InviteStudents,
   Success,
+  Landing,
 };
