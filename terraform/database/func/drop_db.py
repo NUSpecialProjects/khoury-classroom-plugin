@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 import boto3
 
+
 def drop_all_tables(connection):
     try:
         with connection.cursor() as cursor:
@@ -37,6 +38,7 @@ def drop_all_tables(connection):
         connection.rollback()
         print(f"An error occurred while dropping tables: {e}")
         raise
+
 
 def lambda_handler(event, context):
     # Fetch environment variables
