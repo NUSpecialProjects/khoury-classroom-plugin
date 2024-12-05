@@ -11,7 +11,7 @@ VALUES
 (8, 'Cloud Computing', 98772, 'CloudExperts', NOW(), 'cloud-computing-students'),
 (9, 'Cybersecurity Fundamentals', 98773, 'SecureNet', NOW(), 'cybersecurity-fundamentals-students'),
 (10, 'Software Engineering Principles', 98774, 'SoftEngOrg', NOW(), 'software-engineering-principles-students'),
-(11, 'Khoury Coding Bootcamp', 182810684, 'NUSpecialProjects', NOW(), 'khoury-coding-bootcamp-students');
+(11, 'Khoury Coding Bootcamp', 182810684, 'NUSpecialProjects', NOW(), 'khoury-coding-bootcamp-students'),
 SELECT setval('classrooms_id_seq', (SELECT MAX(id) FROM classrooms));
 
 -- Create users (Kenny and others)
@@ -32,7 +32,7 @@ VALUES
 (13, 'Seby', 'Tremblay', 'sebytremblay', 91509344),
 (14, 'Cam', 'Plume', 'CamPlume1', 116120547),
 (15, 'Nandini', 'Ghosh', 'nandini-ghosh', 93226556);
-(16, 'Nick', 'Tietje', 'ntietje1', 124538220);
+(16, 'Nick', 'Tietje', 'ntietje1', 124538220),
 
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
@@ -62,7 +62,7 @@ VALUES
 (14, 1, 'STUDENT', NOW(), 'ACTIVE'),
 (15, 1, 'TA', NOW(), 'ACTIVE'),
 (15, 2, 'TA', NOW(), 'ACTIVE'),
-(15, 5, 'STUDENT', NOW(), 'ACTIVE');
+(15, 5, 'STUDENT', NOW(), 'ACTIVE'),
 (16, 1, 'TA', NOW(), 'ACTIVE');
 
 

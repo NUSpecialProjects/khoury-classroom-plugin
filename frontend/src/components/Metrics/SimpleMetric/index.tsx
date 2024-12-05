@@ -4,8 +4,8 @@ import '../styles.css';
 
 const SimpleMetric : React.FC<ISimpleMetric> = ({metricTitle, metricValue}) => {
     return (
-        <div className="metric">
-            <div className="metricTitle">{metricTitle}</div>
+        <div className="Metric">
+            <div className="Metric__title">{metricTitle}</div>
             <div className="simpleMetric__value">
                 {metricValue}
             </div>
