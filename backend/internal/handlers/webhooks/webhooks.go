@@ -2,7 +2,6 @@ package webhooks
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -22,7 +21,6 @@ func (s *WebHookService) WebhookHandler(c *fiber.Ctx) error {
 
 	handler, exists := dispatch[event]
 	if !exists {
-		fmt.Println("no handler for " + event)
 		return c.SendStatus(400)
 	}
 

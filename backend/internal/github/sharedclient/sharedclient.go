@@ -2,6 +2,7 @@ package sharedclient
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -333,6 +334,9 @@ func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string)
 
 	// Get the commit from the ref
 	parentCommitSHA := ref.Object.GetSHA()
+	if parentCommitSHA == "" {
+		return errors.New("invalid parent commit")
+	}
 	parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
 	if err != nil {
 		return err
