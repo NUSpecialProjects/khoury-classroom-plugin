@@ -89,7 +89,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
                 id={name}
                 name={name}
                 value={name}
-                maxLength={250}
+                maxLength={100}
                 placeholder="Add a rubric item..."
                 onChange={handleNameChange}
             />
