@@ -8,7 +8,8 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDateTime } from "@/utils/date";
+import { getAssignmentFirstCommit } from "@/api/student_works";
+import { formatDateTime, formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
@@ -26,6 +27,7 @@ const Assignment: React.FC = () => {
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const [firstCommit, setFirstCommit] = useState<string>("");
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -94,6 +96,26 @@ const Assignment: React.FC = () => {
     generateInviteLink();
   }, [assignment]);
 
+  useEffect(() => {
+    if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+      (async () => {
+        try {
+          const commitDate = await getAssignmentFirstCommit(
+            selectedClassroom.id,
+            assignment.id
+          );
+          if (commitDate !== null && commitDate !== undefined) {
+            setFirstCommit(formatDate(commitDate));
+          } else {
+            setFirstCommit("N/A");
+          }
+        } catch (_) {
+          // do nothing
+        }
+      })();
+  }
+}, [selectedClassroom, assignment]);
+
   return (
     <div className="Assignment">
       {assignment && (
@@ -139,7 +161,7 @@ const Assignment: React.FC = () => {
           <div className="Assignment__subSectionWrapper">
             <h2 style={{ marginBottom: 10 }}>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
+              <SimpleMetric metricTitle="First Commit Date" metricValue={firstCommit}></SimpleMetric>
               <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
               <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
               <SimpleMetric metricTitle="Regrade  Requests" metricValue="0"></SimpleMetric>
