@@ -1,11 +1,7 @@
 package webhooks
 
 import (
-	//"encoding/json"
 	"errors"
-	"fmt"
-	//"time"
-
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -51,8 +47,6 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 }
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
-	fmt.Println("Push Event Triggered")
-	fmt.Println(c.AllParams())
 	// Extract the 'payload' form value
 	pushEvent := github.PushEvent{}
 	if err := c.BodyParser(&pushEvent); err != nil {
@@ -87,12 +81,11 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		// There is a deadline
 		err = s.appClient.CreateDeadlineEnforcement(c.Context(), deadline, *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 		if err != nil {
-			fmt.Println(err)
-			fmt.Println("DEADLINE ENFORCEMENT FAILED")
+			//TODO: Recovery. Will do in a new ticket. For now, log
+			return err
 		}
-
 	}
-
+	//Create PR Enforcement Action
 	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 		if err != nil {
 			return err
@@ -116,7 +109,6 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	err = s.appClient.CreatePushRuleset(c.Context(),  *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 	if err != nil {
 		// TODO: Recovery. Will do in a new ticket. For now, log
-		fmt.Errorf(err.Error())
 		return err
 	}
 
@@ -124,13 +116,11 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
 	if err != nil {
 			// TODO: Recovery. Will do in a new ticket. For now, log
-			fmt.Errorf(err.Error())
 			return err
 	}
 	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
 	if err != nil {
 			// TODO: Recovery. Will do in a new ticket. For now, log
-			fmt.Errorf(err.Error())
 			return err
 	}
 
@@ -139,7 +129,6 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
 			// TODO: Recovery. Will do in a new ticket. For now, log
-			fmt.Errorf(err.Error())
 			return err
 	}
 

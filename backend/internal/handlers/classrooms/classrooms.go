@@ -2,7 +2,6 @@ package classrooms
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -391,7 +390,6 @@ func (s *ClassroomService) getCurrentClassroomUser() fiber.Handler {
 		}
 
 		if classroomUser.Status == models.UserStatusNotInOrg {
-			fmt.Println("Error correctly identified")
 			return errs.InconsistentOrgMembershipError()
 		}
 

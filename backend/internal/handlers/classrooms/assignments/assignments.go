@@ -2,8 +2,6 @@ package assignments
 
 import (
 	"errors"
-	"fmt"
-	//"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -56,11 +54,7 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 }
 
 func (s *AssignmentService) createAssignment() fiber.Handler {
-	//TODO: .github folder addition
-	//TODO: push rulesets
-	//TODO: Branch protections (maybe)
 	return func(c *fiber.Ctx) error {
-		fmt.Println("Creating Assignment/n/n")
 		// Parse request body
 		var assignmentData models.AssignmentOutline
 		error := c.BodyParser(&assignmentData)
@@ -105,19 +99,6 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		if err != nil {
 			return err
 		}
-
-		// //Create deadline enforcement if one is given
-		// if assignmentData.MainDueDate != nil {
-
-		// 	err = s.appClient.CreatePushRuleset(c.Context(), classroom.OrgName, baseRepoName)
-		// 	if err != nil {
-		// 		fmt.Println("Skill Issue #2")
-		// 	}
-		// 	err = s.appClient.CreateBranchRuleset(c.Context(), classroom.OrgName, baseRepoName)
-		// 	if err != nil {
-		// 		fmt.Println("Skill Issue #3")
-		// 	}
-		// }
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"created_assignment": createdAssignment,
@@ -249,8 +230,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		//@CamTODO: Get rid of happy path here with repo get fail
 		err = client.CreateBranchRuleset(c.Context(), classroom.OrgName, forkName)
 		if err != nil {
-			fmt.Printf("Error creating branch ruleset\n\n")
-			fmt.Println(err.Error())
+			return errs.CriticalGithubError()
 		}
 
 		// Remove student team's access to forked repo

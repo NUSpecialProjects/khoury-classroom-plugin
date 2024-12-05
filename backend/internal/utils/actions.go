@@ -1,15 +1,19 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-func ActionWithDeadlineStub() string {
+func ActionWithDeadline(deadline *time.Time) string {
+  // yyyy, mm, dd, hh, mm, ss
 	var scriptString = `
 from datetime import datetime
 import sys
 
 def check_date():
     # Define the target date
-    target_date = datetime(2024, 12, 20, 0, 0, 0, tzinfo=timezone.utc)
+    target_date = datetime(%d, %d, %d, %d, %d, %d, tzinfo=timezone.utc)
     
     # Get current date and time
     current_date = datetime.now()
@@ -23,7 +27,7 @@ def check_date():
 if __name__ == "__main__":
     check_date()`
 
-	return fmt.Sprintf(scriptString)
+	return fmt.Sprintf(scriptString, deadline.Year(), deadline.Month(), deadline.Day(), deadline.Hour(), deadline.Minute(), deadline.Second())
 }
 
 
