@@ -161,6 +161,32 @@ export const assignmentNameExists = async (
   const data = await result.json();
 
   return data.exists as boolean;
+}
+
+export const setAssignmentRubric = async (
+  rubric_id: number,
+  classroomID: number,
+  assignmentID: number,
+): Promise<IAssignmentOutline> => {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/rubric`,
+    {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(rubric_id),
+    }
+  );
+  
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data: IAssignmentOutline = (await response.json() as IAssignmentOutlineResponse).assignment_outline 
+
+  return data
 };
 
 export const getAssignmentRubric = async (
