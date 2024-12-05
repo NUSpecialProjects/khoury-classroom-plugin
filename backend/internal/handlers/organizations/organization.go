@@ -218,3 +218,4 @@ func (service *OrganizationService) GetOrgTemplateRepos() fiber.Handler {
 		return c.Status(200).JSON(fiber.Map{"templates": templateRepos})
 	}
 }
+

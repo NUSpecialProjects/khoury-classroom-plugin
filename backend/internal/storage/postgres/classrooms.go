@@ -10,13 +10,12 @@ import (
 
 func (db *DB) CreateClassroom(ctx context.Context, classroomData models.Classroom) (models.Classroom, error) {
 	err := db.connPool.QueryRow(ctx, `
-	INSERT INTO classrooms (name, org_id, org_name, created_at, student_team_name)
-	VALUES ($1, $2, $3, $4, $5)
+	INSERT INTO classrooms (name, org_id, org_name, student_team_name)
+	VALUES ($1, $2, $3, $4)
 	RETURNING id, name, org_id, org_name, created_at, student_team_name`,
 		classroomData.Name,
 		classroomData.OrgID,
 		classroomData.OrgName,
-		classroomData.CreatedAt,
 		classroomData.StudentTeamName,
 	).Scan(&classroomData.ID,
 		&classroomData.Name,
