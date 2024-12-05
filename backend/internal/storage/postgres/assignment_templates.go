@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -49,4 +50,16 @@ func (db *DB) GetAssignmentTemplateByID(ctx context.Context, templateID int64) (
 	}
 
 	return assignmentTemplate, nil
+}
+
+func (db *DB) GetAssignmentDueDateByRepoName(ctx context.Context, repoName string) (*time.Time, error){
+	var dueDate time.Time
+			err := db.connPool.QueryRow(ctx, `SELECT ao.main_due_date
+					FROM assignment_outlines ao
+					JOIN assignment_templates at ON ao.template_id = at.template_repo_id
+					WHERE at.template_repo_name = 'your_template_repo_name';`, repoName).Scan(&dueDate)
+	if err != nil {
+		return nil, err
+	}
+	return &dueDate, nil
 }

@@ -4,7 +4,7 @@ import (
 	//"encoding/json"
 	"errors"
 	"fmt"
-	"time"
+	//"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
@@ -81,19 +81,21 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.BadRequest(errors.New("invalid repository data"))
 	}
 
-	stubTime := time.Now()
+	// Retrieve assignment deadline from DB
+	deadline, err := s.store.GetAssignmentDueDateByRepoName(c.Context(), *pushEvent.Repo.Name)
+	if err == nil {
+		// There is a deadline
+		err = s.appClient.CreateDeadlineEnforcement(c.Context(), deadline, *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("DEADLINE ENFORCEMENT FAILED")
+		}
 
-	//TODO: Deadline commit here
-	err := s.appClient.CreateDeadlineEnforcement(c.Context(), &stubTime, *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("DEADLINE ENFORCEMENT FAILED")
 	}
 
 	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 		if err != nil {
-			fmt.Println(err)
-			fmt.Println("DEADLINE ENFORCEMENT FAILED")
+			return err
 		}
 
 	//Create necessary repo branches
@@ -113,25 +115,32 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 
 	err = s.appClient.CreatePushRuleset(c.Context(),  *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 	if err != nil {
-		fmt.Printf("Error creating push ruleset")
-		fmt.Println(err.Error())
+		// TODO: Recovery. Will do in a new ticket. For now, log
+		fmt.Errorf(err.Error())
+		return err
 	}
 
 	// Find the associated assignment and classroom
 	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
 	if err != nil {
-		return errs.InternalServerError()
+			// TODO: Recovery. Will do in a new ticket. For now, log
+			fmt.Errorf(err.Error())
+			return err
 	}
 	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
 	if err != nil {
-		return errs.InternalServerError()
+			// TODO: Recovery. Will do in a new ticket. For now, log
+			fmt.Errorf(err.Error())
+			return err
 	}
 
 	// Give the student team read access to the repository
 	err = s.appClient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, *classroom.StudentTeamName,
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
-		return errs.InternalServerError()
+			// TODO: Recovery. Will do in a new ticket. For now, log
+			fmt.Errorf(err.Error())
+			return err
 	}
 
 	return c.SendStatus(200)
