@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - bugfix/db_migration
     paths:
       - 'backend/**'
       - '.github/workflows/backend_deploy.yml'

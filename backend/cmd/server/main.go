@@ -111,6 +111,7 @@ func runMigrations(ctx context.Context, db *postgres.DB, migrationsDir string) e
 		err := db.ExecFile(ctx, filePath)
 		if err != nil {
 			log.Fatalf("Migration error: DB could not be initialized")
+			log.Fatalf("Failed to apply migration '%s': %v", fileName, err)
 		}
 	}
 
