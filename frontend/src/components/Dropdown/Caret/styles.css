@@ -1,0 +1,22 @@
+.Caret {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.05s ease;
+}
+
+.Caret--rotated {
+    transform: translateY(-50%) rotate(-180deg);
+}
+
+.Caret--clickable {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.Caret--not-clickable {
+    pointer-events: none;
+}
+
+

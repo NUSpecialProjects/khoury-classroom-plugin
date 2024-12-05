@@ -3,6 +3,7 @@ package webhooks
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
@@ -58,7 +59,7 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If app bot triggered the initial commit, initialize the base repository
-	if s.isInitialCommit(pushEvent) && pushEvent.Pusher != nil && *pushEvent.Pusher.Name == "khoury-classroom[bot]" {
+	if s.isInitialCommit(pushEvent) && s.isBotPushEvent(pushEvent) {
 		err := s.baseRepoInitialization(c, pushEvent)
 		if err != nil {
 			return err
@@ -113,6 +114,45 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	return c.SendStatus(200)
 }
 
+func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent github.PushEvent) error {
+	// Find the associated student work
+	studentWork, err := s.store.GetWorkByRepoName(c.Context(), *pushEvent.Repo.Name)
+	if err != nil {
+		return err
+	}
+
+	// Mark the project as started if this is our first student commit
+	if studentWork.WorkState == models.WorkStateAccepted {
+		studentWork.WorkState = models.WorkStateStarted
+		studentWork.FirstCommitDate = &pushEvent.Commits[0].Timestamp.Time
+	}
+
+	if pushEvent.Ref != nil {
+		// TODO: Dynamically determine branch names once parameterized
+		// If commiting to main branch, mark as submitted
+		if *pushEvent.Ref == "refs/heads/main" {
+			studentWork.WorkState = models.WorkStateSubmitted
+		} else if *pushEvent.Ref != "refs/heads/feedback" {
+			// If not committing to main/ or feedback/ branch, increment commit amount
+			studentWork.CommitAmount += len(pushEvent.Commits)
+		}
+	}
+
+	// Store updated student work locally
+	_, err = s.store.UpdateStudentWork(c.Context(), studentWork)
+	if err != nil {
+		return errs.InternalServerError()
+	}
+
+	return c.SendStatus(200)
+}
+
 func (s *WebHookService) isInitialCommit(pushEvent github.PushEvent) bool {
 	return pushEvent.BaseRef == nil && *pushEvent.Created && pushEvent.GetBefore() == "0000000000000000000000000000000000000000"
+}
+
+func (s *WebHookService) isBotPushEvent(pushEvent github.PushEvent) bool {
+	return pushEvent.Pusher != nil &&
+		pushEvent.Pusher.Name != nil &&
+		strings.Contains(*pushEvent.Pusher.Name, "[bot]")
 }

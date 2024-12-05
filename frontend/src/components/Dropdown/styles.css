@@ -1,23 +1,17 @@
 .Dropdown {
-  max-width: 400px;
-  padding: 10px;
-  background: var(--page-background);
-  color: var(--primary-text);
-  font-size: var(--body-font-size);
-  border-radius: 5px;
-  border-width: var(--border-width);
-  border-style: var(--border-style);
-  border-color: var(--button-border-color);
-  cursor: pointer;
-  transition: background 0.2s ease;
-  padding-bottom: 10px;
-
   &__wrapper {
     display: flex;
     padding: 10px;
     flex-direction: column;
     flex: 1;
     justify-content: center;
+  }
+
+  &__select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 400px;
   }
 
   &__label {
@@ -28,11 +22,88 @@
 
   &__option {
     font-size: var(--font-size-s);
+    display: flex;
+    align-items: center;
   }
 
   &__caption {
     padding-top: 10px;
     color: var(--caption-text);
     font-size: var(--font-size-xs);
-}
+  }
+
+  &__select {
+    max-width: 400px;
+    padding: 10px;
+    background: var(--page-background);
+    color: var(--primary-text);
+    font-size: var(--body-font-size);
+    border-radius: 5px;
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--button-border-color);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    padding-bottom: 10px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding-right: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__button {
+    max-width: 400px;
+    padding: 10px;
+    background: var(--page-background);
+    color: var(--primary-text);
+    font-size: var(--body-font-size);
+    border-radius: 5px;
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--button-border-color);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: 100%;
+    padding-right: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+  }
+
+  &__options-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--page-background);
+    border: 1px solid var(--button-border-color);
+    border-radius: 5px;
+    margin-top: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+  }
+
+  &__option {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover:not(&--disabled) {
+      background: var(--button-border-color);
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
 }

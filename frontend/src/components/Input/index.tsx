@@ -6,6 +6,7 @@ interface IInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     name: string;
     placeholder?: string;
     caption?: string;
+    rightElement?: React.ReactNode;
 }
 
 const Input: React.FC<IInputProps> = ({
@@ -13,6 +14,7 @@ const Input: React.FC<IInputProps> = ({
     name,
     placeholder,
     caption,
+    rightElement,
     ...props
 }) => {
     return (
@@ -20,14 +22,17 @@ const Input: React.FC<IInputProps> = ({
             <label className="Input__label" htmlFor={name}>
                 {label}
             </label>
-            <input
-                id={name}
-                name={name}
-                placeholder={placeholder}
-                {...props}
-                className="Input">
-            </input>
-            { caption && 
+            <div className="Input__container">
+                <input
+                    id={name}
+                    name={name}
+                    placeholder={placeholder}
+                    {...props}
+                    className="Input"
+                />
+                {rightElement && <div className="Input__rightElement">{rightElement}</div>}
+            </div>
+            {caption && 
             <p className="Input__caption">{caption}</p>
             }
         </div>
