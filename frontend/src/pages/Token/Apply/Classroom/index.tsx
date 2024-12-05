@@ -15,10 +15,8 @@ const ClassroomTokenApply: React.FC = () => {
   useEffect(() => {
     if (!loadingCurrentClassroomUser && classroomUser && selectedClassroom) {
       if (classroomUser.classroom_role === ClassroomRole.STUDENT) {
-        console.log("Navigating to landing page");
         navigate("/app/classroom/landing", { replace: true });
       } else {
-        console.log("Navigating to dashboard");
         navigate("/app/dashboard", { replace: true });
       }
     }
