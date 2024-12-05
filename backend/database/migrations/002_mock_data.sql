@@ -158,8 +158,7 @@ VALUES
 (8, 8, 'linustorvalds/cloud-deployment', '2023-09-01 23:59:59', 40, 35, '2023-09-05 12:00:00', 'GRADE_PUBLISHED', NOW()),
 (9, 9, 'mhamilton/cybersecurity-analysis', '2023-10-01 23:59:59', 48, 45, '2023-10-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
 (10, 10, 'kennysmith/software-design-patterns', '2023-11-01 23:59:59', 38, 35, '2023-11-05 16:00:00', 'GRADE_PUBLISHED', NOW()),
-(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 40, 35, '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW()),
-(12, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 40, 35, '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
+(11, 1, 'kenny-assignment-josevaca1231', '2023-04-01 23:59:59', 40, 35, '2023-04-05 14:00:00', 'GRADE_PUBLISHED', NOW());
 SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
 
 -- Insert into work_contributors+
@@ -178,8 +177,7 @@ VALUES
 (5, 8, NOW()),
 (6, 9, NOW()),
 (1, 10, NOW()),
-(3, 11, NOW()),
-(4, 12, NOW());
+(3, 11, NOW());
 
 -- Insert into feedback_comment
 INSERT INTO feedback_comment (id, student_work_id, rubric_item_id, ta_user_id, created_at)
@@ -195,7 +193,6 @@ VALUES
 (9, 4, 9, 1, NOW()),
 (10, 5, 10, 1, NOW()),
 (11, 5, 11, 1, NOW()),
-(12, 6, 12, 1, NOW()),
 (13, 7, 13, 1, NOW()),
 (14, 7, 14, 1, NOW()),
 (15, 8, 15, 1, NOW()),

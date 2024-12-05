@@ -81,7 +81,7 @@ const OrganizationSelection: React.FC = () => {
                 href={`https://github.com/apps/khoury-classroom/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
                 newTab={true}
               >
-                Install GitGrader for {selectedOrg.login}
+                Install Marks on {selectedOrg.login}
               </Button>
             )}
         </div>

@@ -3,6 +3,7 @@ package webhooks
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
@@ -69,14 +70,28 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If app bot triggered the initial commit, initialize the base repository
-	if isInitialCommit && pushEvent.Pusher != nil && *pushEvent.Pusher.Name == "khoury-classroom[bot]" {
+	if isInitialCommit && isBotPushEvent(pushEvent) {
 		err = s.baseRepoInitialization(c, pushEvent)
 		if err != nil {
 			return err
 		}
 	}
 
+	// If students pushed commits, update the work state accordingly
+	if !isBotPushEvent(pushEvent) && pushEvent.Commits != nil && len(pushEvent.Commits) > 0 {
+		err = s.updateWorkStateOnStudentCommit(c, pushEvent)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+func isBotPushEvent(pushEvent github.PushEvent) bool {
+	return pushEvent.Pusher != nil &&
+		pushEvent.Pusher.Name != nil &&
+		strings.Contains(*pushEvent.Pusher.Name, "[bot]")
 }
 
 func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.PushEvent) error {
@@ -111,6 +126,39 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	// Give the student team read access to the repository
 	err = s.appClient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, *classroom.StudentTeamName,
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
+	if err != nil {
+		return errs.InternalServerError()
+	}
+
+	return c.SendStatus(200)
+}
+
+func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent github.PushEvent) error {
+	// Find the associated student work
+	studentWork, err := s.store.GetWorkByRepoName(c.Context(), *pushEvent.Repo.Name)
+	if err != nil {
+		return err
+	}
+
+	// Mark the project as started if this is our first student commit
+	if studentWork.WorkState == models.WorkStateAccepted {
+		studentWork.WorkState = models.WorkStateStarted
+		studentWork.FirstCommitDate = &pushEvent.Commits[0].Timestamp.Time
+	}
+
+	if pushEvent.Ref != nil {
+		// TODO: Dynamically determine branch names once parameterized
+		// If commiting to main branch, mark as submitted
+		if *pushEvent.Ref == "refs/heads/main" {
+			studentWork.WorkState = models.WorkStateSubmitted
+		} else if *pushEvent.Ref != "refs/heads/feedback" {
+			// If not committing to main/ or feedback/ branch, increment commit amount
+			studentWork.CommitAmount += len(pushEvent.Commits)
+		}
+	}
+
+	// Store updated student work locally
+	_, err = s.store.UpdateStudentWork(c.Context(), studentWork)
 	if err != nil {
 		return errs.InternalServerError()
 	}
