@@ -28,6 +28,8 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
         if (!isNaN(pointValue)) {
             const adjustedValue = feedbackType === ItemFeedbackType.Deduction ? -1*Math.abs(pointValue) : Math.abs(pointValue)
             onChange({ point_value: adjustedValue, impact: feedbackType });
+        } else {
+            onChange({ impact: feedbackType })
         }
     }
 
@@ -35,7 +37,7 @@ const RubricItem: React.FC<IRubricItemProps> = ({ name, points, impact, onChange
         const value = e.target.value;
         if (value === "") {
             setDisplayPoints("")
-            onChange({ point_value: null, impact: ItemFeedbackType.Neutral})
+            onChange({ point_value: null})
             return;
         }
         

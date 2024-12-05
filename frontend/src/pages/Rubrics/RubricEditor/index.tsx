@@ -73,47 +73,61 @@ const RubricEditor: React.FC = () => {
     // saving the rubric, creates a rubric in the backendindex
     const saveRubric = async () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
-            console.log(rubricItemData)
+            let emptyIssue = false
             if (rubricItemData.filter((item) => !item.hidden).length === 0) {
                 setEmptyRubric(true)
                 setFailedToSave(true)
-            }
-            setEmptyRubric(false)
+                emptyIssue = true
 
-            const rubricItems = (rubricItemData.map(item => item.rubricItem));
-            console.log(rubricItems)
+            } else {
+                setEmptyRubric(false)
+            }
+
+            const rubricItems = (rubricItemData.filter(item => !item.hidden).map(item => item.rubricItem));
 
             //validate items
+            let explantionIssue = false
+            let pointIssue = false
             for (const item of rubricItems) {
                 // check each explanation contains something
                 if (item.explanation === "") {
                     setInvalidExplanation(true)
                     setFailedToSave(true)
+                    explantionIssue = true
                 }
-                
 
                 // check each point value has some data
                 if (item.point_value === null || item.point_value === undefined) {
                     setInvalidPointValue(true);
                     setFailedToSave(true);
+                    pointIssue = true
+
                 }
             }
-            setInvalidPointValue(false)
-            setInvalidExplanation(false)
+            if (!explantionIssue) {
+                setInvalidExplanation(false)
+            }
+            if (!pointIssue) {
+                setInvalidPointValue(false)
+            }
 
             // check all non zero valued items have a selected impact
+            let impactIssue = false
             for (const item of rubricItemData) {
                 if (item.impact === ItemFeedbackType.Neutral && item.rubricItem.point_value !== 0 && !item.hidden) {
                     setInvalidPointImpact(true)
                     setFailedToSave(true)
+                    impactIssue = true
                 }
             }
-            setInvalidPointImpact(false)
+            if (!impactIssue) {
+                setInvalidPointImpact(false)
+            }
 
-
-            if (emptyRubric || invalidExplanation || invalidPointImpact || invalidPointValue) {
+            if (explantionIssue || pointIssue || impactIssue || emptyIssue) {
                 return;
             }
+
 
             const fullRubric: IFullRubric = {
                 rubric: {
@@ -285,15 +299,15 @@ const RubricEditor: React.FC = () => {
                 </div>
             }
 
-            {failedToSave && invalidPointValue &&
-                <div className="NewRubric__title__FailedSave">
-                    {" - Point values cannot be empty."}
-                </div>
-            }
-
             {failedToSave && invalidExplanation &&
                 <div className="NewRubric__title__FailedSave">
                     {" - Item explanations cannot be empty."}
+                </div>
+            }
+
+            {failedToSave && invalidPointValue &&
+                <div className="NewRubric__title__FailedSave">
+                    {" - Point values cannot be empty."}
                 </div>
             }
 
