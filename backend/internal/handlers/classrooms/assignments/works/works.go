@@ -15,16 +15,16 @@ import (
 // Returns the student works for an assignment.
 func (s *WorkService) getWorksInAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		classroomID, err := strconv.ParseInt(c.Params("classroom_id"), 10, 64)
+		classroomID, err := strconv.Atoi(c.Params("classroom_id"))
 		if err != nil {
 			return errs.BadRequest(err)
 		}
-		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		assignmentID, err := strconv.Atoi(c.Params("assignment_id"))
 		if err != nil {
 			return errs.BadRequest(err)
 		}
 
-		assignmentOutline, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
+		assignmentOutline, err := s.store.GetAssignmentByID(c.Context(), int64(assignmentID))
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -44,7 +44,7 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 		}
 
 		// get list of students in class to get which students havent accepted the assignment
-		students, err := s.store.GetUsersInClassroom(c.Context(), classroomID)
+		students, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
 		if err != nil {
 			return errs.InternalServerError()
 		}
@@ -70,9 +70,9 @@ func generateNotAcceptedWork(student models.ClassroomUser, assignmentOutline mod
 		StudentWork: models.StudentWork{
 			ID:                       -1,
 			OrgName:                  assignmentTemplate.TemplateRepoOwner, // This will eventually not always be the org name once we support templates outside of the org
-			ClassroomID:              assignmentOutline.ClassroomID,
+			ClassroomID:              int(assignmentOutline.ClassroomID),
 			AssignmentName:           &assignmentOutline.Name,
-			AssignmentOutlineID:      assignmentOutline.ID,
+			AssignmentOutlineID:      int(assignmentOutline.ID),
 			RepoName:                 assignmentTemplate.TemplateRepoName,
 			UniqueDueDate:            assignmentOutline.MainDueDate,
 			ManualFeedbackScore:      nil,

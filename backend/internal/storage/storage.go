@@ -22,15 +22,15 @@ type Storage interface {
 }
 
 type FeedbackComment interface {
-	GetFeedbackOnWork(ctx context.Context, studentWorkID int64) ([]models.PRReviewCommentResponse, error)
-	CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error
-	AttachRubricItemToFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int64, comment models.PRReviewCommentResponse) error
+	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error)
+	CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
+	AttachRubricItemToFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
 }
 
 type Works interface {
-	GetWorks(ctx context.Context, classroomID int64, assignmentID int64) ([]*models.StudentWorkWithContributors, error)
-	GetWork(ctx context.Context, classroomID int64, assignmentID int64, studentWorkID int64) (*models.PaginatedStudentWorkWithContributors, error)
-	CreateStudentWork(ctx context.Context, assignmentOutlineID int64, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error)
+	GetWorks(ctx context.Context, classroomID int, assignmentID int) ([]*models.StudentWorkWithContributors, error)
+	GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error)
+	CreateStudentWork(ctx context.Context, assignmentOutlineID int32, gitHubUserID int64, repoName string, workState models.WorkState, dueDate *time.Time) (models.StudentWork, error)
 	UpdateStudentWork(ctx context.Context, UpdateStudentWork models.StudentWork) (models.StudentWork, error)
 	GetWorkByRepoName(ctx context.Context, repoName string) (models.StudentWork, error)
 }

@@ -153,7 +153,7 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 			studentWork.WorkState = models.WorkStateSubmitted
 		} else if *pushEvent.Ref != "refs/heads/feedback" {
 			// If not committing to main/ or feedback/ branch, increment commit amount
-			studentWork.CommitAmount += int64(len(pushEvent.Commits))
+			studentWork.CommitAmount += len(pushEvent.Commits)
 		}
 	}
 

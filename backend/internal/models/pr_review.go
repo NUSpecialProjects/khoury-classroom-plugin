@@ -7,13 +7,13 @@ type PRReviewRequest struct {
 
 type PRReviewComment struct {
 	Path *string `json:"path"`
-	Line *int64  `json:"line"`
+	Line *int    `json:"line"`
 	Body string  `json:"body"`
 }
 
 type PRReviewCommentResponse struct {
 	PRReviewComment
-	RubricItemID *int64 `json:"rubric_item_id"`
-	Points       int64  `json:"points"`
+	RubricItemID *int   `json:"rubric_item_id"`
+	Points       int    `json:"points"`
 	TAUsername   string `json:"ta_username"`
 }

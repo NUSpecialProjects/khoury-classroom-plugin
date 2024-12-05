@@ -3,19 +3,19 @@ package models
 import "time"
 
 type StudentWork struct {
-	ID                       int64      `json:"student_work_id" db:"student_work_id"`
+	ID                       int        `json:"student_work_id" db:"student_work_id"`
 	OrgName                  string     `json:"org_name" db:"org_name"`
-	ClassroomID              int64      `json:"classroom_id" db:"classroom_id"`
+	ClassroomID              int        `json:"classroom_id" db:"classroom_id"`
 	AssignmentName           *string    `json:"assignment_name" db:"assignment_name"`
-	AssignmentOutlineID      int64      `json:"assignment_outline_id" db:"assignment_outline_id"`
+	AssignmentOutlineID      int        `json:"assignment_outline_id" db:"assignment_outline_id"`
 	RepoName                 string     `json:"repo_name" db:"repo_name"`
 	UniqueDueDate            *time.Time `json:"unique_due_date" db:"unique_due_date"`
-	ManualFeedbackScore      *int64     `json:"manual_feedback_score" db:"manual_feedback_score"`
-	AutoGraderScore          *int64     `json:"auto_grader_score" db:"auto_grader_score"`
+	ManualFeedbackScore      *int       `json:"manual_feedback_score" db:"manual_feedback_score"`
+	AutoGraderScore          *int       `json:"auto_grader_score" db:"auto_grader_score"`
 	GradesPublishedTimestamp *time.Time `json:"grades_published_timestamp" db:"grades_published_timestamp"`
 	WorkState                WorkState  `json:"work_state" db:"work_state"`
 	CreatedAt                time.Time  `json:"created_at" db:"created_at"`
-	CommitAmount             int64      `json:"commit_amount" db:"commit_amount"`
+	CommitAmount             int        `json:"commit_amount" db:"commit_amount"`
 	FirstCommitDate          *time.Time `json:"first_commit_date" db:"first_commit_date"`
 }
 
@@ -42,16 +42,16 @@ var WorkStateEnum = []WorkState{
 }
 
 type StudentWorkPagination struct {
-	PreviousStudentWorkID *int64 `json:"previous_student_work_id" db:"previous_student_work_id"`
-	NextStudentWorkID     *int64 `json:"next_student_work_id" db:"next_student_work_id"`
+	PreviousStudentWorkID *int `json:"previous_student_work_id" db:"previous_student_work_id"`
+	NextStudentWorkID     *int `json:"next_student_work_id" db:"next_student_work_id"`
 }
 
 type PaginatedStudentWork struct {
 	StudentWork
-	RowNum                *int64 `json:"row_num" db:"row_num"`
-	TotalStudentWorks     *int64 `json:"total_student_works" db:"total_student_works"`
-	PreviousStudentWorkID *int64 `json:"previous_student_work_id" db:"previous_student_work_id"`
-	NextStudentWorkID     *int64 `json:"next_student_work_id" db:"next_student_work_id"`
+	RowNum                *int `json:"row_num" db:"row_num"`
+	TotalStudentWorks     *int `json:"total_student_works" db:"total_student_works"`
+	PreviousStudentWorkID *int `json:"previous_student_work_id" db:"previous_student_work_id"`
+	NextStudentWorkID     *int `json:"next_student_work_id" db:"next_student_work_id"`
 }
 
 type RawStudentWork struct {
@@ -76,7 +76,7 @@ type PaginatedStudentWorkWithContributors struct {
 }
 
 type IStudentWork interface {
-	GetID() int64
+	GetID() int
 	GetUser() User
 }
 
@@ -84,10 +84,10 @@ type IFormattedStudentWork interface {
 	AddContributor(contributor User)
 }
 
-func (w RawStudentWork) GetID() int64  { return w.ID }
+func (w RawStudentWork) GetID() int    { return w.ID }
 func (w RawStudentWork) GetUser() User { return w.User }
 
-func (w RawPaginatedStudentWork) GetID() int64  { return w.ID }
+func (w RawPaginatedStudentWork) GetID() int    { return w.ID }
 func (w RawPaginatedStudentWork) GetUser() User { return w.User }
 
 func (w *StudentWorkWithContributors) AddContributor(contributor User) {

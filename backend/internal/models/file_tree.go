@@ -13,6 +13,6 @@ type FileStatus struct {
 }
 
 type LineRange struct {
-	Start int64 `json:"start"`
-	End   int64 `json:"end"`
+	Start int `json:"start"`
+	End   int `json:"end"`
 }
