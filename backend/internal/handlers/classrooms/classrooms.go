@@ -2,6 +2,7 @@ package classrooms
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -800,4 +801,54 @@ func (s *ClassroomService) checkRole(c *fiber.Ctx, classroomID int64, role model
 	}
 
 	return classroomUser, nil
+}
+
+var semesterNameMap = map[time.Month]string{
+	time.January:   "Spring",
+	time.February:  "Spring",
+	time.March:     "Spring",
+	time.April:     "Spring",
+	time.May:       "Summer",
+	time.June:      "Summer",
+	time.July:      "Summer",
+	time.August:    "Summer",
+	time.September: "Fall",
+	time.October:   "Fall",
+	time.November:  "Fall",
+	time.December:  "Fall",
+}
+
+func (s *ClassroomService) getClassroomNames() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// get the current date
+		now := time.Now()
+		semesterNames := []string{}
+		currentMonthIndex := int(now.Month())
+		for i := currentMonthIndex; i < currentMonthIndex+12; i++ {
+			// generate a full year of semester names (i.e. Fall 2024, Spring 2025, etc.)
+			month := time.Month((i-1)%12 + 1)
+			year := now.Year()
+			if i > 12 { // if the month is past December, we need to roll over to the next year
+				year = year + 1
+			}
+			semester, ok := semesterNameMap[month]
+			if !ok {
+				continue // Skip if month not found in map
+			}
+			semesterName := fmt.Sprintf("%s %d", semester, year)
+			if !stringInList(semesterNames, semesterName) {
+				semesterNames = append(semesterNames, semesterName)
+			}
+		}
+		return c.Status(http.StatusOK).JSON(fiber.Map{"semester_names": semesterNames})
+	}
+}
+
+func stringInList(list []string, str string) bool {
+	for _, item := range list {
+		if item == str {
+			return true
+		}
+	}
+	return false
 }
