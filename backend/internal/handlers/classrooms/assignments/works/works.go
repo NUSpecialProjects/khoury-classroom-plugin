@@ -26,10 +26,10 @@ func (s *WorkService) getWork(c *fiber.Ctx) (*models.PaginatedStudentWorkWithCon
 		return nil, errs.BadRequest(err)
 	}
 
-	_, err = s.RequireAtLeastRole(c, int64(classroomID), models.TA)
-	if err != nil {
-		return nil, err
-	}
+	// _, err = s.RequireAtLeastRole(c, int64(classroomID), models.TA)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	work, err := s.store.GetWork(c.Context(), classroomID, assignmentID, studentWorkID)
 	if err != nil {
@@ -55,10 +55,10 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		_, err = s.RequireAtLeastRole(c, int64(classroomID), models.TA)
-		if err != nil {
-			return err
-		}
+		// _, err = s.RequireAtLeastRole(c, int64(classroomID), models.TA)
+		// if err != nil {
+		// 	return err
+		// }
 
 		works, err := s.store.GetWorks(c.Context(), classroomID, assignmentID)
 		if err != nil {
