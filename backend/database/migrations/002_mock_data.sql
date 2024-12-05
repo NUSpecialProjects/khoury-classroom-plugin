@@ -23,19 +23,19 @@ INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created
 VALUES
 (1, 1, 'TA', NOW(), 'ACTIVE'),
 (2, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
-(3, 1, 'STUDENT', NOW(), 'ACTIVE'),
+(3, 1, 'TA', NOW(), 'ACTIVE'),
 (4, 1, 'TA', NOW(), 'ACTIVE'),
-(5, 1, 'TA', NOW(), 'ACTIVE'),
-(6, 1, 'TA', NOW(), 'ACTIVE'),
-(7, 1, 'TA', NOW(), 'ACTIVE'),
+(5, 1, 'STUDENT', NOW(), 'ACTIVE'),
+(6, 1, 'STUDENT', NOW(), 'ACTIVE'),
+(7, 1, 'STUDENT', NOW(), 'ACTIVE'),
 (8, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
 (1, 2, 'STUDENT', NOW(), 'ACTIVE'),
-(2, 2, 'PROFESSOR', NOW(), 'ACTIVE'),
-(3, 2, 'TA', NOW(), 'ACTIVE'),
+(2, 2, 'STUDENT', NOW(), 'ACTIVE'),
+(3, 2, 'STUDENT', NOW(), 'ACTIVE'),
 (4, 2, 'STUDENT', NOW(), 'ACTIVE'),
-(5, 2, 'STUDENT', NOW(), 'ACTIVE'),
-(6, 2, 'STUDENT', NOW(), 'ACTIVE'),
-(7, 2, 'STUDENT', NOW(), 'ACTIVE'),
+(5, 2, 'TA', NOW(), 'ACTIVE'),
+(6, 2, 'TA', NOW(), 'ACTIVE'),
+(7, 2, 'TA', NOW(), 'ACTIVE'),
 (8, 2, 'PROFESSOR', NOW(), 'ACTIVE');
 
 -- Rubric Data
@@ -69,3 +69,22 @@ VALUES
 (1, 876747485, 898583618, NOW(), NULL, 'Spring2025MockAssignment', 1, 1, false),
 (2, 876747485, 898617287, NOW(), NULL, 'Fall2025MockAssignment', NULL, 2, false);
 SELECT setval('assignment_outlines_id_seq', (SELECT MAX(id) FROM assignment_outlines));
+
+-- Student Works Data
+INSERT INTO student_works (id, assignment_outline_id, repo_name, work_state, created_at)
+VALUES
+(1, 2, 'fall-2025-fall2025mockassignment-alexangione419', 'ACCEPTED', NOW()),
+(2, 2, 'fall-2025-fall2025mockassignment-sebytremblay', 'ACCEPTED', NOW()),
+(3, 1, 'spring-2025-spring2025mockassignment-ntietje1', 'ACCEPTED', NOW()),
+(4, 1, 'spring-2025-spring2025mockassignment-camplume1', 'ACCEPTED', NOW()),
+(5, 1, 'spring-2025-spring2025mockassignment-nandini-ghosh', 'ACCEPTED', NOW());
+SELECT setval('student_works_id_seq', (SELECT MAX(id) FROM student_works));
+
+-- Student Works Contributors Data
+INSERT INTO work_contributors (user_id, student_work_id, created_at)
+VALUES
+(2, 1, NOW()),
+(4, 2, NOW()),
+(6, 3, NOW()),
+(7, 5, NOW()),
+(5, 4, NOW());

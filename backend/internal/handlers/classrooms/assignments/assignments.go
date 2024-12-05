@@ -2,7 +2,6 @@ package assignments
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -99,7 +98,6 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 		if err != nil {
 			return err
 		}
-        fmt.Println(assignmentData)
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"created_assignment": createdAssignment,
