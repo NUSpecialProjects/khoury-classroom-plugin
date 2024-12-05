@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-        contents: read
-        id-token: write
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -30,7 +30,10 @@ jobs:
 
       - name: Store Snapshot of AWS RDS Instance
         run: |
-          aws rds create-db-snapshot --db-instance-identifier gitmarks-rds-instance --db-snapshot-identifier gitmarks-db-snapshot
+          TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+          aws rds create-db-snapshot \
+            --db-instance-identifier gitmarks-rds-instance \
+            --db-snapshot-identifier "gitmarks-db-snapshot-$TIMESTAMP"
 
       - name: Invoke Lambda Function
         run: |
