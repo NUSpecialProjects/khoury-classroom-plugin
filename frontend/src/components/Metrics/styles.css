@@ -1,0 +1,14 @@
+.Metric {
+    padding: 20px;
+    background-color: var(--panels-background);
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 200px;
+
+    &__title {
+        font-size: var(--font-size-xs);
+        color: var(--secondary-text);
+        text-align: center;
+        padding-bottom: 10px;
+    }
+}
