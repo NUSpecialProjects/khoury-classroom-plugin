@@ -46,13 +46,10 @@ jobs:
             --query "DBSnapshots[?starts_with(DBSnapshotIdentifier, 'gitmarks-db-snapshot-') && (Status=='available' || Status=='failed')].{ID:DBSnapshotIdentifier,Time:SnapshotCreateTime}" \
             --output json | jq -r 'sort_by(.Time) | .[].ID')
         
-          # Count the total number of snapshots
+          # Determine how many snapshots to delete
           SNAPSHOT_COUNT=$(echo "$SNAPSHOTS" | wc -l)
-        
-          # Calculate the number of snapshots to delete
           DELETE_COUNT=$((SNAPSHOT_COUNT - RETENTION_LIMIT))
         
-          # If there are more snapshots than the retention limit, proceed with deletion
           if [ "$DELETE_COUNT" -gt 0 ]; then
             # List snapshots to delete
             SNAPSHOTS_TO_DELETE=$(echo "$SNAPSHOTS" | head -n "$DELETE_COUNT")
