@@ -8,7 +8,7 @@ on:
       - feature/kho-237/workflow-db-migration
     paths:
       - 'backend/**'
-      - '.github/workflows/deploy/backend_deploy.yml'
+      - '.github/workflows/backend_deploy.yml'
 
 jobs:
   deploy:

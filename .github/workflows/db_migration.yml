@@ -8,7 +8,7 @@ on:
       - feature/kho-237/workflow-db-migration
     paths:
       - 'backend/database/migrations/*'
-      - '.github/workflows/deploy/database/db_migration.yml'
+      - '.github/workflows/db_migration.yml'
 
 jobs:
   invoke-lambda:
