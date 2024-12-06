@@ -400,14 +400,12 @@ func (api *CommonAPI) CheckForkIsReady(ctx context.Context, repo *github.Reposit
 	endpoint := fmt.Sprintf("/repos/%s/branches", *repo.Parent.FullName)
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
 	if err != nil {
-		fmt.Println(err)
 		return false
 	}
 
 	var srcBranches []github.Branch
 	_, err = api.Client.Do(ctx, req, &srcBranches)
 	if err != nil {
-		fmt.Println(err)
 		return false
 	}
 
