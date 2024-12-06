@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 
 import "./styles.css";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
@@ -13,7 +13,7 @@ import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
-import { MdEditDocument } from "react-icons/md";
+import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 
 const Assignment: React.FC = () => {
@@ -118,17 +118,16 @@ const Assignment: React.FC = () => {
           </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="" variant="secondary" newTab>
+            <Button href="#" variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
             </Button>
-            <Button href="" variant="secondary" newTab>
+            <Button href={`/app/assignments/${assignment.id}/rubric`} variant="secondary" state={{ assignment }}>
               <MdEditDocument className="icon" />  View Rubric
             </Button>
-            <Link to={`/app/assignments/${assignment.id}/rubric`} state={{ assignment }}>
-              <Button href="" variant="secondary">
-                View Rubric
-              </Button>
-            </Link>
+            <Button href="#" variant="secondary" newTab>
+              <MdEdit className="icon" /> Edit Assignment
+            </Button>
+
 
           </div>
 
@@ -168,8 +167,9 @@ const Assignment: React.FC = () => {
             </Table>
           </div>
         </>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 
