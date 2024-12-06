@@ -11,5 +11,5 @@ type RubricService struct {
 }
 
 func newRubricService(store storage.Storage, userCfg *config.GitHubUserClient) *RubricService {
-    return &RubricService{store: store, userCfg: userCfg}
+	return &RubricService{store: store, userCfg: userCfg}
 }

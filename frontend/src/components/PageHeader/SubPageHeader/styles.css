@@ -16,6 +16,7 @@
     }
 
     &__rightSideContents {
+        padding-left: 20px;
         margin-left: auto;
     }
 }

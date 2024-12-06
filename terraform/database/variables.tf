@@ -4,6 +4,12 @@
 #  Local Variables
 # ------------------------------------------------
 
+variable "rds_instance_name" {
+  description = "RDS instance name"
+  type        = string
+  default     = "gitmarks-rds-instance"
+}
+
 variable "db_name" {
   description = "Database name"
   type        = string

@@ -201,8 +201,8 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Otherwise generate fork
 		err = client.ForkRepository(c.Context(),
 			baseRepo.BaseRepoOwner,
-			classroom.OrgName,
 			baseRepo.BaseRepoName,
+			classroom.OrgName,
 			forkName)
 		if err != nil {
 			return errs.GithubAPIError(err)
@@ -227,6 +227,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 
 		// Remove student team's access to forked repo
 		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, *studentWorkRepo.Name)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		// Create initial feedback pull request
+		err = client.CreateFeedbackPR(c.Context(), classroom.OrgName, *studentWorkRepo.Name)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
@@ -282,10 +288,25 @@ func generateSlugCase(parts ...string) string {
 }
 
 // Updates an existing assignment.
-func (s *AssignmentService) updateAssignment() fiber.Handler {
+func (s *AssignmentService) updateAssignmentRubric() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Implement logic here
-		return c.SendStatus(fiber.StatusNotImplemented)
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		var rubricID int64
+		error := c.BodyParser(&rubricID)
+		if error != nil {
+			return errs.BadRequest(error)
+		}
+
+		updatedAssignment, err := s.store.UpdateAssignmentRubric(c.Context(), rubricID, assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{"assignment_outline": updatedAssignment})
 	}
 }
 

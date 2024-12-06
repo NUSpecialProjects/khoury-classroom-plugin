@@ -1,13 +1,13 @@
 package models
 
-// Struct for response from webhook PR comment event
+// Structs for responses from webhook events
 
-type PRComment struct {
-	Comment Comment `json:"comment"`
+type WebHookPRComment struct {
+	Comment WebHookComment `json:"comment"`
 	//Repository string  `json:"repository.path"`
 }
 
-type Comment struct {
+type WebHookComment struct {
 	AuthorAssociation string `json:"author_association"`
 	Author            string `json:"user.name"`
 	Body              string `json:"body"`
