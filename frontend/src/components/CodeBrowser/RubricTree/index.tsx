@@ -11,22 +11,26 @@ const RubricTree: React.FC = () => {
   const { rubric, postFeedback } = useContext(GraderContext);
 
   return (
-    rubric && (
-      <ResizablePanel border="left">
-        <div className="RubricTree__head">Rubric</div>
+    <ResizablePanel border="left">
+      <div className="RubricTree__head">Rubric</div>
 
-        <SimpleBar className="RubricTree__body scrollable">
-          <div className="RubricTree__items">
-            {rubric.rubric_items.map((rubricItem, i) => (
+      <SimpleBar className="RubricTree__body scrollable">
+        <div className="RubricTree__items">
+          {rubric ? (
+            rubric.rubric_items.map((rubricItem, i) => (
               <RubricItem key={i} {...rubricItem} />
-            ))}
-          </div>
-        </SimpleBar>
-        <div className="RubricTree__foot">
-          <Button onClick={postFeedback}>Submit Grade</Button>
+            ))
+          ) : (
+            <span style={{ padding: "8px 10px" }}>
+              No rubric for this assignment.
+            </span>
+          )}
         </div>
-      </ResizablePanel>
-    )
+      </SimpleBar>
+      <div className="RubricTree__foot">
+        <Button onClick={postFeedback}>Submit Grade</Button>
+      </div>
+    </ResizablePanel>
   );
 };
 
