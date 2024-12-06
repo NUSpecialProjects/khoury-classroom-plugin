@@ -288,6 +288,29 @@ func (api *CommonAPI) GetTeam(ctx context.Context, teamID int64) (*github.Team, 
 	return team, err
 }
 
+func (api *CommonAPI) CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error) {
+	team := &github.NewTeam{
+		Name:        teamName,
+		Description: description,
+		Maintainers: maintainers,
+	}
+
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
+	if err != nil {
+		return nil, fmt.Errorf("error creating team: %v", err)
+	}
+
+	return createdTeam, nil
+}
+
+func (api *CommonAPI) DeleteTeam(ctx context.Context, teamID int64) error {
+	_, err := api.Client.Teams.DeleteTeam(ctx, teamID)
+	if err != nil {
+		return fmt.Errorf("error deleting team: %v", err)
+	}
+	return nil
+}
+
 func (api *CommonAPI) GetTeamByName(ctx context.Context, orgName string, teamName string) (*github.Team, error) {
 	endpoint := fmt.Sprintf("/orgs/%s/teams/%s", orgName, teamName)
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
