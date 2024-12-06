@@ -193,7 +193,7 @@ func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]mod
 	FROM users u
 	JOIN classroom_membership cm ON u.id = cm.user_id
 	JOIN classrooms c ON c.id = cm.classroom_id
-	WHERE cm.classroom_id = $1 AND cm.status != 'REMOVED'`, classroomID)
+	WHERE cm.classroom_id = $1 AND cm.status != $2`, classroomID, models.UserStatusRemoved)
 	if err != nil {
 		return nil, err
 	}
