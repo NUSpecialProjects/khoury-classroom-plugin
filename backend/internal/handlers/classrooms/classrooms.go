@@ -311,6 +311,7 @@ func (s *ClassroomService) generateClassroomToken() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
+		// Allow professors to invite other professors (only role that should be allowed to invite ppl of the same level)
 		if classroomRole == models.Professor {
 			_, err = s.RequireAtLeastRole(c, classroomID, classroomRole)
 		} else {
