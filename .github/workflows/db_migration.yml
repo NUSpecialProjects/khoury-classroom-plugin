@@ -71,7 +71,7 @@ jobs:
       - name: Re-Initialize RDS Schema
         run: |
           aws lambda invoke \
-            --function-name drop_db \
+            --function-name gitmarks-reinitialize-rds-schema \
             --invocation-type Event \
             --cli-binary-format raw-in-base64-out \
             /dev/null
