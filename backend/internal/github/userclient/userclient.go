@@ -129,13 +129,13 @@ func (api *UserAPI) AcceptOrgInvitation(ctx context.Context, orgName string) err
 	return nil
 }
 
-func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destName string) error {
-	endpoint := fmt.Sprintf("/repos/%s/%s/forks", owner, repo)
+func (api *UserAPI) ForkRepository(ctx context.Context, srcOwner, srcRepo, dstOrg, dstRepo string) error {
+	endpoint := fmt.Sprintf("/repos/%s/%s/forks", srcOwner, srcRepo)
 
 	//Initialize post request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
-		"organization": org,
-		"name":         destName,
+		"organization": dstOrg,
+		"name":         dstRepo,
 	})
 	if err != nil {
 		return errs.GithubAPIError(err)
@@ -144,6 +144,38 @@ func (api *UserAPI) ForkRepository(ctx context.Context, org, owner, repo, destNa
 	// Make the API call
 	response, err := api.Client.Do(ctx, req, nil)
 	if err != nil && response.StatusCode != 202 {
+		return errs.GithubAPIError(err)
+	}
+
+	return nil
+}
+
+func (api *UserAPI) CreateFeedbackPR(ctx context.Context, owner, repo string) error {
+	// get default branch
+	ghRepo, err := api.GetRepository(ctx, owner, repo)
+	if err != nil {
+		return err
+	}
+	if ghRepo.DefaultBranch == nil {
+		return errs.MissingDefaultBranchError()
+	}
+
+	endpoint := fmt.Sprintf("/repos/%s/%s/pulls", owner, repo)
+
+	//Initialize post request
+	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
+		"title": "Feedback",
+		"head":  owner + ":" + *ghRepo.DefaultBranch,
+		"base":  "feedback",
+		"body":  "Grade and feedback will be left here. Do not close or modify this PR!<br>Once graded, reply with a justification to any deduction you would like to dispute.",
+	})
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	// Make the API call
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
 		return errs.GithubAPIError(err)
 	}
 
