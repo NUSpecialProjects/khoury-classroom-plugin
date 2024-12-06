@@ -45,7 +45,6 @@ const Assignment: React.FC = () => {
             );
             if (studentWorks !== null && studentWorks !== undefined) {
               setStudentAssignment(studentWorks);
-              console.log(studentWorks);
             }
           } catch (_) {
             // do nothing
@@ -203,7 +202,7 @@ useEffect(() => {
                     <TableCell>
                     <Link
                           to={`/app/submissions/${sa.student_work_id}`}
-                          state={{ sa }}
+                          state={{ submission: sa, assignmentId: assignment.id }}
                           className="Dashboard__assignmentLink"
                         >
                           {sa.contributors.join(", ")}
