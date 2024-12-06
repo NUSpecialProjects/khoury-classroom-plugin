@@ -17,9 +17,6 @@ func NewOrganizationService(
 	appClient github.GitHubAppClient,
 	userCfg *config.GitHubUserClient,
 ) *OrganizationService {
-	return &OrganizationService{
-		store:     store,
-		appClient: appClient,
-		userCfg:   userCfg,
-	}
+	service := &OrganizationService{store: store, appClient: appClient, userCfg: userCfg}
+	return service
 }
