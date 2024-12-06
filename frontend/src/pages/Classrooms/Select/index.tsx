@@ -69,6 +69,7 @@ const ClassroomSelection: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : (
+          <>
           <Table cols={2}>
             <TableRow>
               <TableCell>
@@ -86,7 +87,7 @@ const ClassroomSelection: React.FC = () => {
             </TableRow>
             {/* If the org has classrooms, populate table, else display a message 
             TODO make alert for no classes*/}
-            {hasClassrooms ? (
+            {hasClassrooms && (
               classrooms.map((classroomUser, i) => (
                 <TableRow key={i} className="Selection__tableRow">
                   <TableCell>
@@ -99,22 +100,35 @@ const ClassroomSelection: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))
-            ) : (
-              <EmptyDataBanner>
-                <div className="emptyDataBannerMessage">
-                  You have no classes in this organization.
-                  <br></br>
-                  Please create a new classroom to get started.
-                </div>
-                <Button variant="secondary" href={`/app/classroom/create?org_id=${orgID}`}>
-                    <MdAdd /> New Classroom
-                  </Button>
-              </EmptyDataBanner>
-            )}
+            ) }
           </Table>
+          {!hasClassrooms && orgRole === OrgRole.ADMIN ? 
+            (
+              <TableRow className="Selection__tableRow">
+                 <EmptyDataBanner>
+                   <div className="emptyDataBannerMessage">
+                      You have no classes in this organization.
+                      <br></br>
+                      Please create a new classroom to get started.
+               </div>
+               <Button variant="secondary" href={`/app/classroom/create?org_id=${orgID}`}>
+                   <MdAdd /> New Classroom
+                 </Button>
+                 </EmptyDataBanner>
+       
+              </TableRow>
+            ) : (
+              <TableRow className="Selection__tableRow">
+                  <EmptyDataBanner>
+                You have no classes in this organization.
+                    Your professor will need to invite you to a classroom.
+                  </EmptyDataBanner>
+              </TableRow>
+            )}
+            <br></br>
+          </>
         )}
       </div>
-
       <div className="Selection__linkWrapper">
         <Link to={`/app/organization/select`}>
           {" "}
