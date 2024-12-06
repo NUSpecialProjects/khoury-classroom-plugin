@@ -208,7 +208,7 @@ func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID 
 	FROM users u
 	JOIN classroom_membership cm ON u.id = cm.user_id
 	JOIN classrooms c ON c.id = cm.classroom_id
-	WHERE cm.classroom_id = $1 AND u.id = $2 AND cm.status != 'REMOVED'`, classroomID, userID).Scan(
+	WHERE cm.classroom_id = $1 AND u.id = $2 AND cm.status != $3`, classroomID, userID, models.UserStatusRemoved).Scan(
 		&userData.ID,
 		&userData.FirstName,
 		&userData.LastName,
@@ -248,8 +248,8 @@ func (db *DB) GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID in
 	FROM users u
 	JOIN classroom_membership cm ON u.id = cm.user_id
 	JOIN classrooms c ON c.id = cm.classroom_id
-	WHERE org_id = $1 AND user_id = $2 AND c.id IN (SELECT classroom_id FROM classroom_membership WHERE user_id = $2 AND status = 'ACTIVE')
-	`, orgID, userID)
+	WHERE org_id = $1 AND user_id = $2 AND c.id IN (SELECT classroom_id FROM classroom_membership WHERE user_id = $2 AND status = $3)
+	`, orgID, userID, models.UserStatusActive)
 	if err != nil {
 		return nil, err
 	}

@@ -62,13 +62,11 @@ func (roleChecker *RoleChecker[T]) checkRole(c *fiber.Ctx, classroomID int64, ro
 	// if the user is a student, check if they are in the student team
 	if classroomUser.Role == models.Student {
 		studentTeam, err := roleChecker.GetAppClient().GetTeamByName(c.Context(), classroom.OrgName, *classroom.StudentTeamName)
-		// studentTeam, err := userClient.GetTeamByName(c.Context(), classroom.OrgName, *classroom.StudentTeamName)
 		if err != nil { // student team doesn't exist :(
 			return models.ClassroomUser{}, errs.InternalServerError()
 		} else { // student team exists, check if the user is in it
 			var studentIsInStudentTeam = false
 			studentTeamMembers, err := roleChecker.GetAppClient().GetTeamMembers(c.Context(), *studentTeam.ID)
-			// studentTeamMembers, err := userClient.GetTeamMembers(c.Context(), *studentTeam.ID)
 			if err != nil {
 				return models.ClassroomUser{}, errs.InternalServerError()
 			}

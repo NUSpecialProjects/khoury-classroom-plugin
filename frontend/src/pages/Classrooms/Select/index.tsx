@@ -32,7 +32,6 @@ const ClassroomSelection: React.FC = () => {
             const data: IClassroomUsersListResponse = await getClassroomsInOrg(org_id);
             if (data.classroom_users) {
               setClassrooms(data.classroom_users);
-              console.log(data.classroom_users);
             }
             if (data.org_role) {
               setOrgRole(data.org_role);
