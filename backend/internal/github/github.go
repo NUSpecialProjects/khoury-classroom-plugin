@@ -57,11 +57,6 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 
 	// Create initial feedback pull request
 	CreateFeedbackPR(ctx context.Context, owner, repo string) error
-	// Fork a repository as a student
-	ForkRepository(ctx context.Context, srcOwner, srcRepo, dstOrg, dstRepo string) error
-
-	// Create initial feedback pull request
-	CreateFeedbackPR(ctx context.Context, owner, repo string) error
 }
 
 type GitHubBaseClient interface { //All methods in the SHARED client
