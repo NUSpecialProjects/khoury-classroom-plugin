@@ -45,6 +45,7 @@ const Assignment: React.FC = () => {
             );
             if (studentWorks !== null && studentWorks !== undefined) {
               setStudentAssignment(studentWorks);
+              console.log(studentWorks);
             }
           } catch (_) {
             // do nothing

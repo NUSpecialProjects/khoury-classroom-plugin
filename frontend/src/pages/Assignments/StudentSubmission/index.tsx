@@ -18,11 +18,15 @@ const StudentSubmission: React.FC = () => {
         if (location.state) {
             setSubmission(location.state.submission);
         }
-        console.log(submission, id);
+
     }, []);
 
     return (
         <div className="StudentWork">
+            <SubPageHeader
+                pageTitle="Submission"
+                chevronLink={"/app/dashboard"}
+            ></SubPageHeader>
         </div>
     );
 };
