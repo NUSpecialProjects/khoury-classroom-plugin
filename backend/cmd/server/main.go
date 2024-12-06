@@ -3,12 +3,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
-	"path/filepath"
-	"sort"
 	"syscall"
 
 	"log/slog"
@@ -45,15 +42,6 @@ func main() {
 	}
 	defer db.Close(context.Background())
 
-	// Run database migrations
-	if !isLocal() {
-		err := runMigrations(ctx, db, "./database/migrations")
-		if err != nil {
-			log.Fatalf("Failed to run migrations: %v", err)
-		}
-	}
-	defer db.Close(context.Background())
-
 	// Initialize GitHub App Client
 	GitHubApp, err := appclient.New(&cfg.GitHubAppClient)
 	if err != nil {
@@ -86,35 +74,6 @@ func main() {
 	}
 
 	slog.Info("Server shutdown complete")
-}
-
-func runMigrations(ctx context.Context, db *postgres.DB, migrationsDir string) error {
-	// Read all files from the migrations directory
-	files, err := os.ReadDir(migrationsDir)
-	if err != nil {
-		return fmt.Errorf("failed to read migrations directory '%s': %w", migrationsDir, err)
-	}
-
-	// Filter and collect only .sql files
-	var migrationFiles []string
-	for _, file := range files {
-		if !file.IsDir() && filepath.Ext(file.Name()) == ".sql" {
-			migrationFiles = append(migrationFiles, file.Name())
-		}
-	}
-	sort.Strings(migrationFiles)
-
-	// Execute each migration file sequentially
-	for _, fileName := range migrationFiles {
-		filePath := filepath.Join(migrationsDir, fileName)
-		log.Printf("Applying migration: %s", fileName)
-		err := db.ExecFile(ctx, filePath)
-		if err != nil {
-			log.Fatalf("Migration error: DB could not be initialized")
-		}
-	}
-
-	return nil
 }
 
 func isLocal() bool {

@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2 import sql
 import boto3
 
+
 def drop_all_tables(connection):
     try:
         with connection.cursor() as cursor:
@@ -38,6 +39,45 @@ def drop_all_tables(connection):
         print(f"An error occurred while dropping tables: {e}")
         raise
 
+
+def run_sql_scripts(connection, bucket_name, folder_path):
+    try:
+        s3 = boto3.client('s3')
+
+        # List all objects in the specified folder in the S3 bucket
+        objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=folder_path)
+
+        if 'Contents' not in objects:
+            print(
+                f"No SQL scripts found in the bucket '{bucket_name}' under the folder '{folder_path}'.")
+            return
+
+        for obj in objects['Contents']:
+            key = obj['Key']
+            if key.endswith('.sql'):
+                # Download SQL script
+                script_file = '/tmp/' + os.path.basename(key)
+                s3.download_file(bucket_name, key, script_file)
+
+                # Read the SQL script content
+                with open(script_file, 'r') as f:
+                    sql_script = f.read()
+
+                # Execute the SQL commands
+                with connection.cursor() as cursor:
+                    print(f"Running SQL script: {key}")
+                    cursor.execute(sql.SQL(sql_script))
+
+        # Commit the changes
+        connection.commit()
+        print("All SQL scripts have been executed successfully.")
+
+    except Exception as e:
+        connection.rollback()
+        print(f"An error occurred while running SQL scripts: {e}")
+        raise
+
+
 def lambda_handler(event, context):
     # Fetch environment variables
     db_host = os.environ['DB_HOST']
@@ -47,6 +87,8 @@ def lambda_handler(event, context):
     target_db = os.environ['TARGET_DB']
     ecs_cluster = os.environ['ECS_CLUSTER']
     ecs_service = os.environ['ECS_SERVICE']
+    bucket_name = os.environ['BUCKET_NAME']
+    migrations_folder_path = os.environ['MIGRATIONS_FOLDER_PATH']
 
     try:
         # Connect to the target database
@@ -62,6 +104,9 @@ def lambda_handler(event, context):
 
         # Drop all tables in the target database
         drop_all_tables(conn)
+
+        # Run SQL scripts to recreate tables and insert data
+        run_sql_scripts(conn, bucket_name, migrations_folder_path)
 
         # Close the database connection
         conn.close()
