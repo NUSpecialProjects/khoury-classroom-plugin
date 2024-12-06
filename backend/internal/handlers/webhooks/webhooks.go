@@ -1,10 +1,8 @@
 package webhooks
 
 import (
-	"encoding/json"
 	"errors"
 	"strings"
-
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -51,16 +49,9 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	// Extract the 'payload' form value
-	payload := c.FormValue("payload")
-	if payload == "" {
-		return errs.BadRequest(errors.New("missing payload"))
-	}
-
-	// Unmarshal the JSON payload into the PushEvent struct
-	var pushEvent github.PushEvent
-	err := json.Unmarshal([]byte(payload), &pushEvent)
-	if err != nil {
-		return errs.BadRequest(errors.New("invalid JSON payload"))
+	pushEvent := github.PushEvent{}
+	if err := c.BodyParser(&pushEvent); err != nil {
+		return err
 	}
 
 	// Check if this is first commit in a repository
@@ -99,10 +90,26 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.BadRequest(errors.New("invalid repository data"))
 	}
 
-	// Create necessary repo branches
+	// Retrieve assignment deadline from DB
+	deadline, err := s.store.GetAssignmentDueDateByRepoName(c.Context(), *pushEvent.Repo.Name)
+	if err == nil {
+		// There is a deadline
+		err = s.appClient.CreateDeadlineEnforcement(c.Context(), deadline, *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+		if err != nil {
+			//TODO: Recovery. Will do in a new ticket. For now, log
+			return err
+		}
+	}
+	//Create PR Enforcement Action
+	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+		if err != nil {
+			return err
+		}
+
+	//Create necessary repo branches
 	repoBranches := []string{"development", "feedback"}
 	for _, branch := range repoBranches {
-		_, err := s.appClient.CreateBranch(c.Context(),
+		_, err = s.appClient.CreateBranch(c.Context(),
 			*pushEvent.Repo.Organization,
 			*pushEvent.Repo.Name,
 			*pushEvent.Repo.MasterBranch,
@@ -113,21 +120,31 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		}
 	}
 
+
+	err = s.appClient.CreatePushRuleset(c.Context(),  *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	if err != nil {
+		// TODO: Recovery. Will do in a new ticket. For now, log
+		return err
+	}
+
 	// Find the associated assignment and classroom
 	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
 	if err != nil {
-		return errs.InternalServerError()
+			// TODO: Recovery. Will do in a new ticket. For now, log
+			return err
 	}
 	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
 	if err != nil {
-		return errs.InternalServerError()
+			// TODO: Recovery. Will do in a new ticket. For now, log
+			return err
 	}
 
 	// Give the student team read access to the repository
 	err = s.appClient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, *classroom.StudentTeamName,
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
-		return errs.InternalServerError()
+			// TODO: Recovery. Will do in a new ticket. For now, log
+			return err
 	}
 
 	return c.SendStatus(200)

@@ -62,6 +62,7 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			return errs.InvalidRequestBody(assignmentData)
 		}
 
+
 		// Error if assignment already exists
 		existingAssignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentData.Name, assignmentData.ClassroomID)
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
@@ -148,6 +149,7 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 
 // Uses an assignment token to accept an assignment.
 func (s *AssignmentService) useAssignmentToken() fiber.Handler {
+	//@CamTODO-> Downgrade student access
 	return func(c *fiber.Ctx) error {
 		token := c.Params("token")
 		if token == "" {
@@ -223,6 +225,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 
 			time.Sleep(initialDelay)
 			initialDelay *= 2
+		}
+
+		//@CamTODO: Get rid of happy path here with repo get fail
+		err = client.CreateBranchRuleset(c.Context(), classroom.OrgName, forkName)
+		if err != nil {
+			return errs.CriticalGithubError()
 		}
 
 		// Remove student team's access to forked repo

@@ -7,8 +7,8 @@ import (
 )
 
 type AssignmentService struct {
-	store     storage.Storage
-	userCfg   *config.GitHubUserClient
+	store storage.Storage
+	userCfg *config.GitHubUserClient
 	appClient github.GitHubAppClient
 }
 
