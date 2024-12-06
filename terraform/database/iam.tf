@@ -49,6 +49,17 @@ resource "aws_iam_policy" "lambda_policy" {
           "ecs:UpdateService"
         ],
         Resource = "arn:aws:ecs:${data.aws_region.current.name}:${var.aws_account_id}:service/*"
+      },
+      { # Allow access to migration scripts
+        Effect: "Allow",
+        Action: [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        Resource: [
+          "arn:aws:s3:::${aws_s3_bucket.sql_migrations_bucket.id}",
+          "arn:aws:s3:::${aws_s3_bucket.sql_migrations_bucket.id}/*"
+        ]
       }
     ]
   })

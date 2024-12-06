@@ -1,0 +1,32 @@
+name: Database Migration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/database/migrations/*'
+      - '.github/workflows/db_migration.yml'
+
+jobs:
+  invoke-lambda:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::058264409130:role/github-actions-deploy-role
+          aws-region: us-east-2
+
+      - name: Update Migration Scripts in S3
+        run: |
+          aws s3 cp ./backend/database/migrations/ s3://gitmarks-migrations-058264409130/migrations/ --recursive
