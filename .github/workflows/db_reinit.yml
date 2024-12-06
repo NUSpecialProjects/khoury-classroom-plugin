@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - 'backend/database/migrations/001_khouryclassroom.sql'
-      - '.github/workflows/db_reinitialize.yml'
+      - '.github/workflows/db_reinit.yml'
 
 jobs:
   invoke-lambda:
