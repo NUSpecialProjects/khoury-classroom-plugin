@@ -30,7 +30,7 @@ jobs:
 
       - name: Update Migration Scripts in S3
         run: |
-          aws s3 cp ./backend/database/migrations/ s3://gitmarks-migrations/ --recursive
+          aws s3 cp ./backend/database/migrations/ s3://gitmarks-migrations-058264409130/ --recursive
 
       - name: Store Snapshot of AWS RDS Instance
         run: |
