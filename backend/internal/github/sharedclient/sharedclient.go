@@ -2,7 +2,6 @@ package sharedclient
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -331,7 +330,7 @@ func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string)
 		return err
 	}
 	if ghRepo.DefaultBranch == nil {
-		return errors.New("missing default branch")
+		return errs.MissingDefaultBranchError()
 	}
 
 	// Get the reference to main branch
@@ -346,21 +345,20 @@ func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string)
 	if ref.Object != nil {
 		// Get the commit from the ref
 		parentCommitSHA = ref.Object.GetSHA()
-		if parentCommitSHA == "" {
-			return errors.New("invalid parent commit")
-		}
-		parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
-		if err != nil {
-			return err
-		}
+		if parentCommitSHA != "" {
+			parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
+			if err != nil {
+				return err
+			}
 
-		parentCommit.Tree.GetSHA()
+			tree = parentCommit.Tree.GetSHA()
+		}
 	}
 
 	// create commit from parent commit tree (no changes)
 	endpoint := fmt.Sprintf("/repos/%s/%s/git/commits", owner, repo)
 	body := map[string]interface{}{
-		"message": "Initial commit",
+		"message": "Setting up GitMarks feedback",
 		"tree":    tree,
 	}
 	if parentCommitSHA != "" {

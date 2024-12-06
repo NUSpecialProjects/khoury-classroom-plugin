@@ -2,7 +2,6 @@ package userclient
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
@@ -158,7 +157,7 @@ func (api *UserAPI) CreateFeedbackPR(ctx context.Context, owner, repo string) er
 		return err
 	}
 	if ghRepo.DefaultBranch == nil {
-		return errors.New("missing default branch")
+		return errs.MissingDefaultBranchError()
 	}
 
 	endpoint := fmt.Sprintf("/repos/%s/%s/pulls", owner, repo)

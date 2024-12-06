@@ -2,12 +2,12 @@ package appclient
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
@@ -64,7 +64,7 @@ func (api *AppAPI) GetFileTree(owner string, repo string) ([]models.FileTreeNode
 		return nil, err
 	}
 	if ghRepo.DefaultBranch == nil {
-		return nil, errors.New("missing default branch")
+		return nil, errs.MissingDefaultBranchError()
 	}
 
 	// Get the reference to the branch
