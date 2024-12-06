@@ -18,12 +18,6 @@ type GitHubAppClient interface { // All methods in the APP client
 	GetFileTree(owner string, repo string) ([]models.FileTreeNode, error)
 	GetFileBlob(owner string, repo string, sha string) ([]byte, error)
 
-	// Create a new team in an organization
-	CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error)
-
-	// Delete a team in an organization
-	DeleteTeam(ctx context.Context, teamID int64) error
-
 	// Add a repository permission to a team
 	AssignPermissionToTeam(ctx context.Context, teamID int64, ownerName string, repoName string, permission string) error
 
@@ -102,6 +96,12 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 
 	// Get the details of a team
 	GetTeam(ctx context.Context, teamID int64) (*github.Team, error)
+
+	// Create a new team in an organization
+	CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error)
+
+	// Delete a team in an organization
+	DeleteTeam(ctx context.Context, teamID int64) error
 
 	// Get the details of a team by name
 	GetTeamByName(ctx context.Context, orgName string, teamName string) (*github.Team, error)
