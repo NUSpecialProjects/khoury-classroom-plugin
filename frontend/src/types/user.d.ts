@@ -19,8 +19,12 @@ interface IClassroomUser {
   github_username: string;
   github_user_id: number;
   classroom_id: number;
+  classroom_name: string;
+  classroom_created_at: string;
   classroom_role: ClassroomRole;
   status: ClassroomUserStatus;
+  org_id: number;
+  org_name: string;
 }
 
 interface IClassroomUserResponse {

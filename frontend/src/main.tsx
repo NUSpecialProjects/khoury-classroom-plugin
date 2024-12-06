@@ -58,6 +58,7 @@ export default function App(): React.JSX.Element {
                   element={<Pages.InviteStudents />}
                 />
                 <Route path="success" element={<Pages.Success />} />
+                <Route path="landing" element={<Pages.Landing />} />
               </Route>
               <Route path="organization" element={<PrivateRoute />}>
                 <Route

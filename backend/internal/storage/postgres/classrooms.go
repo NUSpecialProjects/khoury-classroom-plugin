@@ -85,9 +85,10 @@ func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, classro
 		VALUES ($1, $2, $3, $4)
 		RETURNING classroom_id,user_id, classroom_role, status
 	)
-	SELECT i.user_id, u.first_name, u.last_name, u.github_username, u.github_user_id, i.classroom_id, i.classroom_role, i.status
+	SELECT i.user_id, u.first_name, u.last_name, u.github_username, u.github_user_id, i.classroom_id, i.classroom_role, i.status, c.name as classroom_name, c.created_at as classroom_created_at, c.org_id, c.org_name
 	FROM inserted i
-	JOIN users u ON u.id = i.user_id`,
+	JOIN users u ON u.id = i.user_id
+	JOIN classrooms c ON c.id = i.classroom_id`,
 		userID, classroomID, classroomRole, classroomStatus,
 	).Scan(
 		&classroomUser.ID,
@@ -98,6 +99,10 @@ func (db *DB) AddUserToClassroom(ctx context.Context, classroomID int64, classro
 		&classroomUser.ClassroomID,
 		&classroomUser.Role,
 		&classroomUser.Status,
+		&classroomUser.ClassroomName,
+		&classroomUser.ClassroomCreatedAt,
+		&classroomUser.OrgID,
+		&classroomUser.OrgName,
 	)
 
 	if err != nil {
@@ -120,9 +125,10 @@ func (db *DB) ModifyUserRole(ctx context.Context, classroomID int64, classroomRo
 		UPDATE classroom_membership SET classroom_role = $1 WHERE classroom_id = $2 AND user_id = $3
 		RETURNING classroom_id, user_id, classroom_role, status
 	)
-	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, up.classroom_id, up.classroom_role, up.status
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, up.classroom_id, up.classroom_role, up.status, c.name as classroom_name, c.created_at as classroom_created_at, c.org_id, c.org_name
 	FROM updated up
-	JOIN users u ON u.id = up.user_id`,
+	JOIN users u ON u.id = up.user_id
+	JOIN classrooms c ON c.id = up.classroom_id`,
 		classroomRole, classroomID, userID,
 	).Scan(
 		&classroomUser.ID,
@@ -133,6 +139,10 @@ func (db *DB) ModifyUserRole(ctx context.Context, classroomID int64, classroomRo
 		&classroomUser.ClassroomID,
 		&classroomUser.Role,
 		&classroomUser.Status,
+		&classroomUser.ClassroomName,
+		&classroomUser.ClassroomCreatedAt,
+		&classroomUser.OrgID,
+		&classroomUser.OrgName,
 	)
 
 	if err != nil {
@@ -150,9 +160,10 @@ func (db *DB) ModifyUserStatus(ctx context.Context, classroomID int64, status mo
 		UPDATE classroom_membership SET status = $1 WHERE classroom_id = $2 AND user_id = $3
 		RETURNING classroom_id, user_id, classroom_role, status
 	)
-	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, up.classroom_id, up.classroom_role, up.status
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, up.classroom_id, up.classroom_role, up.status, c.name as classroom_name, c.created_at as classroom_created_at, c.org_id, c.org_name
 	FROM updated up
-	JOIN users u ON u.id = up.user_id`,
+	JOIN users u ON u.id = up.user_id
+	JOIN classrooms c ON c.id = up.classroom_id`,
 		status, classroomID, userID,
 	).Scan(
 		&classroomUser.ID,
@@ -163,6 +174,10 @@ func (db *DB) ModifyUserStatus(ctx context.Context, classroomID int64, status mo
 		&classroomUser.ClassroomID,
 		&classroomUser.Role,
 		&classroomUser.Status,
+		&classroomUser.ClassroomName,
+		&classroomUser.ClassroomCreatedAt,
+		&classroomUser.OrgID,
+		&classroomUser.OrgName,
 	)
 
 	if err != nil {
@@ -174,10 +189,11 @@ func (db *DB) ModifyUserStatus(ctx context.Context, classroomID int64, status mo
 
 func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.ClassroomUser, error) {
 	rows, err := db.connPool.Query(ctx, `
-	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_id, cm.classroom_role as role, cm.status as status
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_id, cm.classroom_role, cm.status, c.name as classroom_name, c.created_at as classroom_created_at, c.org_id, c.org_name
 	FROM users u
 	JOIN classroom_membership cm ON u.id = cm.user_id
-	WHERE cm.classroom_id = $1`, classroomID)
+	JOIN classrooms c ON c.id = cm.classroom_id
+	WHERE cm.classroom_id = $1 AND cm.status != $2`, classroomID, models.UserStatusRemoved)
 	if err != nil {
 		return nil, err
 	}
@@ -188,10 +204,11 @@ func (db *DB) GetUsersInClassroom(ctx context.Context, classroomID int64) ([]mod
 func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID int64) (models.ClassroomUser, error) {
 	var userData models.ClassroomUser
 	err := db.connPool.QueryRow(ctx, `
-	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_id, cm.classroom_role, cm.status
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_id, cm.classroom_role, cm.status, c.name as classroom_name, c.created_at as classroom_created_at, c.org_id, c.org_name
 	FROM users u
 	JOIN classroom_membership cm ON u.id = cm.user_id
-	WHERE cm.classroom_id = $1 AND u.id = $2`, classroomID, userID).Scan(
+	JOIN classrooms c ON c.id = cm.classroom_id
+	WHERE cm.classroom_id = $1 AND u.id = $2 AND cm.status != $3`, classroomID, userID, models.UserStatusRemoved).Scan(
 		&userData.ID,
 		&userData.FirstName,
 		&userData.LastName,
@@ -200,6 +217,10 @@ func (db *DB) GetUserInClassroom(ctx context.Context, classroomID int64, userID 
 		&userData.ClassroomID,
 		&userData.Role,
 		&userData.Status,
+		&userData.ClassroomName,
+		&userData.ClassroomCreatedAt,
+		&userData.OrgID,
+		&userData.OrgName,
 	)
 
 	if err != nil {
@@ -221,16 +242,19 @@ func (db *DB) GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Cla
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Classroom])
 }
 
-func (db *DB) GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.Classroom, error) {
+func (db *DB) GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.ClassroomUser, error) {
 	rows, err := db.connPool.Query(ctx, `
-	SELECT id, name, org_id, org_name, created_at, student_team_name
-	FROM classrooms
-	WHERE org_id = $1 AND id IN (SELECT classroom_id FROM classroom_membership WHERE user_id = $2 AND status = 'ACTIVE')`, orgID, userID)
+	SELECT u.id, u.first_name, u.last_name, u.github_username, u.github_user_id, cm.classroom_id, cm.classroom_role, cm.status, c.name as classroom_name, c.created_at as classroom_created_at, c.org_id, c.org_name
+	FROM users u
+	JOIN classroom_membership cm ON u.id = cm.user_id
+	JOIN classrooms c ON c.id = cm.classroom_id
+	WHERE org_id = $1 AND user_id = $2 AND c.id IN (SELECT classroom_id FROM classroom_membership WHERE user_id = $2 AND status = $3)
+	`, orgID, userID, models.UserStatusActive)
 	if err != nil {
 		return nil, err
 	}
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Classroom])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.ClassroomUser])
 }
 
 func (db *DB) CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error) {
