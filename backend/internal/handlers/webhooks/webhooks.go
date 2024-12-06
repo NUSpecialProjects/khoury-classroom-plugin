@@ -57,7 +57,7 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If app bot triggered the initial commit, initialize the base repository
-	if s.isInitialCommit(pushEvent) && s.isBotPushEvent(pushEvent) {
+	if isInitialCommit(pushEvent) && isBotPushEvent(pushEvent) {
 		err := s.baseRepoInitialization(c, pushEvent)
 		if err != nil {
 			return err
@@ -65,7 +65,7 @@ func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
 	}
 
 	// If students pushed commits, update the work state accordingly
-	if !s.isBotPushEvent(pushEvent) && pushEvent.Commits != nil && len(pushEvent.Commits) > 0 {
+	if !isBotPushEvent(pushEvent) && pushEvent.Commits != nil && len(pushEvent.Commits) > 0 {
 		err := s.updateWorkStateOnStudentCommit(c, pushEvent)
 		if err != nil {
 			return err
@@ -136,7 +136,7 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	if pushEvent.Ref != nil {
 		// TODO: Dynamically determine branch names once parameterized
 		// If commiting to main branch, mark as submitted
-		if *pushEvent.Ref == "refs/heads/main" {
+		if *pushEvent.Ref == "refs/heads/"+*pushEvent.Repo.DefaultBranch {
 			studentWork.WorkState = models.WorkStateSubmitted
 		} else if *pushEvent.Ref != "refs/heads/feedback" {
 			// If not committing to main/ or feedback/ branch, increment commit amount
@@ -153,11 +153,11 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	return c.SendStatus(200)
 }
 
-func (s *WebHookService) isInitialCommit(pushEvent github.PushEvent) bool {
+func isInitialCommit(pushEvent github.PushEvent) bool {
 	return pushEvent.BaseRef == nil && *pushEvent.Created && pushEvent.GetBefore() == "0000000000000000000000000000000000000000"
 }
 
-func (s *WebHookService) isBotPushEvent(pushEvent github.PushEvent) bool {
+func isBotPushEvent(pushEvent github.PushEvent) bool {
 	return pushEvent.Pusher != nil &&
 		pushEvent.Pusher.Name != nil &&
 		strings.Contains(*pushEvent.Pusher.Name, "[bot]")

@@ -326,8 +326,16 @@ func (api *CommonAPI) GetTeamMembers(ctx context.Context, teamID int64) ([]*gith
 }
 
 func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string) error {
+	ghRepo, err := api.GetRepository(ctx, owner, repo)
+	if err != nil {
+		return err
+	}
+	if ghRepo.DefaultBranch == nil {
+		return errors.New("missing default branch")
+	}
+
 	// Get the reference to main branch
-	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/"+*ghRepo.DefaultBranch)
 	if err != nil {
 		return err
 	}
@@ -369,7 +377,7 @@ func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string)
 	}
 
 	// update main to point to the new empty commit
-	endpoint = fmt.Sprintf("/repos/%s/%s/git/refs/heads/main", owner, repo)
+	endpoint = fmt.Sprintf("/repos/%s/%s/git/refs/heads/%s", owner, repo, *ghRepo.DefaultBranch)
 	req, err = api.Client.NewRequest("PATCH", endpoint, map[string]interface{}{
 		"sha":   commit.SHA,
 		"force": true,

@@ -2,6 +2,7 @@ package userclient
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/CamPlume1/khoury-classroom/internal/config"
@@ -151,12 +152,21 @@ func (api *UserAPI) ForkRepository(ctx context.Context, srcOwner, srcRepo, dstOr
 }
 
 func (api *UserAPI) CreateFeedbackPR(ctx context.Context, owner, repo string) error {
+	// get default branch
+	ghRepo, err := api.GetRepository(ctx, owner, repo)
+	if err != nil {
+		return err
+	}
+	if ghRepo.DefaultBranch == nil {
+		return errors.New("missing default branch")
+	}
+
 	endpoint := fmt.Sprintf("/repos/%s/%s/pulls", owner, repo)
 
 	//Initialize post request
 	req, err := api.Client.NewRequest("POST", endpoint, map[string]interface{}{
 		"title": "Feedback",
-		"head":  owner + ":main",
+		"head":  owner + ":" + *ghRepo.DefaultBranch,
 		"base":  "feedback",
 		"body":  "Grade and feedback will be left here. Do not close or modify this PR!<br>Once graded, reply with a justification to any deduction you would like to dispute.",
 	})
