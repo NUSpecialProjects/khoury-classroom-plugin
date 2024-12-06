@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - bugfix/tf-deployment
     paths:
       - 'terraform/**'
       - '.github/workflows/terraform_deploy.yml'
@@ -37,7 +38,8 @@ jobs:
 
       - name: Zip Lambda Function
         run: |
-          zip -r database/func.zip database/func
+          cd database/func
+          zip drop_db.zip drop_db.py
 
       - name: Terraform Init
         run: |
