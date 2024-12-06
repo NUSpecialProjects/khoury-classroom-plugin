@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - feature/kho-237/workflow-db-migration
     paths:
       - 'backend/**'
       - '.github/workflows/backend_deploy.yml'

@@ -20,6 +20,8 @@ resource "aws_lambda_function" "drop_db_function" {
       TARGET_DB   = var.db_name
       ECS_CLUSTER = var.ecs_cluster_name
       ECS_SERVICE = var.ecs_service_name
+      BUCKET_NAME = aws_s3_bucket.sql_migrations_bucket.bucket
+      MIGRATIONS_FOLDER_PATH = "migrations"
     }
   }
 
