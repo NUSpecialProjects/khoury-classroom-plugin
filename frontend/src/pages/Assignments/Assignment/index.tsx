@@ -6,7 +6,10 @@ import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
-import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
+import {
+  getAssignmentIndirectNav,
+  postAssignmentToken,
+} from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
 import { formatDateTime } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
@@ -24,7 +27,8 @@ const Assignment: React.FC = () => {
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
-  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const base_url: string = import.meta.env
+    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -81,14 +85,16 @@ const Assignment: React.FC = () => {
 
       try {
         if (!selectedClassroom) return;
-        const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
+        const tokenData = await postAssignmentToken(
+          selectedClassroom.id,
+          assignment.id
+        );
         const url = `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
         setInviteLink(url);
       } catch (_) {
         setLinkError("Failed to generate assignment invite link");
       }
     };
-
 
     generateInviteLink();
   }, [assignment]);
@@ -122,14 +128,16 @@ const Assignment: React.FC = () => {
               <FaGithub className="icon" /> View Template Repository
             </Button>
             <Button href="" variant="secondary" newTab>
-              <MdEditDocument className="icon" />  View Rubric
+              <MdEditDocument className="icon" /> View Rubric
             </Button>
-            <Link to={`/app/assignments/${assignment.id}/rubric`} state={{ assignment }}>
+            <Link
+              to={`/app/assignments/${assignment.id}/rubric`}
+              state={{ assignment }}
+            >
               <Button href="" variant="secondary">
                 View Rubric
               </Button>
             </Link>
-
           </div>
 
           <div className="Assignment__subSectionWrapper">
@@ -141,10 +149,22 @@ const Assignment: React.FC = () => {
           <div className="Assignment__subSectionWrapper">
             <h2 style={{ marginBottom: 10 }}>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
-              <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
-              <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
-              <SimpleMetric metricTitle="Regrade  Requests" metricValue="0"></SimpleMetric>
+              <SimpleMetric
+                metricTitle="First Commit Date"
+                metricValue="6 Sep"
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Total Commits"
+                metricValue="941"
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Extension  Requests"
+                metricValue="0"
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Regrade  Requests"
+                metricValue="0"
+              ></SimpleMetric>
             </MetricPanel>
           </div>
 

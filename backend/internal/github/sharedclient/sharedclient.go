@@ -390,3 +390,39 @@ func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string)
 
 	return nil
 }
+
+func (api *CommonAPI) CheckForkIsReady(ctx context.Context, repo *github.Repository) bool {
+	if repo == nil || repo.Parent.FullName == nil {
+		return false
+	}
+
+	// Get all branches from source repo
+	endpoint := fmt.Sprintf("/repos/%s/branches", *repo.Parent.FullName)
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	var srcBranches []github.Branch
+	_, err = api.Client.Do(ctx, req, &srcBranches)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	// Get all branches from forked repo
+	endpoint = fmt.Sprintf("/repos/%s/branches", *repo.FullName)
+	req, err = api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return false
+	}
+
+	var branches []github.Branch
+	_, err = api.Client.Do(ctx, req, &branches)
+	if err != nil {
+		return false
+	}
+
+	return len(branches) == len(srcBranches)
+}
