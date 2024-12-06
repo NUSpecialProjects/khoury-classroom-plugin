@@ -7,7 +7,7 @@ on:
       - main
     paths:
       - 'terraform/**'
-      - '.github/workflows/terraform_deploy.yml'
+      - '.github/workflows/deploy/terraform_deploy.yml'
 
 jobs:
   terraform:

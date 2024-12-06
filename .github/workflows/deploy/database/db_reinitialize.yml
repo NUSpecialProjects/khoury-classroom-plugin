@@ -5,10 +5,9 @@ on:
   push:
     branches:
       - main
-      - feature/kho-237/workflow-db-migration
     paths:
-      - 'backend/database/migrations/*'
-      - '.github/workflows/db_migration.yml'
+      - 'backend/database/migrations/001_khouryclassroom.sql'
+      - '.github/workflows//deploy/database/db_reinitialize.yml'
 
 jobs:
   invoke-lambda:
@@ -27,11 +26,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::058264409130:role/github-actions-deploy-role
           aws-region: us-east-2
-
-      - name: Update Migration Scripts in S3
-        run: |
-          aws s3 cp ./backend/database/migrations/ s3://gitmarks-migrations-058264409130/migrations/ --recursive
-
+        
       - name: Store Snapshot of AWS RDS Instance
         run: |
           TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
