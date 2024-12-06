@@ -1,4 +1,6 @@
 .Assignment {
+  padding-bottom: 50px;
+
   &__head {
     display: flex;
     justify-content: space-between;
@@ -17,6 +19,7 @@
     flex-direction: row;
     gap: 10px;
     color: var(--caption-text);
+    text-wrap: nowrap;
   }
 
   &__date {
@@ -36,7 +39,8 @@
   &__externalButtons {
     display: flex;
     flex-direction: row;
-    padding-bottom: 20px;
+    padding: 20px;
+    padding-bottom: 30px;
     gap: 20px;
 
     .Button {
@@ -58,6 +62,6 @@
   }
 
   &__subSectionWrapper {
-    padding-bottom: 20px;
+    padding: 20px;
   }
 }
