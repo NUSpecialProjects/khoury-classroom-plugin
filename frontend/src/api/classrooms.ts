@@ -230,3 +230,18 @@ export async function removeUserFromClassroom(
     throw new Error(response.statusText);
   }
 }
+
+export async function getClassroomNames(): Promise<string[]> {
+  const response = await fetch(`${base_url}/classrooms/names`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  const resp: { semester_names: string[] } = await response.json();
+  return resp.semester_names;
+}

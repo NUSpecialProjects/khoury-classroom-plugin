@@ -121,3 +121,31 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		})
 	}
 }
+
+func (s *WorkService) GetCommitCount() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		work, err := s.getWork(c)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"work_id":      work.ID,
+			"commit_count": work.CommitAmount,
+		})
+	}
+}
+
+func (s *WorkService) GetFirstCommitDate() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		work, err := s.getWork(c)
+		if err != nil {
+			return err
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{
+			"work_id":         work.ID,
+			"first_commit_at": work.FirstCommitDate,
+		})
+	}
+}

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
@@ -171,4 +172,89 @@ func (db *DB) GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentN
 	}
 
 	return &assignmentOutline, nil
+}
+
+func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error) {
+	var updatedAssignmentData models.AssignmentOutline
+	err := db.connPool.QueryRow(ctx, `UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 
+        RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date`,
+		rubricID, assignmentID).Scan(
+		&updatedAssignmentData.ID,
+		&updatedAssignmentData.TemplateID,
+		&updatedAssignmentData.CreatedAt,
+		&updatedAssignmentData.ReleasedAt,
+		&updatedAssignmentData.Name,
+		&updatedAssignmentData.ClassroomID,
+		&updatedAssignmentData.RubricID,
+		&updatedAssignmentData.GroupAssignment,
+		&updatedAssignmentData.MainDueDate)
+
+	if err != nil {
+		return models.AssignmentOutline{}, errs.NewDBError(err)
+	}
+
+	return updatedAssignmentData, nil
+}
+
+func (db *DB) GetEarliestCommitDate(ctx context.Context, assignmentID int) (*time.Time, error) {
+	var earliestCommitDate *time.Time
+	err := db.connPool.QueryRow(ctx, `
+		SELECT MIN(first_commit_date)
+		FROM student_works
+		WHERE assignment_outline_id = $1
+	`, assignmentID).Scan(&earliestCommitDate)
+	if err != nil {
+		return nil, err
+	}
+
+	return earliestCommitDate, nil
+}
+
+func (db *DB) GetTotalWorkCommits(ctx context.Context, assignmentID int) (int, error) {
+	var totalCommits int
+	err := db.connPool.QueryRow(ctx, `
+		SELECT SUM(commit_amount) 
+		FROM student_works 
+		WHERE assignment_outline_id = $1
+	`, assignmentID).Scan(&totalCommits)
+	if err != nil {
+		return 0, err
+	}
+
+	return totalCommits, nil
+}
+
+func (db *DB) CountWorksByState(ctx context.Context, assignmentID int) (map[models.WorkState]int, error) {
+	// Initialize the count map with all possible WorkState values set to zero
+	workStateCounts := make(map[models.WorkState]int)
+	for _, state := range models.WorkStateEnum {
+		workStateCounts[state] = 0
+	}
+
+	// Query for the count of student works by status
+	rows, err := db.connPool.Query(ctx, `SELECT work_state, COUNT(*) AS state_count
+		FROM student_works
+		WHERE assignment_outline_id = $1
+		GROUP BY work_state;`, assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Scan and populate the count map
+	for rows.Next() {
+		var workState models.WorkState
+		var count int
+		if err := rows.Scan(&workState, &count); err != nil {
+			return nil, err
+		}
+		workStateCounts[workState] = count
+	}
+
+	// Check for errors during iteration
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return workStateCounts, nil
 }
