@@ -1,5 +1,5 @@
 interface IPageHeader {
-    pageTitle: string;
+    pageTitle: string | undefined;
 }
 
 interface IBreadcrumbPageHeader extends IPageHeader {

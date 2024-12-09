@@ -5,7 +5,7 @@ import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
-import { getPaginatedStudentWork } from "@/api/student_works";
+import { getStudentWorkById } from "@/api/student_works";
 
 
 const StudentSubmission: React.FC = () => {
@@ -20,13 +20,13 @@ const StudentSubmission: React.FC = () => {
         if (location.state && location.state.submission) {
           setSubmission(location.state.submission); // Use submission from state
         } else if (id && location.state.assignmentId && selectedClassroom) {
-          // Fetch submission data as a fallback
+          // If state fails, use submission data as a fallback
           (async () => {
             try {
-              const fetchedSubmission = await getPaginatedStudentWork(
+              const fetchedSubmission = await getStudentWorkById(
                 selectedClassroom.id,
-                location.state.assignmentId, // Use assignmentId from state
-                id // Student submission ID
+                location.state.assignmentId, // Use assignmentID from state
+                +id // Student submission ID
               );
               if (fetchedSubmission) {
                 setSubmission(fetchedSubmission);
@@ -41,7 +41,7 @@ const StudentSubmission: React.FC = () => {
     return (
         <div className="StudentWork">
             <SubPageHeader
-                pageTitle={"Submission"}
+                pageTitle={submission?.contributors.join(", ")}
                 chevronLink={"/app/dashboard"}
             ></SubPageHeader>
         </div>
