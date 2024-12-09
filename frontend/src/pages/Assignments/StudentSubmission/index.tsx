@@ -5,8 +5,12 @@ import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
+import Button from "@/components/Button";
 import { getStudentWorkById } from "@/api/student_works";
 
+import { MdEditDocument } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
+import { FaGithub } from "react-icons/fa";
 
 const StudentSubmission: React.FC = () => {
     const location = useLocation();
@@ -47,6 +51,15 @@ const StudentSubmission: React.FC = () => {
                 chevronLink={`/app/assignments/${assignmentID}`}
             >
             </SubPageHeader>
+
+            <div className="Assignment__externalButtons">
+            <Button href="#" variant="secondary" newTab>
+              <FaGithub className="icon" /> View Student Repository
+            </Button>
+            <Button href="#" variant="secondary" newTab>
+              <MdEditDocument className="icon" />  Grade Submission
+            </Button>
+          </div>
         </div>
     );
 };

@@ -1,0 +1,14 @@
+.StudentSubmission {
+
+    &__externalButtons {
+        display: flex;
+        flex-direction: row;
+        padding: 20px;
+        padding-bottom: 30px;
+        gap: 20px;
+    
+        .Button {
+          flex: 1;
+        }
+      }
+}
