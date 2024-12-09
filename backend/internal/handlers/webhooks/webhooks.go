@@ -134,6 +134,11 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	}
 
 	if pushEvent.Ref != nil {
+		// Update the last commit date
+		if len(pushEvent.Commits) > 0 {
+			studentWork.LastCommitDate = &pushEvent.Commits[0].Timestamp.Time
+		}
+
 		// TODO: Dynamically determine branch names once parameterized
 		// If commiting to main branch, mark as submitted
 		if *pushEvent.Ref == "refs/heads/"+*pushEvent.Repo.DefaultBranch {
@@ -141,7 +146,6 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 		} else if *pushEvent.Ref != "refs/heads/feedback" {
 			// If not committing to main/ or feedback/ branch, increment commit amount
 			studentWork.CommitAmount += len(pushEvent.Commits)
-			studentWork.LastCommitDate = &pushEvent.Commits[0].Timestamp.Time
 		}
 	}
 

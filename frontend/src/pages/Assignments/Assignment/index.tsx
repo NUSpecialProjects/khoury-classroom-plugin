@@ -12,7 +12,7 @@ import {
   postAssignmentToken,
 } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDateTime } from "@/utils/date";
+import { formatDate, formatDateTime } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
@@ -169,7 +169,7 @@ const Assignment: React.FC = () => {
             <MetricPanel>
               <SimpleMetric
                 metricTitle="First Commit Date"
-                metricValue={firstCommitDate ? formatDateTime(firstCommitDate) : "N/A"}
+                metricValue={formatDate(firstCommitDate)}
               ></SimpleMetric>
               <SimpleMetric
                 metricTitle="Total Commits"

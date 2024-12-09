@@ -23,7 +23,7 @@ interface IUser {
 interface IClassroomUser extends IUser {
   classroom_id: number;
   classroom_name: string;
-  classroom_created_at: string;
+  classroom_created_at: Date;
   classroom_role: ClassroomRole;
   status: ClassroomUserStatus;
   org_id: number;
