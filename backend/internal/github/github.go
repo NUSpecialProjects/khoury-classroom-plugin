@@ -123,4 +123,7 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 
 	// Create empty commit (will create a diff that allows feedback PR to be created)
 	CreateEmptyCommit(ctx context.Context, owner, repo string) error
+
+	// Check if a fork has finished initializing
+	CheckForkIsReady(ctx context.Context, repo *github.Repository) bool
 }
