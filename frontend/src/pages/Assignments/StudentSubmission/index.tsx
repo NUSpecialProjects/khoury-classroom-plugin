@@ -1,5 +1,5 @@
 import "./styles.css";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
@@ -11,7 +11,6 @@ import { getFirstCommit, getTotalCommits } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 
 import { MdEditDocument } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 
 const StudentSubmission: React.FC = () => {

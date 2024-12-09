@@ -13,8 +13,6 @@ import * as Pages from "./pages";
 import Layout from "./components/Layout";
 import AuthProvider, { AuthContext } from "./contexts/auth";
 import SelectedSemesterProvider from "./contexts/selectedClassroom";
-import StudentSubmission from "./pages/Assignments/StudentSubmission";
-
 import "./global.css";
 
 // If not logged in, route to login
