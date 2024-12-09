@@ -62,6 +62,28 @@ const Assignment: React.FC = () => {
       },
     ],
   };
+  const base_url: string = import.meta.env
+    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
+
+  const data1 = {
+    labels: ["Committed", "Accepted", "Not Accepted"],
+    datasets: [
+      {
+        backgroundColor: ["#219386", "#f69c0e", "#f83b5c"],
+        data: [29, 5, 4],
+      },
+    ],
+  };
+
+  const data2 = {
+    labels: ["Graded", "Ungraded"],
+    datasets: [
+      {
+        backgroundColor: ["#219386", "#e5e7eb"],
+        data: [3000, 700],
+      },
+    ],
+  };
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -116,6 +138,7 @@ const Assignment: React.FC = () => {
     const generateInviteLink = async () => {
       if (!assignment) return;
 
+
       try {
         if (!selectedClassroom) return;
         const tokenData = await postAssignmentToken(
@@ -160,6 +183,7 @@ const Assignment: React.FC = () => {
         </SubPageHeader>
 
         <div className="Assignment">
+        <div className="Assignment">
           <div className="Assignment__externalButtons">
             <Button href="#" variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
@@ -181,7 +205,13 @@ const Assignment: React.FC = () => {
             <CopyLink link={inviteLink} name="invite-assignment" />
             {linkError && <p className="error">{linkError}</p>}
           </div>
+          <div className="Assignment__link">
+            <h2>Assignment Link</h2>
+            <CopyLink link={inviteLink} name="invite-assignment" />
+            {linkError && <p className="error">{linkError}</p>}
+          </div>
 
+          <div className="Assignment__metrics">
           <div className="Assignment__metrics">
             <h2>Metrics</h2>
             <MetricPanel>
@@ -283,6 +313,7 @@ const Assignment: React.FC = () => {
           </div>
 
           <div>
+          <div>
             <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
             <Table cols={3}>
               <TableRow style={{ borderTop: "none" }}>
@@ -300,6 +331,10 @@ const Assignment: React.FC = () => {
                   </TableRow>
                 ))}
             </Table>
+          </div>
+        </div>
+      </>
+    )
           </div>
         </div>
       </>
