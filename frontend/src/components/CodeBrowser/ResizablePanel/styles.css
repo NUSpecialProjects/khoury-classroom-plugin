@@ -2,7 +2,7 @@
   cursor: e-resize;
 }
 
-.TreePanel {
+.ResizablePanel {
   background: #151515;
   font-size: 0.86rem;
   position: relative;
