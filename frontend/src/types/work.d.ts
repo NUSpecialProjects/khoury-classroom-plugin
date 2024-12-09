@@ -12,6 +12,9 @@ interface IStudentWork {
   grades_published_timestamp?: Date;
   work_state: string;
   created_at: Date;
+  commit_amount: number;
+  first_commit_date?: Date;
+  last_commit_date?: Date;
   contributors: IUser[];
 }
 

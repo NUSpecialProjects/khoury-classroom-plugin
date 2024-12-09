@@ -21,7 +21,7 @@ func (s *WebHookService) WebhookHandler(c *fiber.Ctx) error {
 
 	handler, exists := dispatch[event]
 	if !exists {
-		return c.SendStatus(400)
+		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
 	return handler(c)
@@ -29,7 +29,7 @@ func (s *WebHookService) WebhookHandler(c *fiber.Ctx) error {
 
 func (s *WebHookService) PR(c *fiber.Ctx) error {
 	println("PR webhook event")
-	return c.SendStatus(200)
+	return c.SendStatus(fiber.StatusOK)
 }
 
 // todo: finish regrade request handling
@@ -41,12 +41,12 @@ func (s *WebHookService) PRComment(c *fiber.Ctx) error {
 	if payload.Comment.AuthorAssociation == "COLLABORATOR" {
 		println("regrade request")
 	}
-	return c.SendStatus(200)
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 	println("PR thread webhook event")
-	return c.SendStatus(200)
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
@@ -117,7 +117,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		return errs.InternalServerError()
 	}
 
-	return c.SendStatus(200)
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent github.PushEvent) error {
@@ -141,6 +141,7 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 		} else if *pushEvent.Ref != "refs/heads/feedback" {
 			// If not committing to main/ or feedback/ branch, increment commit amount
 			studentWork.CommitAmount += len(pushEvent.Commits)
+			studentWork.LastCommitDate = &pushEvent.Commits[0].Timestamp.Time
 		}
 	}
 
@@ -150,7 +151,7 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 		return errs.InternalServerError()
 	}
 
-	return c.SendStatus(200)
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func isInitialCommit(pushEvent github.PushEvent) bool {

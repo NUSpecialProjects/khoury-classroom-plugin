@@ -76,10 +76,6 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return err
 		}
 
-		for _, work := range works {
-			fmt.Println(work.Contributors)
-		}
-
 		// get list of students in class to get which students havent accepted the assignment
 		students, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
 		if err != nil {

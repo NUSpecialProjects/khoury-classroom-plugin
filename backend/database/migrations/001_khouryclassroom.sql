@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS student_works (
     created_at TIMESTAMP DEFAULT NOW(),
     commit_amount INTEGER DEFAULT 0,
     first_commit_date TIMESTAMP,
+    last_commit_date TIMESTAMP,
     FOREIGN KEY (assignment_outline_id) REFERENCES assignment_outlines(id)
 );
 
