@@ -171,11 +171,6 @@ const Assignment: React.FC = () => {
             <CopyLink link={inviteLink} name="invite-assignment" />
             {linkError && <p className="error">{linkError}</p>}
           </div>
-          <div className="Assignment__link">
-            <h2>Assignment Link</h2>
-            <CopyLink link={inviteLink} name="invite-assignment" />
-            {linkError && <p className="error">{linkError}</p>}
-          </div>
 
           <div className="Assignment__metrics">
             <h2>Metrics</h2>

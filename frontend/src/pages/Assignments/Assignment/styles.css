@@ -33,7 +33,6 @@
   &__externalButtons {
     display: flex;
     flex-direction: row;
-    padding: 20px;
     padding-bottom: 30px;
     gap: 20px;
     width: 100%;
@@ -45,6 +44,7 @@
 
     .Button {
       flex: 1;
+      width: 100%;
     }
   }
 
