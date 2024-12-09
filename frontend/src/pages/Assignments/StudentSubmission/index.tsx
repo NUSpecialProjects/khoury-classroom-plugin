@@ -7,6 +7,8 @@ import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 import Button from "@/components/Button";
 import { getStudentWorkById } from "@/api/student_works";
+import { getFirstCommit, getTotalCommits } from "@/api/student_works";
+import { formatDate } from "@/utils/date";
 
 import { MdEditDocument } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
@@ -18,6 +20,8 @@ const StudentSubmission: React.FC = () => {
   const { id } = useParams();
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const assignmentID = location.state.assignmentId;
+  const [firstCommit, setFirstCommit] = useState<string>("");
+  const [totalCommits, setTotalCommits] = useState<string>();
 
   console.log(location.state);
 
@@ -43,6 +47,51 @@ const StudentSubmission: React.FC = () => {
     }
   }, [location.state, id, selectedClassroom]);
 
+  useEffect(() => {
+    if (submission !== null && submission !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+      (async () => {
+        try {
+          const commitDate = await getFirstCommit(
+            selectedClassroom.id,
+            assignmentID,
+            submission.student_work_id
+          );
+          if (commitDate !== null && commitDate !== undefined) {
+            setFirstCommit(formatDate(commitDate));
+          } else {
+            setFirstCommit("N/A");
+          }
+        } catch (_) {
+          // do nothing
+        }
+      })();
+    }
+  }, [selectedClassroom, submission]);
+
+  useEffect(() => {
+    if (submission !== null && submission !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+      (async () => {
+        try {
+          const total = await getTotalCommits(
+            selectedClassroom.id,
+            assignmentID,
+            submission.student_work_id
+          );
+
+          console.log(total);
+          if (totalCommits !== null && totalCommits !== undefined) {
+            setTotalCommits(total.toString());
+          } else {
+            setTotalCommits("N/A");
+          }
+
+        } catch (_) {
+          // do nothing
+        }
+      })();
+    }
+  }, [selectedClassroom, submission]);
+
   return (
     <div className="StudentWork">
       <SubPageHeader
@@ -64,6 +113,8 @@ const StudentSubmission: React.FC = () => {
       <div className="StudentSubmission__subSectionWrapper">
         <h2 style={{ marginBottom: 10 }}>Metrics</h2>
         <MetricPanel>
+          <SimpleMetric metricTitle="First Commit Date" metricValue={firstCommit}></SimpleMetric>
+          <SimpleMetric metricTitle="Total Commits" metricValue={totalCommits ?? "N/A"}></SimpleMetric>
           <SimpleMetric metricTitle="First Commit Date" metricValue="Put Chart Here"></SimpleMetric>
         </MetricPanel>
       </div>
