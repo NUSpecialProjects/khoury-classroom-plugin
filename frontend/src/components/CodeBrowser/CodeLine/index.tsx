@@ -124,13 +124,13 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
 
     const feedback = rubric.rubric_items.reduce(
       (selected: IGraderFeedback[], ri: IRubricItem) => {
-        if (riIDs.includes(ri.id)) {
+        if (riIDs.includes(ri.id!)) {
           selected.push({
-            rubric_item_id: ri.id,
+            rubric_item_id: ri.id!,
             path,
             line,
             body: ri.explanation,
-            points: ri.point_value,
+            points: ri.point_value ?? 0,
             ta_username: currentUser.login,
           });
         }

@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS rubric_items (
     point_value INTEGER NOT NULL,
     explanation VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
+    deleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (rubric_id) REFERENCES rubrics(id)
 );
 

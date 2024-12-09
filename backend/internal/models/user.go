@@ -1,12 +1,19 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type ClassroomUser struct {
 	User
-	ClassroomID int64         `json:"classroom_id"`
-	Role        ClassroomRole `json:"classroom_role"`
-	Status      UserStatus    `json:"status"`
+	ClassroomID        int64         `json:"classroom_id"`
+	ClassroomName      string        `json:"classroom_name"`
+	ClassroomCreatedAt time.Time     `json:"classroom_created_at"`
+	Role               ClassroomRole `json:"classroom_role" db:"classroom_role"`
+	OrgID              int64         `json:"org_id"`
+	OrgName            string        `json:"org_name"`
+	Status             UserStatus    `json:"status"`
 }
 
 type UserStatus string

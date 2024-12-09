@@ -4,9 +4,12 @@ import Dashboard from "./Dashboard";
 import Assignments from "./Assignments";
 import Assignment from "./Assignments/Assignment";
 import CreateAssignment from "./Assignments/CreateAssignment";
+import AssignmentRubric from "./Assignments/AssignmentRubric";
 import AcceptAssignment from "./Token/Apply/Assignment";
 import Grading from "./Grading";
 import Grader from "./Grading/Grader";
+import Rubrics from "./Rubrics";
+import RubricEditor from "./Rubrics/RubricEditor";
 import Callback from "./Callback";
 import Login from "./Login";
 import JoinClassroom from "./Token/Apply/Classroom";
@@ -19,6 +22,7 @@ import OrganizationSelectPage from "./Organizations/Select";
 import InviteTAs from "./Classrooms/InviteTAs";
 import InviteStudents from "./Classrooms/InviteStudents";
 import Success from "./Classrooms/Sucess";
+import Landing from "./Classrooms/Landing";
 
 export {
   PageNotFound,
@@ -27,9 +31,12 @@ export {
   Assignments,
   Assignment,
   CreateAssignment,
+  AssignmentRubric,
   AcceptAssignment,
   Grading,
   Grader,
+  Rubrics,
+  RubricEditor,
   Callback,
   Login,
   JoinClassroom,
@@ -42,4 +49,5 @@ export {
   InviteTAs,
   InviteStudents,
   Success,
+  Landing,
 };
