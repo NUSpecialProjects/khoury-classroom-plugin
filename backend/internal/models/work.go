@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type StudentWork struct {
 	ID                       int        `json:"student_work_id" db:"student_work_id"`
@@ -17,6 +19,7 @@ type StudentWork struct {
 	CreatedAt                time.Time  `json:"created_at" db:"created_at"`
 	CommitAmount             int        `json:"commit_amount" db:"commit_amount"`
 	FirstCommitDate          *time.Time `json:"first_commit_date" db:"first_commit_date"`
+	LastCommitDate           *time.Time `json:"last_commit_date" db:"last_commit_date"`
 }
 
 type WorkState string
