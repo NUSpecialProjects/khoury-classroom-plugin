@@ -130,13 +130,15 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	// Mark the project as started if this is our first student commit
 	if studentWork.WorkState == models.WorkStateAccepted {
 		studentWork.WorkState = models.WorkStateStarted
-		studentWork.FirstCommitDate = &pushEvent.Commits[0].Timestamp.Time
+		firstCommitDate := pushEvent.Commits[0].Timestamp.Time.UTC()
+		studentWork.FirstCommitDate = &firstCommitDate
 	}
 
 	if pushEvent.Ref != nil {
 		// Update the last commit date
 		if len(pushEvent.Commits) > 0 {
-			studentWork.LastCommitDate = &pushEvent.Commits[0].Timestamp.Time
+			lastCommitDate := pushEvent.Commits[0].Timestamp.Time.UTC()
+			studentWork.LastCommitDate = &lastCommitDate
 		}
 
 		// TODO: Dynamically determine branch names once parameterized
