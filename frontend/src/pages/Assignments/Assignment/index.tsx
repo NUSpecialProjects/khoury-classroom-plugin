@@ -41,9 +41,64 @@ const Assignment: React.FC = () => {
   useEffect(() => {
     if (commitsPerDay) {
       const sortedDates = Array.from(commitsPerDay.keys()).sort((a, b) => a.valueOf() - b.valueOf()) 
-      const sortedCounts: number[] = sortedDates.map((date) => commitsPerDay.get(date)!)
+      // end dates at today or due date, whichever is sooner
+      if (assignment) {
+        if (assignment.main_due_date) {
+          sortedDates.push(assignment.main_due_date.valueOf() - Date.now() ? assignment.main_due_date : new Date())
+        } else {
+          console.log(commitsPerDay.get((new Date())))
+          if (commitsPerDay.get((new Date())) === 0) {
+            sortedDates.push(new Date())
+          } 
+        }
+      }
 
-      const sortedDatesStrings = sortedDates.map((date) => `${date.getMonth()}/${date.getDate()}`)
+      console.log(sortedDates)
+
+
+
+      const sortedCounts: number[] = sortedDates.map((date) => commitsPerDay.get(date)!)
+      const sortedDatesStrings = sortedDates.map((date) => `${date.getUTCMonth()}/${date.getUTCDate()}`)
+
+
+      //add in days with 0 commits
+      const sortedDatesStringsCopy = [...sortedDatesStrings]
+      for (let i = 0; i < sortedDatesStringsCopy.length-1; i++) {
+        const firstMonth = Number(sortedDatesStringsCopy[i].split("/")[0])
+        const firstDay = Number(sortedDatesStringsCopy[i].split("/")[1])
+        const secondDay = Number(sortedDatesStrings[i+1].split("/")[1])
+
+
+        const difference = firstDay - secondDay
+
+        const adjacent = (difference === -1) 
+        const adjacentWrapped = ((difference === 30 || difference === 29 || difference === 27) && (secondDay === 1))
+
+        if (!adjacent && !adjacentWrapped) {
+          for (let j = 1; j < Math.abs(difference); j++) {
+            if (firstMonth === 2 && firstDay === 29 ) {
+              sortedDatesStrings.splice(i+j, 0, `${3}/${1}`);
+
+            } else if (firstDay === 30 && (firstMonth === 10 || firstMonth === 4 || firstMonth === 5 || firstMonth === 11)){
+              sortedDatesStrings.splice(i+j, 0, `${firstMonth+1}/${1}`);
+
+            } else if (firstDay === 31 && !(firstMonth === 10 || firstMonth === 4 || firstMonth === 5 || firstMonth === 11)){
+              if (firstMonth === 12) {
+                sortedDatesStrings.splice(i+j, 0, `${firstMonth+1}/${1}`);
+              } else {
+                sortedDatesStrings.splice(i+j, 0, `${11}/${1}`);
+              }
+            } else {
+              sortedDatesStrings.splice(i+j, 0, `${firstMonth}/${firstDay+j}`);
+            }
+            sortedCounts.splice(i+j, 0, 0)
+          }
+          
+        }
+      } 
+
+
+
 
       const lineData = {
         labels: sortedDatesStrings,
@@ -99,7 +154,7 @@ const Assignment: React.FC = () => {
       setLineOptions(lineOptions)
     }
 
-  }, [commitsPerDay])
+  }, [assignment, commitsPerDay])
 
 
 
@@ -119,10 +174,9 @@ const Assignment: React.FC = () => {
             );
             if (studentWorks !== null && studentWorks !== undefined) {
               setStudentAssignment(studentWorks);
-              const cPD = await getStudentWorkCommitsPerDay(selectedClassroom.id, a.id, 1)
+              const cPD = await getStudentWorkCommitsPerDay(selectedClassroom.id, a.id, 3)
               if (cPD !== null && cPD !== undefined) {
                 setCommitsPerDay(cPD)
-                console.log("ASDAUHDBSLKHJSDBSA: ", cPD instanceof Map)
               }
             }
           } catch (_) {

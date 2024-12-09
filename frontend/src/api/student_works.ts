@@ -63,10 +63,12 @@ export const getStudentWorkCommitsPerDay = async (
     throw new Error("Network response was not ok");
   }
   const resp = (await response.json() as ICommitsPerDayResponse);
-
+  
+  console.log(resp)
   const commitsMap = new Map<Date, number>(
-    Object.entries(resp.dated_commits).map(([key, value]) => [new Date(key), value])
+    Object.entries(resp.dated_commits).map(([key, value]) => [(new Date(key)), value])
   );
+  console.log(commitsMap)
 
   return commitsMap;
 }

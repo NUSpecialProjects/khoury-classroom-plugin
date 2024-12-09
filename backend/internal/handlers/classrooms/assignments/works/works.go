@@ -152,7 +152,6 @@ func (s *WorkService) GetCommitsPerDay() fiber.Handler {
         }
 
         commitDatesMap := make(map[time.Time]int)
-
         for _, commit := range commits {
             commitDate := commit.GetCommit().GetCommitter().Date
 

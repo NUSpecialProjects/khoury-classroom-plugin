@@ -69,7 +69,7 @@ const AssignmentRubric: React.FC = () => {
     };
 
     fetchData();
-}, [location.state, selectedClassroom]);
+}, [location.state, selectedClassroom, assignment]);
 
 
 
