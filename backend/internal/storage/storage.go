@@ -56,7 +56,7 @@ type Classroom interface {
 	GetUsersInClassroom(ctx context.Context, classroomID int64) ([]models.ClassroomUser, error)
 	GetUserInClassroom(ctx context.Context, classroomID int64, userID int64) (models.ClassroomUser, error)
 	GetClassroomsInOrg(ctx context.Context, orgID int64) ([]models.Classroom, error)
-	GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.Classroom, error)
+	GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.ClassroomUser, error)
 	CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error)
 	GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error)
 	GetNumberOfUsersInClassroom(ctx context.Context, classroomID int64) (int, error)
@@ -74,10 +74,10 @@ type AssignmentOutline interface {
 	GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (models.AssignmentOutline, error)
 	GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentName string, classroom int64) (*models.AssignmentOutline, error)
 	CreateAssignment(ctx context.Context, assignmentData models.AssignmentOutline) (models.AssignmentOutline, error)
+	UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error)
 	CountWorksByState(ctx context.Context, assignmentID int) (map[models.WorkState]int, error)
 	GetEarliestCommitDate(ctx context.Context, assignmentID int) (*time.Time, error)
 	GetTotalWorkCommits(ctx context.Context, assignmentID int) (int, error)
-
 	GetAssignmentByToken(ctx context.Context, token string) (models.AssignmentOutline, error)
 	CreateAssignmentToken(ctx context.Context, tokenData models.AssignmentToken) (models.AssignmentToken, error)
 }
@@ -98,4 +98,7 @@ type Rubric interface {
 	GetRubric(ctx context.Context, rubricID int64) (models.Rubric, error)
 	AddItemToRubric(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
 	GetRubricItems(ctx context.Context, rubricID int64) ([]models.RubricItem, error)
+	UpdateRubric(ctx context.Context, rubricID int64, rubricData models.Rubric) (models.Rubric, error)
+	UpdateRubricItem(ctx context.Context, rubricItemData models.RubricItem) (models.RubricItem, error)
+	GetRubricsInClassroom(ctx context.Context, classroomID int64) ([]models.Rubric, error)
 }

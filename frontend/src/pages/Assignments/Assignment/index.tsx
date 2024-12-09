@@ -13,8 +13,7 @@ import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
-import { MdEditDocument } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 
 const Assignment: React.FC = () => {
@@ -84,14 +83,16 @@ const Assignment: React.FC = () => {
 
       try {
         if (!selectedClassroom) return;
-        const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
+        const tokenData = await postAssignmentToken(
+          selectedClassroom.id,
+          assignment.id
+        );
         const url = `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
         setInviteLink(url);
       } catch (_) {
         setLinkError("Failed to generate assignment invite link");
       }
     };
-
 
     generateInviteLink();
   }, [assignment]);
@@ -162,13 +163,17 @@ useEffect(() => {
           </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="" variant="secondary" newTab>
+            <Button href="#" variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
             </Button>
-            <Button href="" variant="secondary" newTab>
-              <MdEditDocument className="icon" />  View Rubric
+            <Button
+              href={`/app/assignments/${assignment.id}/rubric`}
+              variant="secondary"
+              state={{ assignment }}
+            >
+              <MdEditDocument className="icon" /> View Rubric
             </Button>
-            <Button href="" variant="secondary" newTab>
+            <Button href="#" variant="secondary" newTab>
               <MdEdit className="icon" /> Edit Assignment
             </Button>
           </div>

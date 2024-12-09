@@ -12,7 +12,7 @@ import { MdAdd } from "react-icons/md";
 import { OrgRole } from "@/types/users";
 
 const ClassroomSelection: React.FC = () => {
-  const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
+  const [classrooms, setClassrooms] = useState<IClassroomUser[]>([]);
   const [orgRole, setOrgRole] = useState<OrgRole>(OrgRole.MEMBER);
   const orgID = useUrlParameter("org_id");
   const [loading, setLoading] = useState(true);
@@ -29,9 +29,9 @@ const ClassroomSelection: React.FC = () => {
         try {
           const org_id = parseInt(orgID);
           if (!isNaN(org_id)) {
-            const data: IClassroomListResponse = await getClassroomsInOrg(org_id);
-            if (data.classrooms) {
-              setClassrooms(data.classrooms);
+            const data: IClassroomUsersListResponse = await getClassroomsInOrg(org_id);
+            if (data.classroom_users) {
+              setClassrooms(data.classroom_users);
             }
             if (data.org_role) {
               setOrgRole(data.org_role);
@@ -48,7 +48,13 @@ const ClassroomSelection: React.FC = () => {
     void fetchClassrooms();
   }, [orgID]);
 
-  const handleClassroomSelect = (classroom: IClassroom) => {
+  const handleClassroomSelect = (classroomUser: IClassroomUser) => {
+    const classroom: IClassroom = {
+      id: classroomUser.classroom_id,
+      name: classroomUser.classroom_name,
+      org_id: classroomUser.org_id,
+      org_name: classroomUser.org_name,
+    }
     setSelectedClassroom(classroom);
     navigate(`/app/dashboard`);
   };
@@ -63,10 +69,12 @@ const ClassroomSelection: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <Table cols={1}>
+          <Table cols={2}>
             <TableRow>
               <TableCell>
                 <div className="Selection__tableHeaderText">Classroom Name</div>
+              </TableCell>
+              <TableCell>
                 {orgRole === OrgRole.ADMIN &&
                   (<div className="Selection__tableHeaderButton">
                     <Button size="small" href={`/app/classroom/create?org_id=${orgID}`}>
@@ -79,12 +87,15 @@ const ClassroomSelection: React.FC = () => {
             {/* If the org has classrooms, populate table, else display a message 
             TODO make alert for no classes*/}
             {hasClassrooms ? (
-              classrooms.map((classroom, i) => (
+              classrooms.map((classroomUser, i) => (
                 <TableRow key={i} className="Selection__tableRow">
                   <TableCell>
-                    <div key={classroom.id} onClick={() => handleClassroomSelect(classroom)}>
-                      {classroom.name}
+                    <div key={classroomUser.classroom_id} onClick={() => handleClassroomSelect(classroomUser)}>
+                      {classroomUser.classroom_name}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>{classroomUser.classroom_role}</div>
                   </TableCell>
                 </TableRow>
               ))

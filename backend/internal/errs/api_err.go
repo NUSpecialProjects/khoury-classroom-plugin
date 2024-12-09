@@ -106,6 +106,10 @@ func AssignmentNotAcceptedError() APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("student has not accepted this assignment yet"))
 }
 
+func MissingDefaultBranchError() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("repository is missing a default branch"))
+}
+
 /* Post Requests Only */
 func InvalidRequestBody(expected interface{}) APIError {
 	fieldAcc := make([]string, 0, 10)

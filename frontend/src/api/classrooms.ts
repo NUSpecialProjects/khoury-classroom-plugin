@@ -43,7 +43,7 @@ export async function getClassroomUsers(
 
 export async function getClassroomsInOrg(
   orgId: number
-): Promise<IClassroomListResponse> {
+): Promise<IClassroomUsersListResponse> {
   const response = await fetch(`${base_url}/orgs/org/${orgId}/classrooms`, {
     method: "GET",
     credentials: "include",
@@ -54,7 +54,7 @@ export async function getClassroomsInOrg(
   if (!response.ok) {
     throw new Error(response.statusText);
   }
-  const resp: IClassroomListResponse = await response.json();
+  const resp: IClassroomUsersListResponse = await response.json();
   return resp;
 }
 

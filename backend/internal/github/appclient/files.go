@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/google/go-github/github"
 )
@@ -57,8 +58,17 @@ func atoi(s string) int {
 }
 
 func (api *AppAPI) GetFileTree(owner string, repo string) ([]models.FileTreeNode, error) {
+	// get default branch
+	ghRepo, err := api.GetRepository(context.Background(), owner, repo)
+	if err != nil {
+		return nil, err
+	}
+	if ghRepo.DefaultBranch == nil {
+		return nil, errs.MissingDefaultBranchError()
+	}
+
 	// Get the reference to the branch
-	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/main")
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/"+*ghRepo.DefaultBranch)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching branch ref: %v", err)
 	}
