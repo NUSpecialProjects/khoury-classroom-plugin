@@ -1,5 +1,5 @@
 interface IPageHeader {
-    pageTitle: string;
+    pageTitle: string | undefined;
 }
 
 interface IBreadcrumbPageHeader extends IPageHeader {
@@ -8,5 +8,6 @@ interface IBreadcrumbPageHeader extends IPageHeader {
 
 interface ISubPageHeader extends IPageHeader {
     chevronLink: string;
+    pageSubTitle?: string | undefined;
     children?: React.ReactNode;
 }
