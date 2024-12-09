@@ -8,6 +8,7 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import {
   getAssignmentIndirectNav,
+  getAssignmentTemplate,
   postAssignmentToken,
 } from "@/api/assignments";
 import { getStudentWorks } from "@/api/student_works";
@@ -22,6 +23,7 @@ import { FaGithub } from "react-icons/fa";
 const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignmentOutline>();
+  const [assignmentTemplate, setAssignmentTemplate] = useState<IAssignmentTemplate>();
   const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
@@ -38,6 +40,14 @@ const Assignment: React.FC = () => {
 
       // sync student assignments
       if (selectedClassroom !== null && selectedClassroom !== undefined) {
+        getAssignmentTemplate(selectedClassroom.id, a.id)
+        .then(assignmentTemplate => {
+          setAssignmentTemplate(assignmentTemplate);
+        })
+        .catch(_ => {
+          // do nothing
+        });
+
         (async () => {
           try {
             const studentWorks = await getStudentWorks(
@@ -99,6 +109,15 @@ const Assignment: React.FC = () => {
     generateInviteLink();
   }, [assignment]);
 
+
+  const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";
+  const firstCommitDate = studentWorks.reduce((earliest, work) => {
+    if (!work.first_commit_date) return earliest;
+    if (!earliest) return new Date(work.first_commit_date);
+    return new Date(work.first_commit_date) < earliest ? new Date(work.first_commit_date) : earliest;
+  }, null as Date | null);
+  const totalCommits = studentWorks.reduce((total, work) => total + work.commit_amount, 0);
+
   return (
     <div className="Assignment">
       {assignment && (
@@ -124,7 +143,7 @@ const Assignment: React.FC = () => {
           </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="#" variant="secondary" newTab>
+            <Button href={assignmentTemplateLink} variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
             </Button>
             <Button
@@ -150,11 +169,11 @@ const Assignment: React.FC = () => {
             <MetricPanel>
               <SimpleMetric
                 metricTitle="First Commit Date"
-                metricValue="6 Sep"
+                metricValue={firstCommitDate ? formatDateTime(firstCommitDate) : "N/A"}
               ></SimpleMetric>
               <SimpleMetric
                 metricTitle="Total Commits"
-                metricValue="941"
+                metricValue={totalCommits.toString()}
               ></SimpleMetric>
               <SimpleMetric
                 metricTitle="Extension  Requests"
@@ -181,7 +200,7 @@ const Assignment: React.FC = () => {
                   <TableRow key={i} className="Assignment__submission">
                     <TableCell>{sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}</TableCell>
                     <TableCell>{sa.work_state}</TableCell>
-                    <TableCell>12 Sep, 11:34pm</TableCell>
+                    <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
                   </TableRow>
                 ))}
             </Table>
