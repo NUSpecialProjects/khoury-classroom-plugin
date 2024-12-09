@@ -13,19 +13,20 @@ const StudentSubmission: React.FC = () => {
     const [submission, setSubmission] = useState<IStudentWork>();
     const { id } = useParams();
     const { selectedClassroom } = useContext(SelectedClassroomContext);
+    const assignmentID = location.state.assignmentId;
 
     console.log(location.state);
 
     useEffect(() => {
         if (location.state && location.state.submission) {
           setSubmission(location.state.submission); // Use submission from state
-        } else if (id && location.state.assignmentId && selectedClassroom) {
+        } else if (id && assignmentID && selectedClassroom) {
           // If state fails, use submission data as a fallback
           (async () => {
             try {
               const fetchedSubmission = await getStudentWorkById(
                 selectedClassroom.id,
-                location.state.assignmentId, // Use assignmentID from state
+                assignmentID, // Use assignmentID from state
                 +id // Student submission ID
               );
               if (fetchedSubmission) {
@@ -42,8 +43,10 @@ const StudentSubmission: React.FC = () => {
         <div className="StudentWork">
             <SubPageHeader
                 pageTitle={submission?.contributors.join(", ")}
-                chevronLink={"/app/dashboard"}
-            ></SubPageHeader>
+                pageSubTitle={submission?.assignment_name}
+                chevronLink={`/app/assignments/${assignmentID}`}
+            >
+            </SubPageHeader>
         </div>
     );
 };
