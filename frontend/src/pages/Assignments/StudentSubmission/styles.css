@@ -17,4 +17,8 @@
             width: 100%;
         }
     }
+
+    &__subSectionWrapper {
+        padding: 20px;
+      }
 }
