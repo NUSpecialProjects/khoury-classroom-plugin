@@ -101,10 +101,10 @@ const StudentSubmission: React.FC = () => {
       </SubPageHeader>
 
       <div className="StudentSubmission__externalButtons">
-        <Button href="#" variant="secondary" newTab>
+        <Button href={`https://github.com/${submission?.org_name}/${submission?.repo_name}`} variant="secondary" newTab>
           <FaGithub className="icon" /> View Student Repository
         </Button>
-        <Button href="#" variant="secondary" newTab>
+        <Button href={`/app/grading/assignment/${assignmentID}/student/${submission?.student_work_id}`} variant="secondary">
           <MdEditDocument className="icon" />  Grade Submission
         </Button>
       </div>
