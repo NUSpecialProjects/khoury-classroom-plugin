@@ -52,7 +52,7 @@ const StudentSubmission: React.FC = () => {
             >
             </SubPageHeader>
 
-            <div className="Assignment__externalButtons">
+            <div className="StudentSubmission__externalButtons">
             <Button href="#" variant="secondary" newTab>
               <FaGithub className="icon" /> View Student Repository
             </Button>

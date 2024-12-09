@@ -10,8 +10,8 @@ import "./styles.css";
 const LeftNav: React.FC = () => {
   const navItems = [
     { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
-    { name: "Grading", dest: "/app/grading", Icon: MdFactCheck },
-    { name: "Assignments", dest: "/app/assignments", Icon: MdEditDocument },
+    { name: "Grading", dest: "/app/grading", Icon: MdEditDocument },
+    { name: "Assignments", dest: "/app/assignments", Icon: MdFactCheck },
     { name: "Settings", dest: "/app/settings", Icon: FaGear },
   ];
 
