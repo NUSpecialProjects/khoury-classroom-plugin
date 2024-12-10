@@ -20,6 +20,7 @@
   &__items {
     display: flex;
     flex-direction: column;
+    color: #a3a3a3;
   }
 
   &__foot {
@@ -36,7 +37,6 @@
 .RubricItem {
   padding: 8px 10px;
   display: flex;
-  color: #a3a3a3;
   flex-direction: row;
   gap: 14px;
   cursor: pointer;

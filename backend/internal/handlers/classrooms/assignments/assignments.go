@@ -62,6 +62,12 @@ func (s *AssignmentService) createAssignment() fiber.Handler {
 			return errs.InvalidRequestBody(assignmentData)
 		}
 
+		// Check if user has at least Professor role
+		_, err := s.RequireAtLeastRole(c, assignmentData.ClassroomID, models.Professor)
+		if err != nil {
+			return err
+		}
+
 		// Error if assignment already exists
 		existingAssignment, err := s.store.GetAssignmentByNameAndClassroomID(c.Context(), assignmentData.Name, assignmentData.ClassroomID)
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
@@ -182,6 +188,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			return errs.InternalServerError()
 		}
 
+		// Check if user has at least student role
+		_, err = s.RequireAtLeastRole(c, classroom.ID, models.Student)
+		if err != nil {
+			return err
+		}
+
 		// Check if fork already exists
 		forkName := generateSlugCase(classroom.Name, assignment.Name, user.Login)
 		studentWorkRepo, _ := client.GetRepository(c.Context(), classroom.OrgName, forkName)
@@ -201,20 +213,26 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 		// Otherwise generate fork
 		err = client.ForkRepository(c.Context(),
 			baseRepo.BaseRepoOwner,
-			classroom.OrgName,
 			baseRepo.BaseRepoName,
+			classroom.OrgName,
 			forkName)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
 
+		// TODO HERE: insert repo name to fork_queue table, quit
+		// listen for webhook repository creation: if repo name in fork_queue table, create PR and remove read rights etc
+
 		// Wait to perform actions on the fork until it is finished initializing
 		initialDelay := 1 * time.Second
 		maxDelay := 30 * time.Second
+
 		for {
 			studentWorkRepo, _ = client.GetRepository(c.Context(), classroom.OrgName, forkName)
 			if studentWorkRepo != nil {
-				break
+				if client.CheckForkIsReady(c.Context(), studentWorkRepo) {
+					break
+				}
 			}
 
 			if initialDelay > maxDelay {
@@ -227,6 +245,12 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 
 		// Remove student team's access to forked repo
 		err = client.RemoveRepoFromTeam(c.Context(), classroom.OrgName, *classroom.StudentTeamName, classroom.OrgName, *studentWorkRepo.Name)
+		if err != nil {
+			return errs.GithubAPIError(err)
+		}
+
+		// Create initial feedback pull request
+		err = client.CreateFeedbackPR(c.Context(), classroom.OrgName, *studentWorkRepo.Name)
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}

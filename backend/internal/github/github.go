@@ -52,7 +52,11 @@ type GitHubUserClient interface { // All methods in the OAUTH client
 	// Get the membership of the authenticated user to an organization (404 if not a member or invited)
 	GetCurrUserOrgMembership(ctx context.Context, orgName string) (*github.Membership, error)
 
-	ForkRepository(ctx context.Context, org, owner, repo, destName string) error
+	// Fork a repository as a student
+	ForkRepository(ctx context.Context, srcOwner, srcRepo, dstOrg, dstRepo string) error
+
+	// Create initial feedback pull request
+	CreateFeedbackPR(ctx context.Context, owner, repo string) error
 }
 
 type GitHubBaseClient interface { //All methods in the SHARED client
@@ -116,4 +120,10 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 
 	// Remove repository from team
 	RemoveRepoFromTeam(ctx context.Context, org, teamSlug, owner, repo string) error
+
+	// Create empty commit (will create a diff that allows feedback PR to be created)
+	CreateEmptyCommit(ctx context.Context, owner, repo string) error
+
+	// Check if a fork has finished initializing
+	CheckForkIsReady(ctx context.Context, repo *github.Repository) bool
 }

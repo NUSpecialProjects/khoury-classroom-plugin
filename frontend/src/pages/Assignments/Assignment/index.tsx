@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 
 import "./styles.css";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
@@ -13,7 +13,7 @@ import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
-import { MdEditDocument } from "react-icons/md";
+import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 
 import { ChartData, Chart as ChartJS, ChartOptions, Point, registerables } from "chart.js";
@@ -34,7 +34,8 @@ const Assignment: React.FC = () => {
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
-  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const base_url: string = import.meta.env
+    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
 
   useEffect(() => {
@@ -218,14 +219,16 @@ const Assignment: React.FC = () => {
 
       try {
         if (!selectedClassroom) return;
-        const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
+        const tokenData = await postAssignmentToken(
+          selectedClassroom.id,
+          assignment.id
+        );
         const url = `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
         setInviteLink(url);
       } catch (_) {
         setLinkError("Failed to generate assignment invite link");
       }
     };
-
 
     generateInviteLink();
   }, [assignment]);
@@ -255,18 +258,19 @@ const Assignment: React.FC = () => {
           </SubPageHeader>
 
           <div className="Assignment__externalButtons">
-            <Button href="" variant="secondary" newTab>
+            <Button href="#" variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
             </Button>
-            <Button href="" variant="secondary" newTab>
-              <MdEditDocument className="icon" />  View Rubric
+            <Button
+              href={`/app/assignments/${assignment.id}/rubric`}
+              variant="secondary"
+              state={{ assignment }}
+            >
+              <MdEditDocument className="icon" /> View Rubric
             </Button>
-            <Link to={`/app/assignments/${assignment.id}/rubric`} state={{ assignment }}>
-              <Button href="" variant="secondary">
-                View Rubric
-              </Button>
-            </Link>
-
+            <Button href="#" variant="secondary" newTab>
+              <MdEdit className="icon" /> Edit Assignment
+            </Button>
           </div>
 
           <div className="Assignment__subSectionWrapper">
@@ -292,10 +296,22 @@ const Assignment: React.FC = () => {
 
             <h2 style={{ marginBottom: 10 }}>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric metricTitle="First Commit Date" metricValue="6 Sep"></SimpleMetric>
-              <SimpleMetric metricTitle="Total Commits" metricValue="941"></SimpleMetric>
-              <SimpleMetric metricTitle="Extension  Requests" metricValue="0"></SimpleMetric>
-              <SimpleMetric metricTitle="Regrade  Requests" metricValue="0"></SimpleMetric>
+              <SimpleMetric
+                metricTitle="First Commit Date"
+                metricValue="6 Sep"
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Total Commits"
+                metricValue="941"
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Extension  Requests"
+                metricValue="0"
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Regrade  Requests"
+                metricValue="0"
+              ></SimpleMetric>
             </MetricPanel>
           </div>
 
