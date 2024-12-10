@@ -21,7 +21,6 @@ const OrganizationDropdown: React.FC<Props> = ({
     const options: IDropdownOption[] = [];
 
     if (orgsWithApp.length > 0) {
-      options.push({ value: "header-1", label: "Organizations with Marks Installed", disabled: true });
       orgsWithApp.forEach(org => {
         options.push({
           value: org.login,
@@ -31,7 +30,6 @@ const OrganizationDropdown: React.FC<Props> = ({
     }
 
     if (orgsWithoutApp.length > 0) {
-      options.push({ value: "header-2", label: "Organizations without Marks Installed", disabled: true });
       orgsWithoutApp.forEach(org => {
         options.push({
           value: org.login,

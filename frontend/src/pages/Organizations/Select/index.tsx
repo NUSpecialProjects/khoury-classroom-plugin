@@ -7,15 +7,14 @@ import {
   getAppInstallations,
   getOrganizationDetails,
 } from "@/api/organizations";
-import { getCallbackURL } from "@/api/auth";
 
 const OrganizationSelection: React.FC = () => {
   const [orgsWithApp, setOrgsWithApp] = useState<IOrganization[]>([]);
   const [orgsWithoutApp, setOrgsWithoutApp] = useState<IOrganization[]>([]);
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
   const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
-  const [consentUrl, setConsentUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const githubAppName = import.meta.env.VITE_GITHUB_APP_NAME;
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -29,8 +28,6 @@ const OrganizationSelection: React.FC = () => {
           setOrgsWithoutApp(data.orgs_without_app);
         }
 
-        const callbackData = await getCallbackURL();
-        setConsentUrl(callbackData.consent_url);
         setError(null);
       } catch (_) {
         setError("Error fetching organizations");
@@ -78,18 +75,16 @@ const OrganizationSelection: React.FC = () => {
           {selectedOrg &&
             orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
               <Button
-                href={`https://github.com/apps/khoury-classroom/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
+                href={`https://github.com/apps/${githubAppName}/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
                 newTab={true}
               >
                 Install Marks on {selectedOrg.login}
               </Button>
             )}
         </div>
-        {consentUrl && (
-          <a className="Organization__link" href={consentUrl}>
+          <a className="Organization__link" href={`https://github.com/apps/${githubAppName}/installations/select_target`} target="_blank" rel="noopener noreferrer">
             {"Don't see your organization?"}
           </a>
-        )}
         {error && <div className="error">{error}</div>}
       </div>
     </Panel>
