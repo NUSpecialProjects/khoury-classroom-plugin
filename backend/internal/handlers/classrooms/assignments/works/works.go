@@ -86,7 +86,6 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 
 		mockWorks := []*models.StudentWorkWithContributors{}
 		for _, student := range studentsWithoutWorks {
-			fmt.Println(student)
 			mockWorks = append(mockWorks, generateNotAcceptedWork(student, assignmentOutline, assignmentTemplate))
 		}
 
@@ -134,30 +133,25 @@ func studentWorkExists(studentLogin string, works []*models.StudentWorkWithContr
 	for _, work := range works {
 		for _, contributor := range work.Contributors {
 			if contributor.GithubUsername == studentLogin {
-				fmt.Println("student work exists for ", studentLogin)
 				return true
 			}
 		}
 	}
-	fmt.Println("student work does not exist for ", studentLogin)
 	return false
 }
 
 // Returns the details of a specific student work.
 func (s *WorkService) getWorkByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		fmt.Println("getting work by id")
 		work, err := s.getWork(c)
 		if err != nil {
 			return err
 		}
-		fmt.Println("work: ", work)
 
 		feedback, err := s.store.GetFeedbackOnWork(c.Context(), work.ID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
-		fmt.Println("feedback: ", feedback)
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"student_work": work,
