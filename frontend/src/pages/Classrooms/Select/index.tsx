@@ -102,7 +102,8 @@ const ClassroomSelection: React.FC = () => {
               ))
             ) }
           </Table>
-          {!hasClassrooms && orgRole === OrgRole.ADMIN ? 
+          {!hasClassrooms && (
+            orgRole === OrgRole.ADMIN ? 
             (
               <TableRow className="Selection__tableRow">
                  <EmptyDataBanner>
@@ -120,11 +121,13 @@ const ClassroomSelection: React.FC = () => {
             ) : (
               <TableRow className="Selection__tableRow">
                   <EmptyDataBanner>
-                You have no classes in this organization.
+                    You have no classes in this organization.
                     Your professor will need to invite you to a classroom.
                   </EmptyDataBanner>
               </TableRow>
-            )}
+            )
+          )}
+            
             <br></br>
           </>
         )}
