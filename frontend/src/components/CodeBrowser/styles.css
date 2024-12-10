@@ -13,7 +13,8 @@
   padding: 5px 0;
   padding-left: 10px;
   background: var(--browser-background);
-  font-size: 13px;
+  font-size: inherit;
+  border-top: 1px solid #383838;
 
   pre {
     white-space: pre-wrap;
