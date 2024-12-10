@@ -1,14 +1,14 @@
 import Button from "@/components/Button";
 
 import "./styles.css";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
-import { getAssignmentIndirectNav, postAssignmentToken } from "@/api/assignments";
 import { getStudentWorkCommitsPerDay, getStudentWorks } from "@/api/student_works";
-import { formatDateTime } from "@/utils/date";
+import { getAssignmentIndirectNav, postAssignmentToken, getAssignmentFirstCommit, getAssignmentTotalCommits } from "@/api/assignments";
+import { formatDateTime, formatDate } from "@/utils/date";
 import CopyLink from "@/components/CopyLink";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
@@ -34,8 +34,9 @@ const Assignment: React.FC = () => {
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
-  const base_url: string = import.meta.env
-    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const [firstCommit, setFirstCommit] = useState<string>("");
+  const [totalCommits, setTotalCommits] = useState<string>();
 
 
   useEffect(() => {
@@ -233,6 +234,47 @@ const Assignment: React.FC = () => {
     generateInviteLink();
   }, [assignment]);
 
+  useEffect(() => {
+    if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+      (async () => {
+        try {
+          const commitDate = await getAssignmentFirstCommit(
+            selectedClassroom.id,
+            assignment.id
+          );
+          if (commitDate !== null && commitDate !== undefined) {
+            setFirstCommit(formatDate(commitDate));
+          } else {
+            setFirstCommit("N/A");
+          }
+        } catch (_) {
+          // do nothing
+        }
+      })();
+  }
+}, [selectedClassroom, assignment]);
+
+useEffect(() => {
+  if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+    (async () => {
+      try {
+        const total = await getAssignmentTotalCommits (
+          selectedClassroom.id,
+          assignment.id
+        );
+        if (totalCommits !== null && totalCommits !== undefined) {
+          setTotalCommits(total.toString());
+        } else {
+          setTotalCommits("N/A");
+        }
+
+      } catch (_) {
+        // do nothing
+      }
+    })();
+}
+}, [selectedClassroom, assignment]);
+
   return (
     <div className="Assignment">
       {assignment && (
@@ -296,22 +338,8 @@ const Assignment: React.FC = () => {
 
             <h2 style={{ marginBottom: 10 }}>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric
-                metricTitle="First Commit Date"
-                metricValue="6 Sep"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Total Commits"
-                metricValue="941"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Extension  Requests"
-                metricValue="0"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Regrade  Requests"
-                metricValue="0"
-              ></SimpleMetric>
+              <SimpleMetric metricTitle="First Commit Date" metricValue={firstCommit}></SimpleMetric>
+              <SimpleMetric metricTitle="Total Commits" metricValue={totalCommits ?? "N/A"}></SimpleMetric>
             </MetricPanel>
           </div>
 
@@ -327,7 +355,15 @@ const Assignment: React.FC = () => {
                 studentWorks.length > 0 &&
                 studentWorks.map((sa, i) => (
                   <TableRow key={i} className="Assignment__submission">
-                    <TableCell>{sa.contributors.join(", ")}</TableCell>
+                    <TableCell>
+                    <Link
+                          to={`/app/submissions/${sa.student_work_id}`}
+                          state={{ submission: sa, assignmentId: assignment.id }}
+                          className="Dashboard__assignmentLink"
+                        >
+                          {sa.contributors.join(", ")}
+                          </Link>
+                          </TableCell>
                     <TableCell>Passing</TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>

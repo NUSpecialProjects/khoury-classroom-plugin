@@ -3,7 +3,8 @@ interface IStudentWork {
   classroom_id: number;
   assignment_name?: string;
   assignment_outline_id: number;
-  repo_name?: string;
+  repo_name: string;
+  org_name: string;
   unique_due_date?: Date;
   submitted_pr_number?: number;
   manual_feedback_score?: number;
