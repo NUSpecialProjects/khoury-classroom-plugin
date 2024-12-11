@@ -79,8 +79,8 @@ const Assignment: React.FC = () => {
     getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id)).then(
       (metrics) => {
         acceptanceMetrics.datasets[0].data = [
-          metrics.accepted,
           metrics.not_accepted,
+          metrics.accepted,
           metrics.started,
           metrics.submitted,
           metrics.in_grading,
