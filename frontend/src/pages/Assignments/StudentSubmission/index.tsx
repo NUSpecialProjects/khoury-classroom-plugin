@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import MetricPanel from "@/components/Metrics/MetricPanel";
-import SimpleMetric from "@/components/Metrics/SimpleMetric";
+import Metric from "@/components/Metrics";
 import Button from "@/components/Button";
 import { getStudentWorkById } from "@/api/student_works";
 import { getFirstCommit, getTotalCommits } from "@/api/student_works";
@@ -47,7 +47,12 @@ const StudentSubmission: React.FC = () => {
   }, [location.state, id, selectedClassroom]);
 
   useEffect(() => {
-    if (submission !== null && submission !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+    if (
+      submission !== null &&
+      submission !== undefined &&
+      selectedClassroom !== null &&
+      selectedClassroom !== undefined
+    ) {
       (async () => {
         try {
           const commitDate = await getFirstCommit(
@@ -68,7 +73,12 @@ const StudentSubmission: React.FC = () => {
   }, [selectedClassroom, submission]);
 
   useEffect(() => {
-    if (submission !== null && submission !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+    if (
+      submission !== null &&
+      submission !== undefined &&
+      selectedClassroom !== null &&
+      selectedClassroom !== undefined
+    ) {
       (async () => {
         try {
           const total = await getTotalCommits(
@@ -83,7 +93,6 @@ const StudentSubmission: React.FC = () => {
           } else {
             setTotalCommits("N/A");
           }
-
         } catch (_) {
           // do nothing
         }
@@ -97,24 +106,30 @@ const StudentSubmission: React.FC = () => {
         pageTitle={submission?.contributors.join(", ")}
         pageSubTitle={submission?.assignment_name}
         chevronLink={`/app/assignments/${assignmentID}`}
-      >
-      </SubPageHeader>
+      ></SubPageHeader>
 
       <div className="StudentSubmission__externalButtons">
-        <Button href={`https://github.com/${submission?.org_name}/${submission?.repo_name}`} variant="secondary" newTab>
+        <Button
+          href={`https://github.com/${submission?.org_name}/${submission?.repo_name}`}
+          variant="secondary"
+          newTab
+        >
           <FaGithub className="icon" /> View Student Repository
         </Button>
-        <Button href={`/app/grading/assignment/${assignmentID}/student/${submission?.student_work_id}`} variant="secondary">
-          <MdEditDocument className="icon" />  Grade Submission
+        <Button
+          href={`/app/grading/assignment/${assignmentID}/student/${submission?.student_work_id}`}
+          variant="secondary"
+        >
+          <MdEditDocument className="icon" /> Grade Submission
         </Button>
       </div>
 
       <div className="StudentSubmission__subSectionWrapper">
         <h2 style={{ marginBottom: 10 }}>Metrics</h2>
         <MetricPanel>
-          <SimpleMetric metricTitle="First Commit Date" metricValue={firstCommit}></SimpleMetric>
-          <SimpleMetric metricTitle="Total Commits" metricValue={totalCommits ?? "N/A"}></SimpleMetric>
-          <SimpleMetric metricTitle="First Commit Date" metricValue="Put Chart Here"></SimpleMetric>
+          <Metric title="First Commit Date">{firstCommit}</Metric>
+          <Metric title="Total Commits">{totalCommits ?? "N/A"}</Metric>
+          <Metric title="First Commit Date">Put Chart Here</Metric>
         </MetricPanel>
       </div>
     </div>
