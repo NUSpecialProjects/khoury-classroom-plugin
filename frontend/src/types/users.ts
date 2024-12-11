@@ -15,3 +15,13 @@ export enum OrgRole {
   ADMIN = "ADMIN",
   MEMBER = "MEMBER",
 }
+
+export function toClassroom(classroomUser: IClassroomUser) {
+  return {
+    id: classroomUser.classroom_id,
+    name: classroomUser.classroom_name,
+    org_id: classroomUser.org_id,
+    org_name: classroomUser.org_name,
+    created_at: classroomUser.classroom_created_at,
+  }
+}

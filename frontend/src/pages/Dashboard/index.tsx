@@ -18,7 +18,6 @@ import SimpleMetric from "@/components/Metrics/SimpleMetric";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  console.log(selectedClassroom?.created_at);
   const {
     classroomUser,
     error: classroomUserError,
@@ -196,7 +195,8 @@ const Dashboard: React.FC = () => {
                 />
               </div>
 
-              <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at ?? null)}></SimpleMetric>
+              <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom?.created_at ? new Date(selectedClassroom.created_at) : null)}></SimpleMetric>
+    
               <SimpleMetric metricTitle="Assignments" metricValue={assignments.length.toString()}></SimpleMetric>
               <SimpleMetric metricTitle="TA to Student Ratio" metricValue={getTaToStudentRatio(classroomUsersList)}></SimpleMetric>
             </MetricPanel>

@@ -53,6 +53,28 @@ func (s *AssignmentService) getAssignment() fiber.Handler {
 	}
 }
 
+// Returns the template of an assignment.
+func (s *AssignmentService) getAssignmentTemplate() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		assignmentID, err := strconv.ParseInt(c.Params("assignment_id"), 10, 64)
+		if err != nil {
+			return errs.BadRequest(err)
+		}
+
+		assignment, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		assignmentTemplate, err := s.store.GetAssignmentTemplateByID(c.Context(), assignment.TemplateID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		return c.Status(http.StatusOK).JSON(fiber.Map{"assignment_template": assignmentTemplate})
+	}
+}
+
 func (s *AssignmentService) createAssignment() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// Parse request body

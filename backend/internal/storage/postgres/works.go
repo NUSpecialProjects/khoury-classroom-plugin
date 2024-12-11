@@ -7,7 +7,6 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
-	"github.com/jackc/pgx/v5"
 )
 
 const DesiredFields = `
@@ -25,8 +24,12 @@ const DesiredFields = `
 	sw.created_at,
 	sw.commit_amount,
 	sw.first_commit_date,
+	sw.last_commit_date,
+	u.id AS user_id,
 	u.first_name,
-	u.last_name
+	u.last_name,
+	u.github_username,
+	u.github_user_id
 `
 
 const JoinedTable = `
@@ -50,10 +53,11 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 			// insert new formatted work if it doesn't exist already
 			workMap[work.GetID()] = newFormattedWork(work)
 		}
-
 		// combine first and last names into a full name and add to list of contributors
-		fullName := fmt.Sprintf("%s %s", work.GetFirstName(), work.GetLastName())
-		workMap[work.GetID()].AddContributor(fullName)
+		user := work.GetUser()
+		workMap[work.GetID()].AddContributor(work.GetUser())
+		fmt.Printf("Got user: %s %s (@%s) ID:%d\n",
+			user.FirstName, user.LastName, user.GithubUsername, user.GithubUserID)
 	}
 
 	// convert map values to a slice
@@ -74,27 +78,53 @@ ORDER BY u.last_name, u.first_name;
 `, DesiredFields, JoinedTable)
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID)
-
 	if err != nil {
 		fmt.Println("Error in query ", err)
 		return nil, err
 	}
-
 	defer rows.Close()
 
-	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RawStudentWork])
-	if err != nil {
-		fmt.Println("Error collecting rows ", err)
-		return nil, err
+	var rawWorks []models.RawStudentWork
+	for rows.Next() {
+		var rawWork models.RawStudentWork
+		err := rows.Scan(
+			&rawWork.OrgName,
+			&rawWork.ID,
+			&rawWork.ClassroomID,
+			&rawWork.AssignmentName,
+			&rawWork.AssignmentOutlineID,
+			&rawWork.RepoName,
+			&rawWork.UniqueDueDate,
+			&rawWork.ManualFeedbackScore,
+			&rawWork.AutoGraderScore,
+			&rawWork.GradesPublishedTimestamp,
+			&rawWork.WorkState,
+			&rawWork.CreatedAt,
+			&rawWork.CommitAmount,
+			&rawWork.FirstCommitDate,
+			&rawWork.LastCommitDate,
+			&rawWork.User.ID,
+			&rawWork.User.FirstName,
+			&rawWork.User.LastName,
+			&rawWork.User.GithubUsername,
+			&rawWork.User.GithubUserID,
+		)
+		if err != nil {
+			fmt.Println("Error scanning row ", err)
+			return nil, err
+		}
+		rawWorks = append(rawWorks, rawWork)
 	}
 
 	return formatWorks(rawWorks, func(work models.RawStudentWork) *models.StudentWorkWithContributors {
-		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []string{}}
+		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []models.User{}}
 	}), nil
 }
 
 // Get a single student work from an assignment
 func (db *DB) GetWork(ctx context.Context, classroomID int, assignmentID int, studentWorkID int) (*models.PaginatedStudentWorkWithContributors, error) {
+	fmt.Printf("GetWork called with classroomID=%d, assignmentID=%d, studentWorkID=%d\n", classroomID, assignmentID, studentWorkID)
+
 	query := fmt.Sprintf(`
 WITH joined_tables AS
          (SELECT %s FROM %s ORDER BY last_name, first_name),
@@ -111,31 +141,69 @@ SELECT * FROM (paginated NATURAL JOIN joined_tables)
 WHERE student_work_id = $3
 `, DesiredFields, JoinedTable)
 
+	fmt.Printf("Executing query:\n%s\n", query)
+
 	// this query finds the lead/lag (prev/next) rows of a single student work. necessary to join tables before calculating
 	// so that we can order by last name + first name. also gets the row number and total student works in the same assignment so we can index properly.
 
 	rows, err := db.connPool.Query(ctx, query, classroomID, assignmentID, studentWorkID)
-
 	if err != nil {
-		fmt.Println("Error in query ", err)
+		fmt.Printf("Error executing query: %v\n", err)
 		return nil, err
 	}
-
 	defer rows.Close()
-	rawWorks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RawPaginatedStudentWork])
-	if err != nil {
-		fmt.Println("Error collecting rows ", err)
-		return nil, err
+
+	var rawWorks []models.RawPaginatedStudentWork
+	for rows.Next() {
+		var rawWork models.RawPaginatedStudentWork
+		err := rows.Scan(
+			&rawWork.OrgName,
+			&rawWork.ID,
+			&rawWork.ClassroomID,
+			&rawWork.AssignmentName,
+			&rawWork.AssignmentOutlineID,
+			&rawWork.RepoName,
+			&rawWork.UniqueDueDate,
+			&rawWork.ManualFeedbackScore,
+			&rawWork.AutoGraderScore,
+			&rawWork.GradesPublishedTimestamp,
+			&rawWork.WorkState,
+			&rawWork.CreatedAt,
+			&rawWork.RowNum,
+			&rawWork.TotalStudentWorks,
+			&rawWork.PreviousStudentWorkID,
+			&rawWork.NextStudentWorkID,
+			&rawWork.CommitAmount,
+			&rawWork.FirstCommitDate,
+			&rawWork.LastCommitDate,
+			&rawWork.User.ID,
+			&rawWork.User.FirstName,
+			&rawWork.User.LastName,
+			&rawWork.User.GithubUsername,
+			&rawWork.User.GithubUserID,
+		)
+		if err != nil {
+			fmt.Printf("Error scanning row: %v\n", err)
+			return nil, err
+		}
+		fmt.Printf("Scanned row: %+v\n", rawWork)
+		rawWorks = append(rawWorks, rawWork)
 	}
+
+	fmt.Printf("Found %d raw works\n", len(rawWorks))
 
 	formatted := formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
-		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []string{}}
+		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []models.User{}}
 	})
 
+	fmt.Printf("Formatted %d works\n", len(formatted))
+
 	if len(formatted) == 0 {
+		fmt.Println("No works found, returning empty result error")
 		return nil, errs.EmptyResult()
 	}
 
+	fmt.Printf("Returning work: %+v\n", formatted[0])
 	return formatted[0], nil
 }
 
@@ -206,7 +274,8 @@ func (db *DB) GetWorkByRepoName(ctx context.Context, repoName string) (models.St
 			   sw.work_state,
 			   sw.created_at,
 			   sw.commit_amount,
-			   sw.first_commit_date
+			   sw.first_commit_date,
+			   sw.last_commit_date
 		FROM student_works sw
 		JOIN assignment_outlines ao ON sw.assignment_outline_id = ao.id
 		JOIN classrooms c ON ao.classroom_id = c.id
@@ -225,6 +294,7 @@ func (db *DB) GetWorkByRepoName(ctx context.Context, repoName string) (models.St
 		&studentWork.CreatedAt,
 		&studentWork.CommitAmount,
 		&studentWork.FirstCommitDate,
+		&studentWork.LastCommitDate,
 	)
 
 	if err != nil {
@@ -246,8 +316,9 @@ func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentW
 			work_state = $7,
 			created_at = $8,
 			commit_amount = $9,
-			first_commit_date = $10
-		WHERE id = $11
+			first_commit_date = $10,
+			last_commit_date = $11
+		WHERE id = $12
 	`, studentWork.AssignmentOutlineID,
 		studentWork.RepoName,
 		studentWork.UniqueDueDate,
@@ -258,6 +329,7 @@ func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentW
 		studentWork.CreatedAt,
 		studentWork.CommitAmount,
 		studentWork.FirstCommitDate,
+		studentWork.LastCommitDate,
 		studentWork.ID,
 	)
 
