@@ -1,14 +1,21 @@
 .Metric {
-    padding: 20px;
-    background-color: var(--panels-background);
-    align-items: center;
-    flex-grow: 1;
-    flex-basis: 200px;
+  padding: 20px;
+  background-color: var(--panels-background);
+  align-items: center;
+  flex-grow: 1;
+  flex-basis: 200px;
 
-    &__title {
-        font-size: var(--font-size-xs);
-        color: var(--secondary-text);
-        text-align: center;
-        padding-bottom: 10px;
-    }
+  &__title {
+    font-size: var(--font-size-xs);
+    color: var(--secondary-text);
+    text-align: center;
+    padding-bottom: 10px;
+  }
+  &__content {
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    flex: 1;
+  }
 }

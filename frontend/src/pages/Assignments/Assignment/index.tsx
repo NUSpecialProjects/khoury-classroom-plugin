@@ -11,6 +11,10 @@ import {
   getAssignmentIndirectNav,
   postAssignmentToken,
 } from "@/api/assignments";
+import {
+  getAssignmentAcceptanceMetrics,
+  getAssignmentGradedMetrics,
+} from "@/api/metrics";
 import { getStudentWorks } from "@/api/student_works";
 import { formatDateTime } from "@/utils/date";
 
@@ -19,7 +23,7 @@ import CopyLink from "@/components/CopyLink";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
-import SimpleMetric from "@/components/Metrics/SimpleMetric";
+import Metric from "@/components/Metrics";
 
 import "./styles.css";
 
@@ -34,28 +38,60 @@ const Assignment: React.FC = () => {
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
-  const base_url: string = import.meta.env
-    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
-  const data1 = {
-    labels: ["Committed", "Accepted", "Not Accepted"],
+  const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
+    labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
     datasets: [
       {
-        backgroundColor: ["#219386", "#f69c0e", "#f83b5c"],
-        data: [29, 5, 4],
+        backgroundColor: [
+          "#f83b5c",
+          "#50c878",
+          "#fece5a",
+          "#7895cb",
+          "#219386",
+        ],
+        data: [],
       },
     ],
-  };
-
-  const data2 = {
+  });
+  const [gradedMetrics, setGradedMetrics] = useState<IChartJSData>({
     labels: ["Graded", "Ungraded"],
     datasets: [
       {
         backgroundColor: ["#219386", "#e5e7eb"],
-        data: [3000, 700],
+        data: [],
       },
     ],
-  };
+  });
+
+  const base_url: string = import.meta.env
+    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
+
+  useEffect(() => {
+    if (!selectedClassroom || !id) return;
+
+    // populate acceptance metrics
+    getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id)).then(
+      (metrics) => {
+        acceptanceMetrics.datasets[0].data = [
+          metrics.accepted,
+          metrics.not_accepted,
+          metrics.started,
+          metrics.submitted,
+          metrics.in_grading,
+        ];
+        setAcceptanceMetrics(acceptanceMetrics);
+      }
+    );
+
+    // populate graded status metrics
+    getAssignmentGradedMetrics(selectedClassroom.id, Number(id)).then(
+      (metrics) => {
+        gradedMetrics.datasets[0].data = [metrics.graded, metrics.ungraded];
+        setGradedMetrics(gradedMetrics);
+      }
+    );
+  }, [selectedClassroom]);
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -175,27 +211,57 @@ const Assignment: React.FC = () => {
           <div className="Assignment__metrics">
             <h2>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric
-                metricTitle="First Commit Date"
-                metricValue="6 Sep"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Total Commits"
-                metricValue="941"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Extension  Requests"
-                metricValue="0"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Regrade  Requests"
-                metricValue="0"
-              ></SimpleMetric>
+              <Metric title="First Commit Date">6 Sep</Metric>
+              <Metric title="Total Commits">941</Metric>
+              <Metric title="Extension  Requests">0</Metric>
+              <Metric title="Regrade  Requests">0</Metric>
             </MetricPanel>
+
             <div className="Assignment__metricsCharts">
-              <div className="Assignment__metricsChart">
+              <Metric
+                title="Grading Status"
+                className="Assignment__metricsChart Assignment__metricsChart--graded"
+              >
+                <Doughnut
+                  redraw={true}
+                  data={gradedMetrics}
+                  options={{
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: {
+                        onClick: () => {},
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                          usePointStyle: true,
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                      datalabels: {
+                        color: ["#fff", "#000"],
+                        font: {
+                          size: 12,
+                        },
+                      },
+                      tooltip: {
+                        enabled: false,
+                      },
+                    },
+                    cutout: "50%",
+                    borderColor: "transparent",
+                  }}
+                />
+              </Metric>
+
+              <Metric
+                title="Repository Status"
+                className="Assignment__metricsChart Assignment__metricsChart--acceptance"
+              >
                 <Bar
-                  data={data1}
+                  redraw={true}
+                  data={acceptanceMetrics}
                   options={{
                     maintainAspectRatio: false,
                     indexAxis: "y",
@@ -214,7 +280,7 @@ const Assignment: React.FC = () => {
                         },
                         ticks: {
                           font: {
-                            size: 10,
+                            size: 12,
                           },
                         },
                       },
@@ -228,7 +294,7 @@ const Assignment: React.FC = () => {
                         anchor: "end",
                         color: "#000",
                         font: {
-                          size: 10,
+                          size: 12,
                         },
                       },
                       tooltip: {
@@ -237,38 +303,7 @@ const Assignment: React.FC = () => {
                     },
                   }}
                 />
-              </div>
-              <div className="Assignment__metricsChart">
-                <Doughnut
-                  data={data2}
-                  options={{
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        onClick: () => {},
-                        display: true,
-                        position: "bottom",
-                        labels: {
-                          usePointStyle: true,
-                          font: {
-                            size: 10,
-                          },
-                        },
-                      },
-                      datalabels: {
-                        color: ["#fff", "#000"],
-                        font: {
-                          size: 10,
-                        },
-                      },
-                      tooltip: {
-                        enabled: false,
-                      },
-                    },
-                    cutout: "50%",
-                  }}
-                />
-              </div>
+              </Metric>
             </div>
           </div>
 
