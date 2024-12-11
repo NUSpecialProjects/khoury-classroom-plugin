@@ -15,6 +15,17 @@
         gap: 10px;
     }
 
+    &__pageTitles {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    &__pageSubTitle {
+        font-size: var(--font-size-xs);
+        color: var(--caption-text);
+    }
+
     &__rightSideContents {
         padding-left: 20px;
         margin-left: auto;

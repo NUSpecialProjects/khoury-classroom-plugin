@@ -24,3 +24,8 @@ interface IAssignmentToken {
 interface IAssignmentAcceptResponse extends ITokenUseResponse {
   repo_url: string;
 }
+
+interface IAssignmentCommitDate {
+  assignment_id: number;
+  first_commit_at: Date;
+}
