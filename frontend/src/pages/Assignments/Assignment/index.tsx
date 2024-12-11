@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
@@ -10,13 +10,15 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
   getAssignmentIndirectNav,
   postAssignmentToken,
+  getAssignmentFirstCommit,
+  getAssignmentTotalCommits,
 } from "@/api/assignments";
 import {
   getAssignmentAcceptanceMetrics,
   getAssignmentGradedMetrics,
 } from "@/api/metrics";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDateTime } from "@/utils/date";
+import { formatDate } from "@/utils/date";
 
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import CopyLink from "@/components/CopyLink";
@@ -38,6 +40,9 @@ const Assignment: React.FC = () => {
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
+
+  const [firstCommit, setFirstCommit] = useState<string>("");
+  const [totalCommits, setTotalCommits] = useState<string>();
 
   const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
     labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
@@ -162,6 +167,56 @@ const Assignment: React.FC = () => {
     generateInviteLink();
   }, [assignment]);
 
+  useEffect(() => {
+    if (
+      assignment !== null &&
+      assignment !== undefined &&
+      selectedClassroom !== null &&
+      selectedClassroom !== undefined
+    ) {
+      (async () => {
+        try {
+          const commitDate = await getAssignmentFirstCommit(
+            selectedClassroom.id,
+            assignment.id
+          );
+          if (commitDate !== null && commitDate !== undefined) {
+            setFirstCommit(formatDate(commitDate));
+          } else {
+            setFirstCommit("N/A");
+          }
+        } catch (_) {
+          // do nothing
+        }
+      })();
+    }
+  }, [selectedClassroom, assignment]);
+
+  useEffect(() => {
+    if (
+      assignment !== null &&
+      assignment !== undefined &&
+      selectedClassroom !== null &&
+      selectedClassroom !== undefined
+    ) {
+      (async () => {
+        try {
+          const total = await getAssignmentTotalCommits(
+            selectedClassroom.id,
+            assignment.id
+          );
+          if (totalCommits !== null && totalCommits !== undefined) {
+            setTotalCommits(total.toString());
+          } else {
+            setTotalCommits("N/A");
+          }
+        } catch (_) {
+          // do nothing
+        }
+      })();
+    }
+  }, [selectedClassroom, assignment]);
+
   return (
     assignment && (
       <>
@@ -173,13 +228,13 @@ const Assignment: React.FC = () => {
             <div className="Assignment__date">
               <div className="Assignment__date--title"> {"Released on:"}</div>
               {assignment.created_at
-                ? formatDateTime(new Date(assignment.created_at))
+                ? formatDate(assignment.created_at)
                 : "N/A"}
             </div>
             <div className="Assignment__date">
               <div className="Assignment__date--title"> {"Due Date:"}</div>
               {assignment.main_due_date
-                ? formatDateTime(new Date(assignment.main_due_date))
+                ? formatDate(assignment.main_due_date)
                 : "N/A"}
             </div>
           </div>
@@ -211,10 +266,8 @@ const Assignment: React.FC = () => {
           <div className="Assignment__metrics">
             <h2>Metrics</h2>
             <MetricPanel>
-              <Metric title="First Commit Date">6 Sep</Metric>
-              <Metric title="Total Commits">941</Metric>
-              <Metric title="Extension  Requests">0</Metric>
-              <Metric title="Regrade  Requests">0</Metric>
+              <Metric title="First Commit Date">{firstCommit}</Metric>
+              <Metric title="Total Commits">{totalCommits ?? "N/A"}</Metric>
             </MetricPanel>
 
             <div className="Assignment__metricsCharts">
@@ -319,7 +372,15 @@ const Assignment: React.FC = () => {
                 studentWorks.length > 0 &&
                 studentWorks.map((sa, i) => (
                   <TableRow key={i} className="Assignment__submission">
-                    <TableCell>{sa.contributors.join(", ")}</TableCell>
+                    <TableCell>
+                      <Link
+                        to={`/app/submissions/${sa.student_work_id}`}
+                        state={{ submission: sa, assignmentId: assignment.id }}
+                        className="Dashboard__assignmentLink"
+                      >
+                        {sa.contributors.join(", ")}
+                      </Link>
+                    </TableCell>
                     <TableCell>Passing</TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
