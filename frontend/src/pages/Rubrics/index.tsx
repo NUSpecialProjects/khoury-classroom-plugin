@@ -7,6 +7,7 @@ import { getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import { Link } from "react-router-dom";
 import RubricList from "@/components/RubricList";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const Rubrics: React.FC = () => {
     const { selectedClassroom } = useContext(SelectedClassroomContext)
@@ -49,7 +50,7 @@ const Rubrics: React.FC = () => {
 
 
             {!failedRurbicRetrival && loading && (
-                <div> Loading... </div>
+                <LoadingSpinner />
             )}
 
             {(!failedRurbicRetrival && !loading && rubrics) && (

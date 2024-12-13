@@ -81,7 +81,7 @@ const AssignmentRubric: React.FC = () => {
       )}
 
       {loading && !errorState && (
-        <div> Loading... </div>
+        <LoadingSpinner />
       )}
 
       {assignment && !errorState && !loading && (

@@ -8,7 +8,7 @@ import { AuthContext } from "@/contexts/auth";
 import { FaGithub } from "react-icons/fa6";
 
 import Button from "@/components/Button";
-import ClipLoader from "react-spinners/ClipLoader";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 enum LoginStatus {
   LOADING = "LOADING",
@@ -88,7 +88,7 @@ const Login: React.FC = () => {
         )}
 
         {status === LoginStatus.LOADING && (
-          <ClipLoader size={50} color={"#123abc"} loading={true} />
+          <LoadingSpinner />
         )}
 
         {error && (
