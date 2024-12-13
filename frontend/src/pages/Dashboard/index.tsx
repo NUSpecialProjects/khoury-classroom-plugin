@@ -227,17 +227,17 @@ const Dashboard: React.FC = () => {
                 )
               }
             />
-
-            <Metric title="Created on">
-              {formatDate(selectedClassroom.created_at ?? null)}
-            </Metric>
-            <Metric title="Assignments">
-              {assignments.length.toString()}
-            </Metric>
-            <Metric title="TA to Student Ratio">
-              {getTaToStudentRatio(classroomUsersList)}
-            </Metric>
           </div>
+
+          <Metric title="Created on">
+            {formatDate(selectedClassroom.created_at ?? null)}
+          </Metric>
+          <Metric title="Assignments">
+            {assignments.length.toString()}
+          </Metric>
+          <Metric title="TA to Student Ratio">
+            {getTaToStudentRatio(classroomUsersList)}
+          </Metric>
         </MetricPanel>
       </div>
 
