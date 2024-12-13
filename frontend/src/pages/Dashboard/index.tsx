@@ -18,7 +18,6 @@ import Metric from "@/components/Metrics";
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  console.log(selectedClassroom?.created_at);
   const {
     classroomUser,
     error: classroomUserError,
