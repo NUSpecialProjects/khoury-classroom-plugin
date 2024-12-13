@@ -28,10 +28,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useLayoutEffect(() => {
     fetchCurrentUser()
-      .then((user: IGitHubUser | null) => {
+      .then((user: IUserResponse) => {
         if (user) {
           setIsLoggedIn(true);
-          setCurrentUser(user);
+          setCurrentUser(user.github_user);
         } else {
           setIsLoggedIn(false);
         }
