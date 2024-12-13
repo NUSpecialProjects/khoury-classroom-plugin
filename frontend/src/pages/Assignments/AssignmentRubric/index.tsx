@@ -54,7 +54,7 @@ const AssignmentRubric: React.FC = () => {
           } else {
             if (selectedClassroom) {
               const rubric = await getAssignmentRubric(selectedClassroom.id, aData.id);
-                if (rubric !== null) {
+              if (rubric !== null) {
                 setRubricData(rubric)
               }
             }
@@ -93,10 +93,10 @@ const AssignmentRubric: React.FC = () => {
 
       {assignment && !errorState && !loading && (
         <>
-            <SubPageHeader
-              pageTitle={`${assignment.name} Rubric`}
-              chevronLink={`/app/assignments/${assignment.id}`}
-            />
+          <SubPageHeader
+            pageTitle={`${assignment.name} Rubric`}
+            chevronLink={`/app/assignments/${assignment.id}`}
+          />
 
 
           {rubricData ? (
