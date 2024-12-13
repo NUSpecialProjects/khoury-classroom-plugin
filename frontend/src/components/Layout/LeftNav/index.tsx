@@ -49,7 +49,8 @@ const LeftNav: React.FC = () => {
       </div>
       <div className="LeftNav__buttonWrapper">
         <Button
-          href={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}
+          href="/app/classroom/select"
+          state={{ org_id: selectedClassroom?.org_id }}
         >
           View all classrooms
         </Button>

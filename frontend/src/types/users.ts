@@ -1,9 +1,9 @@
 export enum ClassroomRole {
   PROFESSOR = "PROFESSOR",
-  TA = "TA",
+  TA = "TA", 
   STUDENT = "STUDENT",
 }
-  
+
 export enum ClassroomUserStatus {
   REQUESTED = "REQUESTED",
   ACTIVE = "ACTIVE",
