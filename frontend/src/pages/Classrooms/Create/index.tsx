@@ -39,7 +39,7 @@ const ClassroomCreation: React.FC = () => {
 
   const createClassroomMutation = useMutation({
     mutationFn: postClassroom,
-    onSuccess: (createdClassroom) => {
+    onSuccess: (createdClassroom: IClassroom) => {
       setSelectedClassroom(createdClassroom);
       navigate("/app/classroom/invite-tas");
     }

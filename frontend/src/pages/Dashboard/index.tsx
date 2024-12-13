@@ -273,7 +273,7 @@ const Dashboard: React.FC = () => {
               <TableCell>Assignment Name</TableCell>
               <TableCell>Created Date</TableCell>
             </TableRow>
-            {assignments.map((assignment: IAssignment, i: number) => (
+            {assignments.map((assignment: IAssignmentOutline, i: number) => (
               <TableRow key={i} className="Assignment__submission">
                 <TableCell>
                   <Link

@@ -72,49 +72,56 @@ const Assignment: React.FC = () => {
     enabled: !!selectedClassroom?.id && !!assignment?.id
   });
 
-  const { data: acceptanceMetrics = {
+  const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
     labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
-    datasets: [{
-      backgroundColor: ["#f83b5c", "#50c878", "#fece5a", "#7895cb", "#219386"],
-      data: []
-    }]
-  }} = useQuery({
-    queryKey: ['acceptanceMetrics', selectedClassroom?.id, id],
-    queryFn: async () => {
-      if (!selectedClassroom?.id || !id) return null;
-      const metrics = await getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id));
-      return {
-        labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
-        datasets: [{
-          backgroundColor: ["#f83b5c", "#50c878", "#fece5a", "#7895cb", "#219386"],
-          data: [metrics.not_accepted, metrics.accepted, metrics.started, metrics.submitted, metrics.in_grading]
-        }]
-      };
-    },
-    enabled: !!selectedClassroom?.id && !!id
+    datasets: [
+      {
+        backgroundColor: [
+          "#f83b5c",
+          "#50c878",
+          "#fece5a",
+          "#7895cb",
+          "#219386",
+        ],
+        data: [],
+      },
+    ],
+  });
+  const [gradedMetrics, setGradedMetrics] = useState<IChartJSData>({
+    labels: ["Graded", "Ungraded"],
+    datasets: [
+      {
+        backgroundColor: ["#219386", "#e5e7eb"],
+        data: [],
+      },
+    ],
   });
 
-  const { data: gradedMetrics = {
-    labels: ["Graded", "Ungraded"],
-    datasets: [{
-      backgroundColor: ["#219386", "#e5e7eb"],
-      data: []
-    }]
-  }} = useQuery({
-    queryKey: ['gradedMetrics', selectedClassroom?.id, id],
-    queryFn: async () => {
-      if (!selectedClassroom?.id || !id) return null;
-      const metrics = await getAssignmentGradedMetrics(selectedClassroom.id, Number(id));
-      return {
-        labels: ["Graded", "Ungraded"],
-        datasets: [{
-          backgroundColor: ["#219386", "#e5e7eb"],
-          data: [metrics.graded, metrics.ungraded]
-        }]
-      };
-    },
-    enabled: !!selectedClassroom?.id && !!id
-  });
+  useEffect(() => {
+    if (!selectedClassroom || !id) return;
+
+    // populate acceptance metrics
+    getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id)).then(
+      (metrics) => {
+        acceptanceMetrics.datasets[0].data = [
+          metrics.not_accepted,
+          metrics.accepted,
+          metrics.started,
+          metrics.submitted,
+          metrics.in_grading,
+        ];
+        setAcceptanceMetrics(acceptanceMetrics);
+      }
+    );
+
+    // populate graded status metrics
+    getAssignmentGradedMetrics(selectedClassroom.id, Number(id)).then(
+      (metrics) => {
+        gradedMetrics.datasets[0].data = [metrics.graded, metrics.ungraded];
+        setGradedMetrics(gradedMetrics);
+      }
+    );
+  }, [selectedClassroom]);
 
   useEffect(() => {
     if (
