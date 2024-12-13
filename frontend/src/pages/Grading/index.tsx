@@ -14,15 +14,16 @@ import {
   TableDiv,
 } from "@/components/Table/index.tsx";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
+import Button from "@/components/Button";
 
 import "./styles.css";
 
 interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
-  assignmentId: number;
+  assignment: IAssignmentOutline;
 }
 
 const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
-  assignmentId,
+  assignment,
   children,
 }) => {
   const [collapsed, setCollapsed] = useState(true);
@@ -34,9 +35,33 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   );
   const navigate = useNavigate();
 
+  const downloadGrades = () => {
+    const csvContent = studentAssignments
+      .map((work) =>
+        work.contributors
+          .map((contributor) => {
+            return `${contributor},${work.auto_grader_score},${work.manual_feedback_score},${!work.auto_grader_score && !work.manual_feedback_score ? null : (work.auto_grader_score ?? 0) + (work.manual_feedback_score ?? 0)}`;
+          })
+          .join("\n")
+      )
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.setAttribute("download", "data.csv");
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     if (!selectedClassroom) return;
-    getStudentWorks(selectedClassroom.id, assignmentId)
+    getStudentWorks(selectedClassroom.id, assignment.id)
       .then((studentAssignments) => {
         setStudentAssignments(studentAssignments);
       })
@@ -48,7 +73,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   return (
     <>
       <TableRow
-        className={!collapsed ? "TableRow--expanded" : undefined}
+        className={!collapsed ? "GradingAssignmentRow--expanded" : undefined}
         onClick={() => {
           setCollapsed(!collapsed);
         }}
@@ -59,29 +84,53 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
         {children}
       </TableRow>
       {!collapsed && (
-        <TableDiv>
-          <Table cols={2} className="SubmissionTable">
-            <TableRow style={{ borderTop: "none" }}>
-              <TableCell>Student</TableCell>
-              <TableCell>Score</TableCell>
-            </TableRow>
-            {studentAssignments &&
-              studentAssignments.map((studentAssignment, i: number) => (
-                <TableRow
-                  key={i}
-                  onClick={() => {
-                    navigate(
-                      `assignment/${assignmentId}/student/${studentAssignment.student_work_id}`
-                    );
-                  }}
-                >
-                  <TableCell>
-                    {studentAssignment.contributors.join(", ")}
-                  </TableCell>
-                  <TableCell>-/100</TableCell>
+        <TableDiv className="GradingAssignmentRow__submissions">
+          {studentAssignments ? (
+            <>
+              <Table cols={4}>
+                <TableRow style={{ borderTop: "none" }}>
+                  <TableCell>Student</TableCell>
+                  <TableCell>Auto Grader Score</TableCell>
+                  <TableCell>Manual Feedback Score</TableCell>
+                  <TableCell>Overall Score</TableCell>
                 </TableRow>
-              ))}
-          </Table>
+                {studentAssignments.map((studentAssignment, i: number) => (
+                  <TableRow
+                    key={i}
+                    onClick={() => {
+                      navigate(
+                        `assignment/${assignment.id}/student/${studentAssignment.student_work_id}`
+                      );
+                    }}
+                  >
+                    <TableCell>
+                      {studentAssignment.contributors.join(", ")}
+                    </TableCell>
+                    <TableCell style={{ justifyContent: "end" }}>
+                      {studentAssignment.auto_grader_score ?? "-"}
+                    </TableCell>
+                    <TableCell style={{ justifyContent: "end" }}>
+                      {studentAssignment.manual_feedback_score ?? "-"}
+                    </TableCell>
+                    <TableCell style={{ justifyContent: "end" }}>
+                      {!studentAssignment.auto_grader_score &&
+                      !studentAssignment.manual_feedback_score
+                        ? "-"
+                        : (studentAssignment.auto_grader_score ?? 0) +
+                          (studentAssignment.manual_feedback_score ?? 0)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableDiv className="GradingAssignmentRow__foot">
+                  <Button onClick={downloadGrades}>Download Grades</Button>
+                </TableDiv>
+              </Table>
+            </>
+          ) : (
+            <div style={{ padding: "15px 20px" }}>
+              No students have accepted this assignment yet.
+            </div>
+          )}
         </TableDiv>
       )}
     </>
@@ -118,13 +167,17 @@ const Grading: React.FC = () => {
             <TableCell>Assigned Date</TableCell>
             <TableCell>Due Date</TableCell>
           </TableRow>
-          {assignments.map((assignment, i: number) => (
-            <GradingAssignmentRow key={i} assignmentId={assignment.id}>
-              <TableCell>{assignment.name}</TableCell>
-              <TableCell>{formatDateTime(assignment.created_at)}</TableCell>
-              <TableCell>{formatDateTime(assignment.main_due_date)}</TableCell>
-            </GradingAssignmentRow>
-          ))}
+          {assignments
+            ? assignments.map((assignment, i: number) => (
+                <GradingAssignmentRow key={i} assignment={assignment}>
+                  <TableCell>{assignment.name}</TableCell>
+                  <TableCell>{formatDateTime(assignment.created_at)}</TableCell>
+                  <TableCell>
+                    {formatDateTime(assignment.main_due_date)}
+                  </TableCell>
+                </GradingAssignmentRow>
+              ))
+            : "No assignments yet."}
         </Table>
       </div>
     )
