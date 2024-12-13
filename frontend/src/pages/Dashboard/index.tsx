@@ -7,25 +7,17 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDateTime, formatDate } from "@/utils/date";
-import { useClassroomUser } from "@/hooks/useClassroomUser";
 import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
-import ClipLoader from "react-spinners/ClipLoader";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const {
-    classroomUser,
-    error: classroomUserError,
-    loading: loadingCurrentClassroomUser,
-  } = useClassroomUser(selectedClassroom?.id);
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
-
   );
   const navigate = useNavigate();
 
@@ -37,31 +29,27 @@ const Dashboard: React.FC = () => {
     }
     return a;
   };
-  
+
   const getTaToStudentRatio = (users: IClassroomUser[]): string => {
     if (!users || users.length === 0) {
       return "N/A";
     }
-  
-    const tas = users.filter(
-      (user) => user.classroom_role === "TA"
-    );
-  
-    const students = users.filter(
-      (user) => user.classroom_role === "STUDENT"
-    );
-  
+
+    const tas = users.filter((user) => user.classroom_role === "TA");
+
+    const students = users.filter((user) => user.classroom_role === "STUDENT");
+
     if (tas.length === 0 || students.length === 0) {
       return "N/A";
     }
-  
+
     const taCount = tas.length;
     const studentCount = students.length;
     const gcd = getGCD(taCount, studentCount);
-  
+
     const reducedTaCount = taCount / gcd;
     const reducedStudentCount = studentCount / gcd;
-  
+
     return `${reducedTaCount} : ${reducedStudentCount}`;
   };
 
@@ -85,24 +73,6 @@ const Dashboard: React.FC = () => {
     }
   }, [selectedClassroom]);
 
-  useEffect(() => {
-    if (
-      !loadingCurrentClassroomUser &&
-      (classroomUserError || !classroomUser)
-    ) {
-      console.log(
-        "Attempted to view a classroom without access. Redirecting to classroom select."
-      );
-      navigate(`/app/organization/select`);
-    }
-  }, [
-    loadingCurrentClassroomUser,
-    classroomUserError,
-    classroomUser,
-    selectedClassroom?.org_id,
-    navigate,
-  ]);
-
   const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     if (group === "Professor") {
       navigate("/app/professors", { state: { users } });
@@ -114,28 +84,6 @@ const Dashboard: React.FC = () => {
       navigate("/app/students", { state: { users } });
     }
   };
-
-  if (loadingCurrentClassroomUser) {
-    return (
-      <div className="Dashboard__loading">
-        <ClipLoader size={50} color={"#123abc"} loading={true} />
-        <p>Loading classroom details...</p>
-      </div>
-    );
-  }
-
-  if (classroomUser?.classroom_role === "STUDENT") {
-    return (
-      <div className="Dashboard__unauthorized">
-        <h2>Access Denied</h2>
-        <p>You do not have permission to view the classroom management dashboard.</p>
-        <p>Please contact your professor if you believe this is an error.</p>
-        <Button variant="primary" onClick={() => navigate(`/app/classroom/select?org_id=${selectedClassroom?.org_id}`)}>
-          Return to Classroom Selection
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="Dashboard">
@@ -195,9 +143,18 @@ const Dashboard: React.FC = () => {
                 />
               </div>
 
-              <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at ?? null)}></SimpleMetric>
-              <SimpleMetric metricTitle="Assignments" metricValue={assignments.length.toString()}></SimpleMetric>
-              <SimpleMetric metricTitle="TA to Student Ratio" metricValue={getTaToStudentRatio(classroomUsersList)}></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Created on"
+                metricValue={formatDate(selectedClassroom.created_at ?? null)}
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="Assignments"
+                metricValue={assignments.length.toString()}
+              ></SimpleMetric>
+              <SimpleMetric
+                metricTitle="TA to Student Ratio"
+                metricValue={getTaToStudentRatio(classroomUsersList)}
+              ></SimpleMetric>
             </MetricPanel>
           </div>
 

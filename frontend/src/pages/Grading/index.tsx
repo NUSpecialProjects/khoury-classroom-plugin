@@ -2,17 +2,18 @@ import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
 
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+import { getAssignments } from "@/api/assignments";
+import { getStudentWorks } from "@/api/student_works";
+import { formatDateTime } from "@/utils/date";
+
 import {
   Table,
   TableRow,
   TableCell,
   TableDiv,
 } from "@/components/Table/index.tsx";
-import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { getAssignments } from "@/api/assignments";
-import { getStudentWorks } from "@/api/student_works";
-import { formatDateTime } from "@/utils/date";
-import PageHeader from "@/components/PageHeader";
+import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 
 import "./styles.css";
 
@@ -104,24 +105,29 @@ const Grading: React.FC = () => {
   }, []);
 
   return (
-    <div className="Grading">
-      <PageHeader pageTitle="Assignments"></PageHeader>
-      <Table cols={4} primaryCol={1} className="AssignmentsTable">
-        <TableRow style={{ borderTop: "none" }}>
-          <TableCell></TableCell>
-          <TableCell>Assignment Name</TableCell>
-          <TableCell>Assigned Date</TableCell>
-          <TableCell>Due Date</TableCell>
-        </TableRow>
-        {assignments.map((assignment, i: number) => (
-          <GradingAssignmentRow key={i} assignmentId={assignment.id}>
-            <TableCell>{assignment.name}</TableCell>
-            <TableCell>{formatDateTime(assignment.created_at)}</TableCell>
-            <TableCell>{formatDateTime(assignment.main_due_date)}</TableCell>
-          </GradingAssignmentRow>
-        ))}
-      </Table>
-    </div>
+    selectedClassroom && (
+      <div className="Grading">
+        <BreadcrumbPageHeader
+          pageTitle={selectedClassroom?.org_name}
+          breadcrumbItems={[selectedClassroom?.name, "Grading"]}
+        />
+        <Table cols={4} primaryCol={1} className="AssignmentsTable">
+          <TableRow style={{ borderTop: "none" }}>
+            <TableCell></TableCell>
+            <TableCell>Assignment Name</TableCell>
+            <TableCell>Assigned Date</TableCell>
+            <TableCell>Due Date</TableCell>
+          </TableRow>
+          {assignments.map((assignment, i: number) => (
+            <GradingAssignmentRow key={i} assignmentId={assignment.id}>
+              <TableCell>{assignment.name}</TableCell>
+              <TableCell>{formatDateTime(assignment.created_at)}</TableCell>
+              <TableCell>{formatDateTime(assignment.main_due_date)}</TableCell>
+            </GradingAssignmentRow>
+          ))}
+        </Table>
+      </div>
+    )
   );
 };
 
