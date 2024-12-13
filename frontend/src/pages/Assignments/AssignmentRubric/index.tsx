@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { FaChevronLeft } from "react-icons/fa6";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./styles.css";
@@ -7,7 +6,7 @@ import { getRubric, getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { getAssignmentIndirectNav, getAssignmentRubric } from "@/api/assignments";
+import { getAssignmentRubric } from "@/api/assignments";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 
 

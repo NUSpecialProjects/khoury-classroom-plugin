@@ -8,7 +8,7 @@ import { ItemFeedbackType } from "@/components/RubricItem";
 import { createRubric, updateRubric } from "@/api/rubrics";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { setAssignmentRubric } from "@/api/assignments";
-import { To, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaRegTrashAlt } from "react-icons/fa";
 
 interface IEditableItem {
