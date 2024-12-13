@@ -42,3 +42,70 @@ export const getStudentWorks = async (
   const data: IStudentWorkResponses = await response.json();
   return data.student_works;
 };
+
+export const getStudentWorkById = async (
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number
+): Promise<IStudentWork> => {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = ((await response.json()) as IStudentWork);
+  return resp;
+}
+
+export const getFirstCommit = async (
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number
+): Promise<Date> => {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/first-commit`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = ((await response.json()) as Date);
+  return resp;
+}
+
+export const getTotalCommits = async (
+  classroomID: number,
+  assignmentID: number,
+  studentWorkID: number
+): Promise<number> => {
+  const response = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/works/work/${studentWorkID}/commit-count`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const resp = (await response.json());
+  const count = resp.commit_count;
+  return count;
+}

@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 
 import "./styles.css";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Table, TableCell, TableRow } from "@/components/Table";
@@ -29,8 +29,7 @@ const Assignment: React.FC = () => {
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
-  const base_url: string = import.meta.env
-    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -175,14 +174,6 @@ const Assignment: React.FC = () => {
                 metricTitle="Total Commits"
                 metricValue={totalCommits.toString()}
               ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Extension  Requests"
-                metricValue="0"
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Regrade  Requests"
-                metricValue="0"
-              ></SimpleMetric>
             </MetricPanel>
           </div>
 
@@ -198,7 +189,14 @@ const Assignment: React.FC = () => {
                 studentWorks.length > 0 &&
                 studentWorks.map((sa, i) => (
                   <TableRow key={i} className="Assignment__submission">
-                    <TableCell>{sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}</TableCell>
+                    <TableCell>
+                      <Link
+                          to={`/app/submissions/${sa.student_work_id}`}
+                          state={{ submission: sa, assignmentId: assignment.id }}
+                          className="Dashboard__assignmentLink">
+                          {sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}
+                      </Link>
+                    </TableCell>
                     <TableCell>{sa.work_state}</TableCell>
                     <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
                   </TableRow>
