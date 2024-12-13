@@ -9,7 +9,7 @@ import { Table, TableRow, TableCell } from "@/components/Table";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import Button from "@/components/Button";
 import { MdAdd } from "react-icons/md";
-import { OrgRole, toClassroom } from "@/types/users";
+import { OrgRole, toClassroom } from "@/types/enums";
 
 const ClassroomSelection: React.FC = () => {
   const [classrooms, setClassrooms] = useState<IClassroomUser[]>([]);
