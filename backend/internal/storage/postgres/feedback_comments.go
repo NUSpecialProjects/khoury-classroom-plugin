@@ -49,7 +49,13 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 
 // create a new feedback comment (ad-hoc: also create a rubric item simultaneously)
 func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
-	_, err := db.connPool.Exec(ctx,
+	tx, err := db.connPool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx,
 		`WITH ri AS
 			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)
 		INSERT INTO feedback_comment
@@ -62,7 +68,24 @@ func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, student
 		studentWorkID,
 		TAUserID,
 	)
-	return err
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx,
+		`UPDATE student_works SET manual_feedback_score = manual_feedback_score + $1 WHERE id = $2`,
+		comment.Points,
+		studentWorkID,
+	)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // create a new feedback comment (attach existing rubric item)

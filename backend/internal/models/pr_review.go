@@ -11,9 +11,19 @@ type PRReviewComment struct {
 	Body string  `json:"body"`
 }
 
+type PRReviewCommentAction string
+
+const (
+	PRReviewCommentActionCreate PRReviewCommentAction = "CREATE"
+	PRReviewCommentActionEdit   PRReviewCommentAction = "EDIT"
+	PRReviewCommentActionDelete PRReviewCommentAction = "DELETE"
+)
+
 type PRReviewCommentResponse struct {
 	PRReviewComment
-	RubricItemID *int   `json:"rubric_item_id"`
-	Points       int    `json:"points"`
-	TAUsername   string `json:"ta_username"`
+	Action            PRReviewCommentAction `json:"action"`
+	RubricItemID      *int                  `json:"rubric_item_id"`
+	FeedbackCommentID *int                  `json:"feedback_comment_id"`
+	Points            int                   `json:"points"`
+	TAUsername        string                `json:"ta_username"`
 }
