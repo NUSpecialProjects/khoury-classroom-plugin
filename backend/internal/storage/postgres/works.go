@@ -154,8 +154,9 @@ func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, 
 		`INSERT INTO student_works (assignment_outline_id,
     		repo_name,
     		unique_due_date,
-    		work_state)
-        VALUES ($1, $2, $3, $4)
+    		work_state,
+				manual_feedback_score)
+        VALUES ($1, $2, $3, $4, (SELECT default_score FROM assignment_outlines WHERE id = $1))
 		RETURNING id,
 			assignment_outline_id,
 			repo_name,

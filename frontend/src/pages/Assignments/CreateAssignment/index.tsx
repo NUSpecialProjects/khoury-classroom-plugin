@@ -3,12 +3,12 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { getOrganizationTemplates } from "@/api/organizations";
 import { useNavigate } from "react-router-dom";
 
-import MultiStepForm from '@/components/MultiStepForm';
-import AssignmentDetails from '@/components/MultiStepForm/CreateAssignment/AssignmentDetails';
-import StarterCodeDetails from '@/components/MultiStepForm/CreateAssignment/StarterCodeDetails';
+import MultiStepForm from "@/components/MultiStepForm";
+import AssignmentDetails from "@/components/MultiStepForm/CreateAssignment/AssignmentDetails";
+import StarterCodeDetails from "@/components/MultiStepForm/CreateAssignment/StarterCodeDetails";
 import { createAssignment, assignmentNameExists } from "@/api/assignments";
 
-import './styles.css'
+import "./styles.css";
 
 const CreateAssignment: React.FC = () => {
   const navigate = useNavigate();
@@ -47,33 +47,39 @@ const CreateAssignment: React.FC = () => {
 
   // Initial form state
   const initialData: IAssignmentFormData = {
-    assignmentName: '',
+    assignmentName: "",
     classroomId: selectedClassroom?.id || -1,
     groupAssignment: false,
     mainDueDate: null,
-    templateRepo: null
+    defaultScore: 0,
+    templateRepo: null,
   };
 
   // Define each page of the form
   const steps: IStep<IAssignmentFormData>[] = [
     {
-      title: 'Assignment Details',
+      title: "Assignment Details",
       component: AssignmentDetails,
       onNext: async (data: IAssignmentFormData): Promise<void> => {
         // Check the user provided an assignment name
         if (!data.assignmentName) {
-          throw new Error('Please provide the assignment name.');
+          throw new Error("Please provide the assignment name.");
         }
 
         // Check if the assignment name is unique
-        const nameExists = await assignmentNameExists(data.classroomId, data.assignmentName);
+        const nameExists = await assignmentNameExists(
+          data.classroomId,
+          data.assignmentName
+        );
         if (nameExists) {
-          throw new Error('An assignment with this name already exists in this classroom.');
+          throw new Error(
+            "An assignment with this name already exists in this classroom."
+          );
         }
       },
     },
     {
-      title: 'Starter Code Repository',
+      title: "Starter Code Repository",
       component: (props: IStepComponentProps<IAssignmentFormData>) => (
         <StarterCodeDetails
           {...props}
@@ -83,12 +89,12 @@ const CreateAssignment: React.FC = () => {
       ),
       onNext: async (data: IAssignmentFormData): Promise<void> => {
         if (!data.templateRepo?.template_repo_id) {
-          throw new Error('Please select a template repository.');
+          throw new Error("Please select a template repository.");
         }
-
+        console.log(data);
         await createAssignment(data.templateRepo.template_repo_id, data);
 
-        navigate('/app/dashboard');
+        navigate("/app/dashboard");
       },
     },
   ];
