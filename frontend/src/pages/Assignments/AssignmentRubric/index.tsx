@@ -7,6 +7,7 @@ import { getRubric, getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 
 const AssignmentRubric: React.FC = () => {

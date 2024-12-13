@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./styles.css";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { Link } from "react-router-dom";
@@ -10,6 +10,7 @@ import Button from "@/components/Button";
 import { MdAdd } from "react-icons/md";
 import { OrgRole } from "@/types/users";
 import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const ClassroomSelection: React.FC = () => {
   const location = useLocation();
