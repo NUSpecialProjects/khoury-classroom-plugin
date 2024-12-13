@@ -16,7 +16,6 @@ import * as Pages from "./pages";
 import Layout from "./components/Layout";
 import AuthProvider, { AuthContext } from "./contexts/auth";
 import SelectedSemesterProvider from "./contexts/selectedClassroom";
-
 import "./global.css";
 
 // If not logged in, route to login
@@ -106,6 +105,7 @@ export default function App(): React.JSX.Element {
                     element={<Pages.CreateAssignment />}
                   />
                   <Route path="assignments/:id" element={<Pages.Assignment />} />
+                  <Route path="submissions/:id" element={<Pages.StudentSubmission />} />
                   <Route
                     path="assignments/:id/rubric"
                     element={<Pages.AssignmentRubric />}
