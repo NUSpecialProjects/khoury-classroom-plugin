@@ -1,20 +1,37 @@
-import Button from "@/components/Button";
-import "./styles.css";
 import { useLocation, useParams, Link } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
-import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { Table, TableCell, TableRow } from "@/components/Table";
-import SubPageHeader from "@/components/PageHeader/SubPageHeader";
-import { getAssignmentIndirectNav, postAssignmentToken, getAssignmentFirstCommit, getAssignmentTotalCommits } from "@/api/assignments";
-import { getStudentWorks } from "@/api/student_works";
-import { formatDateTime, formatDate } from "@/utils/date";
-import CopyLink from "@/components/CopyLink";
-import MetricPanel from "@/components/Metrics/MetricPanel";
-import SimpleMetric from "@/components/Metrics/SimpleMetric";
-import { useQuery } from "@tanstack/react-query";
-
 import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
+import { useContext, useEffect, useState } from "react";
+import { Chart as ChartJS, registerables } from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+import {
+  getAssignmentIndirectNav,
+  postAssignmentToken,
+  getAssignmentFirstCommit,
+  getAssignmentTotalCommits,
+} from "@/api/assignments";
+import {
+  getAssignmentAcceptanceMetrics,
+  getAssignmentGradedMetrics,
+} from "@/api/metrics";
+import { getStudentWorks } from "@/api/student_works";
+import { formatDate } from "@/utils/date";
+
+import SubPageHeader from "@/components/PageHeader/SubPageHeader";
+import CopyLink from "@/components/CopyLink";
+import { Table, TableCell, TableRow } from "@/components/Table";
+import Button from "@/components/Button";
+import MetricPanel from "@/components/Metrics/MetricPanel";
+import Metric from "@/components/Metrics";
+import { useQuery } from "@tanstack/react-query";
+
+import "./styles.css";
+
+ChartJS.register(...registerables);
+ChartJS.register(ChartDataLabels);
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -55,8 +72,57 @@ const Assignment: React.FC = () => {
     enabled: !!selectedClassroom?.id && !!assignment?.id
   });
 
+  const { data: acceptanceMetrics = {
+    labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
+    datasets: [{
+      backgroundColor: ["#f83b5c", "#50c878", "#fece5a", "#7895cb", "#219386"],
+      data: []
+    }]
+  }} = useQuery({
+    queryKey: ['acceptanceMetrics', selectedClassroom?.id, id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !id) return null;
+      const metrics = await getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id));
+      return {
+        labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
+        datasets: [{
+          backgroundColor: ["#f83b5c", "#50c878", "#fece5a", "#7895cb", "#219386"],
+          data: [metrics.not_accepted, metrics.accepted, metrics.started, metrics.submitted, metrics.in_grading]
+        }]
+      };
+    },
+    enabled: !!selectedClassroom?.id && !!id
+  });
+
+  const { data: gradedMetrics = {
+    labels: ["Graded", "Ungraded"],
+    datasets: [{
+      backgroundColor: ["#219386", "#e5e7eb"],
+      data: []
+    }]
+  }} = useQuery({
+    queryKey: ['gradedMetrics', selectedClassroom?.id, id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !id) return null;
+      const metrics = await getAssignmentGradedMetrics(selectedClassroom.id, Number(id));
+      return {
+        labels: ["Graded", "Ungraded"],
+        datasets: [{
+          backgroundColor: ["#219386", "#e5e7eb"],
+          data: [metrics.graded, metrics.ungraded]
+        }]
+      };
+    },
+    enabled: !!selectedClassroom?.id && !!id
+  });
+
   useEffect(() => {
-    if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
+    if (
+      assignment !== null &&
+      assignment !== undefined &&
+      selectedClassroom !== null &&
+      selectedClassroom !== undefined
+    ) {
       (async () => {
         try {
           const commitDate = await getAssignmentFirstCommit(
@@ -72,54 +138,58 @@ const Assignment: React.FC = () => {
           // do nothing
         }
       })();
-  }
-}, [selectedClassroom, assignment]);
+    }
+  }, [selectedClassroom, assignment]);
 
-useEffect(() => {
-  if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
-    (async () => {
-      try {
-        const total = await getAssignmentTotalCommits (
-          selectedClassroom.id,
-          assignment.id
-        );
-        if (totalCommits !== null && totalCommits !== undefined) {
-          setTotalCommits(total.toString());
-        } else {
-          setTotalCommits("N/A");
+  useEffect(() => {
+    if (
+      assignment !== null &&
+      assignment !== undefined &&
+      selectedClassroom !== null &&
+      selectedClassroom !== undefined
+    ) {
+      (async () => {
+        try {
+          const total = await getAssignmentTotalCommits(
+            selectedClassroom.id,
+            assignment.id
+          );
+          if (totalCommits !== null && totalCommits !== undefined) {
+            setTotalCommits(total.toString());
+          } else {
+            setTotalCommits("N/A");
+          }
+        } catch (_) {
+          // do nothing
         }
-
-      } catch (_) {
-        // do nothing
-      }
-    })();
-}
-}, [selectedClassroom, assignment]);
+      })();
+    }
+  }, [selectedClassroom, assignment]);
 
   return (
-    <div className="Assignment">
-      {assignment && (
-        <>
-          <SubPageHeader
-            pageTitle={assignment.name}
-            chevronLink={"/app/dashboard"}
-          >
-            <div className="Assignment__dates">
-              <div className="Assignment__date">
-                <div className="Assignment__date--title"> {"Released on:"}</div>
-                {assignment.created_at
-                  ? formatDateTime(new Date(assignment.created_at))
-                  : "N/A"}
-              </div>
-              <div className="Assignment__date">
-                <div className="Assignment__date--title"> {"Due Date:"}</div>
-                {assignment.main_due_date
-                  ? formatDateTime(new Date(assignment.main_due_date))
-                  : "N/A"}
-              </div>
+    assignment && (
+      <>
+        <SubPageHeader
+          pageTitle={assignment.name}
+          chevronLink={"/app/dashboard"}
+        >
+          <div className="Assignment__dates">
+            <div className="Assignment__date">
+              <div className="Assignment__date--title"> {"Released on:"}</div>
+              {assignment.created_at
+                ? formatDate(assignment.created_at)
+                : "N/A"}
             </div>
-          </SubPageHeader>
+            <div className="Assignment__date">
+              <div className="Assignment__date--title"> {"Due Date:"}</div>
+              {assignment.main_due_date
+                ? formatDate(assignment.main_due_date)
+                : "N/A"}
+            </div>
+          </div>
+        </SubPageHeader>
 
+        <div className="Assignment">
           <div className="Assignment__externalButtons">
             <Button href="#" variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
@@ -136,21 +206,110 @@ useEffect(() => {
             </Button>
           </div>
 
-          <div className="Assignment__subSectionWrapper">
+          <div className="Assignment__link">
             <h2>Assignment Link</h2>
             <CopyLink link={inviteLink} name="invite-assignment" />
             {linkError && <p className="error">Failed to generate assignment invite link</p>}
           </div>
 
-          <div className="Assignment__subSectionWrapper">
-            <h2 style={{ marginBottom: 10 }}>Metrics</h2>
+          <div className="Assignment__metrics">
+            <h2>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric metricTitle="First Commit Date" metricValue={firstCommit}></SimpleMetric>
-              <SimpleMetric metricTitle="Total Commits" metricValue={totalCommits ?? "N/A"}></SimpleMetric>
+              <Metric title="First Commit Date">{firstCommit}</Metric>
+              <Metric title="Total Commits">{totalCommits ?? "N/A"}</Metric>
             </MetricPanel>
+
+            <div className="Assignment__metricsCharts">
+              <Metric
+                title="Grading Status"
+                className="Assignment__metricsChart Assignment__metricsChart--graded"
+              >
+                <Doughnut
+                  redraw={true}
+                  data={gradedMetrics}
+                  options={{
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: {
+                        onClick: () => {},
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                          usePointStyle: true,
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                      datalabels: {
+                        color: ["#fff", "#000"],
+                        font: {
+                          size: 12,
+                        },
+                      },
+                      tooltip: {
+                        enabled: false,
+                      },
+                    },
+                    cutout: "50%",
+                    borderColor: "transparent",
+                  }}
+                />
+              </Metric>
+
+              <Metric
+                title="Repository Status"
+                className="Assignment__metricsChart Assignment__metricsChart--acceptance"
+              >
+                <Bar
+                  redraw={true}
+                  data={acceptanceMetrics}
+                  options={{
+                    maintainAspectRatio: false,
+                    indexAxis: "y",
+                    layout: {
+                      padding: {
+                        right: 50,
+                      },
+                    },
+                    scales: {
+                      x: {
+                        display: false,
+                      },
+                      y: {
+                        grid: {
+                          display: false,
+                        },
+                        ticks: {
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                    },
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                      datalabels: {
+                        align: "end",
+                        anchor: "end",
+                        color: "#000",
+                        font: {
+                          size: 12,
+                        },
+                      },
+                      tooltip: {
+                        enabled: false,
+                      },
+                    },
+                  }}
+                />
+              </Metric>
+            </div>
           </div>
 
-          <div className="Assignment__subSectionWrapper">
+          <div>
             <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
             <Table cols={3}>
               <TableRow style={{ borderTop: "none" }}>
@@ -160,26 +319,26 @@ useEffect(() => {
               </TableRow>
               {studentWorks &&
                 studentWorks.length > 0 &&
-                studentWorks.map((sa, i) => (
+                studentWorks.map((sa: IStudentWork, i: number) => (
                   <TableRow key={i} className="Assignment__submission">
                     <TableCell>
-                    <Link
-                          to={`/app/submissions/${sa.student_work_id}`}
-                          state={{ submission: sa, assignmentId: assignment.id }}
-                          className="Dashboard__assignmentLink"
-                        >
-                          {sa.contributors.join(", ")}
-                          </Link>
-                          </TableCell>
+                      <Link
+                        to={`/app/submissions/${sa.student_work_id}`}
+                        state={{ submission: sa, assignmentId: assignment.id }}
+                        className="Dashboard__assignmentLink"
+                      >
+                        {sa.contributors.join(", ")}
+                      </Link>
+                    </TableCell>
                     <TableCell>Passing</TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
                 ))}
             </Table>
           </div>
-        </>
-      )}
-    </div>
+        </div>
+      </>
+    )
   );
 };
 

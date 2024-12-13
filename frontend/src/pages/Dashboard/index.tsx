@@ -12,10 +12,10 @@ import { useQuery } from "@tanstack/react-query";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
-import SimpleMetric from "@/components/Metrics/SimpleMetric";
 import { getClassroomUsers } from "@/api/classrooms";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
+import Metric from "@/components/Metrics";
 
 const Dashboard: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -65,31 +65,27 @@ const Dashboard: React.FC = () => {
     }
     return a;
   };
-  
+
   const getTaToStudentRatio = (users: IClassroomUser[]): string => {
     if (!users || users.length === 0) {
       return "N/A";
     }
-  
-    const tas = users.filter(
-      (user) => user.classroom_role === "TA"
-    );
-  
-    const students = users.filter(
-      (user) => user.classroom_role === "STUDENT"
-    );
-  
+
+    const tas = users.filter((user) => user.classroom_role === "TA");
+
+    const students = users.filter((user) => user.classroom_role === "STUDENT");
+
     if (tas.length === 0 || students.length === 0) {
       return "N/A";
     }
-  
+
     const taCount = tas.length;
     const studentCount = students.length;
     const gcd = getGCD(taCount, studentCount);
-  
+
     const reducedTaCount = taCount / gcd;
     const reducedStudentCount = studentCount / gcd;
-  
+
     return `${reducedTaCount} : ${reducedStudentCount}`;
   };
 
@@ -127,7 +123,9 @@ const Dashboard: React.FC = () => {
     return (
       <div className="Dashboard__unauthorized">
         <h2>Access Denied</h2>
-        <p>You do not have permission to view the classroom management dashboard.</p>
+        <p>
+          You do not have permission to view the classroom management dashboard.
+        </p>
         <p>Please contact your professor if you believe this is an error.</p>
         <Button variant="primary" onClick={() => navigate("/app/classroom/select", { state: { orgID: selectedClassroom?.org_id } })}>
           Return to Classroom Selection
@@ -188,13 +186,13 @@ const Dashboard: React.FC = () => {
             <UserGroupCard
               label="Students"
               givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "STUDENT"
+                (user: IClassroomUser) => user.classroom_role === "STUDENT"
               )}
               onClick={() =>
                 handleUserGroupClick(
                   "Student",
                   classroomUsersList.filter(
-                    (user) => user.classroom_role === "STUDENT"
+                    (user: IClassroomUser) => user.classroom_role === "STUDENT"
                   )
                 )
               }
@@ -203,13 +201,13 @@ const Dashboard: React.FC = () => {
             <UserGroupCard
               label="TAs"
               givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "TA"
+                (user: IClassroomUser) => user.classroom_role === "TA"
               )}
               onClick={() =>
                 handleUserGroupClick(
                   "TA",
                   classroomUsersList.filter(
-                    (user) => user.classroom_role === "TA"
+                    (user: IClassroomUser) => user.classroom_role === "TA"
                   )
                 )
               }
@@ -218,22 +216,28 @@ const Dashboard: React.FC = () => {
             <UserGroupCard
               label="Professors"
               givenUsersList={classroomUsersList.filter(
-                (user) => user.classroom_role === "PROFESSOR"
+                (user: IClassroomUser) => user.classroom_role === "PROFESSOR"
               )}
               onClick={() =>
                 handleUserGroupClick(
                   "Professor",
                   classroomUsersList.filter(
-                    (user) => user.classroom_role === "PROFESSOR"
+                    (user: IClassroomUser) => user.classroom_role === "PROFESSOR"
                   )
                 )
               }
             />
-          </div>
 
-          <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at ?? null)}></SimpleMetric>
-          <SimpleMetric metricTitle="Assignments" metricValue={assignments.length.toString()}></SimpleMetric>
-          <SimpleMetric metricTitle="TA to Student Ratio" metricValue={getTaToStudentRatio(classroomUsersList)}></SimpleMetric>
+            <Metric title="Created on">
+              {formatDate(selectedClassroom.created_at ?? null)}
+            </Metric>
+            <Metric title="Assignments">
+              {assignments.length.toString()}
+            </Metric>
+            <Metric title="TA to Student Ratio">
+              {getTaToStudentRatio(classroomUsersList)}
+            </Metric>
+          </div>
         </MetricPanel>
       </div>
 
@@ -269,7 +273,7 @@ const Dashboard: React.FC = () => {
               <TableCell>Assignment Name</TableCell>
               <TableCell>Created Date</TableCell>
             </TableRow>
-            {assignments.map((assignment, i: number) => (
+            {assignments.map((assignment: IAssignment, i: number) => (
               <TableRow key={i} className="Assignment__submission">
                 <TableCell>
                   <Link
