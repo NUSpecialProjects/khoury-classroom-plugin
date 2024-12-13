@@ -1,24 +1,35 @@
-import Button from "@/components/Button";
-
-import "./styles.css";
 import { useLocation, useParams, Link } from "react-router-dom";
+import { MdEdit, MdEditDocument } from "react-icons/md";
+import { FaGithub } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
+import { Chart as ChartJS, registerables } from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { Table, TableCell, TableRow } from "@/components/Table";
-import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import {
   getAssignmentIndirectNav,
   getAssignmentTemplate,
   postAssignmentToken,
 } from "@/api/assignments";
+import {
+  getAssignmentAcceptanceMetrics,
+  getAssignmentGradedMetrics,
+} from "@/api/metrics";
 import { getStudentWorks } from "@/api/student_works";
 import { formatDate, formatDateTime } from "@/utils/date";
-import CopyLink from "@/components/CopyLink";
-import MetricPanel from "@/components/Metrics/MetricPanel";
-import SimpleMetric from "@/components/Metrics/SimpleMetric";
 
-import { MdEdit, MdEditDocument } from "react-icons/md";
-import { FaGithub } from "react-icons/fa";
+import SubPageHeader from "@/components/PageHeader/SubPageHeader";
+import CopyLink from "@/components/CopyLink";
+import { Table, TableCell, TableRow } from "@/components/Table";
+import Button from "@/components/Button";
+import MetricPanel from "@/components/Metrics/MetricPanel";
+import Metric from "@/components/Metrics";
+
+import "./styles.css";
+
+ChartJS.register(...registerables);
+ChartJS.register(ChartDataLabels);
 
 const Assignment: React.FC = () => {
   const location = useLocation();
@@ -30,6 +41,57 @@ const Assignment: React.FC = () => {
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+
+  const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
+    labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
+    datasets: [
+      {
+        backgroundColor: [
+          "#f83b5c",
+          "#50c878",
+          "#fece5a",
+          "#7895cb",
+          "#219386",
+        ],
+        data: [],
+      },
+    ],
+  });
+  const [gradedMetrics, setGradedMetrics] = useState<IChartJSData>({
+    labels: ["Graded", "Ungraded"],
+    datasets: [
+      {
+        backgroundColor: ["#219386", "#e5e7eb"],
+        data: [],
+      },
+    ],
+  });
+
+  useEffect(() => {
+    if (!selectedClassroom || !id) return;
+
+    // populate acceptance metrics
+    getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id)).then(
+      (metrics) => {
+        acceptanceMetrics.datasets[0].data = [
+          metrics.not_accepted,
+          metrics.accepted,
+          metrics.started,
+          metrics.submitted,
+          metrics.in_grading,
+        ];
+        setAcceptanceMetrics(acceptanceMetrics);
+      }
+    );
+
+    // populate graded status metrics
+    getAssignmentGradedMetrics(selectedClassroom.id, Number(id)).then(
+      (metrics) => {
+        gradedMetrics.datasets[0].data = [metrics.graded, metrics.ungraded];
+        setGradedMetrics(gradedMetrics);
+      }
+    );
+  }, [selectedClassroom]);
 
   useEffect(() => {
     // check if assignment has been passed through
@@ -118,29 +180,29 @@ const Assignment: React.FC = () => {
   const totalCommits = studentWorks.reduce((total, work) => total + work.commit_amount, 0);
 
   return (
-    <div className="Assignment">
-      {assignment && (
-        <>
-          <SubPageHeader
-            pageTitle={assignment.name}
-            chevronLink={"/app/dashboard"}
-          >
-            <div className="Assignment__dates">
-              <div className="Assignment__date">
-                <div className="Assignment__date--title"> {"Released on:"}</div>
-                {assignment.created_at
-                  ? formatDateTime(new Date(assignment.created_at))
-                  : "N/A"}
-              </div>
-              <div className="Assignment__date">
-                <div className="Assignment__date--title"> {"Due Date:"}</div>
-                {assignment.main_due_date
-                  ? formatDateTime(new Date(assignment.main_due_date))
-                  : "N/A"}
-              </div>
+    assignment && (
+      <>
+        <SubPageHeader
+          pageTitle={assignment.name}
+          chevronLink={"/app/dashboard"}
+        >
+          <div className="Assignment__dates">
+            <div className="Assignment__date">
+              <div className="Assignment__date--title"> {"Released on:"}</div>
+              {assignment.created_at
+                ? formatDate(assignment.created_at)
+                : "N/A"}
             </div>
-          </SubPageHeader>
+            <div className="Assignment__date">
+              <div className="Assignment__date--title"> {"Due Date:"}</div>
+              {assignment.main_due_date
+                ? formatDate(assignment.main_due_date)
+                : "N/A"}
+            </div>
+          </div>
+        </SubPageHeader>
 
+        <div className="Assignment">
           <div className="Assignment__externalButtons">
             <Button href={assignmentTemplateLink} variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
@@ -157,27 +219,114 @@ const Assignment: React.FC = () => {
             </Button>
           </div>
 
-          <div className="Assignment__subSectionWrapper">
+          <div className="Assignment__link">
             <h2>Assignment Link</h2>
             <CopyLink link={inviteLink} name="invite-assignment" />
             {linkError && <p className="error">{linkError}</p>}
           </div>
 
-          <div className="Assignment__subSectionWrapper">
-            <h2 style={{ marginBottom: 10 }}>Metrics</h2>
+          <div className="Assignment__metrics">
+            <h2>Metrics</h2>
             <MetricPanel>
-              <SimpleMetric
-                metricTitle="First Commit Date"
-                metricValue={formatDate(firstCommitDate)}
-              ></SimpleMetric>
-              <SimpleMetric
-                metricTitle="Total Commits"
-                metricValue={totalCommits.toString()}
-              ></SimpleMetric>
+              <Metric title="First Commit Date">
+                {formatDate(firstCommitDate)}
+              </Metric>
+              <Metric title="Total Commits">
+                {totalCommits.toString()}
+              </Metric>
             </MetricPanel>
+
+            <div className="Assignment__metricsCharts">
+              <Metric
+                title="Grading Status"
+                className="Assignment__metricsChart Assignment__metricsChart--graded"
+              >
+                <Doughnut
+                  redraw={true}
+                  data={gradedMetrics}
+                  options={{
+                    maintainAspectRatio: true,
+                    plugins: {
+                      legend: {
+                        onClick: () => {},
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                          usePointStyle: true,
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                      datalabels: {
+                        color: ["#fff", "#000"],
+                        font: {
+                          size: 12,
+                        },
+                      },
+                      tooltip: {
+                        enabled: false,
+                      },
+                    },
+                    cutout: "50%",
+                    borderColor: "transparent",
+                  }}
+                />
+              </Metric>
+
+              <Metric
+                title="Repository Status"
+                className="Assignment__metricsChart Assignment__metricsChart--acceptance"
+              >
+                <Bar
+                  redraw={true}
+                  data={acceptanceMetrics}
+                  options={{
+                    maintainAspectRatio: false,
+                    indexAxis: "y",
+                    layout: {
+                      padding: {
+                        right: 50,
+                      },
+                    },
+                    scales: {
+                      x: {
+                        display: false,
+                      },
+                      y: {
+                        grid: {
+                          display: false,
+                        },
+                        ticks: {
+                          font: {
+                            size: 12,
+                          },
+                        },
+                      },
+                    },
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                      datalabels: {
+                        align: "end",
+                        anchor: "end",
+                        color: "#000",
+                        font: {
+                          size: 12,
+                        },
+                      },
+                      tooltip: {
+                        enabled: false,
+                      },
+                    },
+                  }}
+                />
+              </Metric>
+            </div>
           </div>
 
-          <div className="Assignment__subSectionWrapper">
+          <div>
             <h2 style={{ marginBottom: 0 }}>Student Assignments</h2>
             <Table cols={3}>
               <TableRow style={{ borderTop: "none" }}>
@@ -203,9 +352,9 @@ const Assignment: React.FC = () => {
                 ))}
             </Table>
           </div>
-        </>
-      )}
-    </div>
+        </div>
+      </>
+    )
   );
 };
 

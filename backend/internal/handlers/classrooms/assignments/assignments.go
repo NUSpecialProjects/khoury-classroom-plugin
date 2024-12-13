@@ -445,7 +445,7 @@ func (s *AssignmentService) getAssignmentStatus() fiber.Handler {
 			counts[models.WorkStateGradePublished]
 
 		// Determine unaccepted works using number of students in classroom
-		numStudents, err := s.store.GetNumberOfUsersInClassroom(c.Context(), classroomID)
+		numStudents, err := s.store.GetNumberOfStudentsInClassroom(c.Context(), classroomID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
