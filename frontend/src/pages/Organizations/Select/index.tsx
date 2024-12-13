@@ -71,7 +71,7 @@ const OrganizationSelection: React.FC = () => {
                 variant="primary"
                 href={`/app/classroom/select?org_id=${selectedOrg.id}`}
               >
-                View Classrooms for {selectedOrg.login}
+                View Classrooms
               </Button>
             )}
             
@@ -81,7 +81,7 @@ const OrganizationSelection: React.FC = () => {
                 href={`https://github.com/apps/khoury-classroom/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
                 newTab={true}
               >
-                Install Marks on {selectedOrg.login}
+                Install GitMarks
               </Button>
             )}
         </div>

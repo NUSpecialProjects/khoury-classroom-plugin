@@ -2,13 +2,13 @@
     text-align: center;
     width: 350px;
     margin: 0 auto;
-    
+
     &__buttonWrapper {
         padding: 10px;
         display: flex;
         justify-content: center;
         width: 100%;
-        margin: 0 auto;
+        margin-top: auto;
     }
 
     &__link {
@@ -19,6 +19,16 @@
         font-size: 0.9em;
         display: block;
         padding-top: 10px;
-        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    a {
+        flex: 1;
+        width: 100%;
+    }
+
+    .Button {
+        flex-grow: 1;
+        width: 100%;
     }
 }
