@@ -11,7 +11,7 @@ interface IStudentWork {
   auto_grader_score?: number;
   submission_timestamp?: Date;
   grades_published_timestamp?: Date;
-  work_state: string;
+  work_state: StudentWorkState;
   created_at: Date;
   commit_amount: number;
   first_commit_date?: Date;

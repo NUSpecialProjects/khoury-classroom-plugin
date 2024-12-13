@@ -27,6 +27,7 @@ import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
 
 import "./styles.css";
+import { StudentWorkState } from "@/types/enums";
 
 ChartJS.register(...registerables);
 ChartJS.register(ChartDataLabels);
@@ -339,12 +340,18 @@ const Assignment: React.FC = () => {
                 studentWorks.map((sa, i) => (
                   <TableRow key={i} className="Assignment__submission">
                     <TableCell>
-                      <Link
+                      {sa.work_state !== StudentWorkState.NOT_ACCEPTED ? (
+                        <Link
                           to={`/app/submissions/${sa.student_work_id}`}
                           state={{ submission: sa, assignmentId: assignment.id }}
                           className="Dashboard__assignmentLink">
                           {sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}
-                      </Link>
+                        </Link>
+                      ) : (
+                        <div>
+                          {sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>{sa.work_state}</TableCell>
                     <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
