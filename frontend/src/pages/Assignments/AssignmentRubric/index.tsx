@@ -58,7 +58,6 @@ const AssignmentRubric: React.FC = () => {
                 setRubricData(rubric)
               }
             }
-
           }
         }
 

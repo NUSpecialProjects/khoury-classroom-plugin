@@ -86,7 +86,7 @@ const RubricEditor: React.FC = () => {
             }
 
             const rubricItems = (rubricItemData.map(item => item.rubricItem));
-        
+
             //validate items
             let explantionIssue = false
             let pointIssue = false
