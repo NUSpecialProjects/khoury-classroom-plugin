@@ -54,10 +54,7 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 			workMap[work.GetID()] = newFormattedWork(work)
 		}
 		// combine first and last names into a full name and add to list of contributors
-		user := work.GetUser()
 		workMap[work.GetID()].AddContributor(work.GetUser())
-		fmt.Printf("Got user: %s %s (@%s) ID:%d\n",
-			user.FirstName, user.LastName, user.GithubUsername, user.GithubUserID)
 	}
 
 	// convert map values to a slice
