@@ -302,7 +302,7 @@ const Assignment: React.FC = () => {
                         enabled: false,
                       },
                     },
-                    cutout: "50%",
+                    cutout: "65%",
                     borderColor: "transparent",
                   }}
                 />
