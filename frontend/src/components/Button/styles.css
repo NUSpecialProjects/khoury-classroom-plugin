@@ -30,6 +30,16 @@
     }
   }
 
+  &--warning {
+    background: var(--red);
+    color: var(--primary-text-white);
+    border: none;
+
+    &:hover {
+      background: var(--red-darker);
+    }
+  }
+
   &--small {
     font-size: var(--font-size-xs);
     padding: 12px 30px;

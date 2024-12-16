@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./styles.css";
 interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "warning";
   size?: "default" | "small";
   newTab?: boolean;
   state?: object;
