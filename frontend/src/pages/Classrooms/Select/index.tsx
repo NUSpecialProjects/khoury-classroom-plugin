@@ -58,7 +58,13 @@ const ClassroomSelection: React.FC = () => {
       <h1 className="Selection__title">Your Classrooms</h1>
       <div className="Selection__tableWrapper">
         {isLoading ? (
-          <LoadingSpinner />
+          <>
+          <br></br>
+          <EmptyDataBanner>
+            <LoadingSpinner />
+          </EmptyDataBanner>
+          <br></br>
+          </>
         ) : error ? (
           <p>Error loading classrooms: {error instanceof Error ? error.message : "Unknown error"}</p>
         ) : (
