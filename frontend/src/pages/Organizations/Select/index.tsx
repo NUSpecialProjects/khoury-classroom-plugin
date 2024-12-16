@@ -7,20 +7,15 @@ import {
   getAppInstallations,
   getOrganizationDetails,
 } from "@/api/organizations";
-import { getCallbackURL } from "@/api/auth";
 import { useQuery } from "@tanstack/react-query";
 
 const OrganizationSelection: React.FC = () => {
   const [selectedOrg, setSelectedOrg] = useState<IOrganization | null>(null);
+  const githubAppName = import.meta.env.VITE_GITHUB_APP_NAME;
 
   const { data: installationsData, isLoading: loadingOrganizations, error: installationsError } = useQuery({
     queryKey: ['organizations'],
     queryFn: getAppInstallations,
-  });
-
-  const { data: callbackData } = useQuery({
-    queryKey: ['callback-url'],
-    queryFn: getCallbackURL,
   });
 
   const { error: orgDetailsError } = useQuery({
@@ -34,7 +29,6 @@ const OrganizationSelection: React.FC = () => {
 
   const orgsWithApp = installationsData?.orgs_with_app || [];
   const orgsWithoutApp = installationsData?.orgs_without_app || [];
-  const consentUrl = callbackData?.consent_url || null;
   const error = installationsError || orgDetailsError;
 
   const handleOrganizationSelect = async (org: IOrganization) => {
@@ -67,18 +61,16 @@ const OrganizationSelection: React.FC = () => {
           {selectedOrg &&
             orgsWithoutApp.some((org) => org.login === selectedOrg.login) && (
               <Button
-                href={`https://github.com/apps/khoury-classroom/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
+                href={`https://github.com/apps/${githubAppName}/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
                 newTab={true}
               >
                 Install Marks on {selectedOrg.login}
               </Button>
             )}
         </div>
-        {consentUrl && (
-          <a className="Organization__link" href={consentUrl}>
+          <a className="Organization__link" href={`https://github.com/apps/${githubAppName}/installations/select_target`} target="_blank" rel="noopener noreferrer">
             {"Don't see your organization?"}
           </a>
-        )}
         {error && <div className="error">{error instanceof Error ? error.message : "An error occurred"}</div>}
       </div>
     </Panel>
