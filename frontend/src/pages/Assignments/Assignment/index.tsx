@@ -381,7 +381,7 @@ const Assignment: React.FC = () => {
                         {sa.contributors.join(", ")}
                       </Link>
                     </TableCell>
-                    <TableCell className="Assignment__pillCell"><Pill label="Passing" variant="green"></Pill></TableCell>
+                    <TableCell className="Assignment__pillCell"><Pill label="PASSING" variant="green"></Pill></TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
                 ))}
