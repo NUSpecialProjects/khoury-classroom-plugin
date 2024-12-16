@@ -86,8 +86,7 @@ const ClassroomSelection: React.FC = () => {
                   )}
               </TableCell>
             </TableRow>
-            {/* If the org has classrooms, populate table, else display a message 
-            TODO make alert for no classes*/}
+            {/* If the org has classrooms, populate table, else display a message TODO make alert for no classes*/}
             {hasClassrooms ? (
               classrooms.map((classroomUser, i) => (
                 <TableRow key={i} className="Selection__tableRow">
