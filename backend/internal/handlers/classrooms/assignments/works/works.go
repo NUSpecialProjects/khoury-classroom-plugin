@@ -76,12 +76,13 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return err
 		}
 
-		// get list of students in class to get which students havent accepted the assignment
-		students, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
+		// get list of users in class
+		users, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
 		if err != nil {
 			return errs.InternalServerError()
 		}
 
+		students := filterStudents(users)
 		studentsWithoutWorks := filterStudentsWithoutWorks(students, works)
 
 		mockWorks := []*models.StudentWorkWithContributors{}
@@ -115,6 +116,17 @@ func generateNotAcceptedWork(student models.ClassroomUser, assignmentOutline mod
 		},
 		Contributors: []models.User{student.User},
 	}
+}
+
+// filters out users who are not students
+func filterStudents(users []models.ClassroomUser) []models.ClassroomUser {
+	var students []models.ClassroomUser
+	for _, user := range users {
+		if user.Role == models.Student {
+			students = append(students, user)
+		}
+	}
+	return students
 }
 
 // filters out students who haven't accepted the assignment

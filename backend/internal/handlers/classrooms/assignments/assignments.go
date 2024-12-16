@@ -61,12 +61,7 @@ func (s *AssignmentService) getAssignmentTemplate() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
-		assignment, err := s.store.GetAssignmentByID(c.Context(), assignmentID)
-		if err != nil {
-			return errs.InternalServerError()
-		}
-
-		assignmentTemplate, err := s.store.GetAssignmentTemplateByID(c.Context(), assignment.TemplateID)
+		assignmentTemplate, err := s.store.GetAssignmentTemplateByAssignmentID(c.Context(), assignmentID)
 		if err != nil {
 			return errs.InternalServerError()
 		}
