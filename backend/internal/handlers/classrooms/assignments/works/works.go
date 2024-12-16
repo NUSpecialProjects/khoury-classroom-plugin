@@ -113,8 +113,16 @@ func generateNotAcceptedWork(student models.ClassroomUser, assignmentOutline mod
 			GradesPublishedTimestamp: nil,
 			WorkState:                models.WorkStateNotAccepted,
 			CreatedAt:                time.Unix(0, 0),
+			CommitAmount:             0,
+			FirstCommitDate:          nil,
+			LastCommitDate:           nil,
 		},
-		Contributors: []models.User{student.User},
+		Contributors: []models.IWorkContributor{
+			{
+				GithubUsername: student.GithubUsername,
+				FullName:       student.FirstName + " " + student.LastName,
+			},
+		},
 	}
 }
 

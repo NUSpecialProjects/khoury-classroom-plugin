@@ -345,11 +345,11 @@ const Assignment: React.FC = () => {
                           to={`/app/submissions/${sa.student_work_id}`}
                           state={{ submission: sa, assignmentId: assignment.id }}
                           className="Dashboard__assignmentLink">
-                          {sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}
+                          {sa.contributors.map(c => `${c.full_name  }`).join(", ")}
                         </Link>
                       ) : (
                         <div>
-                          {sa.contributors.map(c => `${c.first_name} ${c.last_name}`).join(", ")}
+                          {sa.contributors.map(c => `${c.full_name}`).join(", ")}
                         </div>
                       )}
                     </TableCell>

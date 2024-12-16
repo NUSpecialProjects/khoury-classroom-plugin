@@ -16,7 +16,12 @@ interface IStudentWork {
   commit_amount: number;
   first_commit_date?: Date;
   last_commit_date?: Date;
-  contributors: IUser[];
+  contributors: IWorkContributor[];
+}
+
+interface IWorkContributor {
+  full_name: string;
+  github_username: string;
 }
 
 interface IPaginatedStudentWork extends IStudentWork {
