@@ -36,11 +36,11 @@ frontend to backend code. Make an account for a stable link!
 Create an .env file in the backend directory:
 
 ```
-APP_ENVIRONMENT=<LOCAL | PRODUCTION> (use LOCAL if loading env variables through .env file)
 APP_PRIVATE_KEY=<Your GitHub app private key>
 APP_ID=<Your GitHub app ID>
 APP_INSTALLATION_ID=<Your GitHub app installation ID>
 APP_WEBHOOK_SECRET=<Your GitHub app's webhook secret>
+APP_NAME=<Your GitHub app name>
 CLIENT_REDIRECT_URL=<The URL that GitHub should redirect back to>
 CLIENT_ID=<The client ID of your GitHub OAuth app>
 CLIENT_SECRET=<The client Secret of your GitHub OAuth app>
@@ -56,6 +56,7 @@ Create a second .env file in the frontend root directory:
 VITE_PUBLIC_API_DOMAIN=<Your backend url>
 VITE_PUBLIC_FRONTEND_DOMAIN=<Your frontend url>
 VITE_GITHUB_CLIENT_ID=<The client ID of your GitHub OAuth app>
+VITE_GITHUB_APP_NAME=<Your GitHub app name>
 ```
 
 ## Running The Project in A Dev Environment

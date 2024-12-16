@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { FaChevronLeft } from "react-icons/fa6";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./styles.css";
@@ -7,6 +6,8 @@ import { getRubric, getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import { Table, TableCell, TableRow } from "@/components/Table";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+import { getAssignmentRubric } from "@/api/assignments";
+import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 
 
 const AssignmentRubric: React.FC = () => {
@@ -31,7 +32,7 @@ const AssignmentRubric: React.FC = () => {
       const selectedRubric = rubrics.find((rubric) => rubric.rubric.id === selectedId);
       if (selectedRubric && assignment) {
         navigate('/app/rubrics/new', {
-          state: { assignment: assignment, rubricData: selectedRubric },
+          state: { assignment: assignment, rubricData: selectedRubric, newRubric: true },
         });
 
       }
@@ -40,36 +41,41 @@ const AssignmentRubric: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        setLoading(true); // Start loading
-
-        try {
-            if (location.state) {
-                setAssignmentData(location.state.assignment);
-                const aData = location.state.assignment;
-                if (aData && aData.rubric_id) {
-                    const rubric = await getRubric(aData.rubric_id);
-                    if (rubric !== null) {
-                        setRubricData(rubric);
-                    }
-                }
+      setLoading(true); // Start loading
+      try {
+        if (location.state) {
+          setAssignmentData(location.state.assignment);
+          const aData = location.state.assignment;
+          if (aData && aData.rubric_id) {
+            const rubric = await getRubric(aData.rubric_id);
+            if (rubric !== null) {
+              setRubricData(rubric);
             }
-
+          } else {
             if (selectedClassroom) {
-                const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id);
-                if (retrievedRubrics !== null) {
-                    setRubrics(retrievedRubrics);
-                }
+              const rubric = await getAssignmentRubric(selectedClassroom.id, aData.id);
+              if (rubric !== null) {
+                setRubricData(rubric)
+              }
             }
-        } catch (_) {
-            console.log("error!!!");
-            setErrorState(true);
-        } finally {
-            setLoading(false); 
+          }
         }
+
+        if (selectedClassroom) {
+          const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id);
+          if (retrievedRubrics !== null) {
+            setRubrics(retrievedRubrics);
+          }
+        }
+      } catch (_) {
+        setErrorState(true);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
-}, [location.state, selectedClassroom]);
+  }, [location.state, selectedClassroom]);
 
 
 
@@ -86,21 +92,11 @@ const AssignmentRubric: React.FC = () => {
 
       {assignment && !errorState && !loading && (
         <>
-          <div className="Assignment__head">
-            <div className="Assignment__title">
-              <FaChevronLeft />
-              <h2>{assignment.name}</h2>
-            </div>
+          <SubPageHeader
+            pageTitle={`${assignment.name} Rubric`}
+            chevronLink={`/app/assignments/${assignment.id}`}
+          />
 
-            <div className="Assignment__dates">
-              <span>
-                Due Date:{" "}
-                {assignment.main_due_date
-                  ? assignment.main_due_date.toString()
-                  : "N/A"}
-              </span>
-            </div>
-          </div>
 
           {rubricData ? (
             <div>
