@@ -84,7 +84,10 @@ export default function App(): React.JSX.Element {
                   element={<Pages.CreateAssignment />}
                 />
                 <Route path="assignments/:id" element={<Pages.Assignment />} />
-                <Route path="submissions/:id" element={<Pages.StudentSubmission />} />
+                <Route
+                  path="submissions/:id"
+                  element={<Pages.StudentSubmission />}
+                />
                 <Route
                   path="assignments/:id/rubric"
                   element={<Pages.AssignmentRubric />}
