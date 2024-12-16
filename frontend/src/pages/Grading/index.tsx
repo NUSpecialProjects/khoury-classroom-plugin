@@ -124,7 +124,7 @@ const Grading: React.FC = () => {
             No assignments found.
           </div>
           <Button
-              variant="secondary"
+              variant="primary"
               size="small"
               href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
               >

@@ -1,77 +1,64 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 import "./styles.css";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import PageHeader from "@/components/PageHeader";
 import { getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
-import { Link } from "react-router-dom";
 import RubricList from "@/components/RubricList";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import EmptyDataBanner from "@/components/EmptyDataBanner";
+import { MdAdd } from "react-icons/md";
 
 const Rubrics: React.FC = () => {
-    const { selectedClassroom } = useContext(SelectedClassroomContext)
-    const [rubrics, setRubricsData] = useState<IFullRubric[]>([])
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
 
-    const [loading, setLoading] = useState(false)
-    const [failedRurbicRetrival, setfailedRurbicRetrival] = useState(false)
+  const { data: rubrics, isLoading, error } = useQuery({
+    queryKey: ['rubrics', selectedClassroom?.id],
+    queryFn: () => getRubricsInClassroom(selectedClassroom!.id),
+    enabled: !!selectedClassroom,
+  });
 
-    useEffect(() => {
-        if (selectedClassroom) {
-            (async () => {
-                setLoading(true)
-                try {
-                    const retrievedRubrics = await getRubricsInClassroom(selectedClassroom.id)
-                    if (retrievedRubrics !== null) {
-                        setRubricsData(retrievedRubrics)
-                    }
-                    setLoading(false)
+  return (
+    <div>
+      <PageHeader pageTitle="Rubrics"></PageHeader>
 
-                } catch (_) {
-                    setfailedRurbicRetrival(true)
-                }
-
-            })();
-        }
-    }, []);
-
-
-
-    return (
+      {isLoading ? (
+        <EmptyDataBanner>
+          <LoadingSpinner />
+        </EmptyDataBanner>
+      ) : error ? (
+        <EmptyDataBanner>
+          Error loading rubrics: {error instanceof Error ? error.message : "Unknown error"}
+        </EmptyDataBanner>
+      ) : (
         <div>
-            <PageHeader pageTitle="Rubrics"></PageHeader>
+          {rubrics && rubrics.length > 0 ? (
+            <RubricList rubrics={rubrics} />
+          ) : (
+            <EmptyDataBanner>
+              <div className="emptyDataBannerMessage">
+                No rubrics have been created yet.
+              </div>
+              <Button variant="primary" href="/app/rubrics/new">
+                <MdAdd /> Create New Rubric
+              </Button>
+            </EmptyDataBanner>
+          )}
 
-            {failedRurbicRetrival && (
-                <div>
-                    <div> Failed to get existing rubrics </div>
-                </div>
-            )}
-
-
-            {!failedRurbicRetrival && loading && (
-                <LoadingSpinner />
-            )}
-
-            {(!failedRurbicRetrival && !loading && rubrics) && (
-                <div>
-                    {rubrics.length > 0 ?
-                        <RubricList rubrics={rubrics} />
-                        :
-                        <div> No Rubrics Found </div>
-                    }
-
-                    <Link to={`/app/rubrics/new`}>
-                        <Button href=""> Create New Rubric </Button>
-                    </Link>
-                </div>
-
-            )}
-
-
-
-
+          {rubrics && rubrics.length > 0 && (
+            <Link to="/app/rubrics/new">
+              <Button>
+                <MdAdd /> Create New Rubric
+              </Button>
+            </Link>
+          )}
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default Rubrics;
