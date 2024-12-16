@@ -341,7 +341,7 @@ func (s *AssignmentService) getAssignmentRubric() fiber.Handler {
 		}
 
 		if assignment.RubricID == nil {
-			return errs.NotFound("rubric", "assignment_id", assignmentID)
+			return c.Status(http.StatusOK).JSON(nil)
 		}
 
 		rubric, err := s.store.GetRubric(c.Context(), *assignment.RubricID)
@@ -423,7 +423,7 @@ func (s *AssignmentService) getAssignmentStatus() fiber.Handler {
 			counts[models.WorkStateGradePublished]
 
 		// Determine unaccepted works using number of students in classroom
-		numStudents, err := s.store.GetNumberOfUsersInClassroom(c.Context(), classroomID)
+		numStudents, err := s.store.GetNumberOfStudentsInClassroom(c.Context(), classroomID)
 		if err != nil {
 			return errs.InternalServerError()
 		}

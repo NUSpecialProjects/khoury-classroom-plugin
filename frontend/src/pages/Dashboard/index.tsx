@@ -13,12 +13,11 @@ import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import MetricPanel from "@/components/Metrics/MetricPanel";
-import SimpleMetric from "@/components/Metrics/SimpleMetric";
+import Metric from "@/components/Metrics";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  console.log(selectedClassroom?.created_at);
   const {
     classroomUser,
     error: classroomUserError,
@@ -26,7 +25,6 @@ const Dashboard: React.FC = () => {
   } = useClassroomUser(selectedClassroom?.id);
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
-
   );
   const navigate = useNavigate();
 
@@ -38,31 +36,27 @@ const Dashboard: React.FC = () => {
     }
     return a;
   };
-  
+
   const getTaToStudentRatio = (users: IClassroomUser[]): string => {
     if (!users || users.length === 0) {
       return "N/A";
     }
-  
-    const tas = users.filter(
-      (user) => user.classroom_role === "TA"
-    );
-  
-    const students = users.filter(
-      (user) => user.classroom_role === "STUDENT"
-    );
-  
+
+    const tas = users.filter((user) => user.classroom_role === "TA");
+
+    const students = users.filter((user) => user.classroom_role === "STUDENT");
+
     if (tas.length === 0 || students.length === 0) {
       return "N/A";
     }
-  
+
     const taCount = tas.length;
     const studentCount = students.length;
     const gcd = getGCD(taCount, studentCount);
-  
+
     const reducedTaCount = taCount / gcd;
     const reducedStudentCount = studentCount / gcd;
-  
+
     return `${reducedTaCount} : ${reducedStudentCount}`;
   };
 
@@ -129,9 +123,18 @@ const Dashboard: React.FC = () => {
     return (
       <div className="Dashboard__unauthorized">
         <h2>Access Denied</h2>
-        <p>You do not have permission to view the classroom management dashboard.</p>
+        <p>
+          You do not have permission to view the classroom management dashboard.
+        </p>
         <p>Please contact your professor if you believe this is an error.</p>
-        <Button variant="primary" onClick={() => navigate(`/app/classroom/select?org_id=${selectedClassroom?.org_id}`)}>
+        <Button
+          variant="primary"
+          onClick={() =>
+            navigate(
+              `/app/classroom/select?org_id=${selectedClassroom?.org_id}`
+            )
+          }
+        >
           Return to Classroom Selection
         </Button>
       </div>
@@ -196,9 +199,15 @@ const Dashboard: React.FC = () => {
                 />
               </div>
 
-              <SimpleMetric metricTitle="Created on" metricValue={formatDate(selectedClassroom.created_at ?? null)}></SimpleMetric>
-              <SimpleMetric metricTitle="Assignments" metricValue={assignments.length.toString()}></SimpleMetric>
-              <SimpleMetric metricTitle="TA to Student Ratio" metricValue={getTaToStudentRatio(classroomUsersList)}></SimpleMetric>
+              <Metric title="Created on">
+                {formatDate(selectedClassroom.created_at ?? null)}
+              </Metric>
+              <Metric title="Assignments">
+                {assignments.length.toString()}
+              </Metric>
+              <Metric title="TA to Student Ratio">
+                {getTaToStudentRatio(classroomUsersList)}
+              </Metric>
             </MetricPanel>
           </div>
 
