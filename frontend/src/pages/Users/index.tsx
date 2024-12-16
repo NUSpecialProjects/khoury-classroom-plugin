@@ -105,9 +105,9 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   const getActionButton = (user: IClassroomUser) => {
     switch (user.status) {
       case ClassroomUserStatus.ACTIVE:
-        return <Button variant="warning" size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
+        return <Button variant="warning-secondary" size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
       case ClassroomUserStatus.ORG_INVITED:
-        return <Button variant="secondary" size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
+        return <Button variant="warning-secondary" size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
       case ClassroomUserStatus.REQUESTED:
       case ClassroomUserStatus.NOT_IN_ORG:
         return <Button variant="secondary" size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
@@ -174,11 +174,11 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
                     variant={(() => {
                       switch (user.status) {
                         case 'ACTIVE':
-                          return 'default';
+                          return 'green';
                         case 'ORG_INVITED':
                           return 'amber';
                         case 'REQUESTED':
-                          return 'blue';
+                          return 'default';
                         case 'NOT_IN_ORG':
                           return 'red';
                         default:
