@@ -302,12 +302,12 @@ func (db *DB) GetClassroomToken(ctx context.Context, token string) (models.Class
 	return tokenData, nil
 }
 
-func (db *DB) GetNumberOfUsersInClassroom(ctx context.Context, classroomID int64) (int, error) {
+func (db *DB) GetNumberOfStudentsInClassroom(ctx context.Context, classroomID int64) (int, error) {
 	var count int
 	err := db.connPool.QueryRow(ctx, `
 		SELECT COUNT(*)
 		FROM classroom_membership
-		WHERE classroom_id = $1
+		WHERE (classroom_id = $1 AND classroom_role = 'STUDENT')
 	`, classroomID).Scan(&count)
 
 	if err != nil {

@@ -59,7 +59,7 @@ type Classroom interface {
 	GetUserClassroomsInOrg(ctx context.Context, orgID int64, userID int64) ([]models.ClassroomUser, error)
 	CreateClassroomToken(ctx context.Context, tokenData models.ClassroomToken) (models.ClassroomToken, error)
 	GetClassroomToken(ctx context.Context, token string) (models.ClassroomToken, error)
-	GetNumberOfUsersInClassroom(ctx context.Context, classroomID int64) (int, error)
+	GetNumberOfStudentsInClassroom(ctx context.Context, classroomID int64) (int, error)
 }
 
 type User interface {

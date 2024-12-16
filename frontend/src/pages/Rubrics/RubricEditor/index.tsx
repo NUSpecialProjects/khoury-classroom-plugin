@@ -36,6 +36,7 @@ const RubricEditor: React.FC = () => {
     const [rubricData, setRubricData] = useState<IFullRubric>()
     const [rubricItemData, setRubricItemData] = useState<IEditableItem[]>([])
     const [rubricName, setRubricName] = useState<string>("")
+    const [newAssignmentRubric, setNewAssignmentRubric] = useState(false)
 
     // if there has been any changes since last save
     const [rubricEdited, setRubricEdited] = useState(false)
@@ -69,7 +70,8 @@ const RubricEditor: React.FC = () => {
 
     const backButton = () => {
         navigate(-1);
-    }
+    };
+
     // saving the rubric, creates a rubric in the backendindex
     const saveRubric = async () => {
         if (selectedClassroom !== null && selectedClassroom !== undefined && rubricEdited) {
@@ -83,7 +85,7 @@ const RubricEditor: React.FC = () => {
                 setEmptyRubric(false)
             }
 
-            const rubricItems = (rubricItemData.filter(item => !item.hidden).map(item => item.rubricItem));
+            const rubricItems = (rubricItemData.map(item => item.rubricItem));
 
             //validate items
             let explantionIssue = false
@@ -142,7 +144,7 @@ const RubricEditor: React.FC = () => {
             }
 
             // update existing rubric
-            if (rubricData) {
+            if (rubricData && !newAssignmentRubric) {
                 await updateRubric(rubricData.rubric.id!, fullRubric)
                     .then((updatedRubric) => {
                         setRubricEdited(false)
@@ -151,7 +153,7 @@ const RubricEditor: React.FC = () => {
                         if (assignmentData !== null && assignmentData !== undefined) {
                             setAssignmentRubric(updatedRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
                         }
-                        navigate(-1)
+                        backButton()
                     })
                     .catch((_) => {
                         setFailedToSave(true)
@@ -167,7 +169,7 @@ const RubricEditor: React.FC = () => {
                         if (assignmentData !== null && assignmentData !== undefined) {
                             setAssignmentRubric(createdRubric.rubric.id!, selectedClassroom.id, assignmentData.id)
                         }
-                        navigate(-1)
+                        backButton()
                     })
                     .catch((_) => {
                         setFailedToSave(true)
@@ -244,16 +246,26 @@ const RubricEditor: React.FC = () => {
     useEffect(() => {
         if (location.state) {
             if (location.state.assignment && location.state.rubricData) {
+                
                 const assignment = location.state.assignment
                 setAssignmentData(assignment)
                 const rubric = location.state.rubricData
                 setRubricData(rubric)
-                setRubricName(`${assignment.name} Rubric`)
+                if (location.state.newRubric) {
+                    setRubricName(`${assignment.name} Rubric`)
+                    setRubricEdited(true)
+                    setNewAssignmentRubric(true)
+                } else {
+                    setRubricName(rubric.rubric.name)
+                }
+                
 
             } else if (location.state.assignment && !location.state.rubricData) {
                 const assignment = location.state.assignment
                 setAssignmentData(assignment)
                 setRubricName(`${assignment.name} Rubric`)
+                addNewItem()
+
             } else if (location.state.rubricData) {
                 const rubric = location.state.rubricData
                 setRubricData(rubric)
