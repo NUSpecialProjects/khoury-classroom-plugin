@@ -93,4 +93,8 @@
       }
     }
   }
+
+  &__pillCell {
+    justify-content: center;
+  }
 }

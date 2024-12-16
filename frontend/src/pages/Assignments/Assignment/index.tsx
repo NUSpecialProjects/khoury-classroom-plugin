@@ -26,7 +26,7 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
-
+import Pill from "@/components/Pill";
 import "./styles.css";
 
 ChartJS.register(...registerables);
@@ -381,7 +381,7 @@ const Assignment: React.FC = () => {
                         {sa.contributors.join(", ")}
                       </Link>
                     </TableCell>
-                    <TableCell>Passing</TableCell>
+                    <TableCell className="Assignment__pillCell"><Pill label="Passing" variant="green"></Pill></TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
                 ))}
