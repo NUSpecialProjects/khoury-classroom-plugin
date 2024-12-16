@@ -71,6 +71,7 @@ const ClassroomSelection: React.FC = () => {
         {loading ? (
           <p>Loading...</p>
         ) : (
+          <>
           <Table cols={2}>
             <TableRow>
               <TableCell>
@@ -126,9 +127,36 @@ const ClassroomSelection: React.FC = () => {
               </EmptyDataBanner>
             )}
           </Table>
+          {!hasClassrooms && (
+            orgRole === OrgRole.ADMIN ? 
+            (
+              <TableRow className="Selection__tableRow">
+                 <EmptyDataBanner>
+                   <div className="emptyDataBannerMessage">
+                      You have no classes in this organization.
+                      <br></br>
+                      Please create a new classroom to get started.
+               </div>
+               <Button variant="secondary" href={`/app/classroom/create?org_id=${orgID}`}>
+                   <MdAdd /> New Classroom
+                 </Button>
+                 </EmptyDataBanner>
+       
+              </TableRow>
+            ) : (
+              <TableRow className="Selection__tableRow">
+                  <EmptyDataBanner>
+                    You have no classes in this organization.
+                    Your professor will need to invite you to a classroom.
+                  </EmptyDataBanner>
+              </TableRow>
+            )
+          )}
+            
+            <br></br>
+          </>
         )}
       </div>
-
       <div className="Selection__linkWrapper">
         <Link to={`/app/organization/select`}>
           {" "}
