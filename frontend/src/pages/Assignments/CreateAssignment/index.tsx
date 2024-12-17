@@ -91,7 +91,6 @@ const CreateAssignment: React.FC = () => {
         if (!data.templateRepo?.template_repo_id) {
           throw new Error("Please select a template repository.");
         }
-        console.log(data);
         await createAssignment(data.templateRepo.template_repo_id, data);
 
         navigate("/app/dashboard");
