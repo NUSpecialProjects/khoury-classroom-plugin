@@ -1,16 +1,17 @@
-![gitmarks wordmark](https://github.com/user-attachments/assets/f0881fc3-8b28-4895-b305-bed6e88f6b4a)
+![Gitmarks wordmark](https://github.com/user-attachments/assets/f0881fc3-8b28-4895-b305-bed6e88f6b4a)
 # GitMarks
 GitMarks is a Git-based grading platform designed to mirror industry standard workflows and provide support for both students and teaching staff.
 
-Developed in 2024 by:
-- Alex Angione
-- Cam Plume
-- Kenny Chen
-- Nandini Ghosh
-- Nick Tietje
-- Seby Tremblay
+*Developed in 2024 by:*
 
-## Stack
+- ![Alex Angione](https://github.com/alexangione419)
+- ![Cam Plume](https://github.com/CamPlume1)
+- ![Kenny Chen](https://github.com/kennybc)
+- ![Nandini Ghosh](https://github.com/nandini-ghosh)
+- ![Nick Tietje](https://github.com/ntietje1)
+- ![Seby Tremblay](https://github.com/sebytremblay)
+
+## Tech Stack
 
 [![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/doc/)
 [![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
