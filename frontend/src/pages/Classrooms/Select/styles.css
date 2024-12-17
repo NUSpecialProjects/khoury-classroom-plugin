@@ -29,6 +29,10 @@
     text-decoration: underline;
   }
 
+  &__pillCell {
+    justify-content: end;
+  }
+
   .Selection__link {
     color: var(--primary-text-white);
     text-decoration: underline;

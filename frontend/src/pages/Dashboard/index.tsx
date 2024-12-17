@@ -216,7 +216,7 @@ const Dashboard: React.FC = () => {
               <h2 style={{ marginBottom: 0 }}>Assignments</h2>
               <div className="Dashboard__createAssignmentButton">
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="small"
                   href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
                 >
