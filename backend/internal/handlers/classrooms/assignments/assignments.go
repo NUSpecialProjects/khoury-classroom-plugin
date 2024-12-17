@@ -232,7 +232,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 					return errs.InternalServerError()
 				}
 			} else if studentWork.WorkState == models.WorkStateNotAccepted {
-				// Recover from the case where the database is out of sync with the github state (repo exists but student work is not accepted)
+				// Recover from the case where the workstate is out of sync with the github state (repo exists but student work is not accepted)
 				updatedStudentWork := studentWork
 				updatedStudentWork.WorkState = models.WorkStateAccepted
 				_, err = s.store.UpdateStudentWork(c.Context(), updatedStudentWork)
