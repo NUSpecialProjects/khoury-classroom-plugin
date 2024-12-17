@@ -35,12 +35,18 @@ Many of the defined colors are referenced from the Tailwind CSS color library fo
 
   /* Metrics and Accents */
   --teal: #0d9488;
-  --amber: #f59e0b;
+  --teal-darker: #134E4A;
+  --amber: #d97706;
+  --amber-darker: #B45309;
   --rose: #e11d48;
+  --rose-darker: #9F1239;
   --blue: #2563eb;
-  --neutral: #d4d4d4;
+  --blue-darker: #1E40AF;
   --green: #15803d;
+  --green-darker: #14532D;
   --red: #b91c1c;
+  --red-darker: #7f1d1d;
+  --neutral: #d4d4d4;
 
   /* TYPOGRAPHY */
   --primary-font: "Inter", Arial, Helvetica, sans-serif;

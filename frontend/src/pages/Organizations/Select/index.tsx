@@ -54,7 +54,7 @@ const OrganizationSelection: React.FC = () => {
                 href="/app/classroom/select"
                 state={{ orgID: selectedOrg.id }}
               >
-                View Classrooms for {selectedOrg.login}
+                View Classrooms
               </Button>
             )}
             
@@ -64,7 +64,7 @@ const OrganizationSelection: React.FC = () => {
                 href={`https://github.com/apps/${githubAppName}/installations/new/permissions?target_id=${selectedOrg.id}&target_type=Organization`}
                 newTab={true}
               >
-                Install Marks on {selectedOrg.login}
+                Install GitMarks
               </Button>
             )}
         </div>

@@ -27,7 +27,7 @@ import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
 import { useQuery } from "@tanstack/react-query";
-
+import Pill from "@/components/Pill";
 import "./styles.css";
 
 ChartJS.register(...registerables);
@@ -258,7 +258,7 @@ const Assignment: React.FC = () => {
                         enabled: false,
                       },
                     },
-                    cutout: "50%",
+                    cutout: "65%",
                     borderColor: "transparent",
                   }}
                 />
@@ -337,7 +337,7 @@ const Assignment: React.FC = () => {
                         {sa.contributors.join(", ")}
                       </Link>
                     </TableCell>
-                    <TableCell>Passing</TableCell>
+                    <TableCell className="Assignment__pillCell"><Pill label="PASSING" variant="green"></Pill></TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
                 ))}

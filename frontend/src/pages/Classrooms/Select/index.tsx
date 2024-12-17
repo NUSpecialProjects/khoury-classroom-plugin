@@ -7,10 +7,12 @@ import { getClassroomsInOrg } from "@/api/classrooms";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import Button from "@/components/Button";
+import Pill from "@/components/Pill";
+import { removeUnderscores } from "@/utils/text";
 import { MdAdd } from "react-icons/md";
-import { OrgRole } from "@/types/users";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { ClassroomRole, OrgRole } from "@/types/users";
 
 const ClassroomSelection: React.FC = () => {
   const location = useLocation();
@@ -95,8 +97,21 @@ const ClassroomSelection: React.FC = () => {
                       {classroomUser.classroom_name}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div>{classroomUser.classroom_role}</div>
+                  <TableCell className="Selection__pillCell">
+                    <Pill label={removeUnderscores(classroomUser.classroom_role)}
+                      variant={(() => {
+                        switch (classroomUser.classroom_role) {
+                          case ClassroomRole.STUDENT:
+                            return 'teal';
+                          case ClassroomRole.TA:
+                            return 'amber';
+                          case ClassroomRole.PROFESSOR:
+                            return 'default';
+                          default:
+                            return 'default'; // Fallback for unexpected roles
+                        }
+                      })()}>
+                    </Pill>
                   </TableCell>
                 </TableRow>
               ))
