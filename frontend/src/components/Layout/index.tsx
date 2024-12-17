@@ -28,9 +28,6 @@ const Layout: React.FC = () => {
       !loadingCurrentClassroomUser &&
       (classroomUserError || !classroomUser)
     ) {
-      console.log(
-        "Attempted to view a classroom without access. Redirecting to classroom select."
-      );
       navigate(`/app/organization/select`);
     }
   }, [

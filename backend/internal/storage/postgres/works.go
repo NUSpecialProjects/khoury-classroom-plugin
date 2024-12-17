@@ -199,7 +199,6 @@ WHERE sw.repo_name = $1
 	rows, err := db.connPool.Query(ctx, query, repoName)
 
 	if err != nil {
-		fmt.Println("Error in query ", err)
 		return models.StudentWork{}, err
 	}
 
@@ -207,7 +206,6 @@ WHERE sw.repo_name = $1
 
 	work, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.RawStudentWork])
 	if err != nil {
-		fmt.Println("Error collecting rows ", err)
 		return models.StudentWork{}, err
 	}
 

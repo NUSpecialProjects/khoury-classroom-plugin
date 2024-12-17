@@ -36,15 +36,22 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   const navigate = useNavigate();
 
   const downloadGrades = () => {
-    const csvContent = studentAssignments
-      .map((work) =>
-        work.contributors
-          .map((contributor) => {
-            return `${contributor},${work.auto_grader_score},${work.manual_feedback_score},${!work.auto_grader_score && !work.manual_feedback_score ? null : (work.auto_grader_score ?? 0) + (work.manual_feedback_score ?? 0)}`;
-          })
-          .join("\n")
-      )
-      .join("\n");
+    const csvContent =
+      "Student,Auto Grader Score,Manual Feedback Score,Overall Score\n" +
+      studentAssignments
+        .map((work) =>
+          work.contributors
+            .map((contributor) => {
+              const overall_score =
+                !work.auto_grader_score && !work.manual_feedback_score
+                  ? null
+                  : (work.auto_grader_score ?? 0) +
+                    (work.manual_feedback_score ?? 0);
+              return `${contributor},${work.auto_grader_score},${work.manual_feedback_score},${overall_score}`;
+            })
+            .join("\n")
+        )
+        .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");

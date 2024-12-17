@@ -90,16 +90,19 @@ func (s *WorkService) getWorkByID() fiber.Handler {
 	}
 }
 
-func (s *WorkService) formatFeedbackForGitHub(comments []models.PRReviewCommentResponse) []models.PRReviewComment {
+const LatexPositivePointPrefix = `$${\huge\color{limegreen}\textbf{[+%d]}}$$ `
+const LatexNegativePointPrefix = `$${\huge\color{WildStrawberry}\textbf{[%d]}}$$ `
+
+func formatFeedbackForGitHub(comments []models.PRReviewCommentResponse) []models.PRReviewComment {
 	var formattedComments []models.PRReviewComment
 	for _, comment := range comments {
 		// format comment: body -> [pt value] body
 		prefix := ""
 		if comment.Points > 0 {
-			prefix = fmt.Sprintf(`$${\huge\color{limegreen}\textbf{[+%d]}}$$ `, comment.Points)
+			prefix = fmt.Sprintf(LatexPositivePointPrefix, comment.Points)
 		}
 		if comment.Points < 0 {
-			prefix = fmt.Sprintf(`$${\huge\color{WildStrawberry}\textbf{[%d]}}$$ `, comment.Points)
+			prefix = fmt.Sprintf(LatexNegativePointPrefix, comment.Points)
 		}
 		comment.PRReviewComment.Body = prefix + comment.PRReviewComment.Body
 		formattedComments = append(formattedComments, comment.PRReviewComment)
@@ -108,7 +111,7 @@ func (s *WorkService) formatFeedbackForGitHub(comments []models.PRReviewCommentR
 	return formattedComments
 }
 
-func (s *WorkService) insertFeedbackInDB(c *fiber.Ctx, comments []models.PRReviewCommentResponse, taUserID int64, workID int) error {
+func insertFeedbackInDB(s *WorkService, c *fiber.Ctx, comments []models.PRReviewCommentResponse, taUserID int64, workID int) error {
 	// insert into DB, remove points field and format the body to display the points
 	for _, comment := range comments {
 		// insert into DB
@@ -120,7 +123,7 @@ func (s *WorkService) insertFeedbackInDB(c *fiber.Ctx, comments []models.PRRevie
 			}
 		} else {
 			// attach rubric item
-			err := s.store.AttachRubricItemToFeedbackComment(c.Context(), taUserID, workID, comment)
+			err := s.store.CreateFeedbackCommentFromRubricItem(c.Context(), taUserID, workID, comment)
 			if err != nil {
 				return errs.InternalServerError()
 			}
@@ -157,13 +160,13 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 		}
 
 		// create PR review via github API
-		review, err := userClient.CreatePRReview(c.Context(), work.OrgName, work.RepoName, requestBody.Body, s.formatFeedbackForGitHub(requestBody.Comments))
+		review, err := userClient.CreatePRReview(c.Context(), work.OrgName, work.RepoName, requestBody.Body, formatFeedbackForGitHub(requestBody.Comments))
 		if err != nil {
 			return errs.GithubAPIError(err)
 		}
 
 		// insert into DB
-		err = s.insertFeedbackInDB(c, requestBody.Comments, *taUser.ID, work.ID)
+		err = insertFeedbackInDB(s, c, requestBody.Comments, *taUser.ID, work.ID)
 		if err != nil {
 			return err
 		}
