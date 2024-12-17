@@ -199,8 +199,7 @@ const StudentSubmission: React.FC = () => {
             display: false,
           },
           title: {
-            display: true,
-            text: 'Commits over time',
+            display: false,
           },
           datalabels: {
             display: false,
@@ -265,14 +264,15 @@ const StudentSubmission: React.FC = () => {
           <Metric title="First Commit Date">{firstCommit}</Metric>
           <Metric title="Total Commits">{totalCommits ?? "N/A"}</Metric>
           {lineData && lineOptions && (
-            <Metric title="Commits Over Time" className="bigContent"> 
-              <div className="StudentSubmission__commitsOverTimeChart">
-              <Line
-              options={lineOptions}
-              data={lineData}
-              />
+            <Metric title="Commits Over Time" className="Metric__bigContent">
+              <div>
+                <Line className="StudentSubmission__commitsOverTimeChart"
+                  options={lineOptions}
+                  data={lineData}
+                />
               </div>
-             
+
+
             </Metric>
           )}
 

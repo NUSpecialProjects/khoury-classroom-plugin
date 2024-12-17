@@ -182,7 +182,14 @@ func (s *WorkService) GetCommitsPerDay() fiber.Handler {
 			return err
 		}
 
+
+        
+        // Unsure how this will work for group assignments
         var opts github.CommitsListOptions
+        if (len(work.Contributors) > 1) {
+        
+        }
+        opts.Author = work.Contributors[0]
         commits, err := s.appClient.ListCommits(c.Context(), work.OrgName, work.RepoName, &opts)
         if err != nil {
             return errs.GithubAPIError(err)
@@ -198,7 +205,6 @@ func (s *WorkService) GetCommitsPerDay() fiber.Handler {
             }
         }
 
-        fmt.Println(commitDatesMap)
         return c.Status(http.StatusOK).JSON(fiber.Map{
             "dated_commits": commitDatesMap,
         })
