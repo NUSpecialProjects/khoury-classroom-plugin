@@ -173,13 +173,13 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
                   <Pill label={removeUnderscores(user.status)}
                     variant={(() => {
                       switch (user.status) {
-                        case 'ACTIVE':
+                        case ClassroomUserStatus.ACTIVE:
                           return 'green';
-                        case 'ORG_INVITED':
+                        case ClassroomUserStatus.ORG_INVITED:
                           return 'amber';
-                        case 'REQUESTED':
+                        case ClassroomUserStatus.REQUESTED:
                           return 'default';
-                        case 'NOT_IN_ORG':
+                        case ClassroomUserStatus.NOT_IN_ORG:
                           return 'red';
                         default:
                           return 'default'; // Fallback for unexpected roles

@@ -11,7 +11,7 @@ import Button from "@/components/Button";
 import Pill from "@/components/Pill";
 import { removeUnderscores } from "@/utils/text";
 import { MdAdd } from "react-icons/md";
-import { OrgRole } from "@/types/users";
+import { ClassroomRole, OrgRole } from "@/types/users";
 
 const ClassroomSelection: React.FC = () => {
   const [classrooms, setClassrooms] = useState<IClassroomUser[]>([]);
@@ -100,11 +100,11 @@ const ClassroomSelection: React.FC = () => {
                     <Pill label={removeUnderscores(classroomUser.classroom_role)}
                       variant={(() => {
                         switch (classroomUser.classroom_role) {
-                          case 'STUDENT':
+                          case ClassroomRole.STUDENT:
                             return 'teal';
-                          case 'TA':
+                          case ClassroomRole.TA:
                             return 'amber';
-                          case 'PROFESSOR':
+                          case ClassroomRole.PROFESSOR:
                             return 'default';
                           default:
                             return 'default'; // Fallback for unexpected roles
