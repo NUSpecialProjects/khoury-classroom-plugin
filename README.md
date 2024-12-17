@@ -4,12 +4,12 @@ GitMarks is a Git-based grading platform designed to mirror industry standard wo
 
 *Developed in 2024 by:*
 
-- ![Alex Angione](https://github.com/alexangione419)
-- ![Cam Plume](https://github.com/CamPlume1)
-- ![Kenny Chen](https://github.com/kennybc)
-- ![Nandini Ghosh](https://github.com/nandini-ghosh)
-- ![Nick Tietje](https://github.com/ntietje1)
-- ![Seby Tremblay](https://github.com/sebytremblay)
+- [Alex Angione](https://github.com/alexangione419)
+- [Cam Plume](https://github.com/CamPlume1)
+- [Kenny Chen](https://github.com/kennybc)
+- [Nandini Ghosh](https://github.com/nandini-ghosh)
+- [Nick Tietje](https://github.com/ntietje1)
+- [Seby Tremblay](https://github.com/sebytremblay)
 
 ## Tech Stack
 
