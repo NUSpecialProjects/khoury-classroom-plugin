@@ -133,6 +133,20 @@ export const GraderProvider: React.FC<{
       Number(studentWorkID),
       stagedFeedback
     ).then(() => {
+      setStudentWork((prevStudentWork) => {
+        if (prevStudentWork) {
+          return {
+            ...prevStudentWork,
+            manual_feedback_score:
+              prevStudentWork.manual_feedback_score +
+              Object.values(stagedFeedback).reduce(
+                (s: number, fb: IGraderFeedback) => s + fb.points,
+                0
+              ),
+          };
+        }
+        return prevStudentWork;
+      });
       setFeedback((prevFeedback) => ({
         ...prevFeedback,
         ...stagedFeedback,
