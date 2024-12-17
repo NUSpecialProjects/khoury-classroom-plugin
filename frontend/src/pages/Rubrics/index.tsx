@@ -7,9 +7,12 @@ import { getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import { Link } from "react-router-dom";
 import RubricList from "@/components/RubricList";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { ClassroomRole } from "@/types/users";
 
 const Rubrics: React.FC = () => {
     const { selectedClassroom } = useContext(SelectedClassroomContext)
+    useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR, "/app/organization/select");
     const [rubrics, setRubricsData] = useState<IFullRubric[]>([])
 
     const [loading, setLoading] = useState(false)
@@ -33,8 +36,6 @@ const Rubrics: React.FC = () => {
             })();
         }
     }, []);
-
-
 
     return (
         <div>

@@ -22,7 +22,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   userList: initialUserList,
 }: GenericRolePageProps) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { classroomUser: currentClassroomUser } = useClassroomUser(selectedClassroom?.id);
+  const { classroomUser: currentClassroomUser } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
   const [link, setLink] = useState<string>("");
   const [error, setError] = useState<string | null>(null);

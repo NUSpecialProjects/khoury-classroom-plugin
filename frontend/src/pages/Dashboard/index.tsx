@@ -14,6 +14,7 @@ import Button from "@/components/Button";
 import ClipLoader from "react-spinners/ClipLoader";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
+import { ClassroomRole } from "@/types/users";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
@@ -22,7 +23,7 @@ const Dashboard: React.FC = () => {
     classroomUser,
     error: classroomUserError,
     loading: loadingCurrentClassroomUser,
-  } = useClassroomUser(selectedClassroom?.id);
+  } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
   );
@@ -119,28 +120,6 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (classroomUser?.classroom_role === "STUDENT") {
-    return (
-      <div className="Dashboard__unauthorized">
-        <h2>Access Denied</h2>
-        <p>
-          You do not have permission to view the classroom management dashboard.
-        </p>
-        <p>Please contact your professor if you believe this is an error.</p>
-        <Button
-          variant="primary"
-          onClick={() =>
-            navigate(
-              `/app/classroom/select?org_id=${selectedClassroom?.org_id}`
-            )
-          }
-        >
-          Return to Classroom Selection
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="Dashboard">
       {selectedClassroom && (
@@ -156,13 +135,13 @@ const Dashboard: React.FC = () => {
                 <UserGroupCard
                   label="Students"
                   givenUsersList={classroomUsersList.filter(
-                    (user) => user.classroom_role === "STUDENT"
+                    (user) => user.classroom_role === ClassroomRole.STUDENT
                   )}
                   onClick={() =>
                     handleUserGroupClick(
                       "Student",
                       classroomUsersList.filter(
-                        (user) => user.classroom_role === "STUDENT"
+                        (user) => user.classroom_role === ClassroomRole.STUDENT
                       )
                     )
                   }
@@ -171,13 +150,13 @@ const Dashboard: React.FC = () => {
                 <UserGroupCard
                   label="TAs"
                   givenUsersList={classroomUsersList.filter(
-                    (user) => user.classroom_role === "TA"
+                    (user) => user.classroom_role === ClassroomRole.TA
                   )}
                   onClick={() =>
                     handleUserGroupClick(
                       "TA",
                       classroomUsersList.filter(
-                        (user) => user.classroom_role === "TA"
+                        (user) => user.classroom_role === ClassroomRole.TA
                       )
                     )
                   }
@@ -186,13 +165,13 @@ const Dashboard: React.FC = () => {
                 <UserGroupCard
                   label="Professors"
                   givenUsersList={classroomUsersList.filter(
-                    (user) => user.classroom_role === "PROFESSOR"
+                    (user) => user.classroom_role === ClassroomRole.PROFESSOR
                   )}
                   onClick={() =>
                     handleUserGroupClick(
                       "Professor",
                       classroomUsersList.filter(
-                        (user) => user.classroom_role === "PROFESSOR"
+                        (user) => user.classroom_role === ClassroomRole.PROFESSOR
                       )
                     )
                   }

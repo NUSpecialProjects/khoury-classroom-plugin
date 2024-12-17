@@ -15,6 +15,8 @@ import { formatDateTime } from "@/utils/date";
 import PageHeader from "@/components/PageHeader";
 
 import "./styles.css";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { ClassroomRole } from "@/types/users";
 
 interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   assignmentId: number;
@@ -31,6 +33,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,6 +95,7 @@ const Grading: React.FC = () => {
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
   useEffect(() => {
     if (!selectedClassroom) return;
     getAssignments(selectedClassroom.id)
