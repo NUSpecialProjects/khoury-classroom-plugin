@@ -27,7 +27,9 @@ const StudentSubmission: React.FC = () => {
   const assignmentID = location.state.assignmentId;
   const [firstCommit, setFirstCommit] = useState<string>("");
   const [totalCommits, setTotalCommits] = useState<string>();
-  const [noCommits, setNoCommits] = useState(true)
+  const [noCommits, setNoCommits] = useState(false)
+  const [loadingAllCommits, setLoadingAllCommits] = useState(true)
+
 
   const [commitsPerDay, setCommitsPerDay] = useState<Map<Date, number>>(new Map());
   const [lineData, setLineData] = useState<ChartData<"line", (number | Point | null)[], unknown>>()
@@ -121,6 +123,7 @@ const StudentSubmission: React.FC = () => {
   useEffect(() => {
     if (commitsPerDay) {
       const sortedDates = Array.from(commitsPerDay.keys()).sort((a, b) => a.valueOf() - b.valueOf())
+      console.log(sortedDates)
       // end dates at today or due date, whichever is sooner
       if (submission) {
         const today = new Date()
@@ -128,10 +131,9 @@ const StudentSubmission: React.FC = () => {
         today.setUTCMinutes(0)
         today.setUTCSeconds(0)
         if (sortedDates.length === 0) {
-          return;
+          setNoCommits(true)
         } else if (sortedDates[sortedDates.length - 1].toDateString() !== (today.toDateString())) {
           sortedDates.push(new Date())
-          setNoCommits(false)
         }
 
 
@@ -175,6 +177,8 @@ const StudentSubmission: React.FC = () => {
 
         }
       }
+
+      setLoadingAllCommits(false)
 
 
 
@@ -267,11 +271,22 @@ const StudentSubmission: React.FC = () => {
           {lineData && lineOptions && (
             <Metric title="Commits Over Time" className="Metric__bigContent">
               <div>
-                {noCommits ? "No Commits" :
+                {noCommits && (
+                  <div>N/A</div>
+                )}
+
+                {!noCommits && loadingAllCommits &&
+                  <div>Loading...</div>
+                }
+
+                {!noCommits && !loadingAllCommits && (
                   <Line className="StudentSubmission__commitsOverTimeChart"
                     options={lineOptions}
                     data={lineData}
-                  />}
+                  />
+                )}
+
+
 
               </div>
 
