@@ -132,7 +132,6 @@ CREATE TABLE IF NOT EXISTS student_works (
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255) UNIQUE NOT NULL,
     unique_due_date TIMESTAMP,
-    manual_feedback_score INTEGER,
     auto_grader_score INTEGER,
     grades_published_timestamp TIMESTAMP,
     work_state WORK_STATE NOT NULL,
@@ -166,6 +165,14 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     CONSTRAINT if_file_path_then_file_line
         CHECK (NOT (file_path IS NOT NULL AND file_line IS NULL))
 );
+
+CREATE VIEW student_works_with_scores AS
+SELECT sw.*, COALESCE(SUM(ri.point_value), 0) + COALESCE(ao.default_score, 0) AS manual_feedback_score
+FROM student_works sw
+LEFT JOIN feedback_comment fc ON sw.id = fc.student_work_id
+LEFT JOIN rubric_items ri ON fc.rubric_item_id = ri.id
+LEFT JOIN assignment_outlines ao ON ao.id = sw.assignment_outline_id
+GROUP BY sw.id, ao.default_score;
 
 
 DO $$ BEGIN
