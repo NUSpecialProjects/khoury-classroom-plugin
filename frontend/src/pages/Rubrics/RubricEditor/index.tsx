@@ -10,6 +10,8 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { setAssignmentRubric } from "@/api/assignments";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { ClassroomRole } from "@/types/enums";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 interface IEditableItem {
     frontFacingIndex: number;
@@ -29,6 +31,7 @@ const RubricEditor: React.FC = () => {
     const navigate = useNavigate();
 
     const { selectedClassroom } = useContext(SelectedClassroomContext)
+    useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR, "/access-denied");
 
     // potential data for the assignment
     const [assignmentData, setAssignmentData] = useState<IAssignmentOutline>()
