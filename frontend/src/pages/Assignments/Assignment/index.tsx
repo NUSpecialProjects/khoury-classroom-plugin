@@ -25,9 +25,10 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
-
+import Pill from "@/components/Pill";
 import "./styles.css";
 import { StudentWorkState } from "@/types/enums";
+import { removeUnderscores } from "@/utils/text";
 
 ChartJS.register(...registerables);
 ChartJS.register(ChartDataLabels);
@@ -269,7 +270,7 @@ const Assignment: React.FC = () => {
                         enabled: false,
                       },
                     },
-                    cutout: "50%",
+                    cutout: "65%",
                     borderColor: "transparent",
                   }}
                 />
@@ -353,7 +354,30 @@ const Assignment: React.FC = () => {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell>{sa.work_state}</TableCell>
+                    <TableCell className="Assignment__pillCell">
+                      <Pill label={removeUnderscores(sa.work_state)}
+                        variant={(() => {
+                          switch (sa.work_state) {
+                            case StudentWorkState.ACCEPTED:
+                              return 'green';
+                            case StudentWorkState.STARTED:
+                              return 'amber';
+                            case StudentWorkState.SUBMITTED:
+                              return 'blue';
+                            case StudentWorkState.GRADING_ASSIGNED:
+                              return 'teal';
+                            case StudentWorkState.GRADING_COMPLETED:
+                              return 'teal';
+                            case StudentWorkState.GRADE_PUBLISHED:
+                              return 'teal';
+                            case StudentWorkState.NOT_ACCEPTED:
+                              return 'rose';
+                            default:
+                              return 'default';
+                          }
+                        })()}>
+                      </Pill>
+                    </TableCell>
                     <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
                   </TableRow>
                 ))}
