@@ -149,7 +149,7 @@ const StudentSubmission: React.FC = () => {
 
         const firstMonth = Number(sortedDatesStringsCopy[i].split("/")[0])
         const firstDay = Number(sortedDatesStringsCopy[i].split("/")[1])
-        const secondDay = Number(sortedDatesStrings[index + 1].split("/")[1])
+        const secondDay = Number(sortedDatesStringsCopy[i + 1].split("/")[1])
 
 
         const difference = firstDay - secondDay
