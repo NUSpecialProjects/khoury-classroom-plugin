@@ -30,7 +30,7 @@ type GitHubAppClient interface { // All methods in the APP client
 	// Add a repository permission to a user
 	AssignPermissionToUser(ctx context.Context, ownerName string, repoName string, userName string, permission string) error
 
-	CreateDeadlineEnforcement(ctx context.Context, deadline *time.Time, orgName, repoName string) error
+	CreateDeadlineEnforcement(ctx context.Context, deadline *time.Time, orgName, repoName, branchName string) error
 
 	// Create instance of template repository
 	CreateRepoFromTemplate(ctx context.Context, orgName, templateRepoName, newRepoName string) (*models.AssignmentBaseRepo, error)

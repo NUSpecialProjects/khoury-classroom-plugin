@@ -91,15 +91,21 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	}
 
 	// Retrieve assignment deadline from DB
-	deadline, err := s.store.GetAssignmentDueDateByRepoName(c.Context(), *pushEvent.Repo.Name)
-	if err == nil {
+	template, err := s.store.GetAssignmentByRepoName(c.Context(), *pushEvent.Repo.Name)
+	if err != nil {
+		//@KHO-239
+		return err
+	}
+	if template.MainDueDate != nil {
 		// There is a deadline
-		err = s.appClient.CreateDeadlineEnforcement(c.Context(), deadline, *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+		err = s.appClient.CreateDeadlineEnforcement(c.Context(), template.MainDueDate, *pushEvent.Repo.Organization, *pushEvent.Repo.Name, "main")
 		if err != nil {
-			//TODO: Recovery. Will do in a new ticket. For now, log
+			//@KHO-239
 			return err
 		}
-	}
+	} 
+
+
 	//Create PR Enforcement Action
 	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 		if err != nil {
@@ -123,19 +129,19 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 
 	err = s.appClient.CreatePushRuleset(c.Context(),  *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 	if err != nil {
-		// TODO: Recovery. Will do in a new ticket. For now, log
+		// @KHO-239
 		return err
 	}
 
 	// Find the associated assignment and classroom
 	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
 	if err != nil {
-			// TODO: Recovery. Will do in a new ticket. For now, log
+			// @KHO-239
 			return err
 	}
 	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
 	if err != nil {
-			// TODO: Recovery. Will do in a new ticket. For now, log
+			// @KHO-239
 			return err
 	}
 
@@ -143,7 +149,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	err = s.appClient.UpdateTeamRepoPermissions(c.Context(), *pushEvent.Repo.Organization, *classroom.StudentTeamName,
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
-			// TODO: Recovery. Will do in a new ticket. For now, log
+			// @KHO-239
 			return err
 	}
 
@@ -164,7 +170,6 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	}
 
 	if pushEvent.Ref != nil {
-		// TODO: Dynamically determine branch names once parameterized
 		// If commiting to main branch, mark as submitted
 		if *pushEvent.Ref == "refs/heads/main" {
 			studentWork.WorkState = models.WorkStateSubmitted

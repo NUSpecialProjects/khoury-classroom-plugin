@@ -279,12 +279,12 @@ func (api *CommonAPI) CreateBranchRuleset(ctx context.Context,  orgName, repoNam
 
 
 
-func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, deadline *time.Time, orgName, repoName string) error {
+func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, deadline *time.Time, orgName, repoName, branchName string) error {
 	addition := models.RepositoryAddition{
 		FilePath: ".github/workflows/deadline.yml",
 		RepoName: repoName,
 		OwnerName: orgName,
-		DestinationBranch: "main",
+		DestinationBranch: branchName,
 		Content: utils.ActionWithDeadline(deadline),
 		CommitMessage: "Deadline enforcement GH action files",
 	}
