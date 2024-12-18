@@ -2,17 +2,19 @@ import { Link } from "react-router-dom";
 import "./styles.css";
 interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   href?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "warning-primary" | "warning-secondary";
   size?: "default" | "small";
   newTab?: boolean;
+  state?: object;
 }
 const ButtonWrapper: React.FC<IButtonProps> = ({
   children,
   href,
   newTab = false,
+  state
 }) => {
   return href ? (
-    <Link to={href} target={newTab ? "_blank" : "_self"}>
+    <Link to={href} target={newTab ? "_blank" : "_self"} state={state}>
       {children}
     </Link>
   ) : (
@@ -26,10 +28,11 @@ const Button: React.FC<IButtonProps> = ({
   variant = "primary",
   size = "default",
   newTab,
+  state,
   ...props
 }) => {
   return (
-    <ButtonWrapper href={href} newTab={newTab}>
+    <ButtonWrapper href={href} newTab={newTab} state={state}>
       <button
         className={`Button Button--${variant} Button--${size} ${className ?? ""}`}
         {...props}

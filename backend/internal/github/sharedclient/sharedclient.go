@@ -431,6 +431,29 @@ func (api *CommonAPI) GetTeam(ctx context.Context, teamID int64) (*github.Team, 
 	return team, err
 }
 
+func (api *CommonAPI) CreateTeam(ctx context.Context, orgName, teamName string, description *string, maintainers []string) (*github.Team, error) {
+	team := &github.NewTeam{
+		Name:        teamName,
+		Description: description,
+		Maintainers: maintainers,
+	}
+
+	createdTeam, _, err := api.Client.Teams.CreateTeam(ctx, orgName, *team)
+	if err != nil {
+		return nil, fmt.Errorf("error creating team: %v", err)
+	}
+
+	return createdTeam, nil
+}
+
+func (api *CommonAPI) DeleteTeam(ctx context.Context, teamID int64) error {
+	_, err := api.Client.Teams.DeleteTeam(ctx, teamID)
+	if err != nil {
+		return fmt.Errorf("error deleting team: %v", err)
+	}
+	return nil
+}
+
 func (api *CommonAPI) GetTeamByName(ctx context.Context, orgName string, teamName string) (*github.Team, error) {
 	endpoint := fmt.Sprintf("/orgs/%s/teams/%s", orgName, teamName)
 	req, err := api.Client.NewRequest("GET", endpoint, nil)
@@ -465,4 +488,105 @@ func (api *CommonAPI) RemoveTeamMember(ctx context.Context, orgName string, team
 func (api *CommonAPI) GetTeamMembers(ctx context.Context, teamID int64) ([]*github.User, error) {
 	members, _, err := api.Client.Teams.ListTeamMembers(ctx, teamID, nil)
 	return members, err
+}
+
+func (api *CommonAPI) CreateEmptyCommit(ctx context.Context, owner, repo string) error {
+	ghRepo, err := api.GetRepository(ctx, owner, repo)
+	if err != nil {
+		return err
+	}
+	if ghRepo.DefaultBranch == nil {
+		return errs.MissingDefaultBranchError()
+	}
+
+	// Get the reference to main branch
+	ref, _, err := api.Client.Git.GetRef(context.Background(), owner, repo, "heads/"+*ghRepo.DefaultBranch)
+	if err != nil {
+		return err
+	}
+
+	// if no parent commit exists, refer to the empty tree
+	tree := "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+	var parentCommitSHA string
+	if ref.Object != nil {
+		// Get the commit from the ref
+		parentCommitSHA = ref.Object.GetSHA()
+		if parentCommitSHA != "" {
+			parentCommit, _, err := api.Client.Git.GetCommit(context.Background(), owner, repo, parentCommitSHA)
+			if err != nil {
+				return err
+			}
+
+			tree = parentCommit.Tree.GetSHA()
+		}
+	}
+
+	// create commit from parent commit tree (no changes)
+	endpoint := fmt.Sprintf("/repos/%s/%s/git/commits", owner, repo)
+	body := map[string]interface{}{
+		"message": "Setting up GitMarks feedback",
+		"tree":    tree,
+	}
+	if parentCommitSHA != "" {
+		body["parents"] = [1]string{parentCommitSHA}
+	}
+	req, err := api.Client.NewRequest("POST", endpoint, body)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+	var commit github.Commit
+	_, err = api.Client.Do(ctx, req, &commit)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	// update main to point to the new empty commit
+	endpoint = fmt.Sprintf("/repos/%s/%s/git/refs/heads/%s", owner, repo, *ghRepo.DefaultBranch)
+	req, err = api.Client.NewRequest("PATCH", endpoint, map[string]interface{}{
+		"sha":   commit.SHA,
+		"force": true,
+	})
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+	_, err = api.Client.Do(ctx, req, nil)
+	if err != nil {
+		return errs.GithubAPIError(err)
+	}
+
+	return nil
+}
+
+func (api *CommonAPI) CheckForkIsReady(ctx context.Context, repo *github.Repository) bool {
+	if repo == nil || repo.Parent.FullName == nil {
+		return false
+	}
+
+	// Get all branches from source repo
+	endpoint := fmt.Sprintf("/repos/%s/branches", *repo.Parent.FullName)
+	req, err := api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return false
+	}
+
+	var srcBranches []github.Branch
+	_, err = api.Client.Do(ctx, req, &srcBranches)
+	if err != nil {
+		return false
+	}
+
+	// Get all branches from forked repo
+	endpoint = fmt.Sprintf("/repos/%s/branches", *repo.FullName)
+	req, err = api.Client.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return false
+	}
+
+	var branches []github.Branch
+	_, err = api.Client.Do(ctx, req, &branches)
+	if err != nil {
+		return false
+	}
+
+	return len(branches) == len(srcBranches)
 }

@@ -13,7 +13,6 @@ import * as Pages from "./pages";
 import Layout from "./components/Layout";
 import AuthProvider, { AuthContext } from "./contexts/auth";
 import SelectedSemesterProvider from "./contexts/selectedClassroom";
-
 import "./global.css";
 
 // If not logged in, route to login
@@ -53,8 +52,12 @@ export default function App(): React.JSX.Element {
                 <Route path="select" element={<Pages.ClassroomSelectPage />} />
                 <Route path="create" element={<Pages.ClassroomCreatePage />} />
                 <Route path="invite-tas" element={<Pages.InviteTAs />} />
-                <Route path="invite-students" element={<Pages.InviteStudents />} />
+                <Route
+                  path="invite-students"
+                  element={<Pages.InviteStudents />}
+                />
                 <Route path="success" element={<Pages.Success />} />
+                <Route path="landing" element={<Pages.Landing />} />
               </Route>
               <Route path="organization" element={<PrivateRoute />}>
                 <Route
@@ -81,7 +84,12 @@ export default function App(): React.JSX.Element {
                   element={<Pages.CreateAssignment />}
                 />
                 <Route path="assignments/:id" element={<Pages.Assignment />} />
-                <Route path="assignments/:id/rubric" element={<Pages.AssignmentRubric />} />
+                <Route path="submissions/:id" element={<Pages.StudentSubmission />} />
+                <Route
+                  path="assignments/:id/rubric"
+                  element={<Pages.AssignmentRubric />}
+                />
+
                 <Route path="grading" element={<Pages.Grading />} />
                 <Route path="settings" element={<Pages.Settings />} />
                 <Route path="students" element={<Pages.StudentListPage />} />

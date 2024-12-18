@@ -107,8 +107,14 @@ func AssignmentNotAcceptedError() APIError {
 }
 
 
+
 func CriticalGithubError() APIError {
 	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("critical Out of State Error: Github Integration"))
+}
+
+func MissingDefaultBranchError() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("repository is missing a default branch"))
+
 }
 
 /* Post Requests Only */

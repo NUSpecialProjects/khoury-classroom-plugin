@@ -124,10 +124,18 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 			return errs.NewDBError(err)
 		}
 
-		classrooms, err := service.store.GetUserClassroomsInOrg(c.Context(), orgID, *user.ID)
+		classroomUsers, err := service.store.GetUserClassroomsInOrg(c.Context(), orgID, *user.ID)
 		if err != nil {
 			return err
 		}
+
+		// // filter out students
+		// filteredClassroomUsers := []models.ClassroomUser{}
+		// for _, classroomUser := range classroomUsers {
+		// 	if classroomUser.Role.Compare(models.TA) >= 0 {
+		// 		filteredClassroomUsers = append(filteredClassroomUsers, classroomUser)
+		// 	}
+		// }
 
 		// Get the user's org list (work around since we only know the org_id)
 		orgs, err := client.GetUserOrgs(c.Context())
@@ -150,8 +158,8 @@ func (service *OrganizationService) GetClassroomsInOrg() fiber.Handler {
 		}
 
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"classrooms": classrooms,
-			"org_role":   strings.ToUpper(*membership.Role),
+			"classroom_users": classroomUsers,
+			"org_role":        strings.ToUpper(*membership.Role),
 		})
 	}
 }
