@@ -3,20 +3,20 @@
 // ==============================
 
 interface IStepComponentProps<T> {
-    data: T;
-    onChange: (newData: Partial<T>) => void;
+  data: T;
+  onChange: (newData: Partial<T>) => void;
 }
 
 interface IStep<T> {
-    title: string;
-    component: React.ComponentType<IStepComponentProps<T>>;
-    onNext: (data: T) => Promise<void>;
+  title: string;
+  component: React.ComponentType<IStepComponentProps<T>>;
+  onNext: (data: T) => Promise<void>;
 }
 
 interface IMultiStepFormProps<T> {
-    steps: IStep<T>[];
-    cancelLink: string;
-    initialData: T;
+  steps: IStep<T>[];
+  cancelLink: string;
+  initialData: T;
 }
 
 // ==============================
@@ -24,9 +24,10 @@ interface IMultiStepFormProps<T> {
 // ==============================
 
 interface IAssignmentFormData {
-    assignmentName: string;
-    classroomId: number;
-    groupAssignment: boolean;
-    mainDueDate: Date | null;
-    templateRepo: ITemplateRepo | null;
+  assignmentName: string;
+  classroomId: number;
+  groupAssignment: boolean;
+  mainDueDate: Date | null;
+  defaultScore: number;
+  templateRepo: ITemplateRepo | null;
 }

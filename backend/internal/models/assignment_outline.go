@@ -24,6 +24,7 @@ type AssignmentOutline struct {
 	RubricID        *int64     `json:"rubric_id,omitempty"`
 	GroupAssignment bool       `json:"group_assignment"`
 	MainDueDate     *time.Time `json:"main_due_date,omitempty"`
+	DefaultScore    int        `json:"default_score"`
 }
 
 type AssignmentClassroomID struct {

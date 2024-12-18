@@ -8,6 +8,7 @@ interface IAssignmentOutline {
   rubric_id: number | null;
   group_assignment: boolean;
   main_due_date: Date | null;
+  default_score: number;
 }
 
 interface IAssignmentOutlineResponse {

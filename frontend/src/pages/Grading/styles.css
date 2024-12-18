@@ -16,9 +16,6 @@
         background: #f1f1f1;
       }
     }
-    & .TableRow--expanded {
-      background: #f3f3f3;
-    }
   }
 
   .SubmissionTable {
@@ -29,5 +26,27 @@
         font-weight: 500;
       }
     }
+  }
+}
+
+.GradingAssignmentRow {
+  &--expanded {
+    background: #f3f3f3;
+  }
+
+  &__submissions {
+    padding: 0 40px;
+
+    .TableRow:not(:first-child) {
+      .TableCell:first-child {
+        font-weight: 500;
+      }
+    }
+  }
+
+  &__foot {
+    display: flex;
+    justify-content: end;
+    padding-bottom: 10px;
   }
 }
