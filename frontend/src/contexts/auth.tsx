@@ -31,7 +31,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     select: (data: IUserResponse) => {
       return data;
     },
-    retryDelay: 1000,
+    retry: false,
     staleTime: 0, 
     gcTime: 0,
     refetchOnWindowFocus: true,

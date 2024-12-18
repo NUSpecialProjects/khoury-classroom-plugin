@@ -51,6 +51,8 @@ const LeftNav: React.FC = () => {
         <Button
           href="/app/classroom/select"
           state={{ orgID: selectedClassroom?.org_id }}
+          disabled={!selectedClassroom}
+          variant={!selectedClassroom ? "disabled" : "primary"}
         >
           View all classrooms
         </Button>

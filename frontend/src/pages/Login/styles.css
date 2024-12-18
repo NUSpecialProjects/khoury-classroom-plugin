@@ -22,6 +22,10 @@
     flex-direction: column;
     align-items: center;
   }
+
+  .Button {
+    width: 150px;
+  }
 }
 
 /*Format Logos*/

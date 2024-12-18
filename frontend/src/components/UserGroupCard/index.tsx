@@ -32,9 +32,11 @@ const UserGroupCard: React.FC<IUserGroupCardProps> = ({
       const userQuery = userQueries[index];
       const githubUser = userQuery.data?.github_user;
 
+      const showPlaceholder = userQuery.isLoading || !userQuery.data || !githubUser;
+
       return (
         <div key={index}>
-          {!githubUser || userQuery.isLoading ? (
+          {showPlaceholder ? (
             <div className="UserGroupCard__icon-placeholder" />
           ) : (
             <img
