@@ -218,17 +218,15 @@ func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentW
 		SET assignment_outline_id = $1,
 			repo_name = $2,
 			unique_due_date = $3,
-			auto_grader_score = $4,
-			grades_published_timestamp = $5,
-			work_state = $6,
-			created_at = $7,
-			commit_amount = $8,
-			first_commit_date = $9
-		WHERE id = $10
+			grades_published_timestamp = $4,
+			work_state = $5,
+			created_at = $6,
+			commit_amount = $7,
+			first_commit_date = $8
+		WHERE id = $9
 	`, studentWork.AssignmentOutlineID,
 		studentWork.RepoName,
 		studentWork.UniqueDueDate,
-		studentWork.AutoGraderScore,
 		studentWork.GradesPublishedTimestamp,
 		studentWork.WorkState,
 		studentWork.CreatedAt,
