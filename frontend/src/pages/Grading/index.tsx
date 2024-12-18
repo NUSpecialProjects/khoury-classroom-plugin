@@ -15,6 +15,7 @@ import { formatDateTime } from "@/utils/date";
 import PageHeader from "@/components/PageHeader";
 
 import "./styles.css";
+import { StudentWorkState } from "@/types/enums";
 
 interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   assignmentId: number;
@@ -59,24 +60,32 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
       </TableRow>
       {!collapsed && (
         <TableDiv>
-          <Table cols={2} className="SubmissionTable">
+          <Table cols={3} className="SubmissionTable">
             <TableRow style={{ borderTop: "none" }}>
               <TableCell>Student</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Score</TableCell>
             </TableRow>
             {studentAssignments &&
-              studentAssignments.map((studentAssignment, i: number) => (
-                <TableRow
-                  key={i}
-                  onClick={() => {
+              studentAssignments
+                .filter(
+                  (studentAssignment) =>
+                    studentAssignment.work_state !==
+                    StudentWorkState.NOT_ACCEPTED
+                )
+                .map((studentAssignment, i: number) => (
+                  <TableRow
+                    key={i}
+                    onClick={() => {
                     navigate(
                       `assignment/${assignmentId}/student/${studentAssignment.student_work_id}`
                     );
                   }}
                 >
                   <TableCell>
-                    {studentAssignment.contributors.join(", ")}
+                    {studentAssignment.contributors.map(c => `${c.full_name}`).join(", ")}
                   </TableCell>
+                  <TableCell>{studentAssignment.work_state}</TableCell>
                   <TableCell>-/100</TableCell>
                 </TableRow>
               ))}

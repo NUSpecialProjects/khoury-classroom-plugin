@@ -39,8 +39,8 @@ export const getStudentWorks = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = ((await response.json()) as IStudentWorkResponses).student_works;
-  return resp;
+  const data: IStudentWorkResponses = await response.json();
+  return data.student_works;
 };
 
 

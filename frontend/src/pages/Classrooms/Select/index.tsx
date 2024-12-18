@@ -9,7 +9,7 @@ import { Table, TableRow, TableCell } from "@/components/Table";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import Button from "@/components/Button";
 import { MdAdd } from "react-icons/md";
-import { OrgRole } from "@/types/users";
+import { OrgRole, toClassroom } from "@/types/enums";
 
 const ClassroomSelection: React.FC = () => {
   const [classrooms, setClassrooms] = useState<IClassroomUser[]>([]);
@@ -49,12 +49,7 @@ const ClassroomSelection: React.FC = () => {
   }, [orgID]);
 
   const handleClassroomSelect = (classroomUser: IClassroomUser) => {
-    const classroom: IClassroom = {
-      id: classroomUser.classroom_id,
-      name: classroomUser.classroom_name,
-      org_id: classroomUser.org_id,
-      org_name: classroomUser.org_name,
-    }
+    const classroom: IClassroom = toClassroom(classroomUser);
     setSelectedClassroom(classroom);
     navigate(`/app/dashboard`);
   };

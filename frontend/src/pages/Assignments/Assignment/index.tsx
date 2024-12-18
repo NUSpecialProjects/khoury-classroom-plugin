@@ -3,22 +3,20 @@ import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { Bar, Doughnut } from "react-chartjs-2";
-import { ChartData, Chart as ChartJS, ChartOptions, Point, registerables } from "chart.js";
-import { Line } from 'react-chartjs-2'
+import { Chart as ChartJS, registerables } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
   getAssignmentIndirectNav,
+  getAssignmentTemplate,
   postAssignmentToken,
-  getAssignmentFirstCommit,
-  getAssignmentTotalCommits,
 } from "@/api/assignments";
 import {
   getAssignmentAcceptanceMetrics,
   getAssignmentGradedMetrics,
 } from "@/api/metrics";
-import { getStudentWorkCommitsPerDay, getStudentWorks } from "@/api/student_works";
+import { getStudentWorks } from "@/api/student_works";
 import { formatDate } from "@/utils/date";
 
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
@@ -29,6 +27,7 @@ import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
 
 import "./styles.css";
+import { StudentWorkState } from "@/types/enums";
 
 ChartJS.register(...registerables);
 ChartJS.register(ChartDataLabels);
@@ -36,14 +35,13 @@ ChartJS.register(ChartDataLabels);
 const Assignment: React.FC = () => {
   const location = useLocation();
   const [assignment, setAssignment] = useState<IAssignmentOutline>();
+  const [assignmentTemplate, setAssignmentTemplate] = useState<IAssignmentTemplate>();
   const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
-
-  const [firstCommit, setFirstCommit] = useState<string>("");
-  const [totalCommits, setTotalCommits] = useState<string>();
+  const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
     labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
@@ -69,9 +67,6 @@ const Assignment: React.FC = () => {
       },
     ],
   });
-
-  const base_url: string = import.meta.env
-    .VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   useEffect(() => {
     if (!selectedClassroom || !id) return;
@@ -107,6 +102,14 @@ const Assignment: React.FC = () => {
 
       // sync student assignments
       if (selectedClassroom !== null && selectedClassroom !== undefined) {
+        getAssignmentTemplate(selectedClassroom.id, a.id)
+        .then(assignmentTemplate => {
+          setAssignmentTemplate(assignmentTemplate);
+        })
+        .catch(_ => {
+          // do nothing
+        });
+
         (async () => {
           try {
             const studentWorks = await getStudentWorks(
@@ -170,76 +173,15 @@ const Assignment: React.FC = () => {
     generateInviteLink();
   }, [assignment]);
 
-  useEffect(() => {
-    if (
-      assignment !== null &&
-      assignment !== undefined &&
-      selectedClassroom !== null &&
-      selectedClassroom !== undefined
-    ) {
-      (async () => {
-        try {
-          const commitDate = await getAssignmentFirstCommit(
-            selectedClassroom.id,
-            assignment.id
-          );
-          if (commitDate !== null && commitDate !== undefined) {
-            setFirstCommit(formatDate(commitDate));
-          } else {
-            setFirstCommit("N/A");
-          }
-        } catch (_) {
-          // do nothing
-        }
-      })();
-    }
-  }, [selectedClassroom, assignment]);
 
-  useEffect(() => {
-    if (assignment !== null && assignment !== undefined && selectedClassroom !== null && selectedClassroom !== undefined) {
-      (async () => {
-        try {
-          const total = await getAssignmentTotalCommits(
-            selectedClassroom.id,
-            assignment.id
-          );
-          if (totalCommits !== null && totalCommits !== undefined) {
-            setTotalCommits(total.toString());
-          } else {
-            setTotalCommits("N/A");
-          }
-
-        } catch (_) {
-          // do nothing
-        }
-      })();
-    }
-  }, [selectedClassroom, assignment]);
-
-  useEffect(() => {
-    if (
-      assignment !== null &&
-      assignment !== undefined &&
-      selectedClassroom !== null &&
-      selectedClassroom !== undefined
-    ) {
-      (async () => {
-        try {
-          const total = await getAssignmentTotalCommits(
-            selectedClassroom.id,
-            assignment.id
-          );
-          if (totalCommits !== null && totalCommits !== undefined) {
-            setTotalCommits(total.toString());
-          } else {
-            setTotalCommits("N/A");
-          }
-        } catch (_) {
-          // do nothing
-        }
-      })();
-    }
-  }, [selectedClassroom, assignment]);
+  
+  const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";
+  const firstCommitDate = studentWorks.reduce((earliest, work) => {
+    if (!work.first_commit_date) return earliest;
+    if (!earliest) return new Date(work.first_commit_date);
+    return new Date(work.first_commit_date) < earliest ? new Date(work.first_commit_date) : earliest;
+  }, null as Date | null);
+  const totalCommits = studentWorks.reduce((total, work) => total + work.commit_amount, 0);
 
 
 
@@ -268,7 +210,7 @@ const Assignment: React.FC = () => {
 
         <div className="Assignment">
           <div className="Assignment__externalButtons">
-            <Button href="#" variant="secondary" newTab>
+            <Button href={assignmentTemplateLink} variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
             </Button>
             <Button
@@ -292,8 +234,12 @@ const Assignment: React.FC = () => {
           <div className="Assignment__metrics">
             <h2>Metrics</h2>
             <MetricPanel>
-              <Metric title="First Commit Date">{firstCommit}</Metric>
-              <Metric title="Total Commits">{totalCommits ?? "N/A"}</Metric>
+              <Metric title="First Commit Date">
+                {formatDate(firstCommitDate)}
+              </Metric>
+              <Metric title="Total Commits">
+                {totalCommits.toString()}
+              </Metric>
             </MetricPanel>
 
             <div className="Assignment__metricsCharts">
@@ -399,16 +345,21 @@ const Assignment: React.FC = () => {
                 studentWorks.map((sa, i) => (
                   <TableRow key={i} className="Assignment__submission">
                     <TableCell>
-                      <Link
-                        to={`/app/submissions/${sa.student_work_id}`}
-                        state={{ submission: sa, assignmentId: assignment.id }}
-                        className="Dashboard__assignmentLink"
-                      >
-                        {sa.contributors.join(", ")}
-                      </Link>
+                      {sa.work_state !== StudentWorkState.NOT_ACCEPTED ? (
+                        <Link
+                          to={`/app/submissions/${sa.student_work_id}`}
+                          state={{ submission: sa, assignmentId: assignment.id }}
+                          className="Dashboard__assignmentLink">
+                          {sa.contributors.map(c => `${c.full_name  }`).join(", ")}
+                        </Link>
+                      ) : (
+                        <div>
+                          {sa.contributors.map(c => `${c.full_name}`).join(", ")}
+                        </div>
+                      )}
                     </TableCell>
-                    <TableCell>Passing</TableCell>
-                    <TableCell>12 Sep, 11:34pm</TableCell>
+                    <TableCell>{sa.work_state}</TableCell>
+                    <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
                   </TableRow>
                 ))}
             </Table>
