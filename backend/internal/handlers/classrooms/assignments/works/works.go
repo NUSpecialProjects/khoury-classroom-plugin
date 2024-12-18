@@ -93,7 +93,7 @@ func (s *WorkService) getWorkByID() fiber.Handler {
 const LatexPositivePointPrefix = `$${\huge\color{limegreen}\textbf{[+%d]}}$$ `
 const LatexNegativePointPrefix = `$${\huge\color{WildStrawberry}\textbf{[%d]}}$$ `
 
-func formatFeedbackForGitHub(comments []models.PRReviewCommentResponse) []models.PRReviewComment {
+func formatFeedbackForGitHub(comments []models.PRReviewCommentWithMetaData) []models.PRReviewComment {
 	var formattedComments []models.PRReviewComment
 	for _, comment := range comments {
 		// format comment: body -> [pt value] body
@@ -111,7 +111,7 @@ func formatFeedbackForGitHub(comments []models.PRReviewCommentResponse) []models
 	return formattedComments
 }
 
-func insertFeedbackInDB(s *WorkService, c *fiber.Ctx, comments []models.PRReviewCommentResponse, taUserID int64, workID int) error {
+func insertFeedbackInDB(s *WorkService, c *fiber.Ctx, comments []models.PRReviewCommentWithMetaData, taUserID int64, workID int) error {
 	// insert into DB, remove points field and format the body to display the points
 	for _, comment := range comments {
 		// insert into DB

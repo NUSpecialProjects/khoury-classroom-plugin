@@ -10,7 +10,7 @@ import (
 )
 
 // gets all feedback comments on a student work
-func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error) {
+func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.FeedbackComment, error) {
 	query := `SELECT fc.*, ri.explanation, ri.point_value, u.github_username
 	FROM feedback_comment fc
 	JOIN rubric_items ri ON fc.rubric_item_id = ri.id
@@ -25,30 +25,17 @@ func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]model
 	}
 
 	defer rows.Close()
-	rawFeedback, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.FeedbackComment])
+	feedback, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.FeedbackComment])
 	if err != nil {
 		fmt.Println("Error collecting rows ", err)
 		return nil, err
 	}
 
-	var formattedFeedback []models.PRReviewCommentResponse
-	for _, feedback := range rawFeedback {
-		formattedFeedback = append(formattedFeedback, models.PRReviewCommentResponse{
-			PRReviewComment: models.PRReviewComment{
-				Path: feedback.FilePath,
-				Line: feedback.FileLine,
-				Body: feedback.Explanation,
-			},
-			Points:     feedback.PointValue,
-			TAUsername: feedback.TAUsername,
-		})
-	}
-
-	return formattedFeedback, err
+	return feedback, err
 }
 
 // create a new feedback comment (ad-hoc: also create a rubric item simultaneously)
-func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentWithMetaData) error {
 	_, err := db.connPool.Exec(ctx,
 		`WITH ri AS
 			(INSERT INTO rubric_items (point_value, explanation) VALUES ($1, $2) RETURNING id)
@@ -67,7 +54,7 @@ func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, student
 }
 
 // create a new feedback comment (attach existing rubric item)
-func (db *DB) CreateFeedbackCommentFromRubricItem(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+func (db *DB) CreateFeedbackCommentFromRubricItem(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentWithMetaData) error {
 	if comment.RubricItemID == nil {
 		return errors.New("no rubric item id given")
 	}
@@ -87,6 +74,6 @@ func (db *DB) CreateFeedbackCommentFromRubricItem(ctx context.Context, TAUserID 
 }
 
 // edit a feedback comment
-func (db *DB) EditFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+func (db *DB) EditFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentWithMetaData) error {
 	return nil
 }

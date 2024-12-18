@@ -1,8 +1,8 @@
 package models
 
 type PRReviewRequest struct {
-	Body     string                    `json:"body"`
-	Comments []PRReviewCommentResponse `json:"comments"`
+	Body     string                        `json:"body"`
+	Comments []PRReviewCommentWithMetaData `json:"comments"`
 }
 
 type PRReviewComment struct {
@@ -19,7 +19,7 @@ const (
 	PRReviewCommentActionDelete PRReviewCommentAction = "DELETE"
 )
 
-type PRReviewCommentResponse struct {
+type PRReviewCommentWithMetaData struct {
 	PRReviewComment
 	Action            PRReviewCommentAction `json:"action"`
 	RubricItemID      *int                  `json:"rubric_item_id"`

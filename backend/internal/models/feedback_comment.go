@@ -7,11 +7,11 @@ type FeedbackComment struct {
 	StudentWorkID     int       `json:"student_work_id"`
 	RubricItemID      int       `json:"rubric_item_id"`
 	TAUserID          int       `json:"ta_user_id"`
-	TAUsername        string    `json:"github_username" db:"github_username"`
-	PointValue        int       `json:"point_value"`
-	Explanation       string    `json:"explanation"`
-	FilePath          *string   `json:"file_path"`
-	FileLine          *int      `json:"file_line"`
+	TAUsername        string    `json:"ta_username" db:"github_username"`
+	PointValue        int       `json:"points"`
+	Explanation       string    `json:"body"`
+	FilePath          *string   `json:"path"`
+	FileLine          *int      `json:"line"`
 	CreatedAt         time.Time `json:"created_at"`
 	SupersededBy      *int      `json:"superseded_by"`
 }
