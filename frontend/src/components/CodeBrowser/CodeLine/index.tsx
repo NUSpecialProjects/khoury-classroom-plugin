@@ -48,15 +48,8 @@ interface ICodeLine {
 const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { currentUser } = useContext(AuthContext);
-  const {
-    assignmentID,
-    studentWorkID,
-    feedback,
-    stagedFeedback,
-    rubric,
-    selectedRubricItems,
-    addFeedback,
-  } = useContext(GraderContext);
+  const { feedback, stagedFeedback, rubric, selectedRubricItems, addFeedback } =
+    useContext(GraderContext);
   const [editing, setEditing] = useState(false);
   const [feedbackExists, setFeedbackExists] = useState(false);
   const [stagedFeedbackExists, setStagedFeedbackExists] = useState(false);
@@ -93,8 +86,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
 
   const handleAddFeedback = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser || !selectedClassroom || !assignmentID || !studentWorkID)
-      return;
+    if (!currentUser || !selectedClassroom) return;
 
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
@@ -113,14 +105,7 @@ const CodeLine: React.FC<ICodeLine> = ({ path, line, isDiff, code }) => {
   };
 
   const attachRubricItems = (riIDs: number[]) => {
-    if (
-      !currentUser ||
-      !selectedClassroom ||
-      !assignmentID ||
-      !studentWorkID ||
-      !rubric
-    )
-      return;
+    if (!currentUser || !selectedClassroom || !rubric) return;
 
     const feedback = rubric.rubric_items.reduce(
       (selected: IGraderFeedback[], ri: IRubricItem) => {

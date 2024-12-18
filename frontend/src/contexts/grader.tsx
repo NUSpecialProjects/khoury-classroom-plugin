@@ -147,14 +147,16 @@ export const GraderProvider: React.FC<{
     ).then(() => {
       setStudentWork((prevStudentWork) => {
         if (prevStudentWork) {
+          const total =
+            (prevStudentWork.manual_feedback_score ??
+              assignment?.default_score) +
+            Object.values(stagedFeedback).reduce(
+              (s: number, fb: IGraderFeedback) => s + fb.points,
+              0
+            );
           return {
             ...prevStudentWork,
-            manual_feedback_score:
-              prevStudentWork.manual_feedback_score +
-              Object.values(stagedFeedback).reduce(
-                (s: number, fb: IGraderFeedback) => s + fb.points,
-                0
-              ),
+            manual_feedback_score: total,
           };
         }
         return prevStudentWork;
