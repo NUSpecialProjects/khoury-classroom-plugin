@@ -30,6 +30,29 @@
     }
   }
 
+  &--warning-primary {
+    background: var(--red);
+    color: var(--primary-text-white);
+    border: none;
+
+    &:hover {
+      background: var(--red-darker);
+    }
+  }
+
+  &--warning-secondary {
+    background: var(--page-background);
+    color: var(--red);
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--red);
+
+    &:hover {
+      background: var(--red);
+      color: var(--primary-text-white);
+    }
+  }
+
   &--small {
     font-size: var(--font-size-xs);
     padding: 12px 30px;

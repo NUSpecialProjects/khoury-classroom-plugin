@@ -8,6 +8,8 @@ import EmptyDataBanner from "@/components/EmptyDataBanner";
 import './styles.css';
 import Button from "@/components/Button";
 import CopyLink from "@/components/CopyLink";
+import Pill from "@/components/Pill";
+import { removeUnderscores } from "@/utils/text";
 import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 interface GenericRolePageProps {
@@ -87,7 +89,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
         setError(null);
         return;
       }
-  
+
       try {
         const users = await getClassroomUsers(selectedClassroom.id);
         setUsers(users.filter((user: IClassroomUser) => user.classroom_role === role_type));
@@ -103,12 +105,12 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   const getActionButton = (user: IClassroomUser) => {
     switch (user.status) {
       case ClassroomUserStatus.ACTIVE:
-        return <Button size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
+        return <Button variant="warning-secondary" size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
       case ClassroomUserStatus.ORG_INVITED:
-        return <Button size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
+        return <Button variant="warning-secondary" size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
       case ClassroomUserStatus.REQUESTED:
       case ClassroomUserStatus.NOT_IN_ORG:
-        return <Button size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
+        return <Button variant="secondary" size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
       default:
         return null;
     }
@@ -151,8 +153,8 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
           {users.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
             <div className="Users__inviteAllWrapper">
               <Button onClick={handleInviteAll}>Invite All Requested Users</Button>
-          </div>
-        )}
+            </div>
+          )}
         </div>
       )}
 
@@ -167,7 +169,24 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
             {users.map((user, i) => (
               <TableRow key={i}>
                 <TableCell>{user.first_name} {user.last_name}</TableCell>
-                <TableCell>{user.status}</TableCell>
+                <TableCell>
+                  <Pill label={removeUnderscores(user.status)}
+                    variant={(() => {
+                      switch (user.status) {
+                        case ClassroomUserStatus.ACTIVE:
+                          return 'green';
+                        case ClassroomUserStatus.ORG_INVITED:
+                          return 'amber';
+                        case ClassroomUserStatus.REQUESTED:
+                          return 'default';
+                        case ClassroomUserStatus.NOT_IN_ORG:
+                          return 'red';
+                        default:
+                          return 'default'; // Fallback for unexpected roles
+                      }
+                    })()}>
+                  </Pill>
+                </TableCell>
                 <TableCell>{getActionButton(user)}</TableCell>
               </TableRow>
             ))}

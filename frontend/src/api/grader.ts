@@ -1,6 +1,6 @@
 const base_url: string = import.meta.env.VITE_PUBLIC_API_DOMAIN as string;
 
-export const createPRReview = async (
+export const gradeWork = async (
   classroomID: number,
   assignmentID: number,
   studentWorkID: number,

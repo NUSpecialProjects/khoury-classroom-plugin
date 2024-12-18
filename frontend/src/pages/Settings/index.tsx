@@ -1,19 +1,29 @@
-import { AuthContext } from "@/contexts/auth";
 import { useContext } from "react";
-import PageHeader from "@/components/PageHeader";
+
+import { AuthContext } from "@/contexts/auth";
+import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
+
+import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
-import './styles.css';
+
+import "./styles.css";
 
 const Settings: React.FC = () => {
   const { logout } = useContext(AuthContext);
+  const { selectedClassroom } = useContext(SelectedClassroomContext);
 
   return (
-    <div className="Settings">
-      <PageHeader pageTitle="Settings"></PageHeader>
-      <Button variant="primary" onClick={logout}>
-        Logout
-      </Button>
-    </div>
+    selectedClassroom && (
+      <div className="Settings">
+        <BreadcrumbPageHeader
+          pageTitle={selectedClassroom?.org_name}
+          breadcrumbItems={[selectedClassroom?.name, "Grading"]}
+        />
+        <Button variant="primary" onClick={logout}>
+          Logout
+        </Button>
+      </div>
+    )
   );
 };
 
