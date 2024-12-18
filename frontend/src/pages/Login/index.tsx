@@ -5,12 +5,14 @@ import ErrorMessage from "@/components/Error";
 import { getCallbackURL } from "@/api/auth";
 import { FaGithub } from "react-icons/fa6";
 import Button from "@/components/Button";
+import { useEffect, useState } from "react";
 
 const Login: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const errorFromQuery = queryParams.get("error");
+  const [error, setError] = useState<string | null>(null);
 
   // Use React Query to handle the API call
   const { data: callbackData, error: callbackError, isLoading, refetch } = useQuery({
@@ -26,10 +28,13 @@ const Login: React.FC = () => {
   });
 
   // Handle error from query params
-  if (errorFromQuery) {
-    queryParams.delete("error");
-    navigate({ search: queryParams.toString() }, { replace: true });
-  }
+  useEffect(() => {
+    if (errorFromQuery) {
+      setError(errorFromQuery);
+      queryParams.delete("error");
+      navigate({ search: queryParams.toString() }, { replace: true });
+    }
+  }, [errorFromQuery, navigate, queryParams]);
 
   return (
     <div className="LandingPage">
@@ -62,13 +67,12 @@ const Login: React.FC = () => {
                   Loading...
                 </Button>
               );
-            case !!(callbackError || errorFromQuery):
+            case !!callbackError:
               return (
                 <div className="LandingPage__error-container">
                   <Button variant="secondary" onClick={() => refetch()}>
                     Refresh
                   </Button>
-                  <ErrorMessage message={callbackError?.message || errorFromQuery || "An error occurred"} />
                 </div>
               );
             default:
@@ -76,6 +80,9 @@ const Login: React.FC = () => {
           }
         })()}
       </div>
+      {error && (
+        <ErrorMessage message={error} />
+      )}
     </div>
   );
 };
