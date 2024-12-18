@@ -24,7 +24,7 @@ type Storage interface {
 type FeedbackComment interface {
 	GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error)
 	CreateFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
-	AttachRubricItemToFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
+	CreateFeedbackCommentFromRubricItem(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error
 }
 
 type Works interface {
@@ -88,6 +88,7 @@ type AssignmentTemplate interface {
 	AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error)
 	CreateAssignmentTemplate(ctx context.Context, assignmentTemplateData models.AssignmentTemplate) (models.AssignmentTemplate, error)
 	GetAssignmentTemplateByID(ctx context.Context, templateID int64) (models.AssignmentTemplate, error)
+	GetAssignmentTemplateByAssignmentID(ctx context.Context, assignmentID int64) (models.AssignmentTemplate, error)
 }
 
 type AssignmentBaseRepo interface {

@@ -1,6 +1,6 @@
 import { sendOrganizationInvitesToRequestedUsers, sendOrganizationInviteToUser, revokeOrganizationInvite, removeUserFromClassroom, postClassroomToken, getClassroomUsers } from "@/api/classrooms";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import { ClassroomRole, ClassroomUserStatus } from "@/types/users";
+import { ClassroomRole, ClassroomUserStatus } from "@/types/enums";
 import React, { useContext, useState } from "react";
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import { Table, TableCell, TableRow } from "@/components/Table";

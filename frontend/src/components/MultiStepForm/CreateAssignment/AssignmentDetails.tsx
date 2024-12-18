@@ -1,9 +1,12 @@
-import React, { useCallback } from 'react';
-import Input from '@/components/Input';
-import Checkbox from '@/components/Checkbox';
-import './styles.css';
+import React, { useCallback } from "react";
+import Input from "@/components/Input";
+import Checkbox from "@/components/Checkbox";
+import "./styles.css";
 
-const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({ data, onChange }) => {
+const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
+  data,
+  onChange,
+}) => {
   const handleCheckboxChange = (target: HTMLInputElement) => {
     onChange({ [target.name]: target.checked });
   };
@@ -20,10 +23,10 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
       const target = e.target as HTMLInputElement;
 
       switch (type) {
-        case 'checkbox':
+        case "checkbox":
           handleCheckboxChange(target);
           break;
-        case 'date':
+        case "date":
           handleDateChange(target);
           break;
         default:
@@ -46,7 +49,8 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
           value={data.assignmentName}
           onChange={handleInputChange}
           required
-          caption="Student assignments will have the prefix, e.g. database-design-project"></Input>
+          caption="Student assignments will have the prefix, e.g. database-design-project"
+        ></Input>
       </div>
 
       <div className="CreateAssignmentForms__formGroup">
@@ -55,10 +59,26 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
           type="date"
           name="mainDueDate"
           id="mainDueDate"
-          value={data.mainDueDate ? data.mainDueDate.toISOString().split('T')[0] : ''}
+          value={
+            data.mainDueDate ? data.mainDueDate.toISOString().split("T")[0] : ""
+          }
           onChange={handleInputChange}
           required
-          caption="Optional; if left blank the assignment will not have a deadline"></Input>
+          caption="Optional; if left blank the assignment will not have a deadline"
+        ></Input>
+      </div>
+
+      <div className="CreateAssignmentForms__formGroup">
+        <Input
+          label="Default Score"
+          type="number"
+          name="defaultScore"
+          id="defaultScore"
+          value={data.defaultScore}
+          onChange={handleInputChange}
+          required
+          caption="Manual grading score will start at this value; defaults to 0 if left blank"
+        ></Input>
       </div>
 
       <div className="CreateAssignmentForms__checkboxGroup">
@@ -68,7 +88,8 @@ const AssignmentDetails: React.FC<IStepComponentProps<IAssignmentFormData>> = ({
           label="Group Assignment"
           checked={data.groupAssignment}
           onChange={handleInputChange}
-          caption="If left unchecked the assignment will be an individual submission for each student"></Checkbox>
+          caption="If left unchecked the assignment will be an individual submission for each student"
+        ></Checkbox>
       </div>
     </form>
   );

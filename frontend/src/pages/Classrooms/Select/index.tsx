@@ -12,7 +12,8 @@ import { removeUnderscores } from "@/utils/text";
 import { MdAdd } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { ClassroomRole, OrgRole } from "@/types/users";
+import { ClassroomRole, OrgRole } from "@/types/enums";
+import { toClassroom } from "@/types/enums";
 
 const ClassroomSelection: React.FC = () => {
   const location = useLocation();
@@ -43,12 +44,7 @@ const ClassroomSelection: React.FC = () => {
   const orgRole = data?.org_role || OrgRole.MEMBER;
 
   const handleClassroomSelect = (classroomUser: IClassroomUser) => {
-    const classroom: IClassroom = {
-      id: classroomUser.classroom_id,
-      name: classroomUser.classroom_name,
-      org_id: classroomUser.org_id,
-      org_name: classroomUser.org_name,
-    }
+    const classroom: IClassroom = toClassroom(classroomUser);
     setSelectedClassroom(classroom);
     navigate(`/app/dashboard`);
   };

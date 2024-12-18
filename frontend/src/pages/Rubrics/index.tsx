@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 import "./styles.css";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
-import PageHeader from "@/components/PageHeader";
+import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import { getRubricsInClassroom } from "@/api/rubrics";
 import Button from "@/components/Button";
 import RubricList from "@/components/RubricList";
@@ -22,42 +22,47 @@ const Rubrics: React.FC = () => {
   });
 
   return (
-    <div>
-      <PageHeader pageTitle="Rubrics"></PageHeader>
+    selectedClassroom && (
+      <div>
+        <BreadcrumbPageHeader
+          pageTitle={selectedClassroom?.org_name}
+          breadcrumbItems={[selectedClassroom?.name, "Rubrics"]}
+        />
 
-      {isLoading ? (
-        <EmptyDataBanner>
-          <LoadingSpinner />
-        </EmptyDataBanner>
-      ) : error ? (
-        <EmptyDataBanner>
-          Error loading rubrics: {error instanceof Error ? error.message : "Unknown error"}
-        </EmptyDataBanner>
-      ) : (
-        <div>
-          {rubrics && rubrics.length > 0 ? (
-            <RubricList rubrics={rubrics} />
-          ) : (
-            <EmptyDataBanner>
-              <div className="emptyDataBannerMessage">
-                No rubrics have been created yet.
-              </div>
-              <Button variant="primary" href="/app/rubrics/new">
-                <MdAdd /> Create New Rubric
-              </Button>
-            </EmptyDataBanner>
-          )}
+        {isLoading ? (
+          <EmptyDataBanner>
+            <LoadingSpinner />
+          </EmptyDataBanner>
+        ) : error ? (
+          <EmptyDataBanner>
+            Error loading rubrics: {error instanceof Error ? error.message : "Unknown error"}
+          </EmptyDataBanner>
+        ) : (
+          <div>
+            {rubrics && rubrics.length > 0 ? (
+              <RubricList rubrics={rubrics} />
+            ) : (
+              <EmptyDataBanner>
+                <div className="emptyDataBannerMessage">
+                  No rubrics have been created yet.
+                </div>
+                <Button variant="primary" href="/app/rubrics/new">
+                  <MdAdd /> Create New Rubric
+                </Button>
+              </EmptyDataBanner>
+            )}
 
-          {rubrics && rubrics.length > 0 && (
-            <Link to="/app/rubrics/new">
-              <Button>
-                <MdAdd /> Create New Rubric
-              </Button>
-            </Link>
-          )}
-        </div>
-      )}
-    </div>
+            {rubrics && rubrics.length > 0 && (
+              <Link to="/app/rubrics/new">
+                <Button>
+                  <MdAdd /> Create New Rubric
+                </Button>
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+    )
   );
 };
 

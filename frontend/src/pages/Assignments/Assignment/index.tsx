@@ -9,16 +9,15 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
   getAssignmentIndirectNav,
+  getAssignmentTemplate,
   postAssignmentToken,
-  getAssignmentFirstCommit,
-  getAssignmentTotalCommits,
 } from "@/api/assignments";
 import {
   getAssignmentAcceptanceMetrics,
   getAssignmentGradedMetrics,
 } from "@/api/metrics";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDate } from "@/utils/date";
+import { formatDate, formatDateTime } from "@/utils/date";
 
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import CopyLink from "@/components/CopyLink";
@@ -29,6 +28,8 @@ import Metric from "@/components/Metrics";
 import { useQuery } from "@tanstack/react-query";
 import Pill from "@/components/Pill";
 import "./styles.css";
+import { StudentWorkState } from "@/types/enums";
+import { removeUnderscores } from "@/utils/text";
 
 ChartJS.register(...registerables);
 ChartJS.register(ChartDataLabels);
@@ -38,8 +39,6 @@ const Assignment: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
-  const [firstCommit, setFirstCommit] = useState<string>("");
-  const [totalCommits, setTotalCommits] = useState<string>();
 
   const { data: assignment } = useQuery({
     queryKey: ['assignment', selectedClassroom?.id, id],
@@ -68,6 +67,15 @@ const Assignment: React.FC = () => {
       if (!selectedClassroom?.id || !assignment?.id) return "";
       const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
       return `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
+    },
+    enabled: !!selectedClassroom?.id && !!assignment?.id
+  });
+
+  const { data: assignmentTemplate } = useQuery({
+    queryKey: ['assignmentTemplate', selectedClassroom?.id, assignment?.id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !assignment?.id) return null;
+      return await getAssignmentTemplate(selectedClassroom.id, assignment.id);
     },
     enabled: !!selectedClassroom?.id && !!assignment?.id
   });
@@ -123,55 +131,13 @@ const Assignment: React.FC = () => {
     );
   }, [selectedClassroom]);
 
-  useEffect(() => {
-    if (
-      assignment !== null &&
-      assignment !== undefined &&
-      selectedClassroom !== null &&
-      selectedClassroom !== undefined
-    ) {
-      (async () => {
-        try {
-          const commitDate = await getAssignmentFirstCommit(
-            selectedClassroom.id,
-            assignment.id
-          );
-          if (commitDate !== null && commitDate !== undefined) {
-            setFirstCommit(formatDate(commitDate));
-          } else {
-            setFirstCommit("N/A");
-          }
-        } catch (_) {
-          // do nothing
-        }
-      })();
-    }
-  }, [selectedClassroom, assignment]);
-
-  useEffect(() => {
-    if (
-      assignment !== null &&
-      assignment !== undefined &&
-      selectedClassroom !== null &&
-      selectedClassroom !== undefined
-    ) {
-      (async () => {
-        try {
-          const total = await getAssignmentTotalCommits(
-            selectedClassroom.id,
-            assignment.id
-          );
-          if (totalCommits !== null && totalCommits !== undefined) {
-            setTotalCommits(total.toString());
-          } else {
-            setTotalCommits("N/A");
-          }
-        } catch (_) {
-          // do nothing
-        }
-      })();
-    }
-  }, [selectedClassroom, assignment]);
+  const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";
+  const firstCommitDate = studentWorks.reduce((earliest, work) => {
+    if (!work.first_commit_date) return earliest;
+    if (!earliest) return new Date(work.first_commit_date);
+    return new Date(work.first_commit_date) < earliest ? new Date(work.first_commit_date) : earliest;
+  }, null as Date | null);
+  const totalCommits = studentWorks.reduce((total, work) => total + work.commit_amount, 0);
 
   return (
     assignment && (
@@ -198,7 +164,7 @@ const Assignment: React.FC = () => {
 
         <div className="Assignment">
           <div className="Assignment__externalButtons">
-            <Button href="#" variant="secondary" newTab>
+            <Button href={assignmentTemplateLink} variant="secondary" newTab>
               <FaGithub className="icon" /> View Template Repository
             </Button>
             <Button
@@ -222,8 +188,12 @@ const Assignment: React.FC = () => {
           <div className="Assignment__metrics">
             <h2>Metrics</h2>
             <MetricPanel>
-              <Metric title="First Commit Date">{firstCommit}</Metric>
-              <Metric title="Total Commits">{totalCommits ?? "N/A"}</Metric>
+              <Metric title="First Commit Date">
+                {formatDate(firstCommitDate)}
+              </Metric>
+              <Metric title="Total Commits">
+                {totalCommits.toString()}
+              </Metric>
             </MetricPanel>
 
             <div className="Assignment__metricsCharts">
@@ -321,7 +291,7 @@ const Assignment: React.FC = () => {
             <Table cols={3}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Student Name</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell className="Assignment__centerAlignedCell">Status</TableCell>
                 <TableCell>Last Commit</TableCell>
               </TableRow>
               {studentWorks &&
@@ -329,16 +299,44 @@ const Assignment: React.FC = () => {
                 studentWorks.map((sa: IStudentWork, i: number) => (
                   <TableRow key={i} className="Assignment__submission">
                     <TableCell>
-                      <Link
-                        to={`/app/submissions/${sa.student_work_id}`}
-                        state={{ submission: sa, assignmentId: assignment.id }}
-                        className="Dashboard__assignmentLink"
-                      >
-                        {sa.contributors.join(", ")}
-                      </Link>
+                      {sa.work_state !== StudentWorkState.NOT_ACCEPTED ? (
+                        <Link
+                          to={`/app/submissions/${sa.student_work_id}`}
+                          state={{ submission: sa, assignmentId: assignment.id }}
+                          className="Dashboard__assignmentLink">
+                          {sa.contributors.map(c => `${c.full_name  }`).join(", ")}
+                        </Link>
+                      ) : (
+                        <div>
+                          {sa.contributors.map(c => `${c.full_name}`).join(", ")}
+                        </div>
+                      )}
                     </TableCell>
-                    <TableCell className="Assignment__pillCell"><Pill label="PASSING" variant="green"></Pill></TableCell>
-                    <TableCell>12 Sep, 11:34pm</TableCell>
+                    <TableCell className="Assignment__pillCell">
+                      <Pill label={removeUnderscores(sa.work_state)}
+                        variant={(() => {
+                          switch (sa.work_state) {
+                            case StudentWorkState.ACCEPTED:
+                              return 'green';
+                            case StudentWorkState.STARTED:
+                              return 'amber';
+                            case StudentWorkState.SUBMITTED:
+                              return 'blue';
+                            case StudentWorkState.GRADING_ASSIGNED:
+                              return 'teal';
+                            case StudentWorkState.GRADING_COMPLETED:
+                              return 'teal';
+                            case StudentWorkState.GRADE_PUBLISHED:
+                              return 'teal';
+                            case StudentWorkState.NOT_ACCEPTED:
+                              return 'rose';
+                            default:
+                              return 'default';
+                          }
+                        })()}>
+                      </Pill>
+                    </TableCell>
+                    <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
                   </TableRow>
                 ))}
             </Table>

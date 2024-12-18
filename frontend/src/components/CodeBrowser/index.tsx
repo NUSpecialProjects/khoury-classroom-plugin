@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import Prism from "prismjs";
+import SimpleBar from "simplebar-react";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
@@ -13,7 +14,6 @@ import CodeLine from "./CodeLine";
 
 import "@/assets/prism-vs-dark.css";
 import "./styles.css";
-import SimpleBar from "simplebar-react";
 
 interface ICodeBrowser extends React.HTMLProps<HTMLDivElement> {
   assignmentID: string | undefined;

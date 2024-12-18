@@ -127,6 +127,7 @@ const ClassroomCreation: React.FC = () => {
               <Button 
                 type="submit" 
                 disabled={createClassroomMutation.isPending}
+                variant={createClassroomMutation.isPending ? "disabled" : "primary"}
               >
                 {createClassroomMutation.isPending ? "Creating..." : "Create Classroom"}
               </Button>
