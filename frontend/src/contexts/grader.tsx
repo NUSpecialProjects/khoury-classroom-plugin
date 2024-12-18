@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { SelectedClassroomContext } from "./selectedClassroom";
 import { getPaginatedStudentWork } from "@/api/student_works";
-import { createPRReview } from "@/api/grader";
+import { gradeWork } from "@/api/grader";
 import { getAssignmentRubric } from "@/api/assignments";
 
 interface IGraderContext {
@@ -108,7 +108,10 @@ export const GraderProvider: React.FC<{
   const addFeedback = (feedback: IGraderFeedback[]) => {
     const newFeedback: { [id: number]: IGraderFeedback } = {};
     for (const fb of feedback) {
-      newFeedback[getNextFeedbackID()] = fb;
+      newFeedback[getNextFeedbackID()] = {
+        ...fb,
+        action: "CREATE",
+      };
     }
 
     setStagedFeedback((prevFeedback) => ({
@@ -124,12 +127,26 @@ export const GraderProvider: React.FC<{
   const postFeedback = () => {
     if (!selectedClassroom || !assignmentID || !studentWorkID) return;
 
-    createPRReview(
+    gradeWork(
       selectedClassroom.id,
       Number(assignmentID),
       Number(studentWorkID),
       stagedFeedback
     ).then(() => {
+      setStudentWork((prevStudentWork) => {
+        if (prevStudentWork) {
+          return {
+            ...prevStudentWork,
+            manual_feedback_score:
+              prevStudentWork.manual_feedback_score +
+              Object.values(stagedFeedback).reduce(
+                (s: number, fb: IGraderFeedback) => s + fb.points,
+                0
+              ),
+          };
+        }
+        return prevStudentWork;
+      });
       setFeedback((prevFeedback) => ({
         ...prevFeedback,
         ...stagedFeedback,
