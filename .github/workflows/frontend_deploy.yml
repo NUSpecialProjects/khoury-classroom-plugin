@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - bugfix/aws
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend_deploy.yml'
@@ -47,7 +48,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::058264409130:role/github_actions_s3_full_access
+        role-to-assume: arn:aws:iam::058264409130:role/github-actions-deploy-role
         aws-region: us-east-2
 
     - name: Sync to S3
