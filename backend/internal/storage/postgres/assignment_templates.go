@@ -6,6 +6,7 @@ import (
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
+	"github.com/jackc/pgx/v5"
 )
 
 func (db *DB) AssignmentTemplateExists(ctx context.Context, templateID int64) (bool, error) {
@@ -53,13 +54,18 @@ func (db *DB) GetAssignmentTemplateByID(ctx context.Context, templateID int64) (
 }
 
 func (db *DB) GetAssignmentByRepoName(ctx context.Context, repoName string) (*models.AssignmentOutline, error){
-	var assignment models.AssignmentOutline
-			err := db.connPool.QueryRow(ctx, `SELECT *
-					FROM assignment_outlines ao
-					JOIN assignment_base_repos at ON ao.base_repo_id = at.base_repo_id
-					WHERE at.base_repo_name ILIKE $1;`, strings.ToLower(repoName)).Scan(&assignment)
+	row, err := db.connPool.Query(ctx, `SELECT *
+			FROM assignment_outlines ao
+			JOIN assignment_base_repos at ON ao.base_repo_id = at.base_repo_id
+			WHERE at.base_repo_name ILIKE $1;`, strings.ToLower(repoName))
+	
 	if err != nil {
 		return nil, err
 	}
-	return &assignment, nil
+
+	outline, err := pgx.RowToStructByName[models.AssignmentOutline](row)
+	if err != nil {
+		return nil, err
+	}
+	return &outline, nil
 }

@@ -2,7 +2,9 @@ package webhooks
 
 import (
 	"errors"
+	"fmt"
 	"strings"
+
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	models "github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/gofiber/fiber/v2"
@@ -49,21 +51,9 @@ func (s *WebHookService) PRThread(c *fiber.Ctx) error {
 }
 
 func (s *WebHookService) PushEvent(c *fiber.Ctx) error {
-<<<<<<< HEAD
 	// Extract the 'payload' form value
 	pushEvent := github.PushEvent{}
 	if err := c.BodyParser(&pushEvent); err != nil {
-		return err
-	}
-
-	// Check if this is first commit in a repository
-	isInitialCommit, err := s.isInitialCommit(pushEvent)
-	if err != nil {
-=======
-	// Unmarshal the JSON payload into the PushEvent struct
-	pushEvent := github.PushEvent{}
-	if err := c.BodyParser(&pushEvent); err != nil {
->>>>>>> main
 		return err
 	}
 
@@ -94,6 +84,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	// Retrieve assignment deadline from DB
 	template, err := s.store.GetAssignmentByRepoName(c.Context(), *pushEvent.Repo.Name)
 	if err != nil {
+		fmt.Println("Crud error 1")
 		//@KHO-239
 		return err
 	}
@@ -102,6 +93,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		err = s.appClient.CreateDeadlineEnforcement(c.Context(), template.MainDueDate, *pushEvent.Repo.Organization, *pushEvent.Repo.Name, "main")
 		if err != nil {
 			//@KHO-239
+			fmt.Println("Crud error 2")
 			return err
 		}
 	} 
@@ -110,6 +102,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	//Create PR Enforcement Action
 	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 		if err != nil {
+			fmt.Println("Crud error 3")
 			return err
 		}
 
@@ -130,12 +123,14 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	err = s.appClient.CreatePushRuleset(c.Context(),  *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 	if err != nil {
 		// @KHO-239
+		fmt.Println("Crud error 4")
 		return err
 	}
-	
+
 	// Create empty commit (will create a diff that allows feedback PR to be created)
-	err := s.appClient.CreateEmptyCommit(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	err = s.appClient.CreateEmptyCommit(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
 	if err != nil {
+		fmt.Println("Crud error 5")
 		return errs.InternalServerError()
 	}
 
@@ -143,11 +138,13 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 	assignmentOutline, err := s.store.GetAssignmentByBaseRepoID(c.Context(), *pushEvent.Repo.ID)
 	if err != nil {
 			// @KHO-239
+			fmt.Println("Crud error 6")
 			return err
 	}
 	classroom, err := s.store.GetClassroomByID(c.Context(), assignmentOutline.ClassroomID)
 	if err != nil {
 			// @KHO-239
+			fmt.Println("Crud error 7")
 			return err
 	}
 
@@ -156,6 +153,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 		*pushEvent.Repo.Organization, *pushEvent.Repo.Name, "pull")
 	if err != nil {
 			// @KHO-239
+			fmt.Println("Crud error 8")
 			return err
 	}
 
@@ -166,6 +164,7 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	// Find the associated student work
 	studentWork, err := s.store.GetWorkByRepoName(c.Context(), *pushEvent.Repo.Name)
 	if err != nil {
+		fmt.Println("Crud error 9")
 		return err
 	}
 
@@ -188,6 +187,7 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	// Store updated student work locally
 	_, err = s.store.UpdateStudentWork(c.Context(), studentWork)
 	if err != nil {
+		fmt.Println("Crud error 10") 
 		return errs.InternalServerError()
 	}
 
