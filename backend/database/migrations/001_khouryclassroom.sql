@@ -156,9 +156,11 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     file_path VARCHAR(255),
     file_line INTEGER,
     created_at TIMESTAMP DEFAULT NOW(),
+    superseded_by INTEGER,
     FOREIGN KEY (student_work_id) REFERENCES student_works(id),
     FOREIGN KEY (rubric_item_id) REFERENCES rubric_items(id),
     FOREIGN KEY (ta_user_id) REFERENCES users(id),
+    FOREIGN KEY (superseded_by) REFERENCES feedback_comment(id),
     -- if file path exists, enforce that file line also exists.
     -- cannot comment on an entire file (for now), only lines and entire work
     CONSTRAINT if_file_path_then_file_line

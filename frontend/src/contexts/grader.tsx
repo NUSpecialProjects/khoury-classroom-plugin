@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import { SelectedClassroomContext } from "./selectedClassroom";
 import { getPaginatedStudentWork } from "@/api/student_works";
+import { getAssignment } from "@/api/assignments";
 import { gradeWork } from "@/api/grader";
 import { getAssignmentRubric } from "@/api/assignments";
 
 interface IGraderContext {
-  assignmentID: string | undefined;
-  studentWorkID: string | undefined;
+  assignment: IAssignmentOutline | null;
   studentWork: IPaginatedStudentWork | null;
   selectedFile: IFileTreeNode | null;
   feedback: IGraderFeedbackMap;
@@ -26,8 +26,7 @@ interface IGraderContext {
 
 export const GraderContext: React.Context<IGraderContext> =
   createContext<IGraderContext>({
-    assignmentID: undefined,
-    studentWorkID: undefined,
+    assignment: null,
     studentWork: null,
     selectedFile: null,
     feedback: {},
@@ -53,6 +52,7 @@ export const GraderProvider: React.FC<{
   const nextFeedbackID = useRef(0);
   const [feedback, setFeedback] = useState<IGraderFeedbackMap>({});
   const [stagedFeedback, setStagedFeedback] = useState<IGraderFeedbackMap>({});
+  const [assignment, setAssignment] = useState<IAssignmentOutline | null>(null);
   const [studentWork, setStudentWork] = useState<IPaginatedStudentWork | null>(
     null
   );
@@ -61,6 +61,18 @@ export const GraderProvider: React.FC<{
   const [rubric, setRubric] = useState<IFullRubric | null>(null);
 
   const navigate = useNavigate();
+
+  // fetch requested assignment
+  useEffect(() => {
+    // reset states
+    setRubric(null);
+
+    if (!selectedClassroom || !assignmentID) return;
+
+    getAssignment(selectedClassroom.id, Number(assignmentID)).then((resp) => {
+      setAssignment(resp);
+    });
+  }, [assignmentID]);
 
   // fetch rubric from requested assignment
   useEffect(() => {
@@ -173,8 +185,7 @@ export const GraderProvider: React.FC<{
   return (
     <GraderContext.Provider
       value={{
-        assignmentID,
-        studentWorkID,
+        assignment,
         studentWork,
         selectedFile,
         feedback,

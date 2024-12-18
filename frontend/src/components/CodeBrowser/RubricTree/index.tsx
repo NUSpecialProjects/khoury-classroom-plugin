@@ -8,7 +8,7 @@ import { GraderContext } from "@/contexts/grader";
 import "./styles.css";
 
 const RubricTree: React.FC = () => {
-  const { studentWork, rubric, stagedFeedback, postFeedback } =
+  const { assignment, studentWork, rubric, stagedFeedback, postFeedback } =
     useContext(GraderContext);
 
   return (
@@ -31,7 +31,9 @@ const RubricTree: React.FC = () => {
       <div className="RubricTree__foot">
         <div className="RubricTree__score">
           <span>Total Score:</span>
-          {(studentWork?.manual_feedback_score ?? 0) +
+          {(studentWork?.manual_feedback_score ??
+            assignment?.default_score ??
+            0) +
             Object.values(stagedFeedback).reduce(
               (s: number, fb: IGraderFeedback) => s + fb.points,
               0

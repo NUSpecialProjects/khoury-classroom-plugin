@@ -8,7 +8,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import {
-  getAssignmentIndirectNav,
+  getAssignment,
   postAssignmentToken,
   getAssignmentFirstCommit,
   getAssignmentTotalCommits,
@@ -125,7 +125,7 @@ const Assignment: React.FC = () => {
       if (id && selectedClassroom !== null && selectedClassroom !== undefined) {
         (async () => {
           try {
-            const fetchedAssignment = await getAssignmentIndirectNav(
+            const fetchedAssignment = await getAssignment(
               selectedClassroom.id,
               +id
             );
@@ -381,7 +381,9 @@ const Assignment: React.FC = () => {
                         {sa.contributors.join(", ")}
                       </Link>
                     </TableCell>
-                    <TableCell className="Assignment__pillCell"><Pill label="PASSING" variant="green"></Pill></TableCell>
+                    <TableCell className="Assignment__pillCell">
+                      <Pill label="PASSING" variant="green"></Pill>
+                    </TableCell>
                     <TableCell>12 Sep, 11:34pm</TableCell>
                   </TableRow>
                 ))}

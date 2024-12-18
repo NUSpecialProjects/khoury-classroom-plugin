@@ -11,7 +11,7 @@ import (
 
 // gets all feedback comments on a student work
 func (db *DB) GetFeedbackOnWork(ctx context.Context, studentWorkID int) ([]models.PRReviewCommentResponse, error) {
-	query := `SELECT student_work_id, rubric_item_id, github_username, file_path, file_line, fc.created_at, point_value, explanation
+	query := `SELECT fc.*, ri.explanation, ri.point_value, u.github_username
 	FROM feedback_comment fc
 	JOIN rubric_items ri ON fc.rubric_item_id = ri.id
 	JOIN users u ON fc.ta_user_id = u.id 
@@ -84,4 +84,9 @@ func (db *DB) CreateFeedbackCommentFromRubricItem(ctx context.Context, TAUserID 
 	)
 
 	return err
+}
+
+// edit a feedback comment
+func (db *DB) EditFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+	return nil
 }
