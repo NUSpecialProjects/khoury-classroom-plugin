@@ -62,11 +62,12 @@ func (db *DB) CreateFeedbackComment(ctx context.Context, TAUserID int64, student
 		studentWorkID,
 		TAUserID,
 	)
+
 	return err
 }
 
 // create a new feedback comment (attach existing rubric item)
-func (db *DB) AttachRubricItemToFeedbackComment(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
+func (db *DB) CreateFeedbackCommentFromRubricItem(ctx context.Context, TAUserID int64, studentWorkID int, comment models.PRReviewCommentResponse) error {
 	if comment.RubricItemID == nil {
 		return errors.New("no rubric item id given")
 	}

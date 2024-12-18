@@ -8,7 +8,8 @@ import { GraderContext } from "@/contexts/grader";
 import "./styles.css";
 
 const RubricTree: React.FC = () => {
-  const { rubric, postFeedback } = useContext(GraderContext);
+  const { studentWork, rubric, stagedFeedback, postFeedback } =
+    useContext(GraderContext);
 
   return (
     <ResizablePanel border="left">
@@ -28,6 +29,14 @@ const RubricTree: React.FC = () => {
         </div>
       </SimpleBar>
       <div className="RubricTree__foot">
+        <div className="RubricTree__score">
+          <span>Total Score:</span>
+          {(studentWork?.manual_feedback_score ?? 0) +
+            Object.values(stagedFeedback).reduce(
+              (s: number, fb: IGraderFeedback) => s + fb.points,
+              0
+            )}
+        </div>
         <Button onClick={postFeedback}>Submit Grade</Button>
       </div>
     </ResizablePanel>
@@ -55,7 +64,7 @@ const RubricItem: React.FC<IRubricItem> = ({
         setSelected(!selected);
       }}
     >
-      {point_value && (
+      {point_value !== null && (
         <div
           // ternary: if point value is 0, give classname neutral. if < 0, negative. if > 0, positive
           className={`RubricItem__points RubricItem__points--${point_value > 0 ? "positive" : point_value < 0 ? "negative" : "neutral"}`}

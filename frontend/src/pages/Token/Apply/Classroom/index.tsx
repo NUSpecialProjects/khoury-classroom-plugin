@@ -5,7 +5,7 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import TokenApplyPage from "../Generic";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import { useClassroomUser } from "@/hooks/useClassroomUser";
-import { ClassroomRole } from "@/types/users";
+import { ClassroomRole } from "@/types/enums";
 
 const ClassroomTokenApply: React.FC = () => {
   const navigate = useNavigate();

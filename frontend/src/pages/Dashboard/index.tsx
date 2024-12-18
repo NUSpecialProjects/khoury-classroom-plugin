@@ -7,23 +7,22 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { useEffect, useState, useContext } from "react";
 import { getAssignments } from "@/api/assignments";
 import { formatDateTime, formatDate } from "@/utils/date";
-import { useClassroomUser } from "@/hooks/useClassroomUser";
 import { useClassroomUsersList } from "@/hooks/useClassroomUsersList";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
-import ClipLoader from "react-spinners/ClipLoader";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
-import { ClassroomRole } from "@/types/users";
+import { ClassroomRole } from "@/types/enums";
+// import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const {
-    classroomUser,
-    error: classroomUserError,
-    loading: loadingCurrentClassroomUser,
-  } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
+  // const {
+  //   classroomUser,
+  //   error: classroomUserError,
+  //   loading: loadingCurrentClassroomUser,
+  // } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
   );
@@ -81,24 +80,6 @@ const Dashboard: React.FC = () => {
     }
   }, [selectedClassroom]);
 
-  useEffect(() => {
-    if (
-      !loadingCurrentClassroomUser &&
-      (classroomUserError || !classroomUser)
-    ) {
-      console.log(
-        "Attempted to view a classroom without access. Redirecting to classroom select."
-      );
-      navigate(`/app/organization/select`);
-    }
-  }, [
-    loadingCurrentClassroomUser,
-    classroomUserError,
-    classroomUser,
-    selectedClassroom?.org_id,
-    navigate,
-  ]);
-
   const handleUserGroupClick = (group: string, users: IClassroomUser[]) => {
     if (group === "Professor") {
       navigate("/app/professors", { state: { users } });
@@ -110,15 +91,6 @@ const Dashboard: React.FC = () => {
       navigate("/app/students", { state: { users } });
     }
   };
-
-  if (loadingCurrentClassroomUser) {
-    return (
-      <div className="Dashboard__loading">
-        <ClipLoader size={50} color={"#123abc"} loading={true} />
-        <p>Loading classroom details...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="Dashboard">
@@ -195,7 +167,7 @@ const Dashboard: React.FC = () => {
               <h2 style={{ marginBottom: 0 }}>Assignments</h2>
               <div className="Dashboard__createAssignmentButton">
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="small"
                   href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
                 >
