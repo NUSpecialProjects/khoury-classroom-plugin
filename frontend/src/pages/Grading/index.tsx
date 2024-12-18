@@ -17,6 +17,7 @@ import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
 
 import "./styles.css";
+import { StudentWorkState } from "@/types/enums";
 
 interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   assignment: IAssignmentOutline;
@@ -101,7 +102,13 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                   <TableCell>Manual Feedback Score</TableCell>
                   <TableCell>Overall Score</TableCell>
                 </TableRow>
-                {studentAssignments.map((studentAssignment, i: number) => (
+                {studentAssignments
+                .filter(
+                  (studentAssignment) =>
+                    studentAssignment.work_state !==
+                    StudentWorkState.NOT_ACCEPTED
+                )
+                .map((studentAssignment, i: number) => (
                   <TableRow
                     key={i}
                     onClick={() => {
@@ -111,7 +118,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
                     }}
                   >
                     <TableCell>
-                      {studentAssignment.contributors.join(", ")}
+                      {studentAssignment.contributors.map(c => `${c.full_name}`).join(", ")}
                     </TableCell>
                     <TableCell style={{ justifyContent: "end" }}>
                       {studentAssignment.auto_grader_score ?? "-"}
