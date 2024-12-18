@@ -275,7 +275,7 @@ func (s *WorkService) GetCommitsPerDay() fiber.Handler {
         
         // Unsure how this will work for group assignments
         var opts github.CommitsListOptions
-        opts.Author = work.Contributors[0]
+        opts.Author = work.Contributors[0].GithubUsername
         commits, err := s.appClient.ListCommits(c.Context(), work.OrgName, work.RepoName, &opts)
         if err != nil {
             return errs.GithubAPIError(err)

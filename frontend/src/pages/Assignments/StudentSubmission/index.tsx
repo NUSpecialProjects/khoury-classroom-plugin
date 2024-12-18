@@ -122,8 +122,9 @@ const StudentSubmission: React.FC = () => {
   // useEffect for line chart 
   useEffect(() => {
     if (commitsPerDay) {
+      console.log("Loadiong", loadingAllCommits)
+      console.log("noCOmmits", noCommits)
       const sortedDates = Array.from(commitsPerDay.keys()).sort((a, b) => a.valueOf() - b.valueOf())
-      console.log(sortedDates)
       // end dates at today or due date, whichever is sooner
       if (submission) {
         const today = new Date()
@@ -135,8 +136,6 @@ const StudentSubmission: React.FC = () => {
         } else if (sortedDates[sortedDates.length - 1].toDateString() !== (today.toDateString())) {
           sortedDates.push(new Date())
         }
-
-
       }
 
       const sortedCounts: number[] = (sortedDates.map((date) => commitsPerDay.get(date) ?? 0))
@@ -144,41 +143,54 @@ const StudentSubmission: React.FC = () => {
 
       //add in days with 0 commits
       const sortedDatesStringsCopy = [...sortedDatesStrings]
+      let index = 0
       for (let i = 0; i < sortedDatesStringsCopy.length - 1; i++) {
+        console.log("Main loop: " , sortedDatesStrings)
+
         const firstMonth = Number(sortedDatesStringsCopy[i].split("/")[0])
         const firstDay = Number(sortedDatesStringsCopy[i].split("/")[1])
-        const secondDay = Number(sortedDatesStrings[i + 1].split("/")[1])
+        const secondDay = Number(sortedDatesStrings[index + 1].split("/")[1])
 
 
         const difference = firstDay - secondDay
+        console.log("diff" , difference)
 
         const adjacent = (difference === -1)
         const adjacentWrapped = ((difference === 30 || difference === 29 || difference === 27) && (secondDay === 1))
 
         if (!adjacent && !adjacentWrapped) {
           for (let j = 1; j < Math.abs(difference); j++) {
+
             if (firstMonth === 2 && firstDay === 29) {
-              sortedDatesStrings.splice(i + j, 0, `${3}/${1}`);
+              sortedDatesStrings.splice(index + j, 0, `${3}/${1}`);
 
             } else if (firstDay === 30 && (firstMonth === 10 || firstMonth === 4 || firstMonth === 5 || firstMonth === 11)) {
-              sortedDatesStrings.splice(i + j, 0, `${firstMonth + 1}/${1}`);
+              sortedDatesStrings.splice(index + j, 0, `${firstMonth + 1}/${1}`);
 
             } else if (firstDay === 31 && !(firstMonth === 10 || firstMonth === 4 || firstMonth === 5 || firstMonth === 11)) {
               if (firstMonth === 12) {
-                sortedDatesStrings.splice(i + j, 0, `${firstMonth + 1}/${1}`);
+                sortedDatesStrings.splice(index + j, 0, `${firstMonth + 1}/${1}`);
               } else {
-                sortedDatesStrings.splice(i + j, 0, `${11}/${1}`);
+                sortedDatesStrings.splice(index + j, 0, `${11}/${1}`);
               }
             } else {
-              sortedDatesStrings.splice(i + j, 0, `${firstMonth}/${firstDay + j}`);
+              sortedDatesStrings.splice(index + j, 0, `${firstMonth}/${firstDay + j}`);
             }
-            sortedCounts.splice(i + j, 0, 0)
+            sortedCounts.splice(index + j, 0, 0)
+
+
+            console.log("addition: ", sortedDatesStrings)
+
           }
+          index = i + Math.abs(difference)
 
         }
       }
 
-      setLoadingAllCommits(false)
+      if (sortedDates.length > 0) {
+        setLoadingAllCommits(false)
+      }
+      
 
 
 
@@ -285,16 +297,9 @@ const StudentSubmission: React.FC = () => {
                     data={lineData}
                   />
                 )}
-
-
-
               </div>
-
-
             </Metric>
           )}
-
-
         </MetricPanel>
       </div>
     </div>
