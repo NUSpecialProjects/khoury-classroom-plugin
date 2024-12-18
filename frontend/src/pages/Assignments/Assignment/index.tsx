@@ -333,7 +333,7 @@ const Assignment: React.FC = () => {
             <Table cols={3}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Student Name</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell className="Assignment__centerAlignedCell">Status</TableCell>
                 <TableCell>Last Commit</TableCell>
               </TableRow>
               {studentWorks &&
