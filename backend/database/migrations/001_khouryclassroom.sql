@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS assignment_outlines (
     rubric_id INTEGER,
     group_assignment BOOLEAN DEFAULT FALSE NOT NULL,
     main_due_date TIMESTAMP,
+    default_score INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (classroom_id) REFERENCES classrooms(id),
     FOREIGN KEY (template_id) REFERENCES assignment_templates(template_repo_id),
     FOREIGN KEY (base_repo_id) REFERENCES assignment_base_repos(base_repo_id)
@@ -131,8 +132,6 @@ CREATE TABLE IF NOT EXISTS student_works (
     assignment_outline_id INTEGER NOT NULL,
     repo_name VARCHAR(255) UNIQUE NOT NULL,
     unique_due_date TIMESTAMP,
-    manual_feedback_score INTEGER,
-    auto_grader_score INTEGER,
     grades_published_timestamp TIMESTAMP,
     work_state WORK_STATE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
@@ -165,6 +164,21 @@ CREATE TABLE IF NOT EXISTS feedback_comment (
     CONSTRAINT if_file_path_then_file_line
         CHECK (NOT (file_path IS NOT NULL AND file_line IS NULL))
 );
+
+-- TODO CREATE AUTO GRADER RESULT TABLE
+
+CREATE VIEW student_works_with_scores AS
+SELECT sw.*,
+    CASE 
+        WHEN COUNT(ri.id) = 0 THEN NULL
+        ELSE COALESCE(SUM(ri.point_value), 0) + COALESCE(ao.default_score, 0)
+    END AS manual_feedback_score,
+    NULL AS auto_grader_score -- TODO REPLACE WITH MAXIMUM AUTO GRADER SCORE
+FROM student_works sw
+LEFT JOIN feedback_comment fc ON sw.id = fc.student_work_id
+LEFT JOIN rubric_items ri ON fc.rubric_item_id = ri.id
+LEFT JOIN assignment_outlines ao ON ao.id = sw.assignment_outline_id
+GROUP BY sw.id, ao.default_score;
 
 
 DO $$ BEGIN

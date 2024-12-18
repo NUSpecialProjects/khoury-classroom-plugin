@@ -25,9 +25,9 @@ const (
 	WorkStateAccepted         WorkState = "ACCEPTED"
 	WorkStateStarted          WorkState = "STARTED"
 	WorkStateSubmitted        WorkState = "SUBMITTED"
-	WorkStateGradingAssigned  WorkState  = "GRADING_ASSIGNED"
-	WorkStateGradingCompleted WorkState  = "GRADING_COMPLETED"
-	WorkStateGradePublished   WorkState  = "GRADE_PUBLISHED"
+	WorkStateGradingAssigned  WorkState = "GRADING_ASSIGNED"
+	WorkStateGradingCompleted WorkState = "GRADING_COMPLETED"
+	WorkStateGradePublished   WorkState = "GRADE_PUBLISHED"
 )
 
 // Make WorkState an iterable enum

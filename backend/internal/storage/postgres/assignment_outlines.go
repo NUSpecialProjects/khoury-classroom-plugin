@@ -48,6 +48,7 @@ func (db *DB) GetAssignmentByToken(ctx context.Context, token string) (models.As
 		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
+		&assignmentOutline.DefaultScore,
 	)
 	if err != nil {
 		return models.AssignmentOutline{}, errs.NewDBError(err)
@@ -78,6 +79,7 @@ func (db *DB) GetAssignmentByID(ctx context.Context, assignmentID int64) (models
 		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
+		&assignmentOutline.DefaultScore,
 	)
 	if err != nil {
 		return models.AssignmentOutline{}, errs.NewDBError(err)
@@ -90,8 +92,8 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 	var assignmentOutline models.AssignmentOutline
 
 	err := db.connPool.QueryRow(ctx, `
-		INSERT INTO assignment_outlines (template_id, base_repo_id, name, classroom_id, rubric_id, group_assignment, main_due_date)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO assignment_outlines (template_id, base_repo_id, name, classroom_id, rubric_id, group_assignment, main_due_date, default_score)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id,
 			template_id,
 			base_repo_id,
@@ -101,7 +103,8 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 			classroom_id,
 			rubric_id,
 			group_assignment,
-			main_due_date
+			main_due_date,
+			default_score
 	`,
 		assignmentRequestData.TemplateID,
 		assignmentRequestData.BaseRepoID,
@@ -110,6 +113,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 		assignmentRequestData.RubricID,
 		assignmentRequestData.GroupAssignment,
 		assignmentRequestData.MainDueDate,
+		assignmentRequestData.DefaultScore,
 	).Scan(&assignmentOutline.ID,
 		&assignmentOutline.TemplateID,
 		&assignmentOutline.BaseRepoID,
@@ -120,6 +124,7 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
+		&assignmentOutline.DefaultScore,
 	)
 
 	if err != nil {
@@ -141,6 +146,7 @@ func (db *DB) GetAssignmentByBaseRepoID(ctx context.Context, baseRepoID int64) (
 		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
+		&assignmentOutline.DefaultScore,
 	)
 
 	if err != nil {
@@ -163,6 +169,7 @@ func (db *DB) GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentN
 		&assignmentOutline.RubricID,
 		&assignmentOutline.GroupAssignment,
 		&assignmentOutline.MainDueDate,
+		&assignmentOutline.DefaultScore,
 	)
 
 	if err != nil {
@@ -175,7 +182,7 @@ func (db *DB) GetAssignmentByNameAndClassroomID(ctx context.Context, assignmentN
 func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assignmentID int64) (models.AssignmentOutline, error) {
 	var updatedAssignmentData models.AssignmentOutline
 	err := db.connPool.QueryRow(ctx, `UPDATE assignment_outlines SET rubric_id = $1 WHERE id = $2 
-        RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date`,
+        RETURNING id, template_id, created_at, released_at, name, classroom_id, rubric_id, group_assignment, main_due_date, default_score`,
 		rubricID, assignmentID).Scan(
 		&updatedAssignmentData.ID,
 		&updatedAssignmentData.TemplateID,
@@ -185,7 +192,9 @@ func (db *DB) UpdateAssignmentRubric(ctx context.Context, rubricID int64, assign
 		&updatedAssignmentData.ClassroomID,
 		&updatedAssignmentData.RubricID,
 		&updatedAssignmentData.GroupAssignment,
-		&updatedAssignmentData.MainDueDate)
+		&updatedAssignmentData.MainDueDate,
+		&updatedAssignmentData.DefaultScore,
+	)
 
 	if err != nil {
 		return models.AssignmentOutline{}, errs.NewDBError(err)
