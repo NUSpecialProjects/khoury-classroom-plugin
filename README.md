@@ -1,4 +1,5 @@
-![Gitmarks wordmark](https://github.com/user-attachments/assets/f0881fc3-8b28-4895-b305-bed6e88f6b4a)
+![Banner](https://github.com/user-attachments/assets/84169d26-84f0-4786-bf37-87484ef475bb)
+
 # GitMarks
 GitMarks is a Git-based grading platform designed to mirror industry standard workflows and provide support for both students and teaching staff.
 
