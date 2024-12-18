@@ -1,42 +1,24 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getCurrentClassroomUser } from "@/api/classrooms";
 
 export function useClassroomUser(classroomId?: number) {
-  const [classroomUser, setClassroomUser] = useState<IClassroomUser | null>(
-    null
-  );
-  const [error, setError] = useState<Error | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchClassroomUser = async () => {
-      if (classroomId) {
-        await getCurrentClassroomUser(classroomId)
-          .then((user) => {
-            if (user.classroom_id === classroomId) {
-              setClassroomUser(user);
-              setError(null);
-            } else {
-              setError(new Error("User is not in the specified classroom"));
-              setClassroomUser(null);
-            }
-          })
-          .catch((err) => {
-            setError(err);
-            setClassroomUser(null);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      } else {
-        setClassroomUser(null);
-        setError(null);
-        setLoading(false);
+  const { data: classroomUser, error, isLoading } = useQuery({
+    queryKey: ['classroomUser', classroomId],
+    queryFn: async () => {
+      if (!classroomId) return null;
+      const user = await getCurrentClassroomUser(classroomId);
+      if (user.classroom_id !== classroomId) {
+        throw new Error("User is not in the specified classroom");
       }
-    };
+      return user;
+    },
+    enabled: !!classroomId,
+    retry: false
+  });
 
-    fetchClassroomUser();
-  }, [classroomId]);
-
-  return { classroomUser, error, loading };
+  return { 
+    classroomUser: classroomUser || null, 
+    error: error as Error | null,
+    loading: isLoading 
+  };
 }

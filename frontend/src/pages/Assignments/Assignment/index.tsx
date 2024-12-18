@@ -25,6 +25,7 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
+import { useQuery } from "@tanstack/react-query";
 import Pill from "@/components/Pill";
 import "./styles.css";
 import { StudentWorkState } from "@/types/enums";
@@ -35,14 +36,49 @@ ChartJS.register(ChartDataLabels);
 
 const Assignment: React.FC = () => {
   const location = useLocation();
-  const [assignment, setAssignment] = useState<IAssignmentOutline>();
-  const [assignmentTemplate, setAssignmentTemplate] = useState<IAssignmentTemplate>();
-  const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
   const { id } = useParams();
-  const [inviteLink, setInviteLink] = useState<string>("");
-  const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
+
+  const { data: assignment } = useQuery({
+    queryKey: ['assignment', selectedClassroom?.id, id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !id) return null;
+      if (location.state?.assignment) {
+        return location.state.assignment;
+      }
+      return await getAssignmentIndirectNav(selectedClassroom.id, +id);
+    },
+    enabled: !!selectedClassroom?.id && !!id
+  });
+
+  const { data: studentWorks = [] } = useQuery({
+    queryKey: ['studentWorks', selectedClassroom?.id, assignment?.id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !assignment?.id) return [];
+      return await getStudentWorks(selectedClassroom.id, assignment.id);
+    },
+    enabled: !!selectedClassroom?.id && !!assignment?.id
+  });
+
+  const { data: inviteLink = "", error: linkError } = useQuery({
+    queryKey: ['assignmentToken', selectedClassroom?.id, assignment?.id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !assignment?.id) return "";
+      const tokenData = await postAssignmentToken(selectedClassroom.id, assignment.id);
+      return `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
+    },
+    enabled: !!selectedClassroom?.id && !!assignment?.id
+  });
+
+  const { data: assignmentTemplate } = useQuery({
+    queryKey: ['assignmentTemplate', selectedClassroom?.id, assignment?.id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !assignment?.id) return null;
+      return await getAssignmentTemplate(selectedClassroom.id, assignment.id);
+    },
+    enabled: !!selectedClassroom?.id && !!assignment?.id
+  });
 
   const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
     labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
@@ -95,84 +131,6 @@ const Assignment: React.FC = () => {
     );
   }, [selectedClassroom]);
 
-  useEffect(() => {
-    // check if assignment has been passed through
-    if (location.state) {
-      setAssignment(location.state.assignment);
-      const a: IAssignmentOutline = location.state.assignment;
-
-      // sync student assignments
-      if (selectedClassroom !== null && selectedClassroom !== undefined) {
-        getAssignmentTemplate(selectedClassroom.id, a.id)
-        .then(assignmentTemplate => {
-          setAssignmentTemplate(assignmentTemplate);
-        })
-        .catch(_ => {
-          // do nothing
-        });
-
-        (async () => {
-          try {
-            const studentWorks = await getStudentWorks(
-              selectedClassroom.id,
-              a.id
-            );
-            if (studentWorks !== null && studentWorks !== undefined) {
-              setStudentAssignment(studentWorks);
-            }
-          } catch (_) {
-            // do nothing
-          }
-        })();
-      }
-    } else {
-      // fetch the assignment from backend
-      if (id && selectedClassroom !== null && selectedClassroom !== undefined) {
-        (async () => {
-          try {
-            const fetchedAssignment = await getAssignmentIndirectNav(
-              selectedClassroom.id,
-              +id
-            );
-            if (fetchedAssignment !== null && fetchedAssignment !== undefined) {
-              setAssignment(fetchedAssignment);
-              const studentWorks = await getStudentWorks(
-                selectedClassroom.id,
-                fetchedAssignment.id
-              );
-              if (studentWorks !== null && studentWorks !== undefined) {
-                setStudentAssignment(studentWorks);
-              }
-            }
-          } catch (_) {
-            // do nothing
-          }
-        })();
-      }
-    }
-  }, [selectedClassroom]);
-
-  useEffect(() => {
-    const generateInviteLink = async () => {
-      if (!assignment) return;
-
-      try {
-        if (!selectedClassroom) return;
-        const tokenData = await postAssignmentToken(
-          selectedClassroom.id,
-          assignment.id
-        );
-        const url = `${base_url}/app/token/assignment/accept?token=${tokenData.token}`;
-        setInviteLink(url);
-      } catch (_) {
-        setLinkError("Failed to generate assignment invite link");
-      }
-    };
-
-    generateInviteLink();
-  }, [assignment]);
-
-
   const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";
   const firstCommitDate = studentWorks.reduce((earliest, work) => {
     if (!work.first_commit_date) return earliest;
@@ -224,7 +182,7 @@ const Assignment: React.FC = () => {
           <div className="Assignment__link">
             <h2>Assignment Link</h2>
             <CopyLink link={inviteLink} name="invite-assignment" />
-            {linkError && <p className="error">{linkError}</p>}
+            {linkError && <p className="error">Failed to generate assignment invite link</p>}
           </div>
 
           <div className="Assignment__metrics">
@@ -338,7 +296,7 @@ const Assignment: React.FC = () => {
               </TableRow>
               {studentWorks &&
                 studentWorks.length > 0 &&
-                studentWorks.map((sa, i) => (
+                studentWorks.map((sa: IStudentWork, i: number) => (
                   <TableRow key={i} className="Assignment__submission">
                     <TableCell>
                       {sa.work_state !== StudentWorkState.NOT_ACCEPTED ? (
