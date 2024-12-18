@@ -2,8 +2,8 @@ import { useLocation, useParams, Link } from "react-router-dom";
 import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
-import { Chart as ChartJS, registerables } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, registerables } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
@@ -152,6 +152,8 @@ const Assignment: React.FC = () => {
     }
   }, [selectedClassroom]);
 
+  
+
   useEffect(() => {
     const generateInviteLink = async () => {
       if (!assignment) return;
@@ -250,7 +252,7 @@ const Assignment: React.FC = () => {
                     maintainAspectRatio: true,
                     plugins: {
                       legend: {
-                        onClick: () => {},
+                        onClick: () => { },
                         display: true,
                         position: "bottom",
                         labels: {
