@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"time"
-
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/models"
 	"github.com/jackc/pgx/v5"
@@ -126,7 +125,6 @@ func (db *DB) CreateAssignment(ctx context.Context, assignmentRequestData models
 	if err != nil {
 		return assignmentOutline, errs.NewDBError(err)
 	}
-
 	return assignmentOutline, nil
 }
 
