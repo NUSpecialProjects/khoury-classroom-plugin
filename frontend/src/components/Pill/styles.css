@@ -1,0 +1,41 @@
+.Pill {
+    border-radius: 15px;
+    height: 30px;
+    min-width: 100px;
+    
+    &--default {
+        background-color: var(--brand-darkest);
+    }
+
+    &--teal {
+        background-color: var(--teal);
+    }
+
+    &--amber {
+        background-color: var(--amber);
+    }
+
+    &--rose {
+        background-color: var(--rose);
+    }
+
+    &--blue {
+        background-color: var(--blue);
+    }
+
+    &--green {
+        background-color: var(--green);
+    }
+
+    &--red {
+        background-color: var(--red);
+    }
+
+    &__label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--primary-text-white);
+        text-align: center;
+        padding: 8px;
+    }
+}
