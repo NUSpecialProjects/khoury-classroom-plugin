@@ -6,7 +6,7 @@ import { SelectedClassroomContext } from "@/contexts/selectedClassroom";
 import { postClassroomToken } from "@/api/classrooms";
 
 import "../styles.css";
-import { ClassroomRole } from "@/types/users";
+import { ClassroomRole } from "@/types/enums";
 
 const InviteTAs: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);

@@ -35,7 +35,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
   const { selectedClassroom: selectedClassroom } = useContext(
     SelectedClassroomContext
   );
-  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/access-denied");
   const navigate = useNavigate();
 
   const downloadGrades = () => {

@@ -14,7 +14,7 @@ import { ClassroomRole } from "@/types/enums";
 
 const Rubrics: React.FC = () => {
     const { selectedClassroom } = useContext(SelectedClassroomContext)
-    useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR, "/app/organization/select");
+    useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR, "/access-denied");
     const [rubrics, setRubricsData] = useState<IFullRubric[]>([])
 
   const [loading, setLoading] = useState(false);

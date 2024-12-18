@@ -9,14 +9,13 @@ import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 import LeftNav from "./LeftNav";
 import TopNav from "./TopNav";
-import Button from "@/components/Button";
 
 import "./styles.css";
 import { FaTachometerAlt } from "react-icons/fa";
 import { MdEditDocument } from "react-icons/md";
 import { MdFactCheck } from "react-icons/md";
 import { FaGear } from "react-icons/fa6";
-import { ClassroomRole } from "@/types/users";
+import { ClassroomRole } from "@/types/enums";
 
 const Layout: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -66,24 +65,6 @@ const Layout: React.FC = () => {
     return (
       <div className="Layout__loading">
         <ClipLoader size={50} color={"#123abc"} loading={true} />
-      </div>
-    );
-  }
-
-  if (classroomUser?.classroom_role === "STUDENT") {
-    return (
-      <div className="Dashboard__unauthorized">
-        <h2>Access Denied</h2>
-        <p>
-          You do not have permission to view the classroom management dashboard.
-        </p>
-        <p>Please contact your professor if you believe this is an error.</p>
-        <Button
-          variant="primary"
-          href={`/app/classroom/select?org_id=${selectedClassroom?.org_id}`}
-        >
-          Return to Classroom Selection
-        </Button>
       </div>
     );
   }

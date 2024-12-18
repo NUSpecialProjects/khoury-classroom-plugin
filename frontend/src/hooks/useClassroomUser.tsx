@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { getCurrentClassroomUser } from "@/api/classrooms";
-import { ClassroomRole, requireAtLeastClassroomRole } from "@/types/users";
+import { ClassroomRole, requireAtLeastClassroomRole } from "@/types/enums";
 import { useNavigate } from "react-router-dom";
 
-export function useClassroomUser(classroomId?: number, requiredRole?: ClassroomRole, redirectPath?: string) {
+export function useClassroomUser(classroomId?: number, requiredRole: ClassroomRole = ClassroomRole.TA, redirectPath: string = "/access-denied") {
   const [classroomUser, setClassroomUser] = useState<IClassroomUser | null>(
     null
   );

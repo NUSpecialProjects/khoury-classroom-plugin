@@ -13,16 +13,12 @@ import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
 import { ClassroomRole } from "@/types/enums";
-// import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  // const {
-  //   classroomUser,
-  //   error: classroomUserError,
-  //   loading: loadingCurrentClassroomUser,
-  // } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/access-denied");
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
   );
