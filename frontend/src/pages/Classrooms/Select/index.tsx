@@ -8,8 +8,10 @@ import useUrlParameter from "@/hooks/useUrlParameter";
 import { Table, TableRow, TableCell } from "@/components/Table";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import Button from "@/components/Button";
+import Pill from "@/components/Pill";
+import { removeUnderscores } from "@/utils/text";
 import { MdAdd } from "react-icons/md";
-import { OrgRole, toClassroom } from "@/types/enums";
+import { ClassroomRole, OrgRole, toClassroom } from "@/types/enums";
 
 const ClassroomSelection: React.FC = () => {
   const [classrooms, setClassrooms] = useState<IClassroomUser[]>([]);
@@ -37,7 +39,7 @@ const ClassroomSelection: React.FC = () => {
               setOrgRole(data.org_role);
             }
           }
-        } catch (_) { 
+        } catch (_) {
           // do nothing
         } finally {
           setLoading(false);
@@ -74,15 +76,14 @@ const ClassroomSelection: React.FC = () => {
                 {orgRole === OrgRole.ADMIN &&
                   (<div className="Selection__tableHeaderButton">
                     <Button size="small" href={`/app/classroom/create?org_id=${orgID}`}>
-                        <MdAdd /> New Classroom
-                      </Button>
-                    </div>
+                      <MdAdd /> New Classroom
+                    </Button>
+                  </div>
                   )}
               </TableCell>
             </TableRow>
-            {/* If the org has classrooms, populate table, else display a message 
-            TODO make alert for no classes*/}
-            {hasClassrooms && (
+            {/* If the org has classrooms, populate table, else display a message TODO make alert for no classes*/}
+            {hasClassrooms ? (
               classrooms.map((classroomUser, i) => (
                 <TableRow key={i} className="Selection__tableRow">
                   <TableCell>
@@ -90,12 +91,36 @@ const ClassroomSelection: React.FC = () => {
                       {classroomUser.classroom_name}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div>{classroomUser.classroom_role}</div>
+                  <TableCell className="Selection__pillCell">
+                    <Pill label={removeUnderscores(classroomUser.classroom_role)}
+                      variant={(() => {
+                        switch (classroomUser.classroom_role) {
+                          case ClassroomRole.STUDENT:
+                            return 'teal';
+                          case ClassroomRole.TA:
+                            return 'amber';
+                          case ClassroomRole.PROFESSOR:
+                            return 'default';
+                          default:
+                            return 'default'; // Fallback for unexpected roles
+                        }
+                      })()}>
+                    </Pill>
                   </TableCell>
                 </TableRow>
               ))
-            ) }
+            ) : (
+              <EmptyDataBanner>
+                <div className="emptyDataBannerMessage">
+                  You have no classes in this organization.
+                  <br></br>
+                  Please create a new classroom to get started.
+                </div>
+                <Button variant="secondary" href={`/app/classroom/create?org_id=${orgID}`}>
+                  <MdAdd /> New Classroom
+                </Button>
+              </EmptyDataBanner>
+            )}
           </Table>
           {!hasClassrooms && (
             orgRole === OrgRole.ADMIN ? 

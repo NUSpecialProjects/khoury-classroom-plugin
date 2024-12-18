@@ -21,7 +21,7 @@ SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 -- Classroom Membership Data
 INSERT INTO classroom_membership (user_id, classroom_id, classroom_role, created_at, status)
 VALUES
-(1, 1, 'TA', NOW(), 'ACTIVE'),
+(1, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
 (2, 1, 'PROFESSOR', NOW(), 'ACTIVE'),
 (3, 1, 'TA', NOW(), 'ACTIVE'),
 (4, 1, 'PROFESSOR', NOW(), 'ACTIVE'),

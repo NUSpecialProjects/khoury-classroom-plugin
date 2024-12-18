@@ -17,7 +17,7 @@ import {
   getAssignmentGradedMetrics,
 } from "@/api/metrics";
 import { getStudentWorks } from "@/api/student_works";
-import { formatDate } from "@/utils/date";
+import { formatDate, formatDateTime } from "@/utils/date";
 
 import SubPageHeader from "@/components/PageHeader/SubPageHeader";
 import CopyLink from "@/components/CopyLink";
@@ -25,9 +25,10 @@ import { Table, TableCell, TableRow } from "@/components/Table";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
-
+import Pill from "@/components/Pill";
 import "./styles.css";
 import { StudentWorkState } from "@/types/enums";
+import { removeUnderscores } from "@/utils/text";
 
 ChartJS.register(...registerables);
 ChartJS.register(ChartDataLabels);
@@ -174,7 +175,6 @@ const Assignment: React.FC = () => {
   }, [assignment]);
 
 
-  
   const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";
   const firstCommitDate = studentWorks.reduce((earliest, work) => {
     if (!work.first_commit_date) return earliest;
@@ -182,8 +182,6 @@ const Assignment: React.FC = () => {
     return new Date(work.first_commit_date) < earliest ? new Date(work.first_commit_date) : earliest;
   }, null as Date | null);
   const totalCommits = studentWorks.reduce((total, work) => total + work.commit_amount, 0);
-
-
 
   return (
     assignment && (
@@ -274,7 +272,7 @@ const Assignment: React.FC = () => {
                         enabled: false,
                       },
                     },
-                    cutout: "50%",
+                    cutout: "65%",
                     borderColor: "transparent",
                   }}
                 />
@@ -337,7 +335,7 @@ const Assignment: React.FC = () => {
             <Table cols={3}>
               <TableRow style={{ borderTop: "none" }}>
                 <TableCell>Student Name</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell className="Assignment__centerAlignedCell">Status</TableCell>
                 <TableCell>Last Commit</TableCell>
               </TableRow>
               {studentWorks &&
@@ -358,7 +356,30 @@ const Assignment: React.FC = () => {
                         </div>
                       )}
                     </TableCell>
-                    <TableCell>{sa.work_state}</TableCell>
+                    <TableCell className="Assignment__pillCell">
+                      <Pill label={removeUnderscores(sa.work_state)}
+                        variant={(() => {
+                          switch (sa.work_state) {
+                            case StudentWorkState.ACCEPTED:
+                              return 'green';
+                            case StudentWorkState.STARTED:
+                              return 'amber';
+                            case StudentWorkState.SUBMITTED:
+                              return 'blue';
+                            case StudentWorkState.GRADING_ASSIGNED:
+                              return 'teal';
+                            case StudentWorkState.GRADING_COMPLETED:
+                              return 'teal';
+                            case StudentWorkState.GRADE_PUBLISHED:
+                              return 'teal';
+                            case StudentWorkState.NOT_ACCEPTED:
+                              return 'rose';
+                            default:
+                              return 'default';
+                          }
+                        })()}>
+                      </Pill>
+                    </TableCell>
                     <TableCell>{sa.last_commit_date ? formatDateTime(new Date(sa.last_commit_date)) : "N/A"}</TableCell>
                   </TableRow>
                 ))}

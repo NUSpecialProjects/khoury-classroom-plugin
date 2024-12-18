@@ -181,6 +181,48 @@ func (s *WorkService) getWorkByID() fiber.Handler {
 	}
 }
 
+const LatexPositivePointPrefix = `$${\huge\color{limegreen}\textbf{[+%d]}}$$ `
+const LatexNegativePointPrefix = `$${\huge\color{WildStrawberry}\textbf{[%d]}}$$ `
+
+func formatFeedbackForGitHub(comments []models.PRReviewCommentResponse) []models.PRReviewComment {
+	var formattedComments []models.PRReviewComment
+	for _, comment := range comments {
+		// format comment: body -> [pt value] body
+		prefix := ""
+		if comment.Points > 0 {
+			prefix = fmt.Sprintf(LatexPositivePointPrefix, comment.Points)
+		}
+		if comment.Points < 0 {
+			prefix = fmt.Sprintf(LatexNegativePointPrefix, comment.Points)
+		}
+		comment.PRReviewComment.Body = prefix + comment.PRReviewComment.Body
+		formattedComments = append(formattedComments, comment.PRReviewComment)
+	}
+
+	return formattedComments
+}
+
+func insertFeedbackInDB(s *WorkService, c *fiber.Ctx, comments []models.PRReviewCommentResponse, taUserID int64, workID int) error {
+	// insert into DB, remove points field and format the body to display the points
+	for _, comment := range comments {
+		// insert into DB
+		if comment.RubricItemID == nil {
+			// create new rubric item and then attach
+			err := s.store.CreateFeedbackComment(c.Context(), taUserID, workID, comment)
+			if err != nil {
+				return errs.InternalServerError()
+			}
+		} else {
+			// attach rubric item
+			err := s.store.CreateFeedbackCommentFromRubricItem(c.Context(), taUserID, workID, comment)
+			if err != nil {
+				return errs.InternalServerError()
+			}
+		}
+	}
+	return nil
+}
+
 func (s *WorkService) gradeWorkByID() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		// get the work first
@@ -208,40 +250,16 @@ func (s *WorkService) gradeWorkByID() fiber.Handler {
 			return errs.InvalidRequestBody(requestBody)
 		}
 
-		// insert into DB, remove points field and format the body to display the points
-		var comments []models.PRReviewComment
-		for _, comment := range requestBody.Comments {
-			// insert into DB
-			if comment.RubricItemID == nil {
-				// create new rubric item and then attach
-				err := s.store.CreateFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
-				if err != nil {
-					return errs.InternalServerError()
-				}
-			} else {
-				// attach rubric item
-				err := s.store.AttachRubricItemToFeedbackComment(c.Context(), *taUser.ID, work.ID, comment)
-				if err != nil {
-					return errs.InternalServerError()
-				}
-			}
-
-			// format comment: body -> [pt value] body
-			prefix := ""
-			if comment.Points > 0 {
-				prefix = fmt.Sprintf(`$${\huge\color{limegreen}\textbf{[+%d]}}$$ `, comment.Points)
-			}
-			if comment.Points < 0 {
-				prefix = fmt.Sprintf(`$${\huge\color{WildStrawberry}\textbf{[%d]}}$$ `, comment.Points)
-			}
-			comment.PRReviewComment.Body = prefix + comment.PRReviewComment.Body
-			comments = append(comments, comment.PRReviewComment)
-		}
-
 		// create PR review via github API
-		review, err := userClient.CreatePRReview(c.Context(), work.OrgName, work.RepoName, requestBody.Body, comments)
+		review, err := userClient.CreatePRReview(c.Context(), work.OrgName, work.RepoName, requestBody.Body, formatFeedbackForGitHub(requestBody.Comments))
 		if err != nil {
 			return errs.GithubAPIError(err)
+		}
+
+		// insert into DB
+		err = insertFeedbackInDB(s, c, requestBody.Comments, *taUser.ID, work.ID)
+		if err != nil {
+			return err
 		}
 
 		return c.Status(http.StatusOK).JSON(fiber.Map{
