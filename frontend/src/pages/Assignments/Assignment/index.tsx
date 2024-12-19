@@ -96,6 +96,17 @@ const Assignment: React.FC = () => {
   }, [selectedClassroom]);
 
   useEffect(() => {
+    if (!selectedClassroom || !id) return;
+    getAssignmentTemplate(selectedClassroom.id, Number(id))
+      .then(assignmentTemplate => {
+        setAssignmentTemplate(assignmentTemplate);
+      })
+      .catch(_ => {
+        // do nothing
+      });
+  }, [selectedClassroom]);
+
+  useEffect(() => {
     // check if assignment has been passed through
     if (location.state) {
       setAssignment(location.state.assignment);
@@ -103,14 +114,6 @@ const Assignment: React.FC = () => {
 
       // sync student assignments
       if (selectedClassroom !== null && selectedClassroom !== undefined) {
-        getAssignmentTemplate(selectedClassroom.id, a.id)
-        .then(assignmentTemplate => {
-          setAssignmentTemplate(assignmentTemplate);
-        })
-        .catch(_ => {
-          // do nothing
-        });
-
         (async () => {
           try {
             const studentWorks = await getStudentWorks(
