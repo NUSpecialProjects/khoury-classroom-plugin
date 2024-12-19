@@ -39,7 +39,7 @@ const Assignment: React.FC = () => {
   const [assignmentTemplate, setAssignmentTemplate] = useState<IAssignmentTemplate>();
   const [studentWorks, setStudentAssignment] = useState<IStudentWork[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { id } = useParams();
+  const { id: assignmentID } = useParams();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [linkError, setLinkError] = useState<string | null>(null);
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
@@ -70,10 +70,10 @@ const Assignment: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!selectedClassroom || !id) return;
+    if (!selectedClassroom || !assignmentID) return;
 
     // populate acceptance metrics
-    getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id)).then(
+    getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(assignmentID)).then(
       (metrics) => {
         acceptanceMetrics.datasets[0].data = [
           metrics.not_accepted,
@@ -87,7 +87,7 @@ const Assignment: React.FC = () => {
     );
 
     // populate graded status metrics
-    getAssignmentGradedMetrics(selectedClassroom.id, Number(id)).then(
+    getAssignmentGradedMetrics(selectedClassroom.id, Number(assignmentID)).then(
       (metrics) => {
         gradedMetrics.datasets[0].data = [metrics.graded, metrics.ungraded];
         setGradedMetrics(gradedMetrics);
@@ -96,8 +96,8 @@ const Assignment: React.FC = () => {
   }, [selectedClassroom]);
 
   useEffect(() => {
-    if (!selectedClassroom || !id) return;
-    getAssignmentTemplate(selectedClassroom.id, Number(id))
+    if (!selectedClassroom || !assignmentID) return;
+    getAssignmentTemplate(selectedClassroom.id, Number(assignmentID))
       .then(assignmentTemplate => {
         setAssignmentTemplate(assignmentTemplate);
       })
@@ -130,12 +130,12 @@ const Assignment: React.FC = () => {
       }
     } else {
       // fetch the assignment from backend
-      if (id && selectedClassroom !== null && selectedClassroom !== undefined) {
+      if (assignmentID && selectedClassroom !== null && selectedClassroom !== undefined) {
         (async () => {
           try {
             const fetchedAssignment = await getAssignmentIndirectNav(
               selectedClassroom.id,
-              +id
+              +assignmentID
             );
             if (fetchedAssignment !== null && fetchedAssignment !== undefined) {
               setAssignment(fetchedAssignment);
