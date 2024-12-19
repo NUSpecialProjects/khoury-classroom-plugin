@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
 	"github.com/CamPlume1/khoury-classroom/internal/middleware"
@@ -55,6 +56,16 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return errs.BadRequest(err)
 		}
 
+		assignmentOutline, err := s.store.GetAssignmentByID(c.Context(), int64(assignmentID))
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		assignmentTemplate, err := s.store.GetAssignmentTemplateByID(c.Context(), assignmentOutline.TemplateID)
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
 		// _, err = s.RequireAtLeastRole(c, int64(classroomID), models.TA)
 		// if err != nil {
 		// 	return err
@@ -64,10 +75,89 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 		if err != nil {
 			return err
 		}
+
+		// get list of users in class
+		users, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
+		if err != nil {
+			return errs.InternalServerError()
+		}
+
+		students := filterStudents(users)
+		studentsWithoutWorks := filterStudentsWithoutWorks(students, works)
+
+		mockWorks := []*models.StudentWorkWithContributors{}
+		for _, student := range studentsWithoutWorks {
+			mockWorks = append(mockWorks, generateNotAcceptedWork(student, assignmentOutline, assignmentTemplate))
+		}
+
+		works = append(works, mockWorks...)
+
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"student_works": works,
 		})
 	}
+}
+
+func generateNotAcceptedWork(student models.ClassroomUser, assignmentOutline models.AssignmentOutline, assignmentTemplate models.AssignmentTemplate) *models.StudentWorkWithContributors {
+	return &models.StudentWorkWithContributors{
+		StudentWork: models.StudentWork{
+			ID:                       -1,
+			OrgName:                  assignmentTemplate.TemplateRepoOwner, // This will eventually not always be the org name once we support templates outside of the org
+			ClassroomID:              int(assignmentOutline.ClassroomID),
+			AssignmentName:           &assignmentOutline.Name,
+			AssignmentOutlineID:      int(assignmentOutline.ID),
+			RepoName:                 assignmentTemplate.TemplateRepoName,
+			UniqueDueDate:            assignmentOutline.MainDueDate,
+			ManualFeedbackScore:      nil,
+			AutoGraderScore:          nil,
+			GradesPublishedTimestamp: nil,
+			WorkState:                models.WorkStateNotAccepted,
+			CreatedAt:                time.Unix(0, 0),
+			CommitAmount:             0,
+			FirstCommitDate:          nil,
+			LastCommitDate:           nil,
+		},
+		Contributors: []models.IWorkContributor{
+			{
+				GithubUsername: student.GithubUsername,
+				FullName:       student.FirstName + " " + student.LastName,
+			},
+		},
+	}
+}
+
+// filters out users who are not students
+func filterStudents(users []models.ClassroomUser) []models.ClassroomUser {
+	var students []models.ClassroomUser
+	for _, user := range users {
+		if user.Role == models.Student {
+			students = append(students, user)
+		}
+	}
+	return students
+}
+
+// filters out students who haven't accepted the assignment
+func filterStudentsWithoutWorks(students []models.ClassroomUser, works []*models.StudentWorkWithContributors) []models.ClassroomUser {
+	var studentsWithoutWorks []models.ClassroomUser
+	for _, student := range students {
+		if (student.Role == models.Student) && !studentWorkExists(student.GithubUsername, works) {
+			studentsWithoutWorks = append(studentsWithoutWorks, student)
+		}
+	}
+	return studentsWithoutWorks
+}
+
+// checks if a student has accepted the assignment
+func studentWorkExists(studentLogin string, works []*models.StudentWorkWithContributors) bool {
+	for _, work := range works {
+		for _, contributor := range work.Contributors {
+			if contributor.GithubUsername == studentLogin {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // Returns the details of a specific student work.
