@@ -108,17 +108,19 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   }
 
   const showActionsColumn = users.some(user => shouldShowActionButtons(user));
+  const showDisabledButtons = showActionsColumn && !users.every(user => shouldShowActionButtons(user));
 
   const getActionButton = (user: IClassroomUser) => {
-    if (!shouldShowActionButtons(user)) {
+    const shouldShowButton = shouldShowActionButtons(user)
+    if (!shouldShowButton && !showDisabledButtons) {
       return null;
     }
 
     switch (user.status) {
       case ClassroomUserStatus.ACTIVE:
-        return <Button variant="warning-secondary" size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
+        return <Button variant={!shouldShowButton && showDisabledButtons ? "disabled" : "warning-secondary"} size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
       case ClassroomUserStatus.ORG_INVITED:
-        return <Button variant="warning-secondary" size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
+        return <Button variant={!shouldShowButton && showDisabledButtons ? "disabled" : "warning-secondary"} size="small" onClick={() => handleRevokeInvite(user.id)}>Revoke Invitation</Button>;
       case ClassroomUserStatus.REQUESTED:
       case ClassroomUserStatus.NOT_IN_ORG:
         return <Button variant="secondary" size="small" onClick={() => handleInviteUser(user.id)}>Invite User</Button>;
