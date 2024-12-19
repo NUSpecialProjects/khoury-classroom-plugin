@@ -29,4 +29,8 @@
   &__content p:last-of-type {
     margin-bottom: 2rem;
   }
+
+  &__button {
+    margin-bottom: 1rem;
+  }
 }
