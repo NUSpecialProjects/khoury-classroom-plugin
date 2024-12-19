@@ -103,7 +103,7 @@ const StudentSubmission: React.FC = () => {
   return (
     <div className="StudentWork">
       <SubPageHeader
-        pageTitle={submission?.contributors.join(", ")}
+        pageTitle={submission?.contributors.map((contributor) => contributor.full_name).join(", ")}
         pageSubTitle={submission?.assignment_name}
         chevronLink={`/app/assignments/${assignmentID}`}
       ></SubPageHeader>
