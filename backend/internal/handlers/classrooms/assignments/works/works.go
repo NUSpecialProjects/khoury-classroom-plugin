@@ -77,6 +77,22 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return err
 		}
 
+		// update works with current github data (this should be put into a periodic job eventually)
+		for _, work := range works {
+			opts := &github.CommitsListOptions{
+				ListOptions: github.ListOptions{
+					PerPage: 100,
+				},
+			}
+			commits, err := s.appClient.ListCommits(c.Context(), work.OrgName, work.RepoName, opts)
+			if err != nil {
+				return errs.GithubAPIError(err)
+			}
+			work.CommitAmount = len(commits)
+			work.LastCommitDate = commits[0].GetCommit().GetCommitter().Date
+			work.FirstCommitDate = commits[len(commits)-1].GetCommit().GetCommitter().Date
+		}
+
 		// get list of users in class
 		users, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
 		if err != nil {
@@ -300,7 +316,7 @@ func (s *WorkService) GetCommitsPerDay() fiber.Handler {
 		for _, commit := range commits {
 			commitDate := commit.GetCommit().GetCommitter().Date
 			if commitDate != nil {
-                // Standardize times to midday UTC
+				// Standardize times to midday UTC
 				truncatedDate := time.Date(commitDate.Year(), commitDate.Month(), commitDate.Day(), 12, 0, 0, 0, commitDate.Location())
 				commitDatesMap[truncatedDate] = commitDatesMap[truncatedDate] + 1
 			}
