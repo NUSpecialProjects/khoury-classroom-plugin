@@ -10,6 +10,13 @@
     gap: 10px;
     padding-bottom: 30px;
   }
+
+  &__centerAlignedCell {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .CopyLink {
