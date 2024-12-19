@@ -1,7 +1,7 @@
 import { useLocation, useParams, Link } from "react-router-dom";
 import { MdEdit, MdEditDocument } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
@@ -80,56 +80,37 @@ const Assignment: React.FC = () => {
     enabled: !!selectedClassroom?.id && !!assignment?.id
   });
 
-  const [acceptanceMetrics, setAcceptanceMetrics] = useState<IChartJSData>({
-    labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
-    datasets: [
-      {
-        backgroundColor: [
-          "#f83b5c",
-          "#50c878",
-          "#fece5a",
-          "#7895cb",
-          "#219386",
-        ],
-        data: [],
-      },
-    ],
-  });
-  const [gradedMetrics, setGradedMetrics] = useState<IChartJSData>({
-    labels: ["Graded", "Ungraded"],
-    datasets: [
-      {
-        backgroundColor: ["#219386", "#e5e7eb"],
-        data: [],
-      },
-    ],
+  const { data: acceptanceMetrics } = useQuery({
+    queryKey: ['acceptanceMetrics', selectedClassroom?.id, id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !id) return null;
+      const metrics = await getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id));
+      return {
+        labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
+        datasets: [{
+          backgroundColor: ["#f83b5c", "#50c878", "#fece5a", "#7895cb", "#219386"],
+          data: [metrics.not_accepted, metrics.accepted, metrics.started, metrics.submitted, metrics.in_grading]
+        }]
+      };
+    },
+    enabled: !!selectedClassroom?.id && !!id
   });
 
-  useEffect(() => {
-    if (!selectedClassroom || !id) return;
-
-    // populate acceptance metrics
-    getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id)).then(
-      (metrics) => {
-        acceptanceMetrics.datasets[0].data = [
-          metrics.not_accepted,
-          metrics.accepted,
-          metrics.started,
-          metrics.submitted,
-          metrics.in_grading,
-        ];
-        setAcceptanceMetrics(acceptanceMetrics);
-      }
-    );
-
-    // populate graded status metrics
-    getAssignmentGradedMetrics(selectedClassroom.id, Number(id)).then(
-      (metrics) => {
-        gradedMetrics.datasets[0].data = [metrics.graded, metrics.ungraded];
-        setGradedMetrics(gradedMetrics);
-      }
-    );
-  }, [selectedClassroom]);
+  const { data: gradedMetrics } = useQuery({
+    queryKey: ['gradedMetrics', selectedClassroom?.id, id],
+    queryFn: async () => {
+      if (!selectedClassroom?.id || !id) return null;
+      const metrics = await getAssignmentGradedMetrics(selectedClassroom.id, Number(id));
+      return {
+        labels: ["Graded", "Ungraded"],
+        datasets: [{
+          backgroundColor: ["#219386", "#e5e7eb"],
+          data: [metrics.graded, metrics.ungraded]
+        }]
+      };
+    },
+    enabled: !!selectedClassroom?.id && !!id
+  });
 
   const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";
   const firstCommitDate = studentWorks.reduce((earliest, work) => {
@@ -201,87 +182,91 @@ const Assignment: React.FC = () => {
                 title="Grading Status"
                 className="Assignment__metricsChart Assignment__metricsChart--graded"
               >
-                <Doughnut
-                  redraw={true}
-                  data={gradedMetrics}
-                  options={{
-                    maintainAspectRatio: true,
-                    plugins: {
-                      legend: {
-                        onClick: () => {},
-                        display: true,
-                        position: "bottom",
-                        labels: {
-                          usePointStyle: true,
+                {gradedMetrics && (
+                  <Doughnut
+                    redraw={true}
+                    data={gradedMetrics}
+                    options={{
+                      maintainAspectRatio: true,
+                      plugins: {
+                        legend: {
+                          onClick: () => {},
+                          display: true,
+                          position: "bottom",
+                          labels: {
+                            usePointStyle: true,
+                            font: {
+                              size: 12,
+                            },
+                          },
+                        },
+                        datalabels: {
+                          color: ["#fff", "#000"],
                           font: {
                             size: 12,
                           },
                         },
-                      },
-                      datalabels: {
-                        color: ["#fff", "#000"],
-                        font: {
-                          size: 12,
+                        tooltip: {
+                          enabled: false,
                         },
                       },
-                      tooltip: {
-                        enabled: false,
-                      },
-                    },
-                    cutout: "65%",
-                    borderColor: "transparent",
-                  }}
-                />
+                      cutout: "65%",
+                      borderColor: "transparent",
+                    }}
+                  />
+                )}
               </Metric>
 
               <Metric
                 title="Repository Status"
                 className="Assignment__metricsChart Assignment__metricsChart--acceptance"
               >
-                <Bar
-                  redraw={true}
-                  data={acceptanceMetrics}
-                  options={{
-                    maintainAspectRatio: false,
-                    indexAxis: "y",
-                    layout: {
-                      padding: {
-                        right: 50,
+                {acceptanceMetrics && (
+                  <Bar
+                    redraw={true}
+                    data={acceptanceMetrics}
+                    options={{
+                      maintainAspectRatio: false,
+                      indexAxis: "y",
+                      layout: {
+                        padding: {
+                          right: 50,
+                        },
                       },
-                    },
-                    scales: {
-                      x: {
-                        display: false,
-                      },
-                      y: {
-                        grid: {
+                      scales: {
+                        x: {
                           display: false,
                         },
-                        ticks: {
+                        y: {
+                          grid: {
+                            display: false,
+                          },
+                          ticks: {
+                            font: {
+                              size: 12,
+                            },
+                          },
+                        },
+                      },
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                        datalabels: {
+                          align: "end",
+                          anchor: "end",
+                          color: "#000",
                           font: {
                             size: 12,
                           },
                         },
-                      },
-                    },
-                    plugins: {
-                      legend: {
-                        display: false,
-                      },
-                      datalabels: {
-                        align: "end",
-                        anchor: "end",
-                        color: "#000",
-                        font: {
-                          size: 12,
+                        tooltip: {
+                          enabled: false,
                         },
                       },
-                      tooltip: {
-                        enabled: false,
-                      },
-                    },
-                  }}
-                />
+                    }}
+                  />
+                )}
               </Metric>
             </div>
           </div>
