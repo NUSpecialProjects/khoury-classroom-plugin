@@ -25,12 +25,14 @@ const DesiredFields = `
 	sw.created_at,
 	sw.commit_amount,
 	sw.first_commit_date,
+	sw.last_commit_date,
 	u.first_name,
-	u.last_name
+	u.last_name,
+	u.github_username
 `
 
 const JoinedTable = `
-	student_works AS sw
+	student_works_with_scores AS sw
 	JOIN
 	work_contributors AS wc ON sw.id = wc.student_work_id
 	JOIN
@@ -53,7 +55,8 @@ func formatWorks[T models.IStudentWork, F models.IFormattedStudentWork](rawWorks
 
 		// combine first and last names into a full name and add to list of contributors
 		fullName := fmt.Sprintf("%s %s", work.GetFirstName(), work.GetLastName())
-		workMap[work.GetID()].AddContributor(fullName)
+		githubUsername := work.GetGithubUsername()
+		workMap[work.GetID()].AddContributor(models.IWorkContributor{FullName: fullName, GithubUsername: githubUsername})
 	}
 
 	// convert map values to a slice
@@ -89,7 +92,7 @@ ORDER BY u.last_name, u.first_name;
 	}
 
 	return formatWorks(rawWorks, func(work models.RawStudentWork) *models.StudentWorkWithContributors {
-		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []string{}}
+		return &models.StudentWorkWithContributors{StudentWork: work.StudentWork, Contributors: []models.IWorkContributor{}}
 	}), nil
 }
 
@@ -129,7 +132,7 @@ WHERE student_work_id = $3
 	}
 
 	formatted := formatWorks(rawWorks, func(work models.RawPaginatedStudentWork) *models.PaginatedStudentWorkWithContributors {
-		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []string{}}
+		return &models.PaginatedStudentWorkWithContributors{PaginatedStudentWork: work.PaginatedStudentWork, Contributors: []models.IWorkContributor{}}
 	})
 
 	if len(formatted) == 0 {
@@ -191,47 +194,25 @@ func (db *DB) CreateStudentWork(ctx context.Context, assignmentOutlineID int32, 
 }
 
 func (db *DB) GetWorkByRepoName(ctx context.Context, repoName string) (models.StudentWork, error) {
-	var studentWork models.StudentWork
+	query := fmt.Sprintf(`
+SELECT %s FROM %s
+WHERE sw.repo_name = $1
+`, DesiredFields, JoinedTable)
 
-	err := db.connPool.QueryRow(ctx, `
-		SELECT sw.id,
-			   c.org_name,
-			   ao.name AS assignment_name,
-			   sw.assignment_outline_id,
-			   sw.repo_name,
-			   sw.unique_due_date,
-			   sw.manual_feedback_score,
-			   sw.auto_grader_score,
-			   sw.grades_published_timestamp,
-			   sw.work_state,
-			   sw.created_at,
-			   sw.commit_amount,
-			   sw.first_commit_date
-		FROM student_works sw
-		JOIN assignment_outlines ao ON sw.assignment_outline_id = ao.id
-		JOIN classrooms c ON ao.classroom_id = c.id
-		WHERE sw.repo_name = $1
-	`, repoName).Scan(
-		&studentWork.ID,
-		&studentWork.OrgName,
-		&studentWork.AssignmentName,
-		&studentWork.AssignmentOutlineID,
-		&studentWork.RepoName,
-		&studentWork.UniqueDueDate,
-		&studentWork.ManualFeedbackScore,
-		&studentWork.AutoGraderScore,
-		&studentWork.GradesPublishedTimestamp,
-		&studentWork.WorkState,
-		&studentWork.CreatedAt,
-		&studentWork.CommitAmount,
-		&studentWork.FirstCommitDate,
-	)
+	rows, err := db.connPool.Query(ctx, query, repoName)
 
 	if err != nil {
-		return studentWork, err
+		return models.StudentWork{}, err
 	}
 
-	return studentWork, nil
+	defer rows.Close()
+
+	work, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.RawStudentWork])
+	if err != nil {
+		return models.StudentWork{}, err
+	}
+
+	return work.StudentWork, nil
 }
 
 func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentWork) (models.StudentWork, error) {
@@ -244,9 +225,9 @@ func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentW
 			auto_grader_score = $5,
 			grades_published_timestamp = $6,
 			work_state = $7,
-			created_at = $8,
-			commit_amount = $9,
-			first_commit_date = $10
+			commit_amount = $8,
+			first_commit_date = $9,
+			last_commit_date = $10
 		WHERE id = $11
 	`, studentWork.AssignmentOutlineID,
 		studentWork.RepoName,
@@ -255,9 +236,9 @@ func (db *DB) UpdateStudentWork(ctx context.Context, studentWork models.StudentW
 		studentWork.AutoGraderScore,
 		studentWork.GradesPublishedTimestamp,
 		studentWork.WorkState,
-		studentWork.CreatedAt,
 		studentWork.CommitAmount,
 		studentWork.FirstCommitDate,
+		studentWork.LastCommitDate,
 		studentWork.ID,
 	)
 

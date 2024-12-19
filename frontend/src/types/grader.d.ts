@@ -5,7 +5,9 @@ interface IGraderFeedbackMap {
   [commentID: number]: IGraderFeedback;
 }
 interface IGraderFeedback {
+  action?: "CREATE" | "EDIT" | "DELETE";
   rubric_item_id?: number;
+  feedback_comment_id?: number;
   path: string;
   line: number;
   body: string;

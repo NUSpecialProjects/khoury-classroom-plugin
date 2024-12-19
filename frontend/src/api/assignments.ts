@@ -99,6 +99,30 @@ export const getAssignmentIndirectNav = async (
   return data;
 };
 
+export const getAssignmentTemplate = async (
+  classroomID: number,
+  assignmentID: number
+): Promise<IAssignmentTemplate> => {
+  const result = await fetch(
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/template`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!result.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data: IAssignmentTemplate = (await result.json()).assignment_template;
+  console.log(data);
+  return data;
+};
+
 export const createAssignment = async (
   templateRepoID: number,
   assignment: IAssignmentFormData
@@ -117,6 +141,7 @@ export const createAssignment = async (
         classroom_id: assignment.classroomId,
         group_assignment: assignment.groupAssignment,
         main_due_date: assignment.mainDueDate,
+        default_score: Number(assignment.defaultScore),
       }),
     }
   );
@@ -161,12 +186,12 @@ export const assignmentNameExists = async (
   const data = await result.json();
 
   return data.exists as boolean;
-}
+};
 
 export const setAssignmentRubric = async (
   rubric_id: number,
   classroomID: number,
-  assignmentID: number,
+  assignmentID: number
 ): Promise<IAssignmentOutline> => {
   const response = await fetch(
     `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/rubric`,
@@ -179,14 +204,16 @@ export const setAssignmentRubric = async (
       body: JSON.stringify(rubric_id),
     }
   );
-  
+
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
 
-  const data: IAssignmentOutline = (await response.json() as IAssignmentOutlineResponse).assignment_outline 
+  const data: IAssignmentOutline = (
+    (await response.json()) as IAssignmentOutlineResponse
+  ).assignment_outline;
 
-  return data
+  return data;
 };
 
 export const getAssignmentRubric = async (
@@ -213,7 +240,7 @@ export const getAssignmentRubric = async (
 
 export const getAssignmentFirstCommit = async (
   classroomID: number,
-  assignmentID: number 
+  assignmentID: number
 ): Promise<Date> => {
   const response = await fetch(
     `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/first-commit`,
@@ -228,16 +255,17 @@ export const getAssignmentFirstCommit = async (
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  const resp = ((await response.json()) as IAssignmentCommitDate).first_commit_at;
+  const resp = ((await response.json()) as IAssignmentCommitDate)
+    .first_commit_at;
   return resp;
 };
 
 export const getAssignmentTotalCommits = async (
   classroomID: number,
-  assignmentID: number 
+  assignmentID: number
 ): Promise<number> => {
   const response = await fetch(
-    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/total-commit`,
+    `${base_url}/classrooms/classroom/${classroomID}/assignments/assignment/${assignmentID}/commit-count`,
     {
       method: "GET",
       credentials: "include",
