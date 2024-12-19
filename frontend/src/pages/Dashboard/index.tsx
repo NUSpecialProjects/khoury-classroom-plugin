@@ -16,6 +16,7 @@ import { getClassroomUsers } from "@/api/classrooms";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import Metric from "@/components/Metrics";
+import { ClassroomRole, requireAtLeastClassroomRole } from "@/types/enums";
 
 const Dashboard: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -23,7 +24,7 @@ const Dashboard: React.FC = () => {
     classroomUser,
     error: classroomUserError,
     loading: loadingCurrentClassroomUser,
-  } = useClassroomUser(selectedClassroom?.id);
+  } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/access-denied");
 
   const {
     data: classroomUsersList = [],
@@ -71,9 +72,9 @@ const Dashboard: React.FC = () => {
       return "N/A";
     }
 
-    const tas = users.filter((user) => user.classroom_role === "TA");
+    const tas = users.filter((user) => user.classroom_role === ClassroomRole.TA);
 
-    const students = users.filter((user) => user.classroom_role === "STUDENT");
+    const students = users.filter((user) => user.classroom_role === ClassroomRole.STUDENT);
 
     if (tas.length === 0 || students.length === 0) {
       return "N/A";
@@ -119,7 +120,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  if (classroomUser?.classroom_role === "STUDENT") {
+  if (classroomUser?.classroom_role === ClassroomRole.STUDENT) {
     return (
       <div className="Dashboard__unauthorized">
         <h2>Access Denied</h2>
@@ -186,13 +187,13 @@ const Dashboard: React.FC = () => {
             <UserGroupCard
               label="Students"
               givenUsersList={classroomUsersList.filter(
-                (user: IClassroomUser) => user.classroom_role === "STUDENT"
+                (user) => user.classroom_role === ClassroomRole.STUDENT
               )}
               onClick={() =>
                 handleUserGroupClick(
                   "Student",
                   classroomUsersList.filter(
-                    (user: IClassroomUser) => user.classroom_role === "STUDENT"
+                    (user) => user.classroom_role === ClassroomRole.STUDENT
                   )
                 )
               }
@@ -201,13 +202,13 @@ const Dashboard: React.FC = () => {
             <UserGroupCard
               label="TAs"
               givenUsersList={classroomUsersList.filter(
-                (user: IClassroomUser) => user.classroom_role === "TA"
+                (user) => user.classroom_role === ClassroomRole.TA
               )}
               onClick={() =>
                 handleUserGroupClick(
                   "TA",
                   classroomUsersList.filter(
-                    (user: IClassroomUser) => user.classroom_role === "TA"
+                    (user) => user.classroom_role === ClassroomRole.TA
                   )
                 )
               }
@@ -216,13 +217,13 @@ const Dashboard: React.FC = () => {
             <UserGroupCard
               label="Professors"
               givenUsersList={classroomUsersList.filter(
-                (user: IClassroomUser) => user.classroom_role === "PROFESSOR"
+                (user) => user.classroom_role === ClassroomRole.PROFESSOR
               )}
               onClick={() =>
                 handleUserGroupClick(
                   "Professor",
                   classroomUsersList.filter(
-                    (user: IClassroomUser) => user.classroom_role === "PROFESSOR"
+                    (user) => user.classroom_role === ClassroomRole.PROFESSOR
                   )
                 )
               }
@@ -244,29 +245,33 @@ const Dashboard: React.FC = () => {
       <div className="Dashboard__sectionWrapper">
         <div className="Dashboard__assignmentsHeader">
           <h2 style={{ marginBottom: 0 }}>Assignments</h2>
-          <div className="Dashboard__createAssignmentButton">
-            <Button
-              variant="primary"
-              size="small"
-              href={`/app/assignments/create?org_name=${selectedClassroom.org_name}`}
-            >
-              <MdAdd className="icon" /> Create Assignment
-            </Button>
-          </div>
+          {requireAtLeastClassroomRole(classroomUser?.classroom_role, ClassroomRole.PROFESSOR) && (
+            <div className="Dashboard__createAssignmentButton">
+              <Button
+                variant="primary"
+                size="small"
+                href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
+              >
+                <MdAdd className="icon" /> Create Assignment
+              </Button>
+            </div>
+          )}
         </div>
         {assignments.length === 0 ? (
           <EmptyDataBanner>
-          <div className="emptyDataBannerMessage">
-            {assignmentsLoading ? (
-              <LoadingSpinner />
-            ) : (
-              <p>No assignments have been created yet.</p>
+            <div className="emptyDataBannerMessage">
+              {assignmentsLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <p>No assignments have been created yet.</p>
+              )}
+            </div>
+            {requireAtLeastClassroomRole(classroomUser?.classroom_role, ClassroomRole.PROFESSOR) && (
+              <Button variant="secondary" href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}>
+                <MdAdd /> Create Assignment
+              </Button>
             )}
-          </div>
-          <Button variant="secondary" href={`/app/assignments/create?org_name=${selectedClassroom.org_name}`}>
-              <MdAdd /> Create Assignment
-            </Button>
-        </EmptyDataBanner>
+          </EmptyDataBanner>
         ) : (
           <Table cols={2}>
             <TableRow style={{ borderTop: "none" }}>
@@ -293,4 +298,5 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
+
 export default Dashboard;

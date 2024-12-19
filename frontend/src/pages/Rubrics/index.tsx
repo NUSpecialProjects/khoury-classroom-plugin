@@ -11,9 +11,12 @@ import RubricList from "@/components/RubricList";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
 import { MdAdd } from "react-icons/md";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { ClassroomRole } from "@/types/enums";
 
 const Rubrics: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR, "/access-denied");
 
   const { data: rubrics, isLoading, error } = useQuery({
     queryKey: ['rubrics', selectedClassroom?.id],

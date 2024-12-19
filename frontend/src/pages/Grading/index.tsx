@@ -16,12 +16,13 @@ import {
 } from "@/components/Table/index.tsx";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import EmptyDataBanner from "@/components/EmptyDataBanner";
-
-import "./styles.css";
 import Button from "@/components/Button";
 import { MdAdd } from "react-icons/md";
 import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
-import { StudentWorkState } from "@/types/enums";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { ClassroomRole, StudentWorkState } from "@/types/enums";
+
+import "./styles.css";
 
 interface IGradingAssignmentRow extends React.HTMLProps<HTMLDivElement> {
   assignment: IAssignmentOutline;
@@ -148,6 +149,7 @@ const GradingAssignmentRow: React.FC<IGradingAssignmentRow> = ({
 
 const Grading: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/app/organization/select");
 
   const { data: assignments, isLoading, error } = useQuery({
     queryKey: ['assignments', selectedClassroom?.id],

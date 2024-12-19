@@ -25,7 +25,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   userList: initialUserList,
 }: GenericRolePageProps) => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { classroomUser: currentClassroomUser } = useClassroomUser(selectedClassroom?.id);
+  const { classroomUser: currentClassroomUser } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/access-denied");
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -44,12 +44,11 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
   const { data: inviteLink = "" } = useQuery({
     queryKey: ['classroomToken', selectedClassroom?.id, role_type],
     queryFn: async () => {
-      if (!selectedClassroom?.id) return "";
+      if (!selectedClassroom?.id || !showActionsColumn) return "";
       const data = await postClassroomToken(selectedClassroom.id, role_type);
       return `${base_url}/app/token/classroom/join?token=${data.token}`;
     },
     enabled: !!selectedClassroom?.id,
-
   });
 
   const removeUserFromList = (userId: number) => {
@@ -114,7 +113,18 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
       });
   };
 
+  // Don't show buttons if (the current user is a professor) AND (the current user is not the target user)
+  function shouldShowActionButtons(user: IClassroomUser) {
+    return currentClassroomUser?.classroom_role === ClassroomRole.PROFESSOR && currentClassroomUser?.id !== user.id;
+  }
+
+  const showActionsColumn = users.some(user => shouldShowActionButtons(user));
+
   const getActionButton = (user: IClassroomUser) => {
+    if (!shouldShowActionButtons(user)) {
+      return null;
+    }
+
     switch (user.status) {
       case ClassroomUserStatus.ACTIVE:
         return <Button variant="warning-secondary" size="small" onClick={() => handleRemoveUser(user.id)}>Remove User</Button>;
@@ -142,7 +152,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
           </div>
           <CopyLink link={inviteLink} name="invite-link"></CopyLink>
 
-          {users.filter(user => user.status === ClassroomUserStatus.REQUESTED).length > 0 && (
+          {users.filter(user => (user.status === ClassroomUserStatus.REQUESTED && shouldShowActionButtons(user))).length > 0 && (
             <div className="Users__inviteAllWrapper">
               <Button onClick={handleInviteAll}>Invite All Requested Users</Button>
             </div>
@@ -152,11 +162,11 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
 
       <div className="Users__tableWrapper">
         {users.length > 0 ? (
-          <Table cols={3}>
+          <Table cols={showActionsColumn ? 3 : 2}>
             <TableRow style={{ borderTop: "none" }}>
               <TableCell>{role_label} Name</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell className="Users__centerAlignedCell">Status</TableCell>
+              {showActionsColumn && <TableCell className="Users__centerAlignedCell">Actions</TableCell>}
             </TableRow>
             {users.map((user, i) => (
               <TableRow key={i}>
@@ -179,7 +189,7 @@ const GenericRolePage: React.FC<GenericRolePageProps> = ({
                     })()}>
                   </Pill>
                 </TableCell>
-                <TableCell>{getActionButton(user)}</TableCell>
+                {showActionsColumn && <TableCell>{getActionButton(user)}</TableCell>}
               </TableRow>
             ))}
           </Table>

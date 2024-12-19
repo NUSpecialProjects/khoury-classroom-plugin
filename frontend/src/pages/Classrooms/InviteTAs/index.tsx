@@ -7,6 +7,7 @@ import { postClassroomToken } from "@/api/classrooms";
 import { useQuery } from "@tanstack/react-query";
 
 import "../styles.css";
+import { ClassroomRole } from "@/types/enums";
 
 const InviteTAs: React.FC = () => {
   const { selectedClassroom } = useContext(SelectedClassroomContext);
@@ -17,7 +18,7 @@ const InviteTAs: React.FC = () => {
     queryKey: ['classroomToken', selectedClassroom?.id],
     queryFn: async () => {
       if (!selectedClassroom?.id) return null;
-      const data = await postClassroomToken(selectedClassroom.id, "TA");
+      const data = await postClassroomToken(selectedClassroom.id, ClassroomRole.TA);
       return `${base_url}/app/token/classroom/join?token=${data.token}`;
     },
     enabled: !!selectedClassroom?.id
