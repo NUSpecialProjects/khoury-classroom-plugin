@@ -47,7 +47,7 @@ const { id: assignmentID } = useParams();
       if (location.state?.assignment) {
         return location.state.assignment;
       }
-      return await getAssignmentIndirectNav(selectedClassroom.id, +id);
+      return await getAssignmentIndirectNav(selectedClassroom.id, Number(assignmentID));
     },
     enabled: !!selectedClassroom?.id && !!assignmentID
   });
