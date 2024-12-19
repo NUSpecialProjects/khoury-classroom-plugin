@@ -9,12 +9,15 @@ import StarterCodeDetails from "@/components/MultiStepForm/CreateAssignment/Star
 import { createAssignment, assignmentNameExists } from "@/api/assignments";
 
 import "./styles.css";
+import { useClassroomUser } from "@/hooks/useClassroomUser";
+import { ClassroomRole } from "@/types/enums";
 
 const CreateAssignment: React.FC = () => {
   const navigate = useNavigate();
 
   // Determine active classroom and organization
   const { selectedClassroom } = useContext(SelectedClassroomContext);
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR);
   const orgName = selectedClassroom?.org_name;
 
   // Fetch template repositories

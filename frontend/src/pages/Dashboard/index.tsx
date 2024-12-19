@@ -12,13 +12,13 @@ import BreadcrumbPageHeader from "@/components/PageHeader/BreadcrumbPageHeader";
 import Button from "@/components/Button";
 import MetricPanel from "@/components/Metrics/MetricPanel";
 import Metric from "@/components/Metrics";
-import { ClassroomRole } from "@/types/enums";
+import { ClassroomRole, requireAtLeastClassroomRole } from "@/types/enums";
 import { useClassroomUser } from "@/hooks/useClassroomUser";
 
 const Dashboard: React.FC = () => {
   const [assignments, setAssignments] = useState<IAssignmentOutline[]>([]);
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/access-denied");
+  const { classroomUser } = useClassroomUser(selectedClassroom?.id, ClassroomRole.TA, "/access-denied");
   const { classroomUsers: classroomUsersList } = useClassroomUsersList(
     selectedClassroom?.id
   );
@@ -161,15 +161,17 @@ const Dashboard: React.FC = () => {
           <div className="Dashboard__sectionWrapper">
             <div className="Dashboard__assignmentsHeader">
               <h2 style={{ marginBottom: 0 }}>Assignments</h2>
-              <div className="Dashboard__createAssignmentButton">
-                <Button
-                  variant="primary"
-                  size="small"
-                  href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
-                >
-                  <MdAdd className="icon" /> Create Assignment
-                </Button>
-              </div>
+              {requireAtLeastClassroomRole(classroomUser?.classroom_role, ClassroomRole.PROFESSOR) && (
+                <div className="Dashboard__createAssignmentButton">
+                  <Button
+                    variant="primary"
+                    size="small"
+                    href={`/app/assignments/create?org_name=${selectedClassroom?.org_name}`}
+                  >
+                    <MdAdd className="icon" /> Create Assignment
+                  </Button>
+                </div>
+              )}
             </div>
             <Table cols={2}>
               <TableRow style={{ borderTop: "none" }}>

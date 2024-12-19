@@ -22,14 +22,14 @@ export function useClassroomUser(classroomId?: number, requiredRole: ClassroomRo
               setError(null);
               if (requiredRole && !requireAtLeastClassroomRole(user.classroom_role, requiredRole)) {
                 if (redirectPath) {
-                  navigate(redirectPath);
+                  navigate(redirectPath, { replace: true });
                 }
               }
             } else {
               setError(new Error("User is not in the specified classroom"));
               setClassroomUser(null);
               if (redirectPath) {
-                navigate(redirectPath);
+                navigate(redirectPath, { replace: true });
               }
             }
           })
