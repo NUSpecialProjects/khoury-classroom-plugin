@@ -77,22 +77,6 @@ func (s *WorkService) getWorksInAssignment() fiber.Handler {
 			return err
 		}
 
-		// update works with current github data (this should be put into a periodic job eventually)
-		for _, work := range works {
-			opts := &github.CommitsListOptions{
-				ListOptions: github.ListOptions{
-					PerPage: 100,
-				},
-			}
-			commits, err := s.appClient.ListCommits(c.Context(), work.OrgName, work.RepoName, opts)
-			if err != nil {
-				return errs.GithubAPIError(err)
-			}
-			work.CommitAmount = len(commits)
-			work.LastCommitDate = commits[0].GetCommit().GetCommitter().Date
-			work.FirstCommitDate = commits[len(commits)-1].GetCommit().GetCommitter().Date
-		}
-
 		// get list of users in class
 		users, err := s.store.GetUsersInClassroom(c.Context(), int64(classroomID))
 		if err != nil {
