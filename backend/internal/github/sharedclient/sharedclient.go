@@ -293,13 +293,13 @@ func (api *CommonAPI) CreateDeadlineEnforcement(ctx context.Context, deadline *t
 }
 
 
-func (api *CommonAPI) CreatePREnforcement(ctx context.Context, orgName, repoName string) error {
+func (api *CommonAPI) CreatePREnforcement(ctx context.Context, orgName, repoName, branchName string) error {
 
 	addition := models.RepositoryAddition{
 		FilePath: ".github/workflows/branchProtections.yml",
 		RepoName: repoName,
 		OwnerName: orgName,
-		DestinationBranch: "main",
+		DestinationBranch: branchName,
 		Content: utils.TargetBranchProtectionAction(),
 		CommitMessage: "Deadline enforcement GH action files",
 	}

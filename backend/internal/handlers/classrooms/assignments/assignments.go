@@ -154,7 +154,7 @@ func (s *AssignmentService) generateAssignmentToken() fiber.Handler {
 
 // Uses an assignment token to accept an assignment.
 func (s *AssignmentService) useAssignmentToken() fiber.Handler {
-	//@CamTODO-> Downgrade student access
+	//@KHO-239
 	return func(c *fiber.Ctx) error {
 		token := c.Params("token")
 		if token == "" {
@@ -244,7 +244,7 @@ func (s *AssignmentService) useAssignmentToken() fiber.Handler {
 			initialDelay *= 2
 		}
 
-		//@CamTODO: Get rid of happy path here with repo get fail
+		//KHO-239
 		err = client.CreateBranchRuleset(c.Context(), classroom.OrgName, forkName)
 		if err != nil {
 			return errs.CriticalGithubError()

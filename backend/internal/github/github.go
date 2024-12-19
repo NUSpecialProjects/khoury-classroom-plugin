@@ -131,7 +131,7 @@ type GitHubBaseClient interface { //All methods in the SHARED client
 	CreateBranchRuleset(ctx context.Context,  orgName, repoName string) error
 
 	//Creates PR enforcements
-	CreatePREnforcement(ctx context.Context, orgName, repoName string) error
+	CreatePREnforcement(ctx context.Context, orgName, repoName, branchName string) error
 
 	// Create empty commit (will create a diff that allows feedback PR to be created)
 	CreateEmptyCommit(ctx context.Context, owner, repo string) error

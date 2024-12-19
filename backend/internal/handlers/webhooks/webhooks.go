@@ -2,7 +2,6 @@ package webhooks
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/CamPlume1/khoury-classroom/internal/errs"
@@ -98,7 +97,7 @@ func (s *WebHookService) baseRepoInitialization(c *fiber.Ctx, pushEvent github.P
 
 
 	//Create PR Enforcement Action
-	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name)
+	err = s.appClient.CreatePREnforcement(c.Context(), *pushEvent.Repo.Organization, *pushEvent.Repo.Name, "main")
 		if err != nil {
 			return err
 		}
@@ -178,7 +177,6 @@ func (s *WebHookService) updateWorkStateOnStudentCommit(c *fiber.Ctx, pushEvent 
 	// Store updated student work locally
 	_, err = s.store.UpdateStudentWork(c.Context(), studentWork)
 	if err != nil {
-		fmt.Println("Crud error 10") 
 		return errs.InternalServerError()
 	}
 
