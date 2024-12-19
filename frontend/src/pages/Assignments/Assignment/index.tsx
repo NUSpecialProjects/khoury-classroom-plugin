@@ -37,19 +37,19 @@ ChartJS.register(ChartDataLabels);
 const Assignment: React.FC = () => {
   const location = useLocation();
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  const { id } = useParams();
+const { id: assignmentID } = useParams();
   const base_url: string = import.meta.env.VITE_PUBLIC_FRONTEND_DOMAIN as string;
 
   const { data: assignment } = useQuery({
-    queryKey: ['assignment', selectedClassroom?.id, id],
+    queryKey: ['assignment', selectedClassroom?.id, assignmentID],
     queryFn: async () => {
-      if (!selectedClassroom?.id || !id) return null;
+      if (!selectedClassroom?.id || !assignmentID) return null;
       if (location.state?.assignment) {
         return location.state.assignment;
       }
       return await getAssignmentIndirectNav(selectedClassroom.id, +id);
     },
-    enabled: !!selectedClassroom?.id && !!id
+    enabled: !!selectedClassroom?.id && !!assignmentID
   });
 
   const { data: studentWorks = [] } = useQuery({
@@ -81,10 +81,10 @@ const Assignment: React.FC = () => {
   });
 
   const { data: acceptanceMetrics } = useQuery({
-    queryKey: ['acceptanceMetrics', selectedClassroom?.id, id],
+    queryKey: ['acceptanceMetrics', selectedClassroom?.id, assignmentID],
     queryFn: async () => {
-      if (!selectedClassroom?.id || !id) return null;
-      const metrics = await getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(id));
+      if (!selectedClassroom?.id || !assignmentID) return null;
+      const metrics = await getAssignmentAcceptanceMetrics(selectedClassroom.id, Number(assignmentID));
       return {
         labels: ["Not Accepted", "Accepted", "Started", "Submitted", "In Grading"],
         datasets: [{
@@ -93,14 +93,14 @@ const Assignment: React.FC = () => {
         }]
       };
     },
-    enabled: !!selectedClassroom?.id && !!id
+    enabled: !!selectedClassroom?.id && !!assignmentID
   });
 
   const { data: gradedMetrics } = useQuery({
-    queryKey: ['gradedMetrics', selectedClassroom?.id, id],
+    queryKey: ['gradedMetrics', selectedClassroom?.id, assignmentID],
     queryFn: async () => {
-      if (!selectedClassroom?.id || !id) return null;
-      const metrics = await getAssignmentGradedMetrics(selectedClassroom.id, Number(id));
+      if (!selectedClassroom?.id || !assignmentID) return null;
+      const metrics = await getAssignmentGradedMetrics(selectedClassroom.id, Number(assignmentID));
       return {
         labels: ["Graded", "Ungraded"],
         datasets: [{
@@ -109,7 +109,7 @@ const Assignment: React.FC = () => {
         }]
       };
     },
-    enabled: !!selectedClassroom?.id && !!id
+    enabled: !!selectedClassroom?.id && !!assignmentID
   });
 
   const assignmentTemplateLink = assignmentTemplate ? `https://github.com/${assignmentTemplate.template_repo_owner}/${assignmentTemplate.template_repo_name}` : "";

@@ -300,7 +300,7 @@ func (s *WorkService) GetCommitsPerDay() fiber.Handler {
 		for _, commit := range commits {
 			commitDate := commit.GetCommit().GetCommitter().Date
 			if commitDate != nil {
-                // Standardize times to midday UTC
+				// Standardize times to midday UTC
 				truncatedDate := time.Date(commitDate.Year(), commitDate.Month(), commitDate.Day(), 12, 0, 0, 0, commitDate.Location())
 				commitDatesMap[truncatedDate] = commitDatesMap[truncatedDate] + 1
 			}
