@@ -20,10 +20,8 @@ export function useClassroomUser(classroomId?: number, requiredRole: ClassroomRo
             if (user.classroom_id === classroomId) {
               setClassroomUser(user);
               setError(null);
-              if (requiredRole && !requireAtLeastClassroomRole(user.classroom_role, requiredRole)) {
-                if (redirectPath) {
-                  navigate(redirectPath, { replace: true });
-                }
+              if (requiredRole && redirectPath && !requireAtLeastClassroomRole(user.classroom_role, requiredRole)) {
+                navigate(redirectPath, { replace: true });
               }
             } else {
               setError(new Error("User is not in the specified classroom"));

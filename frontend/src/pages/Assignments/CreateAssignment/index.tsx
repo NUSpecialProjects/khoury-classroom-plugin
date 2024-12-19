@@ -17,7 +17,7 @@ const CreateAssignment: React.FC = () => {
 
   // Determine active classroom and organization
   const { selectedClassroom } = useContext(SelectedClassroomContext);
-  useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR);
+  useClassroomUser(selectedClassroom?.id, ClassroomRole.PROFESSOR, "/access-denied");
   const orgName = selectedClassroom?.org_name;
 
   // Fetch template repositories

@@ -42,23 +42,17 @@ const Layout: React.FC = () => {
     navigate,
   ]);
 
-  const baseNavItems = [
-    { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
-    { name: "Grading", dest: "/app/grading", Icon: MdEditDocument },
-  ];
-
   const professorNavItems = [
     { name: "Rubrics", dest: "/app/rubrics", Icon: MdFactCheck }
   ];
 
-  const settingsNavItem = [
-    { name: "Settings", dest: "/app/settings", Icon: FaGear }
-  ];
-
   const navItems = [
-    ...baseNavItems,
-    ...(classroomUser?.classroom_role === ClassroomRole.PROFESSOR ? professorNavItems : []),
-    ...settingsNavItem
+    { name: "Dashboard", dest: "/app/dashboard", Icon: FaTachometerAlt },
+    { name: "Grading", dest: "/app/grading", Icon: MdEditDocument },
+    ...(classroomUser?.classroom_role === ClassroomRole.PROFESSOR
+      ? professorNavItems
+      : []),
+    { name: "Settings", dest: "/app/settings", Icon: FaGear }
   ];
 
   if (loadingCurrentClassroomUser) {
